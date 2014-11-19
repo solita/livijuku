@@ -1,5 +1,11 @@
 *.class
 *.log
+.vagrant
 
 # IntelliJ IDEA
 *.iml
+
+# clojure
+.lein-env
+.nrepl-port
+
