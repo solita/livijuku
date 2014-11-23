@@ -4,11 +4,11 @@
             [compojure.route :as route]
             [ring.middleware.resource :refer [wrap-resource]]
 
-            [juku.reitit :refer [reitit]]
+            [juku.reitit :refer [hakemus-api]]
             [ring.middleware.defaults :refer :all]))
 
 
-(def app (wrap-defaults #'reitit (assoc-in site-defaults [:security :anti-forgery] false)))
+(def app (wrap-defaults #'hakemus-api (assoc-in site-defaults [:security :anti-forgery] false)))
 
 
 

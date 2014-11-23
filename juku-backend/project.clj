@@ -20,6 +20,7 @@
                            [org.clojure/tools.logging "0.3.1"]
                            [ch.qos.logback/logback-classic "1.1.2"]
                            [com.google.guava/guava "18.0"]
+                           [com.zaxxer/HikariCP-java6 "2.2.5"]
                            ;; Clojure i18n & L10n library
                            [com.taoensso/tower "3.0.2"]
                            ;; Clojurescript i18n & L10n library, compatible with tower
@@ -36,7 +37,6 @@
                       [lein-environ "1.0.0"]]
 
             :ring {:handler      juku.handler/app
-                   :init         juku.handler/init
                    :uberwar-name "juku.war"}
 
             :profiles {:dev     {:dependencies [[javax.servlet/servlet-api "2.5"]
@@ -46,7 +46,6 @@
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.
                                                 [lein-pdo "0.1.1"]
-
                                                 [lein-midje "3.1.3"]]
 
                                  ; What to do in the case of version issues - tehdään näin (ignore) koska muuten tulee valitusta leiniltä

@@ -16,10 +16,10 @@
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
-(defapi reitit
-        (swagger-ui "/api/ui")
-        (swagger-docs)
-        (swaggered "hakemukset"
-                           :description "hakemukset"
-                           hakemus-routes)
-        notfound)
+(defapi hakemus-api
+    (swagger-ui "/api/ui")
+    (swagger-docs)
+    (swaggered "hakemus"
+               :description "Hakemus API"
+               hakemus-routes)
+    notfound)

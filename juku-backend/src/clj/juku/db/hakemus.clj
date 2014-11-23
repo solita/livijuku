@@ -1,15 +1,22 @@
 (ns juku.db.hakemus
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
-            [juku.db.tietokanta :as kanta]
-            [juku.db.conversion :as db-util]))
+            [juku.db.tietokanta :refer [db]]
+            [juku.db.coerce :as coerce]
+            [schema.coerce :as scoerce]
+            [juku.schema.hakemus :refer :all]))
 
-(sql/defqueries "hakemus.sql" {:connection kanta/db-connection})
 
-(defmacro defquery [name args & body]
-  `(defn ~name ~args
-     (db-util/sql-timestamp->joda-datetime ~@body)))
+(sql/defqueries "hakemus.sql" {:connection db})
 
-(defquery find-osaston-hakemukset [osastoid] (select-osaston-hakemukset {:osastoid osastoid}))
+(defn hakemus-coercien-matcher [schema]
+  (or
+    (coerce/timestamp->localdate-matcher schema)))
+
+(def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
+
+(defn find-osaston-hakemukset [osastoid]
+  (map (comp coerce-hakemus coerce/transform-row)
+    (select-osaston-hakemukset {:osastoid osastoid})))
 
 

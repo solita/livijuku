@@ -6,8 +6,8 @@
             [ring.swagger.schema :refer [describe]]))
 
 (defroutes* hakemus-routes
-            (GET* "/hakija/hakemukset" []
-                  :return Hakemukset
-                  :query-params [osastoid :- Long]
-                  (ok (db/find-osaston-hakemukset osastoid))))
+      (GET* "/hakemukset/hakija" []
+            :return Hakemukset
+            :query-params [osastoid :- Long]
+            (ok (db/find-osaston-hakemukset osastoid))))
 

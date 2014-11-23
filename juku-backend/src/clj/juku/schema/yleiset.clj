@@ -3,7 +3,6 @@
             [schema.coerce :as scoerce]))
 
 (s/defschema Muokkaustiedot {:luontitunnus s/Str
-                             ;:luontiaika org.joda.time.DateTime
+                             :luontiaika org.joda.time.DateTime
                              :muokkaustunnus s/Str
-                             ;:muokkausaika org.joda.time.DateTime
-                             })
+                             :muokkausaika org.joda.time.DateTime})
