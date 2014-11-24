@@ -4,6 +4,7 @@
             :min-lein-version "2.4.3"
 
             :dependencies [[org.clojure/clojure "1.6.0"]
+                           [org.clojure/java.jdbc "0.3.6"]
                            [compojure "1.2.1"]
                            [metosin/compojure-api "0.16.3"]
                            [metosin/ring-http-response "0.5.1"]

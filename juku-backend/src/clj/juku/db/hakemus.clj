@@ -16,7 +16,13 @@
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
 
 (defn find-osaston-hakemukset [osastoid]
-  (map (comp coerce-hakemus coerce/transform-row)
+  (map (comp coerce-hakemus coerce/row->object)
     (select-osaston-hakemukset {:osastoid osastoid})))
+
+#_
+(defn add-hakemus! [hakemus]
+  (jdbc/with-db-transaction [tx (db)]
+      (let [id (:id (insert-taitorakenne<! hakemus {:connection tx}))]
+        (hae-taitorakenne-conn id {:connection tx}))))
 
 
