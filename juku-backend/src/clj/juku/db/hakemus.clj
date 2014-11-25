@@ -11,7 +11,8 @@
 
 (defn hakemus-coercien-matcher [schema]
   (or
-    (coerce/timestamp->localdate-matcher schema)))
+    (coerce/timestamp->localdate-matcher schema)
+    (coerce/number->int-matcher schema)))
 
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
 
@@ -19,10 +20,10 @@
   (map (comp coerce-hakemus coerce/row->object)
     (select-osaston-hakemukset {:osastoid osastoid})))
 
-#_
 (defn add-hakemus! [hakemus]
-  (jdbc/with-db-transaction [tx (db)]
-      (let [id (:id (insert-taitorakenne<! hakemus {:connection tx}))]
-        (hae-taitorakenne-conn id {:connection tx}))))
+  (jdbc/with-db-transaction [tx db]
+        (:id (insert-hakemus<! (-> hakemus
+          coerce/object->row
+          coerce/localdate->sql-date) {:connection tx}))))
 
 

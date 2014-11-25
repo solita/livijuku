@@ -5,7 +5,7 @@
             [clj-time.core :as time]))
 
 (s/defschema Hakemus {:id        s/Num
-                      :vuosi     s/Num
+                      :vuosi     s/Int
                       :hakuaika {
                           :alkupvm org.joda.time.LocalDate
                           :loppupvm org.joda.time.LocalDate

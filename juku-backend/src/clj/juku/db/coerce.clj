@@ -5,15 +5,28 @@
             [clojure.string :as str]
             [common.map :refer [remove-keys]]
             [schema.core :as sc]
-            [schema.coerce :as scoerce]))
+            [schema.coerce :as scoerce]
+            )
+  (:import (org.joda.time LocalDate )))
 
-
-(defn timestamp->localdate-matcher [schema]
+(defn date->localdate-matcher [schema]
   (if (= schema org.joda.time.LocalDate)
     (fn [v]
-      (if (instance? java.sql.Timestamp v)
-        (time-coerce/to-local-date (time-coerce/from-sql-time v))
+      (if (instance? java.util.Date v)
+        (LocalDate. (.getTime v))
         v))))
+
+(defn number->int-matcher [schema]
+  (if (= schema sc/Int)
+    (fn [v]
+      (if (instance? Number v) (int v) v))))
+
+(defn- convert-instances-of [c f m]
+  (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
+
+(defn localdate->sql-date [m]
+  (convert-instances-of org.joda.time.LocalDate time-coerce/to-sql-date m))
+
 
 (defn keypath [key]
   "Split key to a keypath. Keypath item separator is _."
