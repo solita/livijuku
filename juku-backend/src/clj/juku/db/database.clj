@@ -1,4 +1,4 @@
-(ns juku.db.tietokanta
+(ns juku.db.database
   (:require [clojure.java.jdbc])
   (:require [juku.db.jdbc_monkey_patch])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]))

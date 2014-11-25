@@ -1,7 +1,7 @@
 (ns juku.server
   (:require [org.httpkit.server :as http-kit]
             [juku.handler :as handler]
-            [juku.db.tietokanta :as db]))
+            [juku.db.database :as db]))
 
 ;;
 ;; Server life-cycle:
