@@ -8,12 +8,13 @@ create sequence hakemus_seq
 
 create table hakemus (
   id number constraint hakemus_pk primary key,
-  vuosi number(4) not null, 
+  vuosi number(4) not null,
+  osastoid not null references osasto (id),
+  nro number(1),
   hakuaika_alkupvm date not null,
   hakuaika_loppupvm date not null,
-  osastoid not null references osasto (id),
-  suunniteltuavustus number(9,2),
-  avustushakemusid references hakemus (id)
+
+  suunniteltuavustus number(9,2)
 );
 
 begin
