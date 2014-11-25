@@ -15,24 +15,15 @@
         (time-coerce/to-local-date (time-coerce/from-sql-time v))
         v))))
 
-(defn has-prefix? [key]
-  (strx/substring? "_" (name key)))
-
-(defn prefix [key]
-  (keyword (first (str/split (name key) #"_" ))))
-
-(defn remove-prefix [key]
-  (or
-    (keyword (second (str/split (name key) #"_" )))
-    key))
+(defn keypath [key]
+  "Split key to a keypath. Keypath item separator is _."
+  (map keyword (str/split (name key) #"_" )))
 
 (defn add-prefix [prefix key]
+  "Add prefix to a key. "
   (if prefix
     (-> key name (#(str/join "_" [prefix %])) keyword)
     key))
-
-(defn remove-prefixes [m]
-  (into {} (for [[k v] m] [(remove-prefix k) v])))
 
 (defn row->object [row]
   "Transforms a database row to a more hierarchical object structure so that all keyvalues,
@@ -44,9 +35,7 @@
     (fn [obj keyvalue]
       (let [key (first keyvalue)
             value (second keyvalue)]
-        (if (has-prefix? key)
-           (assoc-in obj [(prefix key) (remove-prefix key)] value)
-           (assoc obj key value)))) {} row))
+        (assoc-in obj (keypath key) value))) {} row))
 
 (defn object->row [obj & [prefix]]
   (reduce
