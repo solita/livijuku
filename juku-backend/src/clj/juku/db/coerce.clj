@@ -20,7 +20,7 @@
   (map keyword (str/split (name key) #"_" )))
 
 (defn add-prefix [prefix key]
-  "Add prefix to a key. "
+  "Add prefix to a key. Returns a new key with specified prefix."
   (if prefix
     (-> key name (#(str/join "_" [prefix %])) keyword)
     key))
@@ -45,17 +45,3 @@
         (if (map? value)
           (merge row (object->row value (name key)))
           (assoc row (add-prefix prefix key) value)))) {} obj))
-
-#_
-(defn transform-row
-  "Transforms a database row to a more hierarchical structure so that all keyvalues,
-  which have the same prefix, are combined to a new map. This map contains all the
-  keyvalues, which have the same prefix. The prefix is removed from the map keys.
-
-  e.g. {:a_x 1, :a_y 2 :b 3} -> {a: {:x 1 :y 2} :b 3}"
-  [row]
-  (let [prefix-keys (filter has-prefix? (keys row))
-        prefixes (group-by prefix prefix-keys)
-        result (remove-keys row prefix-keys)]
-    (into result (for [[prefix keys] prefixes] [prefix (remove-prefixes(select-keys row keys))]))))
-
