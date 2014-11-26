@@ -19,7 +19,7 @@
 (defapi hakemus-api
     (swagger-ui "/api/ui")
     (swagger-docs
-      :title "Juku API"
+      :title "Liikennevirasto - Juku API"
       :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut")
     (swaggered "hakemus"
                :description "Hakemus API"
