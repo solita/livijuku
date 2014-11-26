@@ -7,7 +7,7 @@
 
 (defroutes* hakemus-routes
       (GET* "/hakemukset/hakija" []
-            :return Hakemuskaudet
+            :return [Hakemuskausi]
             :query-params [osastoid :- Long]
             (ok (db/find-osaston-hakemukset-vuosittain osastoid))))
 
