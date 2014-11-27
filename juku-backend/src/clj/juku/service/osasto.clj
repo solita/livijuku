@@ -1,4 +1,4 @@
-(ns juku.db.osasto
+(ns juku.service.osasto
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
             [juku.db.database :refer [db]]

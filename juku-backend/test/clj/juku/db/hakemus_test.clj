@@ -1,7 +1,7 @@
 (ns juku.db.hakemus_test
   (:require [midje.sweet :refer :all]
             [clj-time.core :as t]
-            [juku.db.hakemus :as h]))
+            [juku.service.hakemus :as h]))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 

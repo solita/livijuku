@@ -6,7 +6,7 @@ Kehityskäyttö
 
 Leiningen build-työkalun asennus: http://leiningen.org/#install
 
-Palvelimen käynnistys lokaalisti: lein ring server-headless
+Palvelimen käynnistys lokaalisti: **lein ring server-headless**
 
 Palvelimen käynnistäminen edellyttää tietokannan
 * oletus: jdbc:oracle:thin:@localhost:1521:orcl
@@ -23,4 +23,4 @@ TODO
 Testaus
 -------
 
-TODO
+Midje testit ajetaan komennolla **lein midje**

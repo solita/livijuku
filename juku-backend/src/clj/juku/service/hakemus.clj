@@ -1,7 +1,7 @@
-(ns juku.db.hakemus
+(ns juku.service.hakemus
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
-            [juku.db.osasto :as osasto]
+            [juku.service.osasto :as osasto]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
