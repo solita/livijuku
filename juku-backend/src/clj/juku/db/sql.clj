@@ -1,5 +1,4 @@
 (ns juku.db.sql
-  (:import (java.sql SQLException))
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]))
 
