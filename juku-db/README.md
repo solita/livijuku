@@ -30,6 +30,8 @@ Tietokannan tyhjentäminen: lein clear-db
 
 Tyhjennys/päivitys: lein do clear-db, update-db
 
+Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
+
 Tuotantoasennus
 ---------------
 
