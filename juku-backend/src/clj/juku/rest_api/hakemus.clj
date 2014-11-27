@@ -10,9 +10,9 @@
       (GET* "/hakemukset/hakija" []
             :return [Hakemuskausi]
             :query-params [osastoid :- Long]
-            :summary "Hae hakijan hakemukset"
+            :summary "Hae hakijan hakemukset hakemuskausittain (vuosittain) ryhmitettynä"
             (ok (db/find-osaston-hakemukset-vuosittain osastoid)))
-      (POST* "/add-hakemus" []
+      (POST* "/hakemus" []
              :return   s/Num
              :body     [hakemus New-Hakemus]
              :summary  "Lisää hakemus"
