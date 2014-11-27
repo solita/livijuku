@@ -1,6 +1,8 @@
 Liikennevirasto - Juku palvelut
 ===============================
 
+Tämä projekti sisältää Liikenneviraston Juku -järjestelmän palveluiden toteutuksen.
+
 Kehityskäyttö
 -------------
 
@@ -18,7 +20,11 @@ Lokaalin tietokannan käyttäminen vagrantilla ks. ../juku-db/vagrant/README.md
 Tuotantokäyttö
 --------------
 
-TODO
+Tuotantokäyttö edellyttää java 1.8 kehitysympäristön.
+
+Käynnistäminen: **java -jar juku.jar**
+
+Asetukset: **juku.properties** tiedosto, joka pitää olla ohjelman käynnistyshakemistossa.
 
 Testaus
 -------
