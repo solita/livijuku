@@ -4,6 +4,7 @@ Juku tietokanta
 Tämä projekti sisältää tietokantapäivitykset Oracle Juku-tietokannan skeeman päivitykseen ja luontiin tyhjästä.
 
 Päivitysten hallintaan käytetään dbmaintain työkalua: http://www.dbmaintain.org/overview.html
+
 Tätä työkalua käytetään (leiningen asennustyökalulla): http://leiningen.org
 
 Oletukset
@@ -15,7 +16,7 @@ jolla tietokantaobjektit luodaan ja jolla on riittävät oikeudet muutosten teke
 Kaikki tietoa varaavat kantaobjektit luodaan juku-käyttäjän oletustaulualueeseen: juku_data.
 Oletustaulualueen lisäksi tarvitaan taulualue indekseille: juku_indx.
 
-Indeksitaulualuea valitaan siten että sen nimi on juku%_indx, johon juku käyttäjällä on quotaa.
+Indeksitaulualue valitaan siten että sen nimi on juku%_indx, johon juku käyttäjällä on varattu tilaa (quota).
 
 Tarvittavien taulualueiden luontiin löytyy esimerkit: users/tablespace.sql
 Tarvittavien käyttäjien luontiin löytyy esimerkit: users/users.sql
