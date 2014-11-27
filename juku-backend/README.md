@@ -11,4 +11,4 @@ Palvelimen käynnistäminen edellyttää tietokannan
 
 Palvelujen rajapintadokumentaatio: http://localhost:3000/api/ui/index.html
 
-Lokaalin tietokannan käyttäminen ks. ../juku-db/vagrant/README.md
+Lokaalin tietokannan käyttäminen vagrantilla ks. ../juku-db/vagrant/README.md
