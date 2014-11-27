@@ -10,15 +10,16 @@ Tätä työkalua käytetään (leiningen asennustyökalulla): http://leiningen.o
 Oletukset
 ---------
 
-Päivitykset olettavat että tietokannassa on valmiina tietokantakäyttäjä: juku,
+Päivitykset olettavat että tietokannassa on valmiina tietokantakäyttäjä: **juku**,
 jolla tietokantaobjektit luodaan ja jolla on riittävät oikeudet muutosten tekemiseen.
 
-Kaikki tietoa varaavat kantaobjektit luodaan juku-käyttäjän oletustaulualueeseen: juku_data.
-Oletustaulualueen lisäksi tarvitaan taulualue indekseille: juku_indx.
+Kaikki tietoa varaavat kantaobjektit luodaan juku-käyttäjän oletustaulualueeseen: **juku_data**.
+Oletustaulualueen lisäksi tarvitaan taulualue indekseille: **juku_indx**.
 
 Indeksitaulualue valitaan siten että sen nimi on juku%_indx, johon juku käyttäjällä on varattu tilaa (quota).
 
 Tarvittavien taulualueiden luontiin löytyy esimerkit: users/tablespace.sql
+
 Tarvittavien käyttäjien luontiin löytyy esimerkit: users/users.sql
 
 Kehityskäyttö
@@ -26,10 +27,11 @@ Kehityskäyttö
 
 Leiningen build-työkalun asennus: http://leiningen.org/#install
 
-Tietokannan päivitys: lein update-db
-Tietokannan tyhjentäminen: lein clear-db
+Tietokannan päivitys: **lein update-db**
 
-Tyhjennys/päivitys: lein do clear-db, update-db
+Tietokannan tyhjentäminen: **lein clear-db**
+
+Tyhjennys/päivitys: **lein do clear-db, update-db**
 
 Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
 
