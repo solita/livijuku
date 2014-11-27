@@ -7,14 +7,19 @@
             [schema.core :as s]))
 
 (defroutes* hakemus-routes
-      (GET* "/hakemukset/hakija" []
+      (GET* "/hakemukset/hakija/:osastoid" []
             :return [Hakemuskausi]
-            :query-params [osastoid :- Long]
+            :path-params [osastoid :- Long]
             :summary "Hae hakijan hakemukset hakemuskausittain (vuosittain) ryhmitettynä"
             (ok (db/find-osaston-hakemukset-vuosittain osastoid)))
       (POST* "/hakemus" []
              :return   s/Num
              :body     [hakemus New-Hakemus]
-             :summary  "Lisää hakemus"
-             (ok (db/add-hakemus! hakemus))))
+             :summary  "Lisää yksittäinen hakemus"
+             (ok (db/add-hakemus! hakemus)))
+      (POST* "/hakemuskausi" []
+             :return   nil
+             :form-params     [vuosi :- s/Int]
+             :summary  "Avaa uusi hakemuskausi"
+             (ok (db/avaa-hakemuskausi! vuosi))))
 
