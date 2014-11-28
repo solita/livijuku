@@ -1,12 +1,11 @@
 (ns juku.db.database
-  (:require [clojure.java.jdbc])
-  (:require [juku.db.jdbc_monkey_patch])
+  (:require [clojure.java.jdbc]
+            [juku.db.jdbc_monkey_patch]
+            [juku.settings :refer [settings]])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]))
 
 
-(def db-settings {:url "jdbc:oracle:thin:@localhost:1521:orcl"
-                  :user "juku_app"
-                  :password "juku"})
+(def db-settings (:db settings))
 
 (defn data-source [settings]
   (println (:url settings) (:user settings) (:password settings))
