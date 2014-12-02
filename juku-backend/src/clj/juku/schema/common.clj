@@ -1,4 +1,4 @@
-(ns juku.schema.yleiset
+(ns juku.schema.common
   (:require [schema.core :as s :include-macros  true]
             [schema.coerce :as scoerce]))
 

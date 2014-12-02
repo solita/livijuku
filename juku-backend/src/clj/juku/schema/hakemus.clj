@@ -1,8 +1,6 @@
 (ns juku.schema.hakemus
   (:import (org.joda.time LocalDate))
   (:require [schema.core :as s]
-            [schema.coerce :as scoerce]
-            [juku.schema.yleiset :as y]
             [clj-time.core :as time]))
 
 (s/defschema Hakuaika {:alkupvm LocalDate
