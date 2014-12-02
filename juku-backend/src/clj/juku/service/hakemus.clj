@@ -1,7 +1,7 @@
 (ns juku.service.hakemus
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
-            [juku.service.osasto :as osasto]
+            [juku.service.organisaatio :as organisaatio]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
@@ -19,12 +19,12 @@
 
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
 
-(defn find-osaston-hakemukset [osastoid]
+(defn find-organisaation-hakemukset [organisaatioid]
   (map (comp coerce-hakemus coerce/row->object)
-    (select-osaston-hakemukset {:osastoid osastoid})))
+    (select-organisaation-hakemukset {:organisaatioid organisaatioid})))
 
-(defn find-osaston-hakemukset-vuosittain [osastoid]
-  (let [hakemukset (find-osaston-hakemukset osastoid)
+(defn find-organisaation-hakemukset-vuosittain [organisaatioid]
+  (let [hakemukset (find-organisaation-hakemukset organisaatioid)
         vuosittain (group-by :vuosi hakemukset)]
     (reduce (fn [result [key value]] (conj result {:vuosi key :hakemukset value}))
             '() vuosittain)))
@@ -35,29 +35,29 @@
                                coerce/object->row
                                coerce/localdate->sql-date))))
 
-(defn oletus-avustus-hakemus! [vuosi osastoid] {
+(defn oletus-avustus-hakemus! [vuosi organisaatioid] {
      :vuosi vuosi :nro 1
-     :osastoid osastoid
+     :organisaatioid organisaatioid
      :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
                 :loppupvm (time/local-date (- vuosi 1) 12 15)}})
 
-(defn oletus-maksatus-hakemus1! [vuosi osastoid] {
+(defn oletus-maksatus-hakemus1! [vuosi organisaatioid] {
      :vuosi vuosi :nro 2
-     :osastoid osastoid
+     :organisaatioid organisaatioid
      :hakuaika {:alkupvm (time/local-date vuosi 7 1)
                 :loppupvm (time/local-date vuosi 8 31)}})
 
 
-(defn oletus-maksatus-hakemus2! [vuosi osastoid] {
+(defn oletus-maksatus-hakemus2! [vuosi organisaatioid] {
        :vuosi vuosi :nro 3
-       :osastoid osastoid
+       :organisaatioid organisaatioid
        :hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}})
 
 (defn avaa-hakemuskausi! [vuosi]
-  (doseq [osasto (osasto/osastot)]
-    (add-hakemus! (oletus-avustus-hakemus! vuosi (:id osasto)))
-    (add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id osasto)))
-    (add-hakemus! (oletus-maksatus-hakemus2! vuosi (:id osasto)))))
+  (doseq [organisaatio (organisaatio/organisaatiot)]
+    (add-hakemus! (oletus-avustus-hakemus! vuosi (:id organisaatio)))
+    (add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id organisaatio)))
+    (add-hakemus! (oletus-maksatus-hakemus2! vuosi (:id organisaatio)))))
 
 

@@ -1,4 +1,4 @@
-(ns juku.service.osasto
+(ns juku.service.organisaatio
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
             [juku.db.database :refer [db]]
@@ -6,6 +6,6 @@
             [juku.db.sql :as dml]
             [schema.coerce :as scoerce]))
 
-(sql/defqueries "osasto.sql" {:connection db})
+(sql/defqueries "organisaatio.sql" {:connection db})
 
-(defn osastot [] (select-osastot))
+(defn organisaatiot [] (select-organisaatiot))

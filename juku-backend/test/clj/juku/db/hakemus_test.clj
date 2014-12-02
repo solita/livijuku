@@ -6,12 +6,12 @@
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
 (fact
-  (let [osastoid 1
-        hakemus {:vuosi 2015 :nro 1 :osastoid osastoid
+  (let [organisaatioid 1
+        hakemus {:vuosi 2015 :nro 1 :organisaatioid organisaatioid
                  :hakuaika {:alkupvm (t/local-date 2014 6 1)
                             :loppupvm (t/local-date 2014 12 1)}}
 
         id (h/add-hakemus! hakemus)]
 
-    (first (filter (find-by-id id) (h/find-osaston-hakemukset osastoid)))
-      => (dissoc (assoc hakemus :id id) :osastoid)))
+    (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid)))
+      => (dissoc (assoc hakemus :id id) :organisaatioid)))

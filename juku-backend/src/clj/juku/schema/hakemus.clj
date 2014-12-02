@@ -13,7 +13,7 @@
                       :nro    s/Int
                       :hakuaika Hakuaika})
 
-(s/defschema New-Hakemus (assoc (dissoc Hakemus :id) :osastoid s/Num))
+(s/defschema New-Hakemus (assoc (dissoc Hakemus :id) :organisaatioid s/Num))
 
 (s/defschema Hakemukset [Hakemus])
 

@@ -5,8 +5,8 @@
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [juku.rest-api.hakemus :refer [hakemus-routes]]
-            [juku.rest-api.osasto :refer [osasto-routes]]
-            [juku.schema.osasto :refer :all]
+            [juku.rest-api.organisaatio :refer [organisaatio-routes]]
+            [juku.schema.organisaatio :refer :all]
             [juku.schema.hakemus :refer :all]
             [environ.core :refer [env]]))
 
@@ -20,7 +20,7 @@
     (swaggered "hakemus"
                :description "Hakemus API"
                hakemus-routes)
-    (swaggered "osasto"
-               :description "Osasto API"
-               osasto-routes)
+    (swaggered "organisaatio"
+               :description "Organisaatio API"
+               organisaatio-routes)
     notfound)
