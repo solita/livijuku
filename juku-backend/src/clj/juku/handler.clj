@@ -2,13 +2,12 @@
   (:require [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [ring.middleware.resource :refer [wrap-resource]]
 
-            [juku.reitit :refer [hakemus-api]]
+            [juku.reitit :refer [juku-api]]
             [ring.middleware.defaults :refer :all]))
 
 
-(def app (wrap-defaults #'hakemus-api (assoc-in site-defaults [:security :anti-forgery] false)))
+(def app (wrap-defaults #'juku-api (assoc-in site-defaults [:security :anti-forgery] false)))
 
 
 
