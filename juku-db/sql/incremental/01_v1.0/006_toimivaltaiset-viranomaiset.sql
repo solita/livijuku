@@ -1,37 +1,37 @@
 
 declare
-  type OsastoList is table of osasto%rowtype;
+  type OrganisaatioList is table of organisaatio%rowtype;
 
-  function new_osasto(nimi varchar2) return osasto%rowtype is
-    o osasto%rowtype;
+  function new_organisaatio(nimi varchar2) return organisaatio%rowtype is
+    o organisaatio%rowtype;
   begin
     o.nimi := nimi;
     return o;
   end;
 
-  procedure save_osastot(osastot OsastoList) is
+  procedure save_osastot(organisaatiot OrganisaatioList) is
   begin
-    forall i in osastot.first .. osastot.last
-      insert into osasto (id, nimi) values
-        (osasto_seq.nextval, osastot(i).nimi);
+    forall i in organisaatiot.first .. organisaatiot.last
+      insert into organisaatio (id, nimi) values
+        (organisaatio_seq.nextval, organisaatiot(i).nimi);
   end;
 begin
 
-save_osastot(OsastoList(
-  new_osasto('Helsingin seudun liikenne'),
-  new_osasto('Hämeenlinna'),
-  new_osasto('Joensuu'),
-  new_osasto('Jyväskylä'),
-  new_osasto('Kotka'),
-  new_osasto('Kouvola'),
-  new_osasto('Kuopio'),
-  new_osasto('Lahti'),
-  new_osasto('Lappeenranta'),
-  new_osasto('Oulu'),
-  new_osasto('Pori'),
-  new_osasto('Tampere'),
-  new_osasto('Turku'),
-  new_osasto('Vaasa')
+save_osastot(OrganisaatioList(
+  new_organisaatio('Helsingin seudun liikenne'),
+  new_organisaatio('Hämeenlinna'),
+  new_organisaatio('Joensuu'),
+  new_organisaatio('Jyväskylä'),
+  new_organisaatio('Kotka'),
+  new_organisaatio('Kouvola'),
+  new_organisaatio('Kuopio'),
+  new_organisaatio('Lahti'),
+  new_organisaatio('Lappeenranta'),
+  new_organisaatio('Oulu'),
+  new_organisaatio('Pori'),
+  new_organisaatio('Tampere'),
+  new_organisaatio('Turku'),
+  new_organisaatio('Vaasa')
 ));
 
 end;

@@ -51,7 +51,7 @@ create table kayttaja (
    etunimi varchar2 (200 char), 
    sukunimi varchar2 (200 char), 
    nimi varchar2 (200 char),
-   osastoid references osasto (id),
+   organisaatioid references organisaatio (id),
    jarjestelma number (1) default 0 not null check ( jarjestelma in (0, 1))
 );
 
@@ -59,7 +59,7 @@ begin
   model.define_mutable(model.new_entity('kayttaja', 'Käyttäjä', 'KA'));
   model.define_mutable(model.new_entity('kieli'));
 
-  model.define_mutable(model.new_entity('osasto', 'Osasto', 'ORG'));
+  model.define_mutable(model.new_entity('organisaatio', 'Organisaatio', 'ORG'));
 end;
 /
 
