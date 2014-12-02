@@ -10,8 +10,18 @@
       (GET* "/hakemukset/hakija/:organisaatioid" []
             :return [Hakemuskausi]
             :path-params [organisaatioid :- Long]
-            :summary "Hae hakijan hakemukset hakemuskausittain (vuosittain) ryhmitettynä"
+            :summary "Hae hakijan hakemukset hakemuskausittain (vuosittain) ryhmitettynä."
             (ok (db/find-organisaation-hakemukset-vuosittain organisaatioid)))
+      (GET* "/hakemus/:hakemusid" []
+            :return [Hakemus]
+            :path-params [hakemusid :- Long]
+            :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
+            (ok (db/get-hakemus-by-id hakemusid)))
+      (GET* "/hakemus/avustuskohteet/:hakemusid" []
+            :return [Hakemus]
+            :path-params [hakemusid :- Long]
+            :summary "Hae hakemuksen avustuskohteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
+            (ok (db/find-avustuskohteet-by-hakemusid hakemusid)))
       (POST* "/hakemus" []
              :return   s/Num
              :body     [hakemus New-Hakemus]

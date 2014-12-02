@@ -7,7 +7,8 @@
             [juku.db.sql :as dml]
             [schema.coerce :as scoerce]
             [juku.schema.hakemus :refer :all]
-            [clj-time.core :as time]))
+            [clj-time.core :as time]
+            [common.collection :as c]))
 
 
 (sql/defqueries "hakemus.sql" {:connection db})
@@ -28,6 +29,16 @@
         vuosittain (group-by :vuosi hakemukset)]
     (reduce (fn [result [key value]] (conj result {:vuosi key :hakemukset value}))
             '() vuosittain)))
+
+(defn get-hakemus-by-id [hakemusid]
+  (c/single-result (select-hakemus {:hakemusid hakemusid})))
+  #_
+  (let [hakemus (c/single-result (select-hakemus {:hakemusid hakemusid}))
+        avustuskohteet (select-avustuskohteet {:hakemusid hakemusid})]
+    (assoc hakemus :avustuskohteet avustuskohteet))
+
+(defn find-avustuskohteet-by-hakemusid [hakemusid]
+  (select-avustuskohteet {:hakemusid hakemusid}))
 
 (defn add-hakemus! [hakemus]
   (:id (dml/insert-with-id db "hakemus"

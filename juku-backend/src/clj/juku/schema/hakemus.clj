@@ -20,4 +20,9 @@
 
 (s/defschema Hakemuskaudet [Hakemuskausi])
 
+(s/defschema Avustuskohde {:hakemusid     s/Num
+                           :avustuskohdelajitunnus s/Str
+                           :haettavaavustus s/Int,
+                           :omarahoitus s/Int})
+
 
