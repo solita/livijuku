@@ -33,5 +33,10 @@
 
 (def db {:datasource (data-source db-settings)})
 
+(defn setup-shutdown-hook! [f]
+  (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
+
 (defn shutdown [] (.shutdown (:datasource db)))
+
+(setup-shutdown-hook! shutdown)
 

@@ -25,7 +25,6 @@
     (start-server #'handler/app port)))
 
 (defn stop []
-  (stop-server)
-  (db/shutdown))
+  (stop-server))
 
 
