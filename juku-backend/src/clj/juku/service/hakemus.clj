@@ -46,6 +46,12 @@
                                coerce/object->row
                                coerce/localdate->sql-date))))
 
+(defn add-avustuskohde! [avustuskohde]
+  (:id (dml/insert-with-id db "avustuskohde"
+                           (-> avustuskohde
+                               coerce/object->row
+                               coerce/localdate->sql-date))))
+
 (defn oletus-avustus-hakemus! [vuosi organisaatioid] {
      :vuosi vuosi :hakemustyyppitunnus "AH0"
      :organisaatioid organisaatioid

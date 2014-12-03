@@ -25,11 +25,16 @@
       (POST* "/hakemus" []
              :return   s/Num
              :body     [hakemus New-Hakemus]
-             :summary  "Lisää yksittäinen hakemus"
+             :summary  "Lisää yksittäinen hakemus."
              (ok (service/add-hakemus! hakemus)))
+      (POST* "/avustuskohde" []
+             :return   nil
+             :body     [avustuskohde Avustuskohde]
+             :summary  "Lisää avustuskohde olemassaolevaan hakemukseen."
+             (ok (service/add-avustuskohde! avustuskohde)))
       (POST* "/hakemuskausi" []
              :return   nil
              :form-params     [vuosi :- s/Int]
-             :summary  "Avaa uusi hakemuskausi"
+             :summary  "Avaa uusi hakemuskausi."
              (ok (service/avaa-hakemuskausi! vuosi))))
 
