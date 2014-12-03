@@ -31,22 +31,3 @@ begin
 end;
 /
 
-begin
-  model.new_classification('avustuskohdelaji', 'Avustuskohdelaji', 2, 'AKLAJI');
-end;
-/
-
-create table avustuskohde (
-  hakemusid not null references hakemus (id),
-  avustuskohdelajitunnus references avustuskohdelaji (tunnus),
-  haettavaavustus number(9,2),
-  omarahoitus number(9,2),
-  
-  constraint avustuskohde_pk primary key (hakemusid, avustuskohdelajitunnus)
-);
-
-begin
-  model.define_mutable(model.new_entity('avustuskohde', 'Avustuskohde', 'AK'));
-end;
-/
-
