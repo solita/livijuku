@@ -67,4 +67,4 @@
             :source-paths ["src/clj"]
             :resource-paths ["resources" "src/sql"]
             :test-paths ["test/clj"]
-            :uberjar-name "trex.jar")
+            :uberjar-name "juku.jar")
