@@ -20,7 +20,7 @@ Lokaalin tietokannan käyttäminen vagrantilla ks. ../juku-db/vagrant/README.md
 Tuotantokäyttö
 --------------
 
-Tuotantokäyttö edellyttää java 1.8 kehitysympäristön.
+Tuotantokäyttö edellyttää Java 1.8 JDK:n.
 
 Käynnistäminen: **java -jar juku.jar**
 
