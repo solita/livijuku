@@ -13,11 +13,17 @@ Asenna clojure, leiningen, vagrant.
 
 Käynnistä tietokanta
 
-    cd livijuku/juku-db/vagrant
+    cd juku-db/vagrant
+    less README.md
+
+Luo schema
+
+    cd juku-db
     less README.md
 
 Käynnistä backend palvelu
 
-    lein ring server
+    cd juku-backend
+    less README.md
 
 
