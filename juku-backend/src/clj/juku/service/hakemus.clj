@@ -31,7 +31,11 @@
             '() vuosittain)))
 
 (defn get-hakemus-by-id [hakemusid]
-  (c/single-result (select-hakemus {:hakemusid hakemusid})))
+  (-> (select-hakemus {:hakemusid hakemusid})
+    c/single-result
+    coerce/row->object
+    coerce-hakemus))
+
   #_
   (let [hakemus (c/single-result (select-hakemus {:hakemusid hakemusid}))
         avustuskohteet (select-avustuskohteet {:hakemusid hakemusid})]
