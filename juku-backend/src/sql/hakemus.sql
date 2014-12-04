@@ -7,6 +7,10 @@ from hakemus where organisaatioid = :organisaatioid
 select id, vuosi, hakemustyyppitunnus, hakemustilatunnus, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus where id = :hakemusid
 
+-- name: select-all-hakemukset
+select id, vuosi, hakemustyyppitunnus, hakemustilatunnus, hakuaika_alkupvm, hakuaika_loppupvm
+from hakemus
+
 -- name: select-avustuskohteet
 select hakemusid, avustuskohdelajitunnus, haettavaavustus, omarahoitus
 from avustuskohde where hakemusid = :hakemusid

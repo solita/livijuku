@@ -24,11 +24,20 @@
   (map (comp coerce-hakemus coerce/row->object)
     (select-organisaation-hakemukset {:organisaatioid organisaatioid})))
 
-(defn find-organisaation-hakemukset-vuosittain [organisaatioid]
-  (let [hakemukset (find-organisaation-hakemukset organisaatioid)
-        vuosittain (group-by :vuosi hakemukset)]
+(defn find-all-hakemukset []
+  (map (comp coerce-hakemus coerce/row->object)
+       (select-all-hakemukset)))
+
+(defn hakemukset-group-by-hakemuskausi [hakemukset]
+  (let [vuosittain (group-by :vuosi hakemukset)]
     (reduce (fn [result [key value]] (conj result {:vuosi key :hakemukset value}))
             '() vuosittain)))
+
+(defn find-organisaation-hakemukset-vuosittain [organisaatioid]
+  (hakemukset-group-by-hakemuskausi (find-organisaation-hakemukset organisaatioid)))
+
+(defn find-hakemukset-vuosittain []
+  (hakemukset-group-by-hakemuskausi (find-all-hakemukset)))
 
 (defn get-hakemus-by-id [hakemusid]
   (-> (select-hakemus {:hakemusid hakemusid})

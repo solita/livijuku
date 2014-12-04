@@ -7,6 +7,10 @@
             [schema.core :as s]))
 
 (defroutes* hakemus-routes
+      (GET* "/hakemuskaudet" []
+            :return [Hakemuskausi]
+            :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
+            (ok (service/find-hakemukset-vuosittain)))
       (GET* "/hakemukset/hakija/:organisaatioid" []
             :return [Hakemuskausi]
             :path-params [organisaatioid :- Long]
