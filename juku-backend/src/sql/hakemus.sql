@@ -16,3 +16,7 @@ update avustuskohde set
   haettavaavustus = :haettavaavustus,
   omarahoitus = :omarahoitus
 where hakemusid = :hakemusid and avustuskohdelajitunnus = :avustuskohdelajitunnus
+
+-- name: update-hakemustila!
+update hakemus set hakemustilatunnus = :hakemustilatunnus
+where id = :hakemusid

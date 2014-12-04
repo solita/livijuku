@@ -59,6 +59,9 @@
 (defn save-avustuskohde! [avustuskohde]
   (update-avustuskohde! avustuskohde))
 
+(defn laheta-hakemus! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))
+
 (defn oletus-avustus-hakemus! [vuosi organisaatioid] {
      :vuosi vuosi :hakemustyyppitunnus "AH0"
      :organisaatioid organisaatioid

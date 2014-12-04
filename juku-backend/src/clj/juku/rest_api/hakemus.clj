@@ -37,6 +37,11 @@
              :body     [avustuskohde Avustuskohde]
              :summary  "Päivittää olemassaolevan avustuskohteen tiedot."
              (ok (service/save-avustuskohde! avustuskohde)))
+      (POST* "/laheta-hakemus" []
+             :return   nil
+             :form-params     [hakemusid :- Long]
+             :summary  "Hakija merkitsee hakemuksen lähetetyksi. Hakemus on tämän jälkeen vireillä."
+             (ok (service/laheta-hakemus! hakemusid)))
       (POST* "/hakemuskausi" []
              :return   nil
              :form-params     [vuosi :- s/Int]
