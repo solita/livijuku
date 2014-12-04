@@ -13,7 +13,7 @@
             :summary "Hae hakijan hakemukset hakemuskausittain (vuosittain) ryhmitettynä."
             (ok (service/find-organisaation-hakemukset-vuosittain organisaatioid)))
       (GET* "/hakemus/:hakemusid" []
-            :return [Hakemus]
+            :return Hakemus
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/get-hakemus-by-id hakemusid)))
@@ -30,8 +30,13 @@
       (POST* "/avustuskohde" []
              :return   nil
              :body     [avustuskohde Avustuskohde]
-             :summary  "Lisää avustuskohde olemassaolevaan hakemukseen."
+             :summary  "Lisää uuden avustuskohteen olemassaolevaan hakemukseen."
              (ok (service/add-avustuskohde! avustuskohde)))
+      (PUT* "/avustuskohde" []
+             :return   nil
+             :body     [avustuskohde Avustuskohde]
+             :summary  "Päivittää olemassaolevan avustuskohteen tiedot."
+             (ok (service/save-avustuskohde! avustuskohde)))
       (POST* "/hakemuskausi" []
              :return   nil
              :form-params     [vuosi :- s/Int]

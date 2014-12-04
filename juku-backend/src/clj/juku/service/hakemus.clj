@@ -52,6 +52,9 @@
                                coerce/object->row
                                coerce/localdate->sql-date))))
 
+(defn save-avustuskohde! [avustuskohde]
+  (update-avustuskohde! avustuskohde))
+
 (defn oletus-avustus-hakemus! [vuosi organisaatioid] {
      :vuosi vuosi :hakemustyyppitunnus "AH0"
      :organisaatioid organisaatioid

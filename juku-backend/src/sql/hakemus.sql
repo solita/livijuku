@@ -10,3 +10,9 @@ from hakemus where id = :hakemusid
 -- name: select-avustuskohteet
 select hakemusid, avustuskohdelajitunnus, haettavaavustus, omarahoitus
 from avustuskohde where hakemusid = :hakemusid
+
+-- name: update-avustuskohde!
+update avustuskohde set
+  haettavaavustus = :haettavaavustus,
+  omarahoitus = :omarahoitus
+where hakemusid = :hakemusid and avustuskohdelajitunnus = :avustuskohdelajitunnus
