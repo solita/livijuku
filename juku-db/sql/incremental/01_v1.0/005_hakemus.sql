@@ -23,7 +23,7 @@ create table hakemustila (
 
 insert into hakemustila (tunnus, nimi) values ('K', 'Keskeneräinen');
 insert into hakemustila (tunnus, nimi) values ('V', 'Vireillä');
-insert into hakemustila (tunnus, nimi) values ('TA', 'Tarkastettu');
+insert into hakemustila (tunnus, nimi) values ('T', 'Tarkastettu');
 insert into hakemustila (tunnus, nimi) values ('T0', 'Täydennettävää');
 insert into hakemustila (tunnus, nimi) values ('TV', 'Täydennytty - täydennys valmis tarkastettavaksi');
 insert into hakemustila (tunnus, nimi) values ('P', 'Päätetty');
