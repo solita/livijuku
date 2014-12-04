@@ -1,8 +1,24 @@
 
 begin
-  model.new_classification('avustuskohdelaji', 'Avustuskohdelaji', 2, 'AKLAJI');
+  model.new_classification('avustuskohdelaji', 'Avustuskohdelaji', 5, 'AKLAJI');
 end;
 /
+
+insert into avustuskohdelaji (tunnus, nimi) values ('PSA-1', 'Paikallisliikenne');
+insert into avustuskohdelaji (tunnus, nimi) values ('PSA-2', 'Integroitupalvelulinja');
+insert into avustuskohdelaji (tunnus, nimi) values ('PSA-M', 'Muu PSA:n mukaisen liikenteen järjestäminen');
+
+insert into avustuskohdelaji (tunnus, nimi) values ('HK-SL', 'Seutulippu');
+insert into avustuskohdelaji (tunnus, nimi) values ('HK-KL', 'Kaupunkilippu tai kuntalippu');
+insert into avustuskohdelaji (tunnus, nimi) values ('HK-LL', 'Liityntälippu');
+insert into avustuskohdelaji (tunnus, nimi) values ('HK-TL', 'Työmatkalippu');
+
+insert into avustuskohdelaji (tunnus, nimi) values ('K-IM', 'Informaatio ja maksujärjestelmien kehittäminen');
+insert into avustuskohdelaji (tunnus, nimi) values ('K-MPK', 'Matkapalvelukeskuksen suunnittelu ja kehittäminen');
+insert into avustuskohdelaji (tunnus, nimi) values ('K-MK', 'Matkakeskuksen suunnittelu ja kehittäminen');
+insert into avustuskohdelaji (tunnus, nimi) values ('K-RT', 'Raitiotien suunnittelu');
+insert into avustuskohdelaji (tunnus, nimi) values ('K-M', 'Muu hanke');
+
 
 create table avustuskohde (
   hakemusid not null references hakemus (id),
