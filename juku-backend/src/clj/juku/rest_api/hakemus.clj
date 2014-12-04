@@ -42,6 +42,11 @@
              :form-params     [hakemusid :- Long]
              :summary  "Hakija merkitsee hakemuksen lähetetyksi. Hakemus on tämän jälkeen vireillä."
              (ok (service/laheta-hakemus! hakemusid)))
+      (POST* "/tarkasta-hakemus" []
+             :return   nil
+             :form-params     [hakemusid :- Long]
+             :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
+             (ok (service/tarkasta-hakemus! hakemusid)))
       (POST* "/hakemuskausi" []
              :return   nil
              :form-params     [vuosi :- s/Int]

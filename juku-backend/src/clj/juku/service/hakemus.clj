@@ -62,6 +62,9 @@
 (defn laheta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))
 
+(defn tarkasta-hakemus! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
+
 (defn oletus-avustus-hakemus! [vuosi organisaatioid] {
      :vuosi vuosi :hakemustyyppitunnus "AH0"
      :organisaatioid organisaatioid
