@@ -9,6 +9,7 @@
 (s/defschema Hakemus {:id     s/Num
                       :vuosi  s/Int
                       :hakemustyyppitunnus s/Str
+                      :hakemustilatunnus s/Str
                       :hakuaika Hakuaika})
 
 (s/defschema New-Hakemus (assoc (dissoc Hakemus :id) :organisaatioid s/Num))
