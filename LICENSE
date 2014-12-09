@@ -1,201 +1,197 @@
-Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
-
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-
-   1. Definitions.
-
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
-
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
-
-      "Legal Entity" shall mean the union of the acting entity and all
-      other entities that control, are controlled by, or are under common
-      control with that entity. For the purposes of this definition,
-      "control" means (i) the power, direct or indirect, to cause the
-      direction or management of such entity, whether by contract or
-      otherwise, or (ii) ownership of fifty percent (50%) or more of the
-      outstanding shares, or (iii) beneficial ownership of such entity.
-
-      "You" (or "Your") shall mean an individual or Legal Entity
-      exercising permissions granted by this License.
-
-      "Source" form shall mean the preferred form for making modifications,
-      including but not limited to software source code, documentation
-      source, and configuration files.
-
-      "Object" form shall mean any form resulting from mechanical
-      transformation or translation of a Source form, including but
-      not limited to compiled object code, generated documentation,
-      and conversions to other media types.
-
-      "Work" shall mean the work of authorship, whether in Source or
-      Object form, made available under the License, as indicated by a
-      copyright notice that is included in or attached to the work
-      (an example is provided in the Appendix below).
-
-      "Derivative Works" shall mean any work, whether in Source or Object
-      form, that is based on (or derived from) the Work and for which the
-      editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. For the purposes
-      of this License, Derivative Works shall not include works that remain
-      separable from, or merely link (or bind by name) to the interfaces of,
-      the Work and Derivative Works thereof.
-
-      "Contribution" shall mean any work of authorship, including
-      the original version of the Work and any modifications or additions
-      to that Work or Derivative Works thereof, that is intentionally
-      submitted to Licensor for inclusion in the Work by the copyright owner
-      or by an individual or Legal Entity authorized to submit on behalf of
-      the copyright owner. For the purposes of this definition, "submitted"
-      means any form of electronic, verbal, or written communication sent
-      to the Licensor or its representatives, including but not limited to
-      communication on electronic mailing lists, source code control systems,
-      and issue tracking systems that are managed by, or on behalf of, the
-      Licensor for the purpose of discussing and improving the Work, but
-      excluding communication that is conspicuously marked or otherwise
-      designated in writing by the copyright owner as "Not a Contribution."
-
-      "Contributor" shall mean Licensor and any individual or Legal Entity
-      on behalf of whom a Contribution has been received by Licensor and
-      subsequently incorporated within the Work.
-
-   2. Grant of Copyright License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      copyright license to reproduce, prepare Derivative Works of,
-      publicly display, publicly perform, sublicense, and distribute the
-      Work and such Derivative Works in Source or Object form.
-
-   3. Grant of Patent License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      (except as stated in this section) patent license to make, have made,
-      use, offer to sell, sell, import, and otherwise transfer the Work,
-      where such license applies only to those patent claims licensable
-      by such Contributor that are necessarily infringed by their
-      Contribution(s) alone or by combination of their Contribution(s)
-      with the Work to which such Contribution(s) was submitted. If You
-      institute patent litigation against any entity (including a
-      cross-claim or counterclaim in a lawsuit) alleging that the Work
-      or a Contribution incorporated within the Work constitutes direct
-      or contributory patent infringement, then any patent licenses
-      granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
-
-   4. Redistribution. You may reproduce and distribute copies of the
-      Work or Derivative Works thereof in any medium, with or without
-      modifications, and in Source or Object form, provided that You
-      meet the following conditions:
-
-      (a) You must give any other recipients of the Work or
-          Derivative Works a copy of this License; and
-
-      (b) You must cause any modified files to carry prominent notices
-          stating that You changed the files; and
-
-      (c) You must retain, in the Source form of any Derivative Works
-          that You distribute, all copyright, patent, trademark, and
-          attribution notices from the Source form of the Work,
-          excluding those notices that do not pertain to any part of
-          the Derivative Works; and
-
-      (d) If the Work includes a "NOTICE" text file as part of its
-          distribution, then any Derivative Works that You distribute must
-          include a readable copy of the attribution notices contained
-          within such NOTICE file, excluding those notices that do not
-          pertain to any part of the Derivative Works, in at least one
-          of the following places: within a NOTICE text file distributed
-          as part of the Derivative Works; within the Source form or
-          documentation, if provided along with the Derivative Works; or,
-          within a display generated by the Derivative Works, if and
-          wherever such third-party notices normally appear. The contents
-          of the NOTICE file are for informational purposes only and
-          do not modify the License. You may add Your own attribution
-          notices within Derivative Works that You distribute, alongside
-          or as an addendum to the NOTICE text from the Work, provided
-          that such additional attribution notices cannot be construed
-          as modifying the License.
-
-      You may add Your own copyright statement to Your modifications and
-      may provide additional or different license terms and conditions
-      for use, reproduction, or distribution of Your modifications, or
-      for any such Derivative Works as a whole, provided Your use,
-      reproduction, and distribution of the Work otherwise complies with
-      the conditions stated in this License.
-
-   5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted for inclusion in the Work
-      by You to the Licensor shall be under the terms and conditions of
-      this License, without any additional terms or conditions.
-      Notwithstanding the above, nothing herein shall supersede or modify
-      the terms of any separate license agreement you may have executed
-      with Licensor regarding such Contributions.
-
-   6. Trademarks. This License does not grant permission to use the trade
-      names, trademarks, service marks, or product names of the Licensor,
-      except as required for reasonable and customary use in describing the
-      origin of the Work and reproducing the content of the NOTICE file.
-
-   7. Disclaimer of Warranty. Unless required by applicable law or
-      agreed to in writing, Licensor provides the Work (and each
-      Contributor provides its Contributions) on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-      implied, including, without limitation, any warranties or conditions
-      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
-      PARTICULAR PURPOSE. You are solely responsible for determining the
-      appropriateness of using or redistributing the Work and assume any
-      risks associated with Your exercise of permissions under this License.
-
-   8. Limitation of Liability. In no event and under no legal theory,
-      whether in tort (including negligence), contract, or otherwise,
-      unless required by applicable law (such as deliberate and grossly
-      negligent acts) or agreed to in writing, shall any Contributor be
-      liable to You for damages, including any direct, indirect, special,
-      incidental, or consequential damages of any character arising as a
-      result of this License or out of the use or inability to use the
-      Work (including but not limited to damages for loss of goodwill,
-      work stoppage, computer failure or malfunction, or any and all
-      other commercial damages or losses), even if such Contributor
-      has been advised of the possibility of such damages.
-
-   9. Accepting Warranty or Additional Liability. While redistributing
-      the Work or Derivative Works thereof, You may choose to offer,
-      and charge a fee for, acceptance of support, warranty, indemnity,
-      or other liability obligations and/or rights consistent with this
-      License. However, in accepting such obligations, You may act only
-      on Your own behalf and on Your sole responsibility, not on behalf
-      of any other Contributor, and only if You agree to indemnify,
-      defend, and hold each Contributor harmless for any liability
-      incurred by, or claims asserted against, such Contributor by reason
-      of your accepting any such warranty or additional liability.
-
-   END OF TERMS AND CONDITIONS
-
-   APPENDIX: How to apply the Apache License to your work.
-
-      To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "{}"
-      replaced with your own identifying information. (Don't include
-      the brackets!)  The text should be enclosed in the appropriate
-      comment syntax for the file format. We also recommend that a
-      file or class name and description of purpose be included on the
-      same "printed page" as the copyright notice for easier
-      identification within third-party archives.
-
-   Copyright {yyyy} {name of copyright owner}
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+Euroopan unionin yleinen lisenssi 
+v.1.1 
+EUPL © Euroopan yhteisö 2007 
+Tätä Euroopan unionin yleistä lisenssiä (”EUPL”)1
+ sovelletaan teokseen tai ohjelmistoon 
+(sellaisina kuin ne määritellään jäljempänä), joka toimitetaan tämän lisenssin ehdoilla. 
+Teoksen kaikki muu kuin tämän lisenssin nojalla sallittu käyttö on kielletty (siltä osin kuin 
+tällainen käyttö on suojattu teoksen tekijänoikeuden haltijan oikeuksilla). 
+Alkuperäisteos toimitetaan tämän lisenssin ehdoilla silloin kun lisenssinantaja (sellaisena kuin 
+se määritellään jäljempänä) on asettanut seuraavan ilmoituksen välittömästi alkuperäisteoksen 
+tekijänoikeusilmoituksen perään: 
+Lisensoitu EUPL V.1.1:n nojalla 
+tai ilmaissut muilla keinoin suostumuksensa EUPL: n mukaiseen lisenssin myöntämiseen. 
+1. Määritelmät
+Tässä lisenssissä seuraavilla termeillä on seuraavat merkitykset: 
+– Lisenssi: tämä lisenssi. 
+− Alkuperäisteos tai ohjelmisto: lisenssinantajan tämän lisenssin mukaisesti levittämä 
+ja/tai luovuttama ohjelmisto, joka on saatavana lähdekoodina sekä mahdollisesti myös 
+suoritettavana koodina. 
+− Jälkiperäisteokset: teokset tai ohjelmistot, joita lisenssinsaaja voi luoda 
+alkuperäisteoksen tai sen muunnelmien pohjalta. Tässä lisenssissä ei määritellä, minkä 
+laajuinen muuntelu tai riippuvuus alkuperäisteoksesta riittää luokittelemaan teoksen 
+jälkiperäisteokseksi; tämä laajuus määritetään 15 kohdassa mainitussa maassa 
+sovellettavassa tekijänoikeuslaissa. 
+– Teos: alkuperäisteos ja/tai sen jälkiperäisteokset. 
+− Lähdekoodi: teos ihmiselle luettavassa muodossa, jossa sitä on helpointa tutkia ja 
+muunnella. 
+− Suoritettava koodi: mikä tahansa koodi, yleensä käännettynä, joka on tarkoitettu 
+tietokoneen tulkittavaksi ohjelmana. 
+− Lisenssinantaja: luonnollinen henkilö tai oikeushenkilö, joka levittää ja/tai luovuttaa 
+lisenssin alaista teosta. 
+ 
+1
+ EUPL: "European Union Public Licence" − Muu(t) tekijä(t): luonnollinen henkilö tai oikeushenkilö, joka muuntelee lisenssin 
+alaista teosta tai muutoin myötävaikuttaa jälkiperäisteoksen luomiseen. 
+− Lisenssinsaaja tai "te": luonnollinen henkilö tai oikeushenkilö, joka jollain tavoin 
+käyttää ohjelmistoa lisenssin ehdoilla. 
+− Levittäminen ja/tai luovuttaminen: kaikki toimet, joilla teoskappaleita myydään, 
+annetaan, lainataan, vuokrataan, levitetään, luovutetaan, lähetetään tai muutoin 
+asetetaan luonnollisten ja oikeushenkilöiden saataville tai joilla tarjotaan pääsyä 
+teoksen olennaisiin toimintoihin verkon kautta tai sen ulkopuolella. 
+2. Tällä lisenssillä myönnettävien oikeuksien laajuus
+Lisenssinantaja myöntää teille maailmanlaajuisen, rojaltimaksuttoman, yksinoikeudettoman, 
+alilisensoitavan lisenssin seuraaviin toimiin alkuperäisteokseen kohdistuvien 
+tekijänoikeuksien ajaksi: 
+– teoksen käyttö kaikissa olosuhteissa ja käyttötarkoituksissa, 
+– teoksen toisinto, 
+– alkuperäisteoksen muuntelu ja teokseen perustuvien jälkiperäisteosten tekeminen, 
+− teoksen luovuttaminen yleisölle, mukaan lukien oikeus asettaa teos tai teoskappaleita 
+yleisön saataville tai näytteille sekä mahdollisesti suorittaa teos julkisesti, 
+– teoksen tai teoskappaleiden levittäminen, 
+– teoksen tai teoskappaleiden lainaaminen ja vuokraaminen, 
+– teoksen tai teoskappaleiden oikeuksien alilisensointi. 
+Näitä oikeuksia voidaan harjoittaa millä tahansa välineellä, alustalla tai muodolla, riippumatta 
+siitä onko se tiedossa nyt tai keksitäänkö se myöhemmin, kunhan sovellettavaa lakia 
+noudatetaan. 
+Maissa, joissa sovelletaan moraalisia oikeuksia, lisenssinantaja luopuu oikeudestaan harjoittaa 
+moraalista oikeuttaan lain sallimassa laajuudessa, jotta edellä lueteltujen taloudellisten 
+oikeuksien lisensointi olisi tehokasta. 
+Lisenssinantaja myöntää lisenssinsaajalle rojaltimaksuttomat, yksinoikeudettomat 
+käyttöoikeudet kaikkiin lisenssinantajan hallussa pitämiin patentteihin siinä määrin kuin on 
+tarpeen tällä lisenssillä teokseen myönnettyjen oikeuksien käyttämiseksi. 
+3. Lähdekoodin luovuttaminen
+Lisenssinantaja voi toimittaa teoksen joko lähdekoodina tai suoritettavana koodina. Jos teos 
+toimitetaan suoritettavana koodina, lisenssinantaja toimittaa lisäksi koneella luettavan kopion 
+teoksen lähdekoodista lisenssinantajan levittämän kunkin teoskappaleen yhteydessä tai 
+ilmoittaa teokseen liitetyn tekijänoikeusilmoituksen perään lisätyssä ilmoituksessa paikan, josta lähdekoodi on helposti ja vapaasti saatavissa niin pitkään kuin lisenssinantaja jatkaa 
+teoksen levittämistä ja/tai luovuttamista. 
+4. Tekijänoikeuden rajoitukset
+Tässä lisenssissä ei ole mitään sellaista, jonka tarkoitus on estää lisenssinsaajaa hyötymästä 
+oikeudenomistajien alkuperäisteokseen tai ohjelmistoon kohdistuvien yksinoikeuksien 
+poikkeuksesta tai rajoituksesta, näiden oikeuksien päättymisestä tai muista niihin 
+sovellettavista rajoituksista. 
+5. Lisenssinsaajan velvoitteet
+Edellä mainittujen oikeuksien myöntäminen lisenssinsaajalle on sidottu tiettyihin rajoituksiin 
+ja velvoitteisiin. Nämä velvoitteet ovat seuraavat:
+Isyysoikeus: Lisenssinsaajan on pidettävä koskemattomina kaikki tekijänoikeus-, patentti- tai 
+tavaramerkki-ilmoitukset sekä kaikki ilmoitukset, jotka viittaavat lisenssiin ja 
+takuunrajoituksiin. Lisenssinsaajan on sisällytettävä jäljennös tällaisista ilmoituksista ja 
+lisenssistä jokaiseen levittämäänsä ja/tai luovuttamaansa teoskappaleeseen. Lisenssinsaajan 
+on huolehdittava siitä, että kaikissa jälkiperäisteoksissa on näkyvä ilmoitus siitä, että teosta on 
+muunneltu. Ilmoituksen on sisällettävä myös muuntelun päiväys. 
+Copyleft-lauseke: Jos lisenssinsaaja levittää ja/tai luovuttaa alkuperäisteosten teoskappaleita 
+tai alkuperäisteoksiin perustuvia jälkiperäisteoksia, tämä levittäminen ja/tai luovuttaminen 
+tapahtuu tämän lisenssin tai sen myöhemmän version ehdoilla, paitsi jos alkuperäisteosta 
+levitetään nimenomaisesti lisenssin tämän version ehdoilla. Lisenssinsaaja (josta tulee 
+lisenssinantaja) ei voi tarjota tai asettaa teokselle tai jälkiperäisteokselle mitään lisäehtoja tai 
+edellytyksiä, jotka muuttavat tai rajoittavat lisenssin ehtoja. 
+Yhteensopivuuslauseke: Jos lisenssinsaaja levittää ja/tai luovuttaa jälkiperäisteoksia tai sen 
+teoskappaleita, jotka perustuvat sekä alkuperäisteokseen että muuhun teokseen, joka on 
+lisensoitu jollakin yhteensopivalla lisenssillä, tämä levittäminen ja/tai luovuttaminen voi 
+tapahtua tämän yhteensopivan lisenssin ehdoilla. Tämän lausekkeen soveltamiseksi 
+”yhteensopivalla lisenssillä” tarkoitetaan tämän lisenssin lisäyksessä lueteltuja lisenssejä. Jos 
+lisenssinsaajalla on yhteensopivan lisenssin mukaisia velvoitteita, jotka ovat ristiriidassa 
+hänen tämän lisenssin mukaisten velvoitteidensa kanssa, sovelletaan yhteensopivan lisenssin 
+velvoitteita. 
+Lähdekoodin toimittaminen: Levittäessään ja/tai luovuttaessaan teoksesta teoskappaleita 
+lisenssinsaaja toimittaa koneella luettavan kopion lähdekoodista tai ilmoittaa paikan, josta 
+lähdekoodi on helposti ja vapaasti saatavissa niin pitkään kuin lisenssinsaaja jatkaa teoksen 
+levittämistä ja/tai luovuttamista. 
+Oikeussuoja: Tämä lisenssi ei anna lupaa käyttää kauppanimiä, tavaramerkkejä, 
+palvelumerkkejä tai lisenssinantajan nimiä paitsi siltä osin kuin niiden kohtuullinen ja 
+tavanmukainen käyttö edellyttää teoksen alkuperän kuvailemisessa ja 
+tekijänoikeusilmoituksen sisällön toisintamisessa. 6. Tekijyysketju
+Alkuperäinen lisenssinantaja takaa, että hän omistaa tällä lisenssillä myönnettävän 
+tekijänoikeuden alkuperäisteokseen tai se on lisensoitu hänelle ja että hänellä on oikeus ja 
+valtuudet lisenssin myöntämiseen. 
+Jokainen muu tekijä takaa, että hän omistaa teokseen tekemiensä muunnelmien 
+tekijänoikeuden tai se on lisensoitu hänelle ja että hänellä on oikeus ja valtuudet lisenssin 
+myöntämiseen. 
+Aina kun hyväksytte lisenssin, alkuperäinen lisenssinantaja ja sen jälkeiset muut tekijät 
+antavat teille lisenssin omaan panokseensa teoksessa tämän lisenssin ehdoilla. 
+7. Takuunrajoitus
+Teos on tekeillä oleva teos, jota lukuisat muut tekijät parantelevat jatkuvasti. Se ei ole 
+viimeistelty teos ja saattaa sen vuoksi sisältää tämänkaltaiselle ohjelmistokehitykselle 
+tunnusomaisia toimintavirheitä (”bugeja”). 
+Tästä syystä teos toimitetaan lisenssin nojalla ”sellaisena kuin se on” ilman minkäänlaisia 
+teokseen liittyviä takuita, mukaan lukien takuut soveltuvuudesta kaupankäynnin kohteeksi, 
+sopivuudesta johonkin tiettyyn tarkoitukseen, virheettömyydestä, oikeellisuudesta ja muiden 
+teollis- ja tekijänoikeuksien kuin tämän lisenssin 6 kohdassa tarkoitettujen tekijänoikeuksien 
+loukkaamattomuudesta. 
+Tämä takuunrajoitus on olennainen osa lisenssiä ja ehtona teokseen kohdistuvien oikeuksien 
+myöntämiselle. 
+8. Vastuunrajoitus
+Lukuun ottamatta tapauksia, joissa on kyse tahallisesta teosta tai luonnollisille henkilöille 
+välittömästi aiheutetusta vahingosta, lisenssinantaja ei ole missään tapauksessa vastuussa 
+minkäänlaisesta välittömästä tai välillisestä, materiaalisesta tai moraalisesta vahingosta, joka 
+johtuu lisenssistä tai teoksen käytöstä, mukaan lukien vahingot liikearvon menettämisestä, 
+työnseisauksesta, tietokoneen viasta tai toimintahäiriöstä, tietojen menettämisestä tai 
+liiketaloudellisesta vahingosta, vaikka lisenssinantajalle olisi ilmoitettu tällaisen vahingon 
+mahdollisuudesta. Lisenssinantaja on kuitenkin tuotevastuulakien alaisessa vastuussa siltä 
+osin kuin näitä lakeja sovelletaan teokseen. 
+9. Lisäsopimukset
+Alkuperäisteosta tai jälkiperäisteoksia levittäessänne voitte halutessanne tehdä 
+lisäsopimuksen, jolla hyväksytte maksua vastaan tuen, takuun, korvauksen tai muiden 
+vastuuvelvoitteiden ja/tai tämän lisenssin mukaisten palvelujen tarjoamisen. Jos kuitenkin 
+hyväksytte tällaisia velvoitteita, voitte toimia ainoastaan omasta puolestanne ja omalla 
+vastuullanne ettekä alkuperäisen lisenssinantajan tai kenenkään muun tekijän puolesta, ja 
+ainoastaan jos suostutte vapauttamaan kunkin muun tekijän vastuusta, puolustamaan häntä ja 
+pitäytymään aiheuttamasta hänelle haittaa, jos se, että olette hyväksyneet tällaisen takuun tai 
+lisävastuun, aiheuttaa tällaiselle muulle tekijälle vastuita tai vaatimuksia. 10. Lisenssin hyväksyminen
+Voitte hyväksyä tämän lisenssin määräykset napsauttamalla ”Hyväksyn”-kuvaketta, joka on 
+tämän lisenssin tekstin esittävän ikkunan alareunassa, tai vahvistamalla suostumuksenne 
+muulla vastaavalla tavalla sovellettavan lain mukaisesti. Napsauttamalla kuvaketta ilmoitatte 
+hyväksyvänne yksiselitteisesti ja peruuttamattomasti tämän lisenssin ja kaikki sen ehdot ja 
+edellytykset. 
+Samoin ilmoitatte hyväksyvänne peruuttamattomasti tämän lisenssin ja kaikki sen ehdot ja 
+edellytykset harjoittamalla mitä tahansa teille tämän lisenssin 2 kohdalla myönnettyjä 
+oikeuksia, kuten teoksen käyttö, jälkiperäisteoksen luominen tai teoksen tai sen 
+teoskappaleiden levittäminen ja/tai luovuttaminen. 
+11. Tiedottaminen yleisölle
+Teoksen levittämisessä ja/tai luovuttamisessa sähköisen viestinnän keinoin (esimerkiksi 
+tarjoamalla teoksen ladattavaksi etäpisteestä käsin) jakelukanavan tai viestimen (esimerkiksi 
+verkkosivun) on annettava yleisölle vähintään sovellettavan lain edellyttämät tiedot 
+lisenssinantajasta, lisenssistä ja tavoista, joilla lisenssinsaaja voi saada, solmia, tallentaa ja 
+toisintaa sen. 
+12. Lisenssin päättyminen
+Lisenssi ja sen nojalla myönnetyt oikeudet päättyvät automaattisesti lisenssinsaajan rikkoessa 
+mitä tahansa tämän lisenssin ehtoja. 
+Tällainen päättyminen ei päätä lisenssejä muilta henkilöiltä, jotka ovat saaneet teoksen 
+lisenssinsaajalta tämän lisenssin nojalla, jos nämä henkilöt jatkavat lisenssin ehtojen 
+täydellistä noudattamista. 
+13. Muuta
+Rajoittamatta 9 kohdan soveltamista lisenssi edustaa kaiken kattavaa sopimusta 
+sopimuspuolten välillä sen nojalla lisensoitavan teoksen osalta. 
+Jos jokin lisenssin määräys on sovellettavan lain osalta pätemätön tai täytäntöönpanokelvoton, 
+tämä ei vaikuta lisenssin pätevyyteen tai täytäntöönpanokelpoisuuteen kokonaisuutena. 
+Tällainen määräys tulkitaan ja/tai muotoillaan uudelleen tarpeen mukaan siten, että siitä tulee 
+pätevä ja täytäntöönpanokelpoinen. 
+Euroopan komissio voi julkaista tästä lisenssistä muita kieliversioita ja/tai uusia versioita, 
+sikäli kuin tämä on tarpeen ja kohtuullista, rajoittamatta tällä lisenssillä myönnettävien 
+oikeuksien laajuutta. Lisenssin uudet versiot julkaistaan ainutkertaisella versionumerolla. 
+Kaikki Euroopan komission hyväksymät kieliversiot tästä lisenssistä ovat samanarvoisia. 
+Sopimuspuolet voivat käyttää valitsemaansa kieliversiota. 14. Lainkäyttövalta
+Euroopan yhteisöjen tuomioistuimella on toimivalta ratkaista kaikki tämän lisenssin 
+tulkinnasta aiheutuvat riita-asiat Euroopan komission, lisenssinantajan ominaisuudessa, ja 
+kenen tahansa lisenssinsaajan välillä Euroopan yhteisön perustamissopimuksen 238 artiklassa 
+määrätyllä tavalla. 
+Kaikissa tämän lisenssin tulkinnasta aiheutuvissa riita-asioissa, joissa asianosaisena on muu 
+kuin Euroopan komissio, yksinomainen toimivalta on toimivaltaisella tuomioistuimella siinä 
+maassa, jossa lisenssinantaja asuu tai harjoittaa pääasiallista liiketoimintaansa. 
+15. Sovellettava laki
+Tähän lisenssiin sovelletaan sen Euroopan unionin maan lakia, jossa lisenssinantaja asuu tai 
+hänellä on sääntömääräinen kotipaikka. 
+Tähän lisenssiin sovelletaan Belgian lakia, jos: 
+− riita-asia aiheutuu Euroopan komission, lisenssinantajan ominaisuudessa, ja kenen 
+tahansa lisenssinsaajan välillä; 
+− lisenssinantajalla, joka on muu kuin Euroopan komissio, ei ole asuinpaikkaa tai 
+sääntömääräistä kotipaikkaa Euroopan unioniin kuuluvassa maassa. 
+=== 
+ Lisäys
+EUPL: n 5 kohdan mukaisia ”yhteensopivia lisenssejä” ovat seuraavat: 
+– GNU General Public License (GNU GPL) v. 2 
+– Open Software License (OSL) v. 2.1, v. 3.0 
+– Common Public License v. 1.0 
+– Eclipse Public License v. 1.0 
+– Cecill v. 2.0 
