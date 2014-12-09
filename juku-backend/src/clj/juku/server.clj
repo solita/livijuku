@@ -13,11 +13,11 @@
     (s))
   (reset! server nil))
 
-(defn start-server [routes port]
+(defn start-server [handler port]
   (stop-server)
   (let [port (or port 8082)]
     (println (str "Starting web server on port " port))
-    (reset! server (http-kit/run-server routes {:port port}))))
+    (reset! server (http-kit/run-server handler {:port port}))))
 
 (defn start []
   (let [port (Integer/parseInt (or (System/getenv "JUKU_PORT") "8082"))]

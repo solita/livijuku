@@ -42,3 +42,11 @@
         (if (map? value)
           (merge row (tree->flat value separator (name key)))
           (assoc row key value)))) {} obj))
+
+(defn keys-to-keywords [m]
+  (into {} (for [[k v] m]
+             [(-> k name
+                    .toLowerCase
+                    (str/replace "_" "-")
+                    keyword)
+              v])))
