@@ -1,7 +1,8 @@
 (ns juku.settings
   (:require [schema.core :as s]
             [common.settings :refer [read-settings]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [environ.core :refer [env]]))
 
 (s/defschema Server {:port s/Int} )
 
@@ -19,5 +20,5 @@
               :user "juku_app"
               :password "juku"}})
 
-(def settings (read-settings (io/file "./juku.properties") default-settings Settings))
+(def settings (read-settings (io/file (or (env :properties-file) "./juku.properties")) default-settings Settings))
 
