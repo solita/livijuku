@@ -1,12 +1,38 @@
 (ns juku.handler
-  (:require [compojure.core :refer :all]
-            [compojure.handler :as handler]
-            [compojure.route :as route]
+  (:require [compojure.core :as c]
+            [compojure.route :as r]
+            [ring.util.http-response :refer :all]
+            [compojure.api.sweet :refer :all]
 
-            [juku.reitit :refer [juku-api]]
-            [juku.middleware :as m]
-            [ring.middleware.defaults :refer :all]))
+            [juku.rest-api.hakemus :refer [hakemus-routes]]
+            [juku.rest-api.organisaatio :refer [organisaatio-routes]]
+            [juku.rest-api.user :refer [user-routes]]
 
+            [schema.core :as s]
+            [juku.schema.organisaatio :refer :all]
+            [juku.schema.hakemus :refer :all]
+            [juku.schema.user :refer :all]
+
+            [ring.middleware.defaults :refer :all]
+            [juku.middleware :as m]))
+
+(c/defroutes notfound (r/not-found "Not Found"))
+
+(defapi juku-api
+        (swagger-ui "/api/ui")
+        (swagger-docs
+          :title "Liikennevirasto - Juku API"
+          :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut")
+        (swaggered "hakemus"
+                   :description "Hakemus API"
+                   hakemus-routes)
+        (swaggered "organisaatio"
+                   :description "Organisaatio API"
+                   organisaatio-routes)
+        (swaggered "user"
+                   :description "Käyttäjä API"
+                   user-routes)
+        notfound)
 
 (def app (-> #'juku-api
   m/wrap-user
