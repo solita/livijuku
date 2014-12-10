@@ -22,6 +22,9 @@
         (swagger-ui "/api/ui")
         (swagger-docs
           :title "Liikennevirasto - Juku API"
+          :apiVersion "0.0.1"
+          :license "Euroopan unionin yleinen lisenssi v.1.1"
+          :licenseUrl "http://ec.europa.eu/idabc/servlets/Doc7ace.pdf?id=31982"
           :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut")
         (swaggered "hakemus"
                    :description "Hakemus API"
