@@ -41,6 +41,11 @@
              :body     [avustuskohde Avustuskohde]
              :summary  "Päivittää olemassaolevan avustuskohteen tiedot."
              (ok (service/save-avustuskohde! avustuskohde)))
+      (PUT* "/avustuskohteet" []
+            :return   nil
+            :body     [avustuskohteet [Avustuskohde]]
+            :summary  "Päivittää tai lisää annetut avustuskohteet."
+            (ok (service/save-avustuskohteet! avustuskohteet)))
       (POST* "/laheta-hakemus" []
              :return   nil
              :form-params     [hakemusid :- Long]

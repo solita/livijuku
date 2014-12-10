@@ -18,7 +18,13 @@
     (coerce/date->localdate-matcher schema)
     (coerce/number->int-matcher schema)))
 
+(defn avustuskohde-coercien-matcher [schema]
+  (or
+    (coerce/number->int-matcher schema)))
+
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
+
+(def coerce-avustuskohde (scoerce/coercer Avustuskohde avustuskohde-coercien-matcher))
 
 (defn find-organisaation-hakemukset [organisaatioid]
   (map (comp coerce-hakemus coerce/row->object)
@@ -51,7 +57,7 @@
     (assoc hakemus :avustuskohteet avustuskohteet))
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
-  (select-avustuskohteet {:hakemusid hakemusid}))
+  (map coerce-avustuskohde (select-avustuskohteet {:hakemusid hakemusid})))
 
 (defn add-hakemus! [hakemus]
   (:id (dml/insert-with-id db "hakemus"
@@ -60,13 +66,18 @@
                                coerce/localdate->sql-date))))
 
 (defn add-avustuskohde! [avustuskohde]
-  (:id (dml/insert-with-id db "avustuskohde"
+  (:id (dml/insert db "avustuskohde"
                            (-> avustuskohde
                                coerce/object->row
                                coerce/localdate->sql-date))))
 
 (defn save-avustuskohde! [avustuskohde]
   (update-avustuskohde! avustuskohde))
+
+(defn save-avustuskohteet! [avustuskohteet]
+  (doseq [avustuskohde avustuskohteet]
+    (if (= (save-avustuskohde! avustuskohde) 0)
+      (add-avustuskohde! avustuskohde))))
 
 (defn laheta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))
