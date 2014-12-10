@@ -6,8 +6,10 @@
             [compojure.api.sweet :refer :all]
             [juku.rest-api.hakemus :refer [hakemus-routes]]
             [juku.rest-api.organisaatio :refer [organisaatio-routes]]
+            [juku.rest-api.user :refer [user-routes]]
             [juku.schema.organisaatio :refer :all]
             [juku.schema.hakemus :refer :all]
+            [juku.schema.user :refer :all]
             [environ.core :refer [env]]))
 
 (c/defroutes notfound (r/not-found "Not Found"))
@@ -23,4 +25,7 @@
     (swaggered "organisaatio"
                :description "Organisaatio API"
                organisaatio-routes)
+    (swaggered "user"
+               :description "Käyttäjä API"
+               user-routes)
     notfound)
