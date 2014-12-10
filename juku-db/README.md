@@ -35,6 +35,11 @@ Tyhjennys/päivitys: **lein do clear-db, update-db**
 
 Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
 
+Testidata: (test/sql/repeatable.test) on mahdollista lisätä tietokantaan
+päivityksen yhteydessä käyttämällä profiilia **test-data**
+
+**lein with-profiles +test-data do clear-db, update-db**
+
 Tuotantoasennus
 ---------------
 
