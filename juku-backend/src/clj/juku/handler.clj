@@ -13,8 +13,8 @@
             [juku.schema.hakemus :refer :all]
             [juku.schema.user :refer :all]
 
-            [ring.middleware.defaults :refer :all]
-            [juku.middleware :as m]))
+            [ring.middleware.defaults :as m]
+            [juku.middleware :as jm]))
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
@@ -35,8 +35,8 @@
         notfound)
 
 (def app (-> #'juku-api
-  m/wrap-user
-  (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))))
+  jm/wrap-user
+  (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))))
 
 
 
