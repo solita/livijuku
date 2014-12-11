@@ -44,8 +44,7 @@
   (hakemukset-group-by-hakemuskausi (find-organisaation-hakemukset organisaatioid)))
 
 (defn find-kayttajan-hakemukset-vuosittain []
-  (hakemukset-group-by-hakemuskausi (find-organisaation-hakemukset
-                                      (:organisaatioid user/*current-user*))))
+  (find-organisaation-hakemukset-vuosittain (:organisaatioid user/*current-user*)))
 
 (defn find-hakemukset-vuosittain []
   (hakemukset-group-by-hakemuskausi (find-all-hakemukset)))
