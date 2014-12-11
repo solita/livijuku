@@ -10,9 +10,10 @@
                       :vuosi  s/Int
                       :hakemustyyppitunnus s/Str
                       :hakemustilatunnus s/Str
+                      :organisaatioid s/Num
                       :hakuaika Hakuaika})
 
-(s/defschema New-Hakemus (assoc (dissoc Hakemus :id) :organisaatioid s/Num))
+(s/defschema New-Hakemus (dissoc Hakemus :id))
 
 (s/defschema Hakemukset [Hakemus])
 

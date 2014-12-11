@@ -1,14 +1,17 @@
 
 -- name: select-organisaation-hakemukset
-select id, vuosi, hakemustyyppitunnus, hakemustilatunnus, hakuaika_alkupvm, hakuaika_loppupvm
+select id, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus where organisaatioid = :organisaatioid
 
 -- name: select-hakemus
-select id, vuosi, hakemustyyppitunnus, hakemustilatunnus, hakuaika_alkupvm, hakuaika_loppupvm
+select id, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus where id = :hakemusid
 
 -- name: select-all-hakemukset
-select id, vuosi, hakemustyyppitunnus, hakemustilatunnus, hakuaika_alkupvm, hakuaika_loppupvm
+select id, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus
 
 -- name: select-avustuskohteet
