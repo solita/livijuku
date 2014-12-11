@@ -25,8 +25,6 @@
                            [com.zaxxer/HikariCP-java6 "2.2.5"]
                            ;; Clojure i18n & L10n library
                            [com.taoensso/tower "3.0.2"]
-                           ;; Clojurescript i18n & L10n library, compatible with tower
-                           [net.unit8/tower-cljs "0.1.0"]
                            ;; Library for managing environment variables in Clojure.
                            [environ "1.0.0"]
                            ;; Timbre brings functional, Clojure-y goodness to all your logging needs.
