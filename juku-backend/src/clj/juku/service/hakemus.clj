@@ -83,6 +83,10 @@
     (if (= (save-avustuskohde! avustuskohde) 0)
       (add-avustuskohde! avustuskohde))))
 
+;; TODO probably does not work for over 4000 byte strings
+(defn save-hakemus-selite! [hakemusid selite]
+  (update-hakemus-selite! {:hakemusid hakemusid :selite selite}))
+
 (defn laheta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))
 

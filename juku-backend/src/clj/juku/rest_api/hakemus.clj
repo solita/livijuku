@@ -45,6 +45,11 @@
             :body     [avustuskohteet [Avustuskohde]]
             :summary  "Päivittää tai lisää annetut avustuskohteet."
             (ok (service/save-avustuskohteet! avustuskohteet)))
+      (PUT* "/hakemus/selite" []
+            :return   s/Num
+            :body-params [hakemusid :- Long, selite :- s/Str]
+            :summary  "Päivittää hakemuksen selitteen."
+            (ok (service/save-hakemus-selite! hakemusid selite)))
       (POST* "/laheta-hakemus" []
              :return   nil
              :form-params     [hakemusid :- Long]
