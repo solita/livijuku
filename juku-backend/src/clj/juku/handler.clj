@@ -37,7 +37,7 @@
                    user-routes)
         notfound)
 
-(def app (-> #'juku-api
+(def app (-> juku-api
   jm/wrap-user
   (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))))
 

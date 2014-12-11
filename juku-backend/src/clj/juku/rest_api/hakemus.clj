@@ -11,11 +11,10 @@
             :return [Hakemuskausi]
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
             (ok (service/find-hakemukset-vuosittain)))
-      (GET* "/hakemukset/hakija/:organisaatioid" []
+      (GET* "/hakemukset/hakija" []
             :return [Hakemuskausi]
-            :path-params [organisaatioid :- Long]
-            :summary "Hae hakijan hakemukset hakemuskausittain (vuosittain) ryhmitettynä."
-            (ok (service/find-organisaation-hakemukset-vuosittain organisaatioid)))
+            :summary "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain (vuosittain) ryhmitettynä."
+            (ok (service/find-kayttajan-hakemukset-vuosittain)))
       (GET* "/hakemus/:hakemusid" []
             :return Hakemus
             :path-params [hakemusid :- Long]

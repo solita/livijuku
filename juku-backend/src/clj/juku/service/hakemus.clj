@@ -2,6 +2,7 @@
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
             [juku.service.organisaatio :as organisaatio]
+            [juku.service.user :as user]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
@@ -41,6 +42,10 @@
 
 (defn find-organisaation-hakemukset-vuosittain [organisaatioid]
   (hakemukset-group-by-hakemuskausi (find-organisaation-hakemukset organisaatioid)))
+
+(defn find-kayttajan-hakemukset-vuosittain []
+  (hakemukset-group-by-hakemuskausi (find-organisaation-hakemukset
+                                      (:organisaatioid user/*current-user*))))
 
 (defn find-hakemukset-vuosittain []
   (hakemukset-group-by-hakemuskausi (find-all-hakemukset)))
