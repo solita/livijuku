@@ -6,7 +6,7 @@ from hakemus where organisaatioid = :organisaatioid
 
 -- name: select-hakemus
 select id, vuosi, hakemustyyppitunnus, hakemustilatunnus,
-       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite
 from hakemus where id = :hakemusid
 
 -- name: select-all-hakemukset

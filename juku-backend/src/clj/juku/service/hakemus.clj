@@ -17,13 +17,15 @@
 (defn hakemus-coercien-matcher [schema]
   (or
     (coerce/date->localdate-matcher schema)
-    (coerce/number->int-matcher schema)))
+    (coerce/number->int-matcher schema)
+    (coerce/clob->str-matcher schema)))
 
 (defn avustuskohde-coercien-matcher [schema]
   (or
     (coerce/number->int-matcher schema)))
 
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
+(def coerce-hakemus+ (scoerce/coercer Hakemus+ hakemus-coercien-matcher))
 
 (def coerce-avustuskohde (scoerce/coercer Avustuskohde avustuskohde-coercien-matcher))
 
@@ -53,7 +55,7 @@
   (-> (select-hakemus {:hakemusid hakemusid})
     c/single-result
     coerce/row->object
-    coerce-hakemus))
+    coerce-hakemus+))
 
   #_
   (let [hakemus (c/single-result (select-hakemus {:hakemusid hakemusid}))

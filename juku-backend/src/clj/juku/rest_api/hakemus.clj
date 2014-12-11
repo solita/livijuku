@@ -16,7 +16,7 @@
             :summary "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain (vuosittain) ryhmitettynä."
             (ok (service/find-kayttajan-hakemukset-vuosittain)))
       (GET* "/hakemus/:hakemusid" []
-            :return Hakemus
+            :return Hakemus+
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/get-hakemus-by-id hakemusid)))

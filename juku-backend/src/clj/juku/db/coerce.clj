@@ -27,6 +27,13 @@
     (fn [v]
       (if (instance? Number v) (not= v 0) v))))
 
+;; TODO check if this works for strings longer than 4000 bytes
+(defn clob->str-matcher [schema]
+  (if (= schema sc/Str)
+    (fn [v]
+      (if (instance? java.sql.Clob v)
+        (let [length (.length v)] (.getSubString v 1 length)) v))))
+
 (defn- convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
 
