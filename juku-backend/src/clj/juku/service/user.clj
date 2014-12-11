@@ -2,6 +2,9 @@
   (:require [yesql.core :as sql]
             [clojure.java.jdbc :as jdbc]
             [juku.db.database :refer [db]]
+            [juku.db.coerce :as coerce]
+            [schema.coerce :as scoerce]
+            [juku.schema.user :as s]
             [clojure.string :as str]
             [common.map :as m]))
 
@@ -19,5 +22,11 @@
 (defmacro with-user [user & body]
   `(with-user* ~user (fn [] ~@body)))
 
+(defn user-coercien-matcher [schema]
+  (or
+    (coerce/number->boolean-matcher schema)))
+
+(def coerce-user (scoerce/coercer s/DbUser user-coercien-matcher))
+
 (defn find-user [tunnus]
-  (first (select-user {:tunnus tunnus})))
+  (coerce-user(m/dissoc-if-nil(first (select-user {:tunnus tunnus})) :nimi :etunimi :sukuni)))

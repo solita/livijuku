@@ -22,6 +22,11 @@
     (fn [v]
       (if (instance? Number v) (int v) v))))
 
+(defn number->boolean-matcher [schema]
+  (if (= schema sc/Bool)
+    (fn [v]
+      (if (instance? Number v) (not= v 0) v))))
+
 (defn- convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
 

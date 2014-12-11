@@ -50,3 +50,6 @@
                     (str/replace "_" "-")
                     keyword)
               v])))
+
+(defn dissoc-if-nil [m & keys]
+  (reduce (fn [r key] (if (= (key r) nil) (dissoc r key) r)) m keys))
