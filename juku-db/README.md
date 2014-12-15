@@ -40,7 +40,22 @@ päivityksen yhteydessä käyttämällä profiilia **test-data**
 
 **lein with-profiles +test-data do clear-db, update-db**
 
+Oletustietokanta-asetukset ovat:
+- url = jdbc:oracle:thin:@localhost:1521:orcl
+- user = juku_app
+- password = juku
+
+Asetuksia voi muuttaa ympäristömuuttujilla:
+- DB_URL
+- DB_USER
+- DB_PASSWORD
+
+Esim. letto-tietokannassa oleva kehitysympäristön päivitys:
+DB_URL=letto.solita.fi:1521/ldev.solita.fi lein with-profiles +test-data do clear-db, update-db
+
 Tuotantoasennus
 ---------------
 
-TODO
+Tuotantoasennuksessa tuotantokannan osoite ja salasana annetaan ympäristömuuttujina esim.
+
+DB_URL=oracle.livi.fi:1521/juku.livi.fi DB_PASSWORD=trustno1 lein with-profiles +test-data do clear-db, update-db

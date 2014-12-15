@@ -5,13 +5,13 @@
 
 	:dbmaintain {
 			 :driver "oracle.jdbc.driver.OracleDriver"
-			 :url "jdbc:oracle:thin:@localhost:1521:orcl"
-			 :user-name "juku"
-			 :password "juku"
-			 :schemas "juku"
+			 :url ~(str "jdbc:oracle:thin:@" (or (System/getenv "DB_URL") "localhost:1521:orcl"))
+			 :user-name ~(or (System/getenv "DB_USER") "juku")
+			 :password ~(or (System/getenv "DB_PASSWORD") "juku")
+			 :schemas ~(or (System/getenv "DB_USER") "juku")
 			 :scripts "sql"
 			 :dialect "oracle"}
-				 
+
 	:repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita/" :snapshots true}]]
 
 	:profiles {:test-data {:dbmaintain {:scripts "sql, test/sql"}}}
