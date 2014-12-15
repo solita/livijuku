@@ -42,7 +42,7 @@ päivityksen yhteydessä käyttämällä profiilia **test-data**
 
 Oletustietokanta-asetukset ovat:
 - url = jdbc:oracle:thin:@localhost:1521:orcl
-- user = juku_app
+- user = juku
 - password = juku
 
 Asetuksia voi muuttaa ympäristömuuttujilla:
