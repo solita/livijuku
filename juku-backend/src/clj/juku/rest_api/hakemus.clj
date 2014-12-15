@@ -51,12 +51,12 @@
             :summary  "Päivittää hakemuksen selitteen."
             (ok (service/save-hakemus-selite! hakemusid selite)))
       (POST* "/laheta-hakemus" []
-             :return   nil
+             :return  s/Num
              :body-params     [hakemusid :- Long]
              :summary  "Hakija merkitsee hakemuksen lähetetyksi. Hakemus on tämän jälkeen vireillä."
              (ok (service/laheta-hakemus! hakemusid)))
       (POST* "/tarkasta-hakemus" []
-             :return   nil
+             :return  s/Num
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
