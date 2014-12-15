@@ -52,17 +52,17 @@
             (ok (service/save-hakemus-selite! hakemusid selite)))
       (POST* "/laheta-hakemus" []
              :return   nil
-             :form-params     [hakemusid :- Long]
+             :body-params     [hakemusid :- Long]
              :summary  "Hakija merkitsee hakemuksen lähetetyksi. Hakemus on tämän jälkeen vireillä."
              (ok (service/laheta-hakemus! hakemusid)))
       (POST* "/tarkasta-hakemus" []
              :return   nil
-             :form-params     [hakemusid :- Long]
+             :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
       (POST* "/hakemuskausi" []
              :return   nil
-             :form-params     [vuosi :- s/Int]
+             :body-params     [vuosi :- s/Int]
              :summary  "Avaa uusi hakemuskausi."
              (ok (service/avaa-hakemuskausi! vuosi))))
 
