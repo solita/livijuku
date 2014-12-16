@@ -14,16 +14,16 @@ Asenna clojure, leiningen, vagrant.
 Käynnistä tietokanta
 
     cd juku-db/vagrant
-    less README.md
+    [less README.md](/solita/livijuku/tree/develop/juku-db/vagrant)
 
-Luo schema
+Luo skeema tietokantaan
 
     cd juku-db
-    less README.md
+    [less README.md](/solita/livijuku/tree/develop/juku-db)
 
-Käynnistä backend palvelu
+Käynnistä backend-palvelu 
 
     cd juku-backend
-    less README.md
+    [less README.md](/solita/livijuku/tree/develop/juku-backend)
 
 
