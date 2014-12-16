@@ -10,7 +10,7 @@ Versiontikäytännöt perustuvat malliin: [http://nvie.com/posts/a-successful-gi
 Kehitysympäristön käynnistäminen
 --------------------------------
 
-Asenna clojure, leiningen, vagrant.
+Asenna java, virtualbox, vagrant, leiningen.
 
 Käynnistä [tietokanta](/juku-db/vagrant)
 
@@ -20,11 +20,11 @@ Käynnistä [tietokanta](/juku-db/vagrant)
 Luo [skeema](/juku-db) tietokantaan
 
     cd juku-db
-    less README.md
+	lein with-profiles +test-data do clear-db, update-db
 
 Käynnistä [backend-palvelu](/juku-backend)
 
     cd juku-backend
-    less README.md
+    lein ring server-headless
 
 
