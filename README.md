@@ -11,19 +11,19 @@ Kehitysympäristön käynnistäminen
 
 Asenna clojure, leiningen, vagrant.
 
-Käynnistä tietokanta
+Käynnistä [tietokanta](/solita/livijuku/tree/develop/juku-db/vagrant)
 
     cd juku-db/vagrant
-    [less README.md](/solita/livijuku/tree/develop/juku-db/vagrant)
+    less README.md
 
-Luo skeema tietokantaan
+Luo [skeema](/solita/livijuku/tree/develop/juku-db) tietokantaan
 
     cd juku-db
-    [less README.md](/solita/livijuku/tree/develop/juku-db)
+    less README.md
 
-Käynnistä backend-palvelu 
+Käynnistä [backend-palvelu](/solita/livijuku/tree/develop/juku-backend)
 
     cd juku-backend
-    [less README.md](/solita/livijuku/tree/develop/juku-backend)
+    less README.md
 
 
