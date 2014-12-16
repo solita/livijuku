@@ -2,7 +2,8 @@
   (:require [schema.core :as s]))
 
 (s/defschema Organisaatio {:id     s/Num
-                           :nimi   s/Str})
+                           :nimi   s/Str
+                           :lajitunnus   s/Str})
 
 
 
