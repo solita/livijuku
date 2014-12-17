@@ -58,11 +58,6 @@
     coerce/row->object
     coerce-hakemus+))
 
-  #_
-  (let [hakemus (c/single-result (select-hakemus {:hakemusid hakemusid}))
-        avustuskohteet (select-avustuskohteet {:hakemusid hakemusid})]
-    (assoc hakemus :avustuskohteet avustuskohteet))
-
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
   (map coerce-avustuskohde (select-avustuskohteet {:hakemusid hakemusid})))
 
