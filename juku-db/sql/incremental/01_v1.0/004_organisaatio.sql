@@ -14,6 +14,7 @@ end;
 insert into organisaatiolaji (tunnus, nimi) values ('KS1', 'Suuri kaupunkiseutu');
 insert into organisaatiolaji (tunnus, nimi) values ('KS2', 'Keskisuuri kaupunkiseutu');
 insert into organisaatiolaji (tunnus, nimi) values ('ELY', 'ELY-keskus');
+insert into organisaatiolaji (tunnus, nimi) values ('LV', 'Liikennevirasto');
 
 create table organisaatio (
   id number constraint organisaatio_pk primary key,
