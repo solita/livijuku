@@ -26,7 +26,7 @@
 
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
 (def coerce-hakemus+ (scoerce/coercer Hakemus+ hakemus-coercien-matcher))
-(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnittelma hakemus-coercien-matcher))
+(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnitelma hakemus-coercien-matcher))
 
 (def coerce-avustuskohde (scoerce/coercer Avustuskohde avustuskohde-coercien-matcher))
 

@@ -12,7 +12,7 @@
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
             (ok (service/find-hakemukset-vuosittain)))
       (GET* "/hakemussuunnitelmat/:vuosi/:hakemustyyppitunnus" []
-            :return [HakemusSuunnittelma]
+            :return [HakemusSuunnitelma]
             :path-params [vuosi :- s/Int, hakemustyyppitunnus :- s/Str]
             :summary "Hae hakemussuunnitelmat tietylle vuodella ja hakemustyypille."
             (ok (service/find-hakemussuunnitelmat vuosi hakemustyyppitunnus)))

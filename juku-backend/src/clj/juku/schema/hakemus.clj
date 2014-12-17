@@ -13,7 +13,7 @@
                       :organisaatioid s/Num
                       :hakuaika Hakuaika})
 
-(s/defschema HakemusSuunnittelma
+(s/defschema HakemusSuunnitelma
      (assoc Hakemus :haettu-avustus s/Num
                     :myonnettava-avustus s/Num))
 
