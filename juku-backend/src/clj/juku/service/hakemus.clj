@@ -26,6 +26,7 @@
 
 (def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
 (def coerce-hakemus+ (scoerce/coercer Hakemus+ hakemus-coercien-matcher))
+(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnittelma hakemus-coercien-matcher))
 
 (def coerce-avustuskohde (scoerce/coercer Avustuskohde avustuskohde-coercien-matcher))
 
@@ -64,6 +65,10 @@
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
   (map coerce-avustuskohde (select-avustuskohteet {:hakemusid hakemusid})))
+
+(defn find-hakemussuunnitelmat [vuosi hakemustyyppitunnus]
+  (map (comp coerce-hakemus-suunnitelma coerce/row->object)
+       (select-hakemussuunnitelmat {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus})))
 
 (defn add-hakemus! [hakemus]
   (:id (dml/insert-with-id db "hakemus"

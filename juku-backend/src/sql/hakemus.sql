@@ -18,6 +18,15 @@ from hakemus
 select hakemusid, avustuskohdelajitunnus, haettavaavustus, omarahoitus
 from avustuskohde where hakemusid = :hakemusid
 
+-- name: select-hakemussuunnitelmat
+select id, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm,
+  (select nvl(sum(avustuskohde.haettavaavustus), 0) from avustuskohde
+  where hakemusid = hakemus.id) "haettu-avustus",
+  nvl(suunniteltuavustus, 0) "myonnettava-avustus"
+from hakemus
+where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
+
 -- name: update-avustuskohde!
 update avustuskohde set
   haettavaavustus = :haettavaavustus,
