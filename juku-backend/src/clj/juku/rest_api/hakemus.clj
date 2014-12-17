@@ -45,6 +45,11 @@
             :body     [avustuskohteet [Avustuskohde]]
             :summary  "Päivittää tai lisää annetut avustuskohteet."
             (ok (service/save-avustuskohteet! avustuskohteet)))
+      (PUT* "/hakemus/suunniteltuavustus" []
+            :return   s/Num
+            :body-params [hakemusid :- Long, suunniteltuavustus :- s/Num]
+            :summary  "Päivittää hakemuksen selitteen."
+            (ok (service/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
       (PUT* "/hakemus/selite" []
             :return   s/Num
             :body-params [hakemusid :- Long, selite :- s/Str]

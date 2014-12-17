@@ -89,6 +89,9 @@
 (defn save-hakemus-selite! [hakemusid selite]
   (update-hakemus-selite! {:hakemusid hakemusid :selite selite}))
 
+(defn save-hakemus-suunniteltuavustus! [hakemusid suunniteltuavustus]
+  (update-hakemus-suunniteltuavustus! {:hakemusid hakemusid :suunniteltuavustus suunniteltuavustus}))
+
 (defn laheta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))
 

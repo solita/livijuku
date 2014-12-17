@@ -27,6 +27,9 @@ where hakemusid = :hakemusid and avustuskohdelajitunnus = :avustuskohdelajitunnu
 -- name: update-hakemus-selite!
 update hakemus set selite = :selite where id = :hakemusid
 
+-- name: update-hakemus-suunniteltuavustus!
+update hakemus set suunniteltuavustus = :suunniteltuavustus where id = :hakemusid
+
 -- name: update-hakemustila!
 update hakemus set hakemustilatunnus = :hakemustilatunnus
 where id = :hakemusid
