@@ -38,6 +38,7 @@ create table hakemus (
   hakuaika_alkupvm date not null,
   hakuaika_loppupvm date not null,
   suunniteltuavustus number(9,2),
+  kasittelija references kayttaja (tunnus),
   selite clob
 );
 
