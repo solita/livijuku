@@ -90,12 +90,18 @@
     (if (= (save-avustuskohde! avustuskohde) 0)
       (add-avustuskohde! avustuskohde))))
 
+(defn- update-hakemus-by-id [hakemus hakemusid]
+  (dml/update-where-id db "hakemus" hakemus hakemusid))
+
 ;; TODO probably does not work for over 4000 byte strings
 (defn save-hakemus-selite! [hakemusid selite]
-  (update-hakemus-selite! {:hakemusid hakemusid :selite selite}))
+  (update-hakemus-by-id {:selite selite} hakemusid))
 
 (defn save-hakemus-suunniteltuavustus! [hakemusid suunniteltuavustus]
-  (update-hakemus-suunniteltuavustus! {:hakemusid hakemusid :suunniteltuavustus suunniteltuavustus}))
+  (update-hakemus-by-id {:suunniteltuavustus suunniteltuavustus} hakemusid))
+
+(defn save-hakemus-kasittelija! [hakemusid kasittelija]
+  (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
 
 (defn laheta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))

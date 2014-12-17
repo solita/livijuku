@@ -55,6 +55,11 @@
             :body-params [hakemusid :- Long, suunniteltuavustus :- s/Num]
             :summary  "Päivittää hakemuksen selitteen."
             (ok (service/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
+      (PUT* "/hakemus/kasittelija" []
+            :return   s/Num
+            :body-params [hakemusid :- Long, kasittelija :- s/Str]
+            :summary  "Päivittää hakemuksen käsittelijän."
+            (ok (service/save-hakemus-kasittelija! hakemusid kasittelija)))
       (PUT* "/hakemus/selite" []
             :return   s/Num
             :body-params [hakemusid :- Long, selite :- s/Str]

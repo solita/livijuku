@@ -5,7 +5,7 @@
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
-(fact "Hakemuksen tallentamisen testi"
+(fact "Uuden hakemuksen luonti"
   (let [organisaatioid 1M
         hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0"
                  :organisaatioid organisaatioid
@@ -15,9 +15,9 @@
         id (h/add-hakemus! hakemus)]
 
     (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid)))
-      => (-> hakemus (assoc :id id) (assoc :hakemustilatunnus "K"))))
+      => (-> hakemus (assoc :id id, :hakemustilatunnus "K"))))
 
-(fact
+(fact "Avustuskohteiden tallentaminen ja hakeminen"
   (let [organisaatioid 1
         hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid
                  :hakuaika {:alkupvm (t/local-date 2014 6 1)
@@ -29,3 +29,15 @@
       (h/save-avustuskohteet![avustuskohde])
       (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]
     ))
+
+(fact "Hakemustietojen päivittäminen"
+  (let [organisaatioid 1M
+        hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid
+                 :hakuaika {:alkupvm (t/local-date 2014 6 1)
+                            :loppupvm (t/local-date 2014 12 1)}}
+
+        id (h/add-hakemus! hakemus)
+        selite "selite"]
+
+    (h/save-hakemus-selite! id selite)
+    (h/get-hakemus-by-id id) => (assoc hakemus :id id, :selite selite :hakemustilatunnus "K")))

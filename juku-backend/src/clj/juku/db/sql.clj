@@ -2,6 +2,15 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]))
 
+(defn- db-do [operation db sql params]
+  (try
+    (operation db sql params)
+    (catch Exception e
+      (throw (RuntimeException.
+               (str "Failed to execute: " sql " - values: " params) e)))))
+
+;; insert statements
+
 (defn insert-statement [table columns values]
   (let [separator ", "]
     (str "insert into " table " (" (str/join separator columns)
@@ -18,17 +27,17 @@
     (insert-statement table columns values)))
 
 (defn insert-with-id [db table row]
-  (let [sql (insert-statement-with-id table row)]
-    (try
-      (jdbc/db-do-prepared-return-keys db sql (vals row))
-      (catch Exception e
-        (throw (RuntimeException.
-          (str "insert: " sql " - values: " (vals row)) e))))))
+  (db-do jdbc/db-do-prepared-return-keys db (insert-statement-with-id table row) (vals row)))
 
 (defn insert [db table row]
-  (let [sql (insert-statement-flatmap table row)]
-    (try
-      (jdbc/db-do-prepared db sql (vals row))
-      (catch Exception e
-        (throw (RuntimeException.
-                 (str "insert: " sql " - values: " (vals row)) e))))))
+  (db-do jdbc/db-do-prepared db (insert-statement-flatmap table row) (vals row)))
+
+;; update statements
+
+(defn update-statement [table obj]
+  (let [separator ", "
+        set-clause  (str/join separator (map (fn [key] (str (name key) " = ?")) (keys obj)))]
+       (str "update " table " set " set-clause)))
+
+(defn update-where-id [db table obj id]
+  (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
