@@ -11,7 +11,7 @@
           :return User+Roles
           :summary "Hae nykyisen käyttäjän tiedot."
           (ok service/*current-user*))
-    (GET* "/users/organisaatio/:organisaatioid" []
+    (GET* "/organisaatio/:organisaatioid/users" []
           :return [User]
           :path-params [organisaatioid :- Long]
           :summary "Hae organisaation kaikki käyttäjät."
