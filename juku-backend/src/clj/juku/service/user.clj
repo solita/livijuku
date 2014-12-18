@@ -26,7 +26,11 @@
   (or
     (coerce/number->boolean-matcher schema)))
 
-(def coerce-user (scoerce/coercer s/DbUser user-coercien-matcher))
+(def coerce-user (scoerce/coercer s/User user-coercien-matcher))
 
 (defn find-user [tunnus]
   (coerce-user(m/dissoc-if-nil(first (select-user {:tunnus tunnus})) :nimi :etunimi :sukuni)))
+
+(defn find-users-by-organization [organisaatioid]
+  (map (comp coerce-user (fn [user] (m/dissoc-if-nil user :nimi :etunimi :sukunimi)))
+       (select-users-where-organization {:organisaatioid organisaatioid})))
