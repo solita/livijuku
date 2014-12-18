@@ -14,8 +14,8 @@
 
         id (h/add-hakemus! hakemus)]
 
-    (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid)))
-      => (-> hakemus (assoc :id id, :hakemustilatunnus "K"))))
+    (dissoc (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid))) :muokkausaika)
+      => (-> hakemus (assoc :id id, :hakemustilatunnus "K", :diaarinumero id))))
 
 (fact "Avustuskohteiden tallentaminen ja hakeminen"
   (let [organisaatioid 1
@@ -40,4 +40,4 @@
         selite "selite"]
 
     (h/save-hakemus-selite! id selite)
-    (h/get-hakemus-by-id id) => (assoc hakemus :id id, :selite selite :hakemustilatunnus "K")))
+    (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc hakemus :id id, :selite selite :hakemustilatunnus "K", :diaarinumero id)))

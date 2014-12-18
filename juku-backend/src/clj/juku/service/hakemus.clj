@@ -125,7 +125,7 @@
                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}})
 
 (defn avaa-hakemuskausi! [vuosi]
-  (doseq [organisaatio (organisaatio/organisaatiot)]
+  (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
     (add-hakemus! (oletus-avustus-hakemus! vuosi (:id organisaatio)))
     (add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id organisaatio)))
     (add-hakemus! (oletus-maksatus-hakemus2! vuosi (:id organisaatio)))))

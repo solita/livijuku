@@ -9,3 +9,5 @@
 (sql/defqueries "organisaatio.sql" {:connection db})
 
 (defn organisaatiot [] (select-organisaatiot))
+
+(defn hakija-organisaatiot [] (filter (fn [org] (not= (:lajitunnus org) "LV")) (select-organisaatiot)))
