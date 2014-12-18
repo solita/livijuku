@@ -1,5 +1,6 @@
 (ns juku.schema.hakemus
-  (:import (org.joda.time LocalDate))
+  (:import (org.joda.time DateTime)
+           (org.joda.time LocalDate))
   (:require [schema.core :as s]
             [clj-time.core :as time]))
 
@@ -7,11 +8,13 @@
                        :loppupvm LocalDate})
 
 (s/defschema Hakemus {:id     s/Num
+                      :diaarinumero     s/Num
                       :vuosi  s/Int
                       :hakemustyyppitunnus s/Str
                       :hakemustilatunnus s/Str
                       :organisaatioid s/Num
-                      :hakuaika Hakuaika})
+                      :hakuaika Hakuaika
+                      :muokkausaika DateTime})
 
 (s/defschema HakemusSuunnitelma
      (assoc Hakemus :haettu-avustus s/Num

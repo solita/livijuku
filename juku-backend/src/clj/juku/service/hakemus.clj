@@ -18,7 +18,8 @@
   (or
     (coerce/date->localdate-matcher schema)
     (coerce/number->int-matcher schema)
-    (coerce/clob->str-matcher schema)))
+    (coerce/clob->str-matcher schema)
+    (coerce/date->datetime-matcher schema)))
 
 (defn avustuskohde-coercien-matcher [schema]
   (or

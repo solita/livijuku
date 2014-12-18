@@ -8,13 +8,21 @@
             [schema.core :as sc]
             [schema.coerce :as scoerce]
             )
-  (:import (org.joda.time LocalDate )))
+  (:import (org.joda.time LocalDate )
+           (org.joda.time DateTime )))
 
 (defn date->localdate-matcher [schema]
-  (if (= schema org.joda.time.LocalDate)
+  (if (= schema LocalDate)
     (fn [v]
       (if (instance? java.util.Date v)
         (LocalDate. (.getTime v))
+        v))))
+
+(defn date->datetime-matcher [schema]
+  (if (= schema DateTime)
+    (fn [v]
+      (if (instance? java.util.Date v)
+        (DateTime. (.getTime v))
         v))))
 
 (defn number->int-matcher [schema]
