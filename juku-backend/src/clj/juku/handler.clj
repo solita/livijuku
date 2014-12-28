@@ -14,7 +14,9 @@
             [juku.schema.user :refer :all]
 
             [ring.middleware.defaults :as m]
-            [juku.middleware :as jm]))
+            [juku.middleware :as jm]
+            [common.collection :as f]
+            [juku.db.oracle-metrics :as metrics]))
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
@@ -41,11 +43,6 @@
   jm/wrap-user
   (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))))
 
-
-
-
-
-
-
-
-
+;; set oracle metrics to all service namespaces excluding yesql generated functions
+(doseq [service (filter (f/starts-with (comp name ns-name) "juku.service") (all-ns))]
+  (metrics/trace-ns service (comp not :yesql.generate/source)))

@@ -1,5 +1,7 @@
 (ns juku.db.jdbc_monkey_patch
-  (:require [clojure.java.jdbc])
+  (:require [clojure.java.jdbc]
+            [juku.db.oracle-metrics :as metrics]
+            [juku.user :refer [*current-user-id*]])
   (:import (java.sql PreparedStatement ResultSet)))
 
 (def ^{:private true
@@ -35,25 +37,30 @@
   [^java.sql.Connection con ^String sql &
    {:keys [return-keys result-type concurrency cursors
            fetch-size max-rows timeout]}]
-  (let [^PreparedStatement
-        stmt (cond return-keys
-                   (.prepareStatement con sql (into-array ["id"]))
+  (do
+    (metrics/set-end-to-end-metrics con *current-user-id*
+                                    (:name metrics/*module*)
+                                    (:action metrics/*module*))
 
-                   (and result-type concurrency)
-                   (if cursors
-                     (.prepareStatement con sql
-                                        (get result-set-type result-type result-type)
-                                        (get result-set-concurrency concurrency concurrency)
-                                        (get result-set-holdability cursors cursors))
-                     (.prepareStatement con sql
-                                        (get result-set-type result-type result-type)
-                                        (get result-set-concurrency concurrency concurrency)))
+    (let [^PreparedStatement
+          stmt (cond return-keys
+                     (.prepareStatement con sql (into-array ["id"]))
 
-                   :else
-                   (.prepareStatement con sql))]
-    (when fetch-size (.setFetchSize stmt fetch-size))
-    (when max-rows (.setMaxRows stmt max-rows))
-    (when timeout (.setQueryTimeout stmt timeout))
-    stmt))
+                     (and result-type concurrency)
+                     (if cursors
+                       (.prepareStatement con sql
+                                          (get result-set-type result-type result-type)
+                                          (get result-set-concurrency concurrency concurrency)
+                                          (get result-set-holdability cursors cursors))
+                       (.prepareStatement con sql
+                                          (get result-set-type result-type result-type)
+                                          (get result-set-concurrency concurrency concurrency)))
+
+                     :else
+                     (.prepareStatement con sql))]
+      (when fetch-size (.setFetchSize stmt fetch-size))
+      (when max-rows (.setMaxRows stmt max-rows))
+      (when timeout (.setQueryTimeout stmt timeout))
+      stmt)))
 
 (alter-var-root #'clojure.java.jdbc/prepare-statement (constantly prepare-statement))
