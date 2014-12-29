@@ -8,45 +8,42 @@
             [schema.core :as sc]
             [schema.coerce :as scoerce]
             )
-  (:import (org.joda.time LocalDate )
-           (org.joda.time DateTime )))
+  (:import (org.joda.time LocalDate)
+           (org.joda.time DateTime)
+           (java.util Date)))
 
-(defn date->localdate-matcher [schema]
-  (if (= schema LocalDate)
-    (fn [v]
-      (if (instance? java.util.Date v)
-        (LocalDate. (.getTime v))
-        v))))
+(defn date->localdate [^Date v] (LocalDate. (.getTime v)))
 
-(defn date->datetime-matcher [schema]
-  (if (= schema DateTime)
-    (fn [v]
-      (if (instance? java.util.Date v)
-        (DateTime. (.getTime v))
-        v))))
+(defn date->datetime [^Date v] (DateTime. (.getTime v)))
 
-(defn number->int-matcher [schema]
-  (if (= schema sc/Int)
-    (fn [v]
-      (if (instance? Number v) (int v) v))))
+(defn number->int [^Number v] (int v))
 
-(defn number->boolean-matcher [schema]
-  (if (= schema sc/Bool)
-    (fn [v]
-      (if (instance? Number v) (not= v 0) v))))
+(defn number->boolean [^Number v] (not= v 0))
 
 ;; TODO check if this works for strings longer than 4000 bytes
-(defn clob->str-matcher [schema]
-  (if (= schema sc/Str)
-    (fn [v]
-      (if (instance? java.sql.Clob v)
-        (let [length (.length v)] (.getSubString v 1 length)) v))))
+(defn clob->string [^java.sql.Clob v]
+  (let [length (.length v)] (.getSubString v 1 length)))
+
+(defn- create-match-fn [conversion]
+  (let [var-conversion (if (var? conversion) conversion (resolve conversion))
+        type (-> var-conversion meta :arglists first first meta :tag resolve)]
+    (fn [v] (if (instance? type v) (var-conversion v) v))))
+
+(defn create-matcher [conversion-map]
+  (into {} (for [[schema conversion] conversion-map]
+             [schema (create-match-fn conversion)])))
+
+(def db-coercion-matcher (create-matcher
+    {LocalDate   'date->localdate
+     DateTime    'date->datetime
+     sc/Int      'number->int
+     sc/Str      'clob->string}))
 
 (defn- convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
 
 (defn localdate->sql-date [m]
-  (convert-instances-of org.joda.time.LocalDate time-coerce/to-sql-date m))
+  (convert-instances-of LocalDate time-coerce/to-sql-date m))
 
 (defn row->object [row]
   "Transforms a database row to a more hierarchical object structure so that all keyvalues,

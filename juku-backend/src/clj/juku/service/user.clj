@@ -22,11 +22,7 @@
 (defmacro with-user [user & body]
   `(with-user* ~user (fn [] ~@body)))
 
-(defn user-coercien-matcher [schema]
-  (or
-    (coerce/number->boolean-matcher schema)))
-
-(def coerce-user (scoerce/coercer s/User user-coercien-matcher))
+(def coerce-user (scoerce/coercer s/User coerce/db-coercion-matcher))
 
 (defn find-user [tunnus]
   (coerce-user(m/dissoc-if-nil(first (select-user {:tunnus tunnus})) :nimi :etunimi :sukuni)))

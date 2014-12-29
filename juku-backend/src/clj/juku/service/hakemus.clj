@@ -14,22 +14,11 @@
 
 (sql/defqueries "hakemus.sql" {:connection db})
 
-(defn hakemus-coercien-matcher [schema]
-  (or
-    (coerce/date->localdate-matcher schema)
-    (coerce/number->int-matcher schema)
-    (coerce/clob->str-matcher schema)
-    (coerce/date->datetime-matcher schema)))
+(def coerce-hakemus (scoerce/coercer Hakemus coerce/db-coercion-matcher))
+(def coerce-hakemus+ (scoerce/coercer Hakemus+ coerce/db-coercion-matcher))
+(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnitelma coerce/db-coercion-matcher))
 
-(defn avustuskohde-coercien-matcher [schema]
-  (or
-    (coerce/number->int-matcher schema)))
-
-(def coerce-hakemus (scoerce/coercer Hakemus hakemus-coercien-matcher))
-(def coerce-hakemus+ (scoerce/coercer Hakemus+ hakemus-coercien-matcher))
-(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnitelma hakemus-coercien-matcher))
-
-(def coerce-avustuskohde (scoerce/coercer Avustuskohde avustuskohde-coercien-matcher))
+(def coerce-avustuskohde (scoerce/coercer Avustuskohde coerce/db-coercion-matcher))
 
 (defn find-organisaation-hakemukset [organisaatioid]
   (map (comp coerce-hakemus coerce/row->object)
