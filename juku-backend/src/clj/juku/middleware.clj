@@ -3,7 +3,8 @@
             [juku.service.user :as user]
             [common.map :as m]
             [common.xforms :as f]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [ring.util.http-response :as r]))
 
 (defn wrap-user [handler]
   (fn [request]
@@ -14,9 +15,5 @@
                     roles (str/split group-txt #",")
                     user (user/find-user uid)]
                (user/with-user (assoc user :roles roles) (handler request))
-               {:headers {"Content-Type" "text/plain;charset=utf-8"}
-                :status 403
-                :body (str "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")}))
-      {:headers {"Content-Type" "text/plain;charset=utf-8"}
-       :status 403
-       :body (str "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user.")})))
+               (r/forbidden (str "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
+      (r/forbidden "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user."))))
