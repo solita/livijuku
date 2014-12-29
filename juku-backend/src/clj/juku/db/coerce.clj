@@ -18,7 +18,7 @@
 
 (defn number->int [^Number v] (int v))
 
-(defn number->boolean [^Number v] (not= v 0))
+(defn number->boolean [^Number v] (not (== v 0)))
 
 ;; TODO check if this works for strings longer than 4000 bytes
 (defn clob->string [^java.sql.Clob v]
@@ -37,6 +37,7 @@
     {LocalDate   'date->localdate
      DateTime    'date->datetime
      sc/Int      'number->int
+     sc/Bool     'number->boolean
      sc/Str      'clob->string}))
 
 (defn- convert-instances-of [c f m]
