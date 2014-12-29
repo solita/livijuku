@@ -19,7 +19,8 @@ insert into organisaatiolaji (tunnus, nimi) values ('LV', 'Liikennevirasto');
 create table organisaatio (
   id number constraint organisaatio_pk primary key,
   lajitunnus not null references organisaatiolaji (tunnus),
-  nimi varchar2(200 char)
+  nimi varchar2(200 char),
+  pankkitilinumero varchar2(34 char)
 );
 
 begin
