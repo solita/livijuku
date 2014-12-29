@@ -23,9 +23,12 @@
     key))
 
 (defn flat->tree [row separator]
-  "Transforms a flat map object to a hierarchical object structure so that all keyvalues,
-  which have the same prefix, are combined to a new map. This map contains all the
-  keyvalues, which have the same prefix. The prefix is removed from the map keys.
+  "Transforms a flat associative structure to a hierarchical structure so that all values
+  are associated to a new map using a specific key path, which is generated from
+  the current key of the value.
+
+  Keypath is a sequence of keys and it is generated from splitting the current key
+  using a given separator. Separator is a regular expression.
 
   e.g. {:a_x 1, :a_y 2 :b 3} -> {a: {:x 1 :y 2} :b 3}"
   (reduce
