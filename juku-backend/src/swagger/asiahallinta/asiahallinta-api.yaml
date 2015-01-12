@@ -277,7 +277,7 @@ definitions:
         description: täydennyspyynnön lähettäjä, esim "Bärman Toni" 
       osapuoli:  
         type: string
-        description: "Lähettäjä"
+        description: Vakioteksti 'Lähettäjä'
         default: Lähettäjä
       asiakirjanotsikko: 
         type: string
@@ -287,7 +287,7 @@ definitions:
         description: avustuskauden yksilöivä diaarinumero
       suunta:   
         type: string
-        description: "saapuva"
+        description: Vakioteksti 'saapuva'
         default: saapuva
   Paatos:
     properties:
@@ -305,14 +305,14 @@ definitions:
         description:  tähän liittyvän avustushakemuksen käsittelijän nimi
       osapuoli:  
         type: string
-        description: "Lähettäjä"
+        description: Vakioteksti 'Lähettäjä'
         default: Lähettäjä
       avustuskausi: 
         type: string
         description: avustuskauden yksilöivä diaarinumero
       suunta:
         type: string
-        description: "saapuva"
+        description: Vakioteksti 'saapuva'
         default: saapuva
       asiakirjanotsikko:  
         type: string
