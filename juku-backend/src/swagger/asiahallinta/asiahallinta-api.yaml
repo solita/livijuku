@@ -212,9 +212,9 @@ paths:
 definitions:
   Hakemus:
     properties:
-      avustuskausi:
+      hakemuskausi:
         type: string
-        description: Avustuskauden yksilöivä diaarinumero
+        description: Hakemuskauden yksilöivä diaarinumero
       tehtäväluokka: 
         type: string
         description: Vakioteksti '07.00.01 joukkoliikenteen rahoitus'
@@ -259,10 +259,10 @@ definitions:
         type: string
         description:  Vakioteksti 'Vastaanottaja'
         default: Vastaanottaja
-      avustuskausi: 
+      hakemuskausi: 
         type: string
         description: |
-          Avustuskauden yksilöivä diaarinumero 
+          Hakemuskauden yksilöivä diaarinumero 
           TODO tälle ei pitäisi olla tarvetta hakemus kuuluu jo valmiiksi aina johonkin kauteen
       suunta: 
         type: string
@@ -283,9 +283,9 @@ definitions:
       asiakirjanotsikko: 
         type: string
         description: ??? TODO
-      avustuskausi:  
+      hakemuskausi:  
         type: string
-        description: avustuskauden yksilöivä diaarinumero
+        description: Hakemuskauden yksilöivä diaarinumero
       suunta:   
         type: string
         description: Vakioteksti 'saapuva'
@@ -308,9 +308,9 @@ definitions:
         type: string
         description: Vakioteksti 'Lähettäjä'
         default: Lähettäjä
-      avustuskausi: 
+      hakemuskausi: 
         type: string
-        description: avustuskauden yksilöivä diaarinumero
+        description: Hakemuskauden yksilöivä diaarinumero
       suunta:
         type: string
         description: Vakioteksti 'saapuva'
