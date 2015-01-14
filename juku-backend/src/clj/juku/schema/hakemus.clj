@@ -33,7 +33,7 @@
 
 (s/defschema Avustuskohde {:hakemusid     s/Num
                            :avustuskohdelajitunnus s/Str
-                           :haettavaavustus s/Int,
-                           :omarahoitus s/Int})
+                           :haettavaavustus s/Num,
+                           :omarahoitus s/Num})
 
 
