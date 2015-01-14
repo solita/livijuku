@@ -24,7 +24,7 @@
                             :loppupvm (t/local-date 2014 12 1)}}
 
         id (h/add-hakemus! hakemus)
-        avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1, :omarahoitus 1}]
+        avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
 
       (h/save-avustuskohteet![avustuskohde])
       (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]
