@@ -1,4 +1,4 @@
-(ns juku.db.hakemus_test
+(ns juku.service.hakemus_test
   (:require [midje.sweet :refer :all]
             [clj-time.core :as t]
             [juku.service.hakemus :as h]))

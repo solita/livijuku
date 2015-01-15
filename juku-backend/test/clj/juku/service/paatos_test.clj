@@ -1,4 +1,4 @@
-(ns juku.db.paatos-test
+(ns juku.service.paatos-test
   (:require [midje.sweet :refer :all]
             [clj-time.core :as t]
             [juku.service.hakemus :as h]
