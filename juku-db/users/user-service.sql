@@ -55,7 +55,7 @@ create or replace package body juku_users.testing as
     run('grant livi_application to ' || juku_app);
     
     run('create or replace trigger ' || juku_app || '.set_default_schema ' ||
-        'after logon on juku_app.schema ' ||
+        'after logon on ' || juku_app || '.schema ' ||
         'begin execute immediate ''alter session set current_schema = ' || juku || '''; end;');
   exception
     when user_allready_exists then return;
@@ -87,7 +87,7 @@ end;
 /
 
 
--- Usage:
+-- Usage --
 -- http://juku:juku@letto.solita.fi:50000/juku/juku_users.testing.create_users?username=test
 -- http://juku:juku@letto.solita.fi:50000/juku/juku_users.testing.drop_users?username=test
 
@@ -103,7 +103,7 @@ begin
 end;
 /
 
--- Cleanup
+-- Cleanup --
 /*
 begin
   dbms_epg.drop_dad ('juku_admin_service'); -- Cleanup the DAD.
