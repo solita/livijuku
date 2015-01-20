@@ -1,6 +1,6 @@
 (ns juku.user)
 
-(def ^:dynamic *current-user-id* "JUKU_APP")
+(def ^:dynamic *current-user-id* "")
 
 (defn with-user-id*
   [user-id f]
