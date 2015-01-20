@@ -45,5 +45,20 @@ after logon on juku_app.schema
 begin
   execute immediate 'alter session set current_schema = juku';
 end;
+/
 
+-- These settings are only for development databases --
 
+grant flashback any table to juku;
+
+-- publish juku services to pl/sql http gateway
+begin
+  dbms_epg.create_dad (
+    dad_name => 'juku_admin_service',
+    path     => '/juku/*');
+    
+  dbms_epg.authorize_dad (
+    dad_name => 'juku_admin_service',
+    user     => 'JUKU');
+end;
+/
