@@ -35,3 +35,6 @@ create or replace package body testing as
 end;
 /
 
+-- Usage: --
+-- http://juku:juku@localhost:50000/juku/testing.create_restorepoint?restorepoint=test
+-- http://juku:juku@localhost:50000/juku/testing.revert_to?restorepoint=test
