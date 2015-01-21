@@ -2,11 +2,11 @@
 
 
 create table liite (
-  hakemusid not null references hakemus (id),
+  hakemusid references hakemus (id),
   liitenumero number,
   nimi varchar2 (200 char),
-  kuvaus varchar2(2000 char),
   contenttype varchar2 (200 char),
+  poistoaika date,
   sisalto blob,
 
   constraint liite_pk primary key (hakemusid, liitenumero)
