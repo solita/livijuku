@@ -1,8 +1,10 @@
 (ns juku.db.database
-  (:require [clojure.java.jdbc]
+  (:require [clojure.java.jdbc :as jdbc]
             [juku.db.jdbc_monkey_patch]
             [juku.settings :refer [settings]])
-  (:import [com.zaxxer.hikari HikariConfig HikariDataSource]))
+  (:import [com.zaxxer.hikari HikariConfig HikariDataSource]
+           (java.io InputStream)
+           (java.sql PreparedStatement)))
 
 
 (def db-settings (:db settings))
@@ -39,4 +41,9 @@
 (defn shutdown [] (.shutdown (:datasource db)))
 
 (setup-shutdown-hook! shutdown)
+
+(extend-protocol jdbc/ISQLParameter
+  InputStream
+  (set-parameter [^InputStream v ^PreparedStatement s  i]
+    (.setBlob s i v)))
 

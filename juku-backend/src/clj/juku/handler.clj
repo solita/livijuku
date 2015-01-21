@@ -6,6 +6,7 @@
 
             [juku.rest-api.hakemus :refer [hakemus-routes]]
             [juku.rest-api.paatos :refer [paatos-routes]]
+            [juku.rest-api.liitteet :refer [liitteet-routes]]
             [juku.rest-api.organisaatio :refer [organisaatio-routes]]
             [juku.rest-api.user :refer [user-routes]]
 
@@ -14,6 +15,7 @@
             [juku.schema.hakemus :refer :all]
             [juku.schema.user :refer :all]
             [juku.schema.paatos :refer :all]
+            [juku.schema.liitteet :refer :all]
 
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]
@@ -36,6 +38,9 @@
         (swaggered "paatos"
                    :description "Päätös API"
                    paatos-routes)
+        (swaggered "liitteet"
+                   :description "Liite API"
+                   liitteet-routes)
         (swaggered "organisaatio"
                    :description "Organisaatio API"
                    organisaatio-routes)
