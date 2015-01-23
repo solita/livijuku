@@ -15,6 +15,11 @@
           :summary "Hae hakemuksen liitteet."
           (ok (service/find-liitteet hakemusid)))
 
+    (GET* "/hakemus/:hakemusid/liite/:liitenumero" []
+          :path-params [hakemusid :- Long, liitenumero :- Long]
+          :summary "Lataa liitteen sisältö."
+          (ok (:sisalto (service/find-liite-sisalto hakemusid liitenumero))))
+
     (POST "/hakemus/:hakemusid/liite"
             [hakemusid :as {{{tempfile :tempfile filename :filename contenttype :content-type} :liite} :params}]
             (ok (service/add-liite! {:hakemusid hakemusid :nimi filename :contenttype contenttype} (io/input-stream tempfile))))
