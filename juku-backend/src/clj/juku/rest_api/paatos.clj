@@ -18,4 +18,10 @@
           :path-params [hakemusid :- Long]
           :body [paatos Edit-Paatos]
           :summary "Tallenna hakemuksen päätöksen tiedot."
-          (ok (service/save-paatos! paatos))))
+          (ok (service/save-paatos! paatos)))
+
+    (POST* "/hakemus/:hakemusid/hyvaksy-paatos" []
+          :return  nil
+          :path-params [hakemusid :- Long]
+          :summary "Hyväksy hakemuksen avoinna oleva päätös."
+          (ok (service/hyvaksy-paatos! hakemusid))))
