@@ -6,11 +6,9 @@
             :dependencies [[org.clojure/clojure "1.6.0"]
                            [org.clojure/java.jdbc "0.3.6"]
 
-                           [compojure "1.2.1"]
-                           [metosin/compojure-api "0.16.6"]
-                           [metosin/ring-http-response "0.5.2"]
-                           [metosin/ring-swagger "0.15.0"]
-                           [metosin/ring-swagger-ui "2.0.17"]
+                           [metosin/compojure-api "0.17.0"]
+                           [metosin/ring-swagger-ui "2.0.24"]
+
                            [org.clojars.zentrope/ojdbc "11.2.0.3.0"]
                            [yesql "0.5.0-beta2"]
                            [prismatic/schema "0.3.3"]
