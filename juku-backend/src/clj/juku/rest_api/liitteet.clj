@@ -18,7 +18,9 @@
     (GET* "/hakemus/:hakemusid/liite/:liitenumero" []
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö."
-          (ok (:sisalto (service/find-liite-sisalto hakemusid liitenumero))))
+          (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
+            (content-type (ok (:sisalto liite)) (:contenttype liite))
+            (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
     (POST "/hakemus/:hakemusid/liite"
             [hakemusid :as {{{tempfile :tempfile filename :filename contenttype :content-type} :liite} :params}]
