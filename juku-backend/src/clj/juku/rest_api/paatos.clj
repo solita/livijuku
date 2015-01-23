@@ -8,7 +8,7 @@
 
 (defroutes* paatos-routes
     (GET* "/hakemus/:hakemusid/paatos" []
-          :return Paatos
+          :return (s/maybe Paatos)
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen nykyinen päätös."
           (ok (service/find-paatos hakemusid)))
