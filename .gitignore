@@ -17,3 +17,5 @@
 # target-kansio
 juku-backend/target
 juku-db/target
+
+juku-backend/juku.properties
