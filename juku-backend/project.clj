@@ -27,7 +27,8 @@
                            [environ "1.0.0"]
                            ;; Timbre brings functional, Clojure-y goodness to all your logging needs.
                            [com.taoensso/timbre "3.3.1"]
-                           [enlive "1.1.5"]]
+                           [enlive "1.1.5"]
+                           [slingshot "0.12.1"]]
 
             :plugins [[test2junit "1.1.0"]
                       [lein-ring "0.8.12"]

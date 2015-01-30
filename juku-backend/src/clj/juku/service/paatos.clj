@@ -6,9 +6,7 @@
             [juku.service.hakemus :as h]
             [schema.coerce :as scoerce]
             [juku.schema.paatos :as s]
-            [clojure.string :as str]
-            [common.map :as m]
-            [ring.util.http-response :as r]))
+            [common.collection :as c]))
 
 (sql/defqueries "paatos.sql" {:connection db})
 
@@ -19,15 +17,20 @@
 
 (defn new-paatos! [paatos] (insert-paatos! paatos))
 
+(defn- assert-update [updateamount hakemusid]
+  (assert (< updateamount 2) (str "Tietokannan tiedot ovat virheelliset. Hakemuksella " hakemusid " on kaksi avointa päätöstä.")))
+
 (defn save-paatos! [paatos]
   (let [updated (update-paatos! paatos)]
-    (assert (< updated 2) "Tietokannan tiedot ovat virheelliset. Hakemuksella on kaksi avointa päätöstä.")
-    (if (= updated 0) (new-paatos! paatos))
+    (assert-update updated (:hakemusid paatos))
+    (if (== updated 0) (new-paatos! paatos))
     nil))
 
 (defn hyvaksy-paatos! [hakemusid]
   (jdbc/with-db-transaction [db-spec db]
      (let [updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})]
+        (assert-update updated hakemusid)
         (cond
            (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "P"})
-           (== updated 0) (r/not-found! "Hakemuksella ei ole avointa päätöstä")))) nil)
+           (== updated 0) (c/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))))
+  nil)

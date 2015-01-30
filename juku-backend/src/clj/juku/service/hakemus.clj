@@ -44,7 +44,7 @@
 
 (defn get-hakemus-by-id [hakemusid]
   (-> (select-hakemus {:hakemusid hakemusid})
-    c/single-result
+    c/single-result-required
     coerce/row->object
     coerce-hakemus+))
 
