@@ -44,9 +44,9 @@
 
 (defn get-hakemus-by-id [hakemusid]
   (-> (select-hakemus {:hakemusid hakemusid})
-    c/single-result-required
-    coerce/row->object
-    coerce-hakemus+))
+      (c/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
+      coerce/row->object
+      coerce-hakemus+))
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
   (map coerce-avustuskohde (select-avustuskohteet {:hakemusid hakemusid})))
@@ -68,11 +68,11 @@
                                coerce/localdate->sql-date))))
 
 (defn save-avustuskohde! [avustuskohde]
-  (update-avustuskohde! avustuskohde))
+  (update-avustuskohde! avustuskohde) nil)
 
 (defn save-avustuskohteet! [avustuskohteet]
   (doseq [avustuskohde avustuskohteet]
-    (if (= (save-avustuskohde! avustuskohde) 0)
+    (if (= (update-avustuskohde! avustuskohde) 0)
       (add-avustuskohde! avustuskohde))))
 
 (defn- update-hakemus-by-id [hakemus hakemusid]
@@ -94,20 +94,20 @@
 (defn tarkasta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
 
-(defn oletus-avustus-hakemus! [vuosi organisaatioid] {
+(defn- oletus-avustus-hakemus! [vuosi organisaatioid] {
      :vuosi vuosi :hakemustyyppitunnus "AH0"
      :organisaatioid organisaatioid
      :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
                 :loppupvm (time/local-date (- vuosi 1) 12 15)}})
 
-(defn oletus-maksatus-hakemus1! [vuosi organisaatioid] {
+(defn- oletus-maksatus-hakemus1! [vuosi organisaatioid] {
      :vuosi vuosi :hakemustyyppitunnus "MH1"
      :organisaatioid organisaatioid
      :hakuaika {:alkupvm (time/local-date vuosi 7 1)
                 :loppupvm (time/local-date vuosi 8 31)}})
 
 
-(defn oletus-maksatus-hakemus2! [vuosi organisaatioid] {
+(defn- oletus-maksatus-hakemus2! [vuosi organisaatioid] {
        :vuosi vuosi :hakemustyyppitunnus "MH2"
        :organisaatioid organisaatioid
        :hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)

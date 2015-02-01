@@ -17,6 +17,19 @@
     (dissoc (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid))) :muokkausaika)
       => (-> hakemus (assoc :id id, :hakemustilatunnus "K", :diaarinumero id))))
 
+(fact "Avustuskohteen lisääminen"
+  (let [organisaatioid 1
+        hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid
+                 :hakuaika {:alkupvm (t/local-date 2014 6 1)
+                            :loppupvm (t/local-date 2014 12 1)}}
+
+        id (h/add-hakemus! hakemus)
+        avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+
+    (h/add-avustuskohde! avustuskohde)
+    (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]
+))
+
 (fact "Avustuskohteiden tallentaminen ja hakeminen"
   (let [organisaatioid 1
         hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid

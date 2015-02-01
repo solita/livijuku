@@ -3,6 +3,7 @@
             [juku.service.user :as user]
             [common.map :as m]
             [common.xforms :as f]
+            [common.core :as c]
             [clojure.string :as str]
             [slingshot.slingshot :as ss]
             [ring.util.http-response :as r]
@@ -20,8 +21,11 @@
                (r/forbidden (str "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
       (r/forbidden "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user."))))
 
-(defn- assoc-message [map throw-context]
-  (assoc map :message (:message throw-context)))
+(defn- assoc-throw-context [map throw-context]
+  (let [message (:message throw-context)
+        cause (:cause throw-context)
+        cause-message (c/maybe-nil #(.getMessage %) "" cause)]
+    (assoc map :message message :cause cause-message)))
 
 ;; more suitable exception info support
 (defn ex-info-support
@@ -30,8 +34,8 @@
     (ss/try+
       (handler request)
       (catch :http-response {:keys [http-response] :as e}
-        (http-response (assoc-message (dissoc e :http-response) &throw-context)))
+        (http-response (assoc-throw-context (dissoc e :http-response) &throw-context)))
       (catch map? e
-        (r/internal-server-error (assoc-message e &throw-context))))))
+        (r/internal-server-error (assoc-throw-context e &throw-context))))))
 
 (alter-var-root #'cm/ex-info-support (constantly ex-info-support))

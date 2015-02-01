@@ -5,12 +5,12 @@
 (defmacro not-found!
   [type parameters msg] `(ss/throw+ (merge {:type ~type :http-response http/not-found} ~parameters) ~msg))
 
-(defn assert-not-empty! [coll]
-  (if (empty? coll) (not-found! ::empty {} "The collection is empty")))
+(defn assert-not-empty! [coll type parameters message]
+  (if (empty? coll) (not-found! type parameters message)))
 
-(defn single-result-required [coll]
+(defn single-result-required [coll type parameters message]
   (assert (<= (count coll) 1) "The collection contains more than one item.")
-  (assert-not-empty! coll)
+  (assert-not-empty! coll type parameters message)
   (first coll))
 
 (defn starts-with [getter txt]

@@ -1,13 +1,13 @@
 (ns juku.db.sql
   (:require [clojure.java.jdbc :as jdbc]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [slingshot.slingshot :as ss]))
 
 (defn- db-do [operation db sql params]
-  (try
+  (ss/try+
     (operation db sql params)
     (catch Exception e
-      (throw (RuntimeException.
-               (str "Failed to execute: " sql " - values: " params) e)))))
+      (ss/throw+ {:sql sql} (str "Failed to execute: " sql " - values: " params)))))
 
 ;; insert statements
 
@@ -34,9 +34,12 @@
 
 ;; update statements
 
+(defn- assignment-expression [key]
+  (str (name key) " = ?"))
+
 (defn update-statement [table obj]
   (let [separator ", "
-        set-clause  (str/join separator (map (fn [key] (str (name key) " = ?")) (keys obj)))]
+        set-clause  (str/join separator (map assignment-expression (keys obj)))]
        (str "update " table " set " set-clause)))
 
 (defn update-where-id [db table obj id]
