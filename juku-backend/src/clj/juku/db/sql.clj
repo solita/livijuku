@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [common.string :as strx]
             [common.core :as c]
-            [common.xforms :as f]
             [slingshot.slingshot :as ss]))
 
 (defn- parse-constraint-name [^String txt]
@@ -25,7 +24,7 @@
   (ss/try+
     (operation db sql params)
     (catch Exception e
-      (f/if-let* [violated-constraint (violated-constraint e)
+      (c/if-let* [violated-constraint (violated-constraint e)
                    error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
                    message-template (or (:message error) (default-error-message sql params))]
         (ss/throw+ (merge {:sql sql :violated-constraint violated-constraint} error error-parameters)

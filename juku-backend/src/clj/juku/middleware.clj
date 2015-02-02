@@ -2,7 +2,6 @@
   (:require [juku.user :as current-user]
             [juku.service.user :as user]
             [common.map :as m]
-            [common.xforms :as f]
             [common.core :as c]
             [clojure.string :as str]
             [slingshot.slingshot :as ss]
@@ -11,10 +10,10 @@
 
 (defn wrap-user [handler]
   (fn [request]
-    (f/if-let* [headers (m/keys-to-keywords (:headers request))
+    (c/if-let* [headers (m/keys-to-keywords (:headers request))
                 uid (:oam-remote-user headers)]
       (current-user/with-user-id uid
-        (f/if-let* [group-txt (:oam-groups headers)
+        (c/if-let* [group-txt (:oam-groups headers)
                     roles (str/split group-txt #",")
                     user (user/find-user uid)]
                (user/with-user (assoc user :roles roles) (handler request))
