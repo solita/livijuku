@@ -74,10 +74,5 @@
              :return  s/Num
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
-             (ok (service/tarkasta-hakemus! hakemusid)))
-      (POST* "/hakemuskausi" []
-             :return   nil
-             :body-params     [vuosi :- s/Int]
-             :summary  "Avaa uusi hakemuskausi."
-             (ok (service/avaa-hakemuskausi! vuosi))))
+             (ok (service/tarkasta-hakemus! hakemusid))))
 

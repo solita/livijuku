@@ -5,6 +5,7 @@
             [compojure.api.sweet :refer :all]
 
             [juku.rest-api.hakemus :refer [hakemus-routes]]
+            [juku.rest-api.hakemuskausi :refer [hakemuskausi-routes]]
             [juku.rest-api.paatos :refer [paatos-routes]]
             [juku.rest-api.liitteet :refer [liitteet-routes]]
             [juku.rest-api.organisaatio :refer [organisaatio-routes]]
@@ -32,6 +33,9 @@
           :license "Euroopan unionin yleinen lisenssi v.1.1"
           :licenseUrl "http://ec.europa.eu/idabc/servlets/Doc7ace.pdf?id=31982"
           :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut")
+        (swaggered "hakemuskausi"
+                   :description "Hakemuskausi API"
+                   hakemuskausi-routes)
         (swaggered "hakemus"
                    :description "Hakemus API"
                    hakemus-routes)
