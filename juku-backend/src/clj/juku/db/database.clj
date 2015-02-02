@@ -10,7 +10,7 @@
 (def db-settings (:db settings))
 
 (defn data-source [settings]
-  (println (:url settings) (:user settings) (:password settings))
+  (println (:url settings) (:user settings) "****")
   (HikariDataSource. (doto (HikariConfig.)
                        (.setMaximumPoolSize 10)
                        (.setDriverClassName "oracle.jdbc.OracleDriver")
