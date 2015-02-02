@@ -42,8 +42,11 @@ create table hakemus (
   selite clob
 );
 
+declare
+  e entity%rowtype := model.new_entity('hakemus', 'Hakemus', 'HA');
 begin
-  model.define_mutable(model.new_entity('hakemus', 'Hakemus', 'HA'));
+  model.define_mutable(e);
+  model.rename_fk_constraints(e);
 end;
 /
 

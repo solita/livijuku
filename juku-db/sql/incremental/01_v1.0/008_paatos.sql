@@ -12,7 +12,10 @@ create table paatos (
   constraint paatos_pk primary key (hakemusid, paatosnumero)
 );
 
+declare
+  e entity%rowtype := model.new_entity('paatos', 'Päätös', 'PA');
 begin
-  model.define_mutable(model.new_entity('paatos', 'Päätös', 'PA'));
+  model.define_mutable(e);
+  model.rename_fk_constraints(e);
 end;
 /
