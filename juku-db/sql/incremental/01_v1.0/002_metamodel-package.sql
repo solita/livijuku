@@ -85,6 +85,8 @@ create or replace package model authid current_user as
     data_length number,
     char_length number) 
   return varchar2 deterministic;
+  
+  procedure rename_fk_constraints(e entity%rowtype);
 end model;
 /
 
@@ -310,6 +312,35 @@ create or replace package body model as
                   then entity.abbreviation
                   else entity.table_name end;
     end select_name;
-
+  
+  function first_valid_oracle_name(n1 varchar2, n2 varchar2, n3 varchar2 default null) return varchar2 deterministic is
+    objectname constant varchar2(30 char) := 
+            case when n1 is not null and length(n1) <= 30 then n1
+                when n2 is not null and length(n2) <= 30 then n2
+                when n3 is not null and length(n3) <= 30 then n3
+            end;
+  begin
+    if objectname is null then raise_application_error(-20000, 'Mikään annetuista nimistä ei ole sopiva nimi oracle objektille: ' || n1 || ', ' || n2 || ', ' || n3); end if;
+    return objectname;
+  end;
+  
+  procedure rename_fk_constraints(e entity%rowtype) as
+  begin
+    for i in (
+      select 
+            gc.constraint_name, 
+            source.table_name || '_' || target.table_name || '_FK' n1,
+            source.table_name || '_' || target.abbreviation || '_FK' n2,
+            source.abbreviation || '_' || target.abbreviation || '_FK' n3
+        from user_constraints gc
+        inner join user_constraints rc on gc.r_constraint_name = rc.constraint_name
+        inner join entity source on source.table_name = gc.table_name
+        inner join entity target on target.table_name = rc.table_name
+      where gc.generated = 'GENERATED NAME' and gc.table_name = e.table_name
+    )
+    loop
+      putline_or_execute('alter table ' || e.table_name || ' rename constraint ' || i.constraint_name || ' to ' || first_valid_oracle_name(i.n1, i.n2, i.n3));
+    end loop;
+  end;
 end model;
 /

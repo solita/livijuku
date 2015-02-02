@@ -29,8 +29,11 @@ create table avustuskohde (
   constraint avustuskohde_pk primary key (hakemusid, avustuskohdelajitunnus)
 );
 
+declare 
+  e entity%rowtype := model.new_entity('avustuskohde', 'Avustuskohde', 'AK');
 begin
-  model.define_mutable(model.new_entity('avustuskohde', 'Avustuskohde', 'AK'));
+  model.define_mutable(e);
+  model.rename_fk_constraints(e);
 end;
 /
 
