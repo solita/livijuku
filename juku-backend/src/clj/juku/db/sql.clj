@@ -51,8 +51,9 @@
         values (repeat (count row) "?")]
     (insert-statement table columns values)))
 
-(defn insert-with-id [db table row]
-  (db-do jdbc/db-do-prepared-return-keys db (insert-statement-with-id table row) (vals row)))
+(defn insert-with-id [db table row constraint-violation-error error-parameters]
+  (db-do jdbc/db-do-prepared-return-keys db (insert-statement-with-id table row) (vals row)
+         constraint-violation-error error-parameters))
 
 (defn insert [db table row constraint-violation-error error-parameters]
   (db-do jdbc/db-do-prepared db (insert-statement-flatmap table row) (vals row)

@@ -17,6 +17,15 @@
     (dissoc (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid))) :muokkausaika)
       => (-> hakemus (assoc :id id, :hakemustilatunnus "K", :diaarinumero id))))
 
+(fact "Uuden hakemuksen luonti - organisaatio ei ole olemassa"
+  (let [organisaatioid 23453453453453
+        hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0"
+                 :organisaatioid organisaatioid
+                 :hakuaika {:alkupvm (t/local-date 2014 6 1)
+                            :loppupvm (t/local-date 2014 12 1)}}]
+
+    (h/add-hakemus! hakemus) => (throws (str "Hakemuksen organisaatiota " organisaatioid " ei ole olemassa." ))))
+
 (facts "Avustuskohteiden testit"
 
 (fact "Avustuskohteen lisääminen"

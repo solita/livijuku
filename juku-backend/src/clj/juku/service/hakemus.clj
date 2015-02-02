@@ -22,7 +22,11 @@
 (def coerce-avustuskohde (scoerce/coercer Avustuskohde coerce/db-coercion-matcher))
 
 (def constraint-errors
-  {:avustuskohde_pk {:http-response r/bad-request :message "Avustuskohde {avustuskohdelajitunnus} on jo olemassa hakemuksella (id = {hakemusid})."}
+  {:hakemus_hakemustyyppi_fk {:http-response r/not-found :message "Hakemustyyppiä {hakemustyyppitunnus} ei ole olemassa."}
+   :hakemus_organisaatio_fk {:http-response r/not-found :message "Hakemuksen organisaatiota {organisaatioid} ei ole olemassa."}
+   :hakemus_kasittelija_fk {:http-response r/not-found :message "Hakemuksen käsittelijää {kasittelija} ei ole olemassa."}
+
+   :avustuskohde_pk {:http-response r/bad-request :message "Avustuskohde {avustuskohdelajitunnus} on jo olemassa hakemuksella (id = {hakemusid})."}
    :avustuskohde_hakemus_fk {:http-response r/not-found :message "Avustuskohteen {avustuskohdelajitunnus} hakemusta (id = {hakemusid}) ei ole olemassa."}
    :avustuskohde_aklaji_fk {:http-response r/not-found :message "Avustuskohdelajia {avustuskohdelajitunnus} ei ole olemassa."}})
 
@@ -65,7 +69,8 @@
   (:id (dml/insert-with-id db "hakemus"
                            (-> hakemus
                                coerce/object->row
-                               coerce/localdate->sql-date))))
+                               coerce/localdate->sql-date)
+                           constraint-errors hakemus)))
 
 (defn add-avustuskohde! [avustuskohde]
   (:id (dml/insert db "avustuskohde"
