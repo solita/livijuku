@@ -17,6 +17,8 @@
     (dissoc (first (filter (find-by-id id) (h/find-organisaation-hakemukset organisaatioid))) :muokkausaika)
       => (-> hakemus (assoc :id id, :hakemustilatunnus "K", :diaarinumero id))))
 
+(facts "Avustuskohteiden testit"
+
 (fact "Avustuskohteen lisääminen"
   (let [organisaatioid 1
         hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid
@@ -30,6 +32,25 @@
     (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]
 ))
 
+(fact "Avustuskohteen lisääminen - avustuskohde on jo olemassa"
+  (let [organisaatioid 1
+        hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid
+                 :hakuaika {:alkupvm (t/local-date 2014 6 1)
+                            :loppupvm (t/local-date 2014 12 1)}}
+
+        id (h/add-hakemus! hakemus)
+        avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+
+    (h/add-avustuskohde! avustuskohde)
+    (h/add-avustuskohde! avustuskohde) => (throws (str "Avustuskohde PSA-1 on jo olemassa hakemuksella (id = " id ")." ))
+    ))
+
+(fact "Avustuskohteen lisääminen - hakemusta ei löydy"
+  (let [avustuskohde {:hakemusid 1324123434, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+
+    (h/add-avustuskohde! avustuskohde) => (throws "Avustuskohteen PSA-1 hakemusta (id = 1324123434) ei ole olemassa.")
+))
+
 (fact "Avustuskohteiden tallentaminen ja hakeminen"
   (let [organisaatioid 1
         hakemus {:vuosi 2015 :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid
@@ -41,7 +62,7 @@
 
       (h/save-avustuskohteet![avustuskohde])
       (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]
-    ))
+    )))
 
 (fact "Hakemustietojen päivittäminen"
   (let [organisaatioid 1M
