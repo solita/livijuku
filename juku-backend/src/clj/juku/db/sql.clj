@@ -1,13 +1,38 @@
 (ns juku.db.sql
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]
+            [common.string :as strx]
+            [common.core :as c]
+            [common.xforms :as f]
             [slingshot.slingshot :as ss]))
 
-(defn- db-do [operation db sql params]
+(defn- parse-constraint-name [^String txt]
+  (if-let [content (re-find #"\(JUKU.*\.(.*?)\)" txt)]
+    (content 1)))
+
+(defn- violated-constraint [^Throwable e]
+  (if-let [message (.getMessage e)]
+    (cond
+      (strx/substring? "ORA-02291" message) (parse-constraint-name message)
+      (strx/substring? "ORA-00001" message) (parse-constraint-name message)
+      :else (c/maybe-nil violated-constraint nil (.getCause e)))))
+
+(defn- default-error-message [sql params]
+  (str "Failed to execute: " sql " - values: " params))
+
+(defn- db-do
+  ([operation db sql params constraint-violation-error error-parameters]
   (ss/try+
     (operation db sql params)
     (catch Exception e
-      (ss/throw+ {:sql sql} (str "Failed to execute: " sql " - values: " params)))))
+      (f/if-let* [violated-constraint (violated-constraint e)
+                   error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
+                   message-template (or (:message error) (default-error-message sql params))]
+        (ss/throw+ (merge {:sql sql :violated-constraint violated-constraint} error error-parameters)
+                   (strx/interpolate message-template error-parameters))
+        (ss/throw+ {:sql sql} (default-error-message sql params))))))
+
+  ([operation db sql params] (db-do operation db sql params (constantly nil) {}) ))
 
 ;; insert statements
 
@@ -29,8 +54,9 @@
 (defn insert-with-id [db table row]
   (db-do jdbc/db-do-prepared-return-keys db (insert-statement-with-id table row) (vals row)))
 
-(defn insert [db table row]
-  (db-do jdbc/db-do-prepared db (insert-statement-flatmap table row) (vals row)))
+(defn insert [db table row constraint-violation-error error-parameters]
+  (db-do jdbc/db-do-prepared db (insert-statement-flatmap table row) (vals row)
+         constraint-violation-error error-parameters))
 
 ;; update statements
 
