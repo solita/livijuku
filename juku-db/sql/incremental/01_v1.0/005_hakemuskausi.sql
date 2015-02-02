@@ -1,6 +1,6 @@
 
 create table hakemuskausi (
-  vuosi number(4) primary key,
+  vuosi number(4) constraint hakemuskausi_pk primary key,
   hakuohje blob
 );
 
