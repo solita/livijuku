@@ -1,7 +1,10 @@
 
 create table hakemuskausi (
   vuosi number(4) constraint hakemuskausi_pk primary key,
-  hakuohje blob
+
+  hakuohje_nimi varchar2 (200 char),
+  hakuohje_contenttype varchar2 (200 char),
+  hakuohje_sisalto blob
 );
 
 declare

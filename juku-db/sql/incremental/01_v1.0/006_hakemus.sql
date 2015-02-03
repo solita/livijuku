@@ -31,7 +31,7 @@ insert into hakemustila (tunnus, nimi) values ('M', 'Maksettu');
 
 create table hakemus (
   id number constraint hakemus_pk primary key,
-  vuosi number(4) not null,
+  vuosi number(4) not null, --references hakemuskausi (vuosi),
   organisaatioid not null references organisaatio (id),
   hakemustyyppitunnus not null references hakemustyyppi (tunnus),
   hakemustilatunnus varchar2(2 char) default 'K' not null references hakemustila (tunnus),
