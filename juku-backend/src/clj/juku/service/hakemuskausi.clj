@@ -3,11 +3,17 @@
             [juku.service.hakemus :as hakemus]
             [juku.db.database :refer [db]]
             [juku.db.sql :as dml]
+            [yesql.core :as sql]
             [ring.util.http-response :as r]
             [clj-time.core :as time]))
 
+(sql/defqueries "hakemuskausi.sql" {:connection db})
+
 (def constraint-errors
   {:hakemuskausi_pk {:http-response r/bad-request :message "Hakemuskausi on jo avattu vuodelle: {vuosi}"}})
+
+(defn save-hakuohje [vuosi nimi content-type ^java.io.InputStream hakuohje]
+  (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje}))
 
 (defn add-hakemuskausi! [vuosi]
   (let [hakemuskausi {:vuosi vuosi}]
