@@ -36,7 +36,17 @@ save_osastot(OrganisaatioList(
   new_organisaatio('Vaasa', 'KS2'),
 
   -- liikennevirasto --
-  new_organisaatio('Liikennevirasto', 'LV')
+  new_organisaatio('Liikennevirasto', 'LV'),
+
+  -- ELY:t --
+  new_organisaatio('Etelä-Pohjanmaa', 'ELY'),
+  new_organisaatio('Kaakkois-Suomi', 'ELY'),
+  new_organisaatio('Keski-Suomi', 'ELY'),
+  new_organisaatio('Lappi', 'ELY'),
+  new_organisaatio('Pirkanmaa', 'ELY'),
+  new_organisaatio('Pohjois-Pohjanmaa', 'ELY'),
+  new_organisaatio('Pohjois-Savo', 'ELY'),
+  new_organisaatio('Varsinais-Suomi', 'ELY')
 ));
 
 end;
