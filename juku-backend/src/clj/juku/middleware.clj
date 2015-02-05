@@ -5,6 +5,7 @@
             [common.core :as c]
             [clojure.string :as str]
             [slingshot.slingshot :as ss]
+            [clojure.walk :as w]
             [ring.util.http-response :as r]
             [compojure.api.middleware :as cm]))
 
@@ -26,6 +27,11 @@
         cause-message (c/maybe-nil #(.getMessage %) "" cause)]
     (assoc map :message message :cause cause-message)))
 
+
+(defn- json-type-or-str [v] (if (or (keyword? v) (map? v) (vector? v) (number? v) (string? v) (instance? Boolean v)) v (str v)))
+
+(defn- error->json [map] (w/postwalk json-type-or-str map))
+
 ;; more suitable exception info support
 (defn ex-info-support
   [handler]
@@ -33,8 +39,11 @@
     (ss/try+
       (handler request)
       (catch :http-response {:keys [http-response] :as e}
-        (http-response (assoc-throw-context (dissoc e :http-response) &throw-context)))
+        (let [error-body (error->json (dissoc e :http-response))]
+          (http-response (assoc-throw-context error-body &throw-context))))
       (catch map? e
-        (r/internal-server-error (assoc-throw-context e &throw-context))))))
+        (let [error-body (error->json e)]
+          (r/internal-server-error (assoc-throw-context error-body &throw-context)))))))
 
 (alter-var-root #'cm/ex-info-support (constantly ex-info-support))
+

@@ -19,17 +19,21 @@
 (defn- default-error-message [sql params]
   (str "Failed to execute: " sql " - values: " params))
 
-(defn- db-do
-  ([operation db sql params constraint-violation-error error-parameters]
+(defn with-db-exception-translation
+  ([db-operation sql params constraint-violation-error error-parameters]
   (ss/try+
-    (operation db sql params)
+    (db-operation)
     (catch Exception e
       (c/if-let* [violated-constraint (violated-constraint e)
-                   error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
-                   message-template (or (:message error) (default-error-message sql params))]
+                  error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
+                  message-template (or (:message error) (default-error-message sql params))]
         (ss/throw+ (merge {:sql sql :violated-constraint violated-constraint} error error-parameters)
                    (strx/interpolate message-template error-parameters))
-        (ss/throw+ {:sql sql} (default-error-message sql params))))))
+        (ss/throw+ {:sql sql} (default-error-message sql params)))))))
+
+(defn- db-do
+  ([operation db sql params constraint-violation-error error-parameters]
+    (with-db-exception-translation (fn [] (operation db sql params)) sql params constraint-violation-error error-parameters))
 
   ([operation db sql params] (db-do operation db sql params (constantly nil) {}) ))
 

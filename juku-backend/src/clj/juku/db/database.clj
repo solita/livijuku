@@ -1,6 +1,7 @@
 (ns juku.db.database
   (:require [clojure.java.jdbc :as jdbc]
             [juku.db.jdbc_monkey_patch]
+            [juku.db.yesql-patch]
             [juku.settings :refer [settings]])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]
            (java.io InputStream)

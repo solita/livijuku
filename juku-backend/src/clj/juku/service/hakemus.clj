@@ -1,7 +1,5 @@
 (ns juku.service.hakemus
   (:require [yesql.core :as sql]
-            [clojure.java.jdbc :as jdbc]
-            [juku.service.organisaatio :as organisaatio]
             [juku.service.user :as user]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
@@ -9,7 +7,6 @@
             [schema.coerce :as scoerce]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
-            [clj-time.core :as time]
             [common.collection :as c]))
 
 
