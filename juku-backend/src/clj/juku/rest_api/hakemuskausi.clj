@@ -23,6 +23,6 @@
               (not-found (str "Hakemuskaudella " vuosi " ei ole ohjetta."))))
 
       (PUT "/hakemuskausi/:vuosi/hakuohje"
-            [vuosi :as {{{tempfile :tempfile filename :filename contenttype :content-type} :hakuohje} :params}]
-            (ok (service/save-hakuohje vuosi filename contenttype (io/input-stream tempfile)))))
+            [vuosi :as {{{tempfile :tempfile filename :filename content-type :content-type} :hakuohje} :params}]
+            (ok (service/save-hakuohje vuosi filename content-type (io/input-stream tempfile)))))
 

@@ -17,7 +17,8 @@
 (defn save-hakuohje [vuosi nimi content-type ^java.io.InputStream hakuohje]
   (jdbc/with-db-transaction [db-spec db]
     (merge-hakemuskausi-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type})
-    (update-hakemuskausi-set-hakuohje-sisalto! {:vuosi vuosi :sisalto hakuohje})))
+    (update-hakemuskausi-set-hakuohje-sisalto! {:vuosi vuosi :sisalto hakuohje})
+    nil))
 
 (defn find-hakuohje-sisalto [vuosi]
   (if-let [ohje (first (select-hakuohje-sisalto {:vuosi vuosi}))]
