@@ -15,6 +15,13 @@
              :summary  "Avaa uusi hakemuskausi."
              (ok (service/avaa-hakemuskausi! vuosi)))
 
+      (GET* "/hakemuskausi/:vuosi/hakuohje" []
+            :path-params [vuosi :- s/Int]
+            :summary "Lataa hakuohjeen sisältö."
+            (if-let [hakuohje (service/find-hakuohje-sisalto vuosi)]
+              (content-type (ok (:sisalto hakuohje)) (:contenttype hakuohje))
+              (not-found (str "Hakemuskaudella " vuosi " ei ole ohjetta."))))
+
       (PUT "/hakemuskausi/:vuosi/hakuohje"
             [vuosi :as {{{tempfile :tempfile filename :filename contenttype :content-type} :hakuohje} :params}]
             (ok (service/save-hakuohje vuosi filename contenttype (io/input-stream tempfile)))))

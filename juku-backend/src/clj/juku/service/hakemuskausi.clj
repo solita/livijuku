@@ -4,8 +4,10 @@
             [juku.db.database :refer [db]]
             [juku.db.sql :as dml]
             [yesql.core :as sql]
+            [clojure.java.jdbc :as jdbc]
             [ring.util.http-response :as r]
-            [clj-time.core :as time]))
+            [clj-time.core :as time])
+  (:import (java.sql Blob)))
 
 (sql/defqueries "hakemuskausi.sql" {:connection db})
 
@@ -13,7 +15,13 @@
   {:hakemuskausi_pk {:http-response r/bad-request :message "Hakemuskausi on jo avattu vuodelle: {vuosi}"}})
 
 (defn save-hakuohje [vuosi nimi content-type ^java.io.InputStream hakuohje]
-  (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje}))
+  (jdbc/with-db-transaction [db-spec db]
+    (merge-hakemuskausi-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type})
+    (update-hakemuskausi-set-hakuohje-sisalto! {:vuosi vuosi :sisalto hakuohje})))
+
+(defn find-hakuohje-sisalto [vuosi]
+  (if-let [ohje (first (select-hakuohje-sisalto {:vuosi vuosi}))]
+    (update-in ohje [:sisalto] #(.getBinaryStream ^Blob %))))
 
 (defn add-hakemuskausi! [vuosi]
   (let [hakemuskausi {:vuosi vuosi}]
@@ -31,7 +39,6 @@
      :hakuaika {:alkupvm (time/local-date vuosi 7 1)
                 :loppupvm (time/local-date vuosi 8 31)}})
 
-
 (defn- oletus-maksatus-hakemus2! [vuosi organisaatioid] {
        :vuosi vuosi :hakemustyyppitunnus "MH2"
        :organisaatioid organisaatioid
@@ -39,10 +46,10 @@
                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}})
 
 (defn avaa-hakemuskausi! [vuosi]
-  (add-hakemuskausi! vuosi)
-  (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
-    (hakemus/add-hakemus! (oletus-avustus-hakemus! vuosi (:id organisaatio)))
-    (hakemus/add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id organisaatio)))
-    (hakemus/add-hakemus! (oletus-maksatus-hakemus2! vuosi (:id organisaatio)))))
+  (jdbc/with-db-transaction [db-spec db]
+    (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
+      (hakemus/add-hakemus! (oletus-avustus-hakemus! vuosi (:id organisaatio)))
+      (hakemus/add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id organisaatio)))
+      (hakemus/add-hakemus! (oletus-maksatus-hakemus2! vuosi (:id organisaatio))))))
 
 
