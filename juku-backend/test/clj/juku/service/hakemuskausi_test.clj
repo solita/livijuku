@@ -13,3 +13,10 @@
     (slurp (:sisalto (h/find-hakuohje-sisalto vuosi))) => "test"))
 
 
+
+(fact "Avaa hakemuskausi"
+  (let [vuosi 100
+        hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
+
+    (h/save-hakuohje vuosi "test" "text/plain" (ByteArrayInputStream. (.getBytes "test")))
+    (h/avaa-hakemuskausi! vuosi)))

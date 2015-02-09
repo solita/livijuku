@@ -15,3 +15,7 @@ when not matched then
 
 -- name: select-hakuohje-sisalto
 select hakuohje_contenttype contenttype, hakuohje_sisalto sisalto from hakemuskausi where vuosi = :vuosi
+
+-- name: update-hakemuskausi-set-tila!
+update hakemuskausi set tilatunnus = :newtunnus
+where vuosi = :vuosi and tilatunnus = :expectedtunnus

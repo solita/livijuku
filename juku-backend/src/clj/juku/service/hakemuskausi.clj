@@ -48,6 +48,7 @@
 
 (defn avaa-hakemuskausi! [vuosi]
   (jdbc/with-db-transaction [db-spec db]
+    (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
     (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
       (hakemus/add-hakemus! (oletus-avustus-hakemus! vuosi (:id organisaatio)))
       (hakemus/add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id organisaatio)))
