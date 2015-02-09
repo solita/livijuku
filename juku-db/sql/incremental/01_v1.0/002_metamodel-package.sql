@@ -41,7 +41,12 @@ create or replace package model authid current_user as
    * Luo uuden luokittelun. Tämä palvelu luo sekä taulut ja niihin liittyvän metatiedon malliin.
    */
   procedure new_classification (tablename varchar2, entityname varchar2 default null, tunnuksenpituus number default 2, abbreviation varchar2 default null);
-
+  
+  /**
+   * Luo uuden tila-käsitteen. Tämä palvelu luo sekä taulut ja niihin liittyvän metatiedon malliin.
+   */
+  procedure new_state (tablename varchar2, entityname varchar2 default null, tunnuksenpituus number default 2, abbreviation varchar2 default null);
+  
   /**
    * Lisää rajoitteen tietokantaan. Rajoitteen nimen muodostamisessa käytetään yleistä nimeämiskäytäntöä. 
    */
@@ -279,29 +284,41 @@ create or replace package body model as
           'END;');
 
   end;
-
-  procedure new_classification (tablename varchar2, entityname varchar2 default null, tunnuksenpituus number default 2, abbreviation varchar2 default null) as
-
-    classification constant entity%rowtype := new_entity(tablename, entityname, abbreviation);
-
-    shortname constant varchar2(20 char) := select_name(20, classification);
+  
+  procedure create_table(e entity%rowtype, tunnuksenpituus number) as 
     tunnus constant varchar2(30 char) := 'TUNNUS';
     tunnus_declaration constant varchar2(2000 char) := tunnus || ' varchar2 (' || tunnuksenpituus || ' char) not null';
 
     create_table_stm constant varchar2(2000 char) :=
-      'create table ' || tablename || ' ( ' ||
-         tunnus_declaration || ', ' ||
-         'nimi varchar2 (200 char), ' ||
-         'kuvaus varchar2 (2000 char), ' ||
-         'constraint ' || tablename || '_PK primary key (' || tunnus || ') ' ||
-      ') logging';
+    'create table ' || e.table_name || ' ( ' ||
+       tunnus_declaration || ', ' ||
+       'nimi varchar2 (200 char), ' ||
+       'kuvaus varchar2 (2000 char), ' ||
+       'constraint ' || e.table_name || '_PK primary key (' || tunnus || ') ' ||
+    ') logging';
 
   begin
     putline_or_execute(create_table_stm);
+  end;
 
+  procedure new_classification (tablename varchar2, entityname varchar2 default null, tunnuksenpituus number default 2, abbreviation varchar2 default null) as
+    classification constant entity%rowtype := new_entity(tablename, entityname, abbreviation);
+  begin
+    create_table(classification, tunnuksenpituus);
+    insert into entitytypeentity (table_name, entitytypename) values (classification.table_name, 'class');
+    
     define_datetemporal(classification);
     --define_localizable(classification);
     define_mutable(classification);
+  end;
+
+  procedure new_state (tablename varchar2, entityname varchar2 default null, tunnuksenpituus number default 2, abbreviation varchar2 default null) as
+    state constant entity%rowtype := new_entity(tablename, entityname, abbreviation);
+  begin
+    create_table(state, tunnuksenpituus);
+    insert into entitytypeentity (table_name, entitytypename) values (state.table_name, 'state');
+    
+    define_mutable(state);
   end;
 
   -- max 20 characters tablename or abbreviation
