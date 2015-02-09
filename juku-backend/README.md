@@ -23,15 +23,15 @@ Pyynnön otsikkotiedot (pakolliset kaikissa pyynnöissä):
 * -H oam-remote-user:käyttäjätunnus
 * -H oam-groups:käyttäjäroolit
 
-Esimerkki: curl -v -H oam-remote-user:harri -H oam-groups:test http://localhost:8082/user
+Esimerkki: **curl** -v -H oam-remote-user:harri -H oam-groups:test http://localhost:8082/user
 
 Liitteiden lähettäminen multipart/form-data-muodossa: --form liite="@tiedostonimi;type=mime-type"
 
-Esimerkki: curl -v -H oam-remote-user:harri -H oam-groups:t --form liite="@README.md;type=text/plain" http://localhost:8082/hakemus/1/liite
+Esimerkki: **curl** -v -H oam-remote-user:harri -H oam-groups:t --form liite="@README.md;type=text/plain" http://localhost:8082/hakemus/1/liite
 
 Hakuohjeen päivittäminen: -X PUT --form hakuohje="@tiedostonimi;type=text/plain"
 
-Esimerkki
+Esimerkki: **curl** -v -X PUT -include -H oam-remote-user:harri -H oam-groups:t --form hakuohje="@ohje.pdf;type=application/pdf" http://localhost:8082/hakemuskausi/2015/hakuohje
 
 Tuotantokäyttö
 --------------
