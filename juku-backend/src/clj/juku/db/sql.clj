@@ -80,7 +80,7 @@
   "Asserts that the update statement is successfully executed. Statement is successfull,
   if it has updated one or more rows (updatecount > 0).
   Error form is evaluated only if the statement is not successful (updatecount = 0).
-  Error form should evaluate to error object, which is thrown in case of failure."
+  Error form should evaluate to an error object, which is thrown in case of a failure."
 
   [updatecount errorform]
     `(if (> ~updatecount 0) nil (let [e# ~errorform] (ss/throw+ e# (:message e#)))))
