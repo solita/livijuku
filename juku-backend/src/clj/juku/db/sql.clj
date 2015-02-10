@@ -75,5 +75,12 @@
 (defn update-where-id [db table obj id]
   (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
 
-(defmacro assert-update [updatecount errorform]
-  `(if (> ~updatecount 0) nil (let [e# ~errorform] (ss/throw+ e# (:message e#)))))
+(defmacro
+
+  "Asserts that the update statement is successfully executed. Statement is successfull,
+  if it has updated one or more rows (updatecount > 0).
+  Error form is evaluated only if the statement is not successful (updatecount = 0).
+  Error form should evaluate to error object, which is thrown in case of failure."
+
+  assert-update [updatecount errorform]
+    `(if (> ~updatecount 0) nil (let [e# ~errorform] (ss/throw+ e# (:message e#)))))
