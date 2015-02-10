@@ -12,6 +12,9 @@ create table paatos (
   constraint paatos_pk primary key (hakemusid, paatosnumero)
 );
 
+-- Uniikki-indeksi, joka varmistaa että hakemuksella on vain yksi avoinn päätös
+create unique index paatos_hakemus_u on paatos (case when voimaantuloaika is null then hakemusid else null end);
+
 declare
   e entity%rowtype := model.new_entity('paatos', 'Päätös', 'PA');
 begin
