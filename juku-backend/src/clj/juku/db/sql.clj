@@ -74,3 +74,6 @@
 
 (defn update-where-id [db table obj id]
   (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
+
+(defmacro assert-update [updatecount errorform]
+  `(if (> ~updatecount 0) nil (let [e# ~errorform] (ss/throw+ e# (:message e#)))))

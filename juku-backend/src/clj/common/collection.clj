@@ -1,5 +1,7 @@
 (ns common.collection
-  (:require [slingshot.slingshot :as ss]
+  (:require [clojure.set :as set]
+            [common.map :as m]
+            [slingshot.slingshot :as ss]
             [ring.util.http-response :as http]))
 
 (defmacro not-found!
@@ -15,3 +17,11 @@
 
 (defn starts-with [getter txt]
   (fn [obj] (.startsWith ^String (getter obj) txt)))
+
+(defn assoc-left-join [new-key target-rel join-rel & eq-join-keys]
+  (let [index (set/index join-rel eq-join-keys)]
+    (map (fn [parent]
+           (let [foreign-key (select-keys parent eq-join-keys)
+                 value (or (get index foreign-key) #{})]
+             (assoc parent new-key value)))
+         target-rel)))

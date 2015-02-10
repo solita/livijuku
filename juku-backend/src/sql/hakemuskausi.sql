@@ -1,4 +1,10 @@
 
+-- name: select-all-hakemuskaudet
+select vuosi, tilatunnus, hakuohje_contenttype from hakemuskausi
+
+-- name: select-hakemuskausi
+select vuosi from hakemuskausi where vuosi = :vuosi
+
 -- name: update-hakemuskausi-set-hakuohje-sisalto!
 update hakemuskausi set hakuohje_sisalto = :sisalto
 where vuosi = :vuosi

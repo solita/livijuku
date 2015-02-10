@@ -9,6 +9,11 @@
             [clojure.java.io :as io]))
 
 (defroutes* hakemuskausi-routes
+      (GET* "/hakemuskaudet" []
+            :return [Hakemuskausi+]
+            :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
+            (ok (service/find-hakemuskaudet)))
+
       (POST* "/hakemuskausi" []
              :return   nil
              :body-params     [vuosi :- s/Int]

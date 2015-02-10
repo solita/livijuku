@@ -2,9 +2,10 @@
   (:require [juku.service.organisaatio :as organisaatio]
             [juku.service.hakemus :as hakemus]
             [juku.db.database :refer [db]]
+            [clojure.java.jdbc :as jdbc]
             [juku.db.sql :as dml]
             [yesql.core :as sql]
-            [clojure.java.jdbc :as jdbc]
+            [common.collection :as c]
             [ring.util.http-response :as r]
             [clj-time.core :as time])
   (:import (java.sql Blob)))
@@ -13,6 +14,11 @@
 
 (def constraint-errors
   {:hakemuskausi_pk {:http-response r/bad-request :message "Hakemuskausi on jo avattu vuodelle: {vuosi}"}})
+
+(defn find-hakemuskaudet []
+  (let [hakemuskaudet (map (fn [kausi] (update-in kausi [:vuosi] int)) (select-all-hakemuskaudet))
+        hakemukset (hakemus/find-all-hakemukset)]
+    (c/assoc-left-join :hakemukset hakemuskaudet hakemukset :vuosi)))
 
 (defn save-hakuohje [vuosi nimi content-type ^java.io.InputStream hakuohje]
   (jdbc/with-db-transaction [db-spec db]
@@ -48,7 +54,10 @@
 
 (defn avaa-hakemuskausi! [vuosi]
   (jdbc/with-db-transaction [db-spec db]
-    (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
+    (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
+      (if (empty? (select-hakemuskausi {:vuosi vuosi}))
+        {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
+        {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
     (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
       (hakemus/add-hakemus! (oletus-avustus-hakemus! vuosi (:id organisaatio)))
       (hakemus/add-hakemus! (oletus-maksatus-hakemus1! vuosi (:id organisaatio)))
