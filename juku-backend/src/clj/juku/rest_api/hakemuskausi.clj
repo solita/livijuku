@@ -37,7 +37,7 @@
             :return   nil
             :path-params [vuosi :- s/Int, organisaatiolajitunnus :- s/Str]
             :body     [maararaha Maararaha]
-            :summary  "Päivittää tai lisää määrärahan tietylle vuodella ja organisaatiolajille.."
+            :summary  "Päivittää tai lisää määrärahan tietylle vuodella ja organisaatiolajille."
             (ok (service/save-maararaha! (assoc maararaha :vuosi vuosi :organisaatiolajitunnus organisaatiolajitunnus))))
 
       (PUT "/hakemuskausi/:vuosi/hakuohje"
