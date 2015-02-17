@@ -52,4 +52,4 @@ save_osastot(OrganisaatioList(
 end;
 /
 
-update organisaatio set pankkitilinumero = 'FI4250001510000023' where lajitunnus in ('KS1', 'KS2');
+update organisaatio set pankkitilinumero = 'FI4250001510000023' where lajitunnus in ('KS1', 'KS2', 'ELY');
