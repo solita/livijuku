@@ -24,3 +24,21 @@ begin
   model.rename_fk_constraints(e);
 end;
 /
+
+create table maararaha (
+  vuosi references hakemuskausi (vuosi),
+  organisaatiolajitunnus references organisaatiolaji (tunnus),
+
+  maararaha number(12,2),
+  ylijaama number(12,2),
+
+  constraint maararaha_pk primary key (vuosi, organisaatiolajitunnus)
+);
+
+declare
+  e entity%rowtype := model.new_entity('maararaha', 'Maararaha', 'MR');
+begin
+  model.define_mutable(e);
+  model.rename_fk_constraints(e);
+end;
+/
