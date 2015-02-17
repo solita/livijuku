@@ -1,2 +1,2 @@
 #!/bin/bash
-lein ring server-headless
+lein ring server-headless 8082
