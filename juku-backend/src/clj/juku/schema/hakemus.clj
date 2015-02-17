@@ -29,11 +29,6 @@
 (s/defschema Hakemuskausi {:vuosi      s/Int
                            :hakemukset [Hakemus]})
 
-(s/defschema Hakemuskausi+ {:vuosi      s/Int
-                            :tilatunnus s/Str
-                            :hakuohje_contenttype s/Str
-                            :hakemukset #{Hakemus}})
-
 (s/defschema Hakemuskaudet [Hakemuskausi])
 
 (s/defschema Avustuskohde {:hakemusid     s/Num

@@ -17,6 +17,7 @@
             [juku.schema.user :refer :all]
             [juku.schema.paatos :refer :all]
             [juku.schema.liitteet :refer :all]
+            [juku.schema.hakemuskausi :refer :all]
 
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]

@@ -5,6 +5,10 @@ select vuosi, tilatunnus, hakuohje_contenttype from hakemuskausi
 -- name: select-hakemuskausi
 select vuosi from hakemuskausi where vuosi = :vuosi
 
+-- name: select-maararaha
+select maararaha, ylijaama
+from maararaha where vuosi = :vuosi and organisaatiolajitunnus = :organisaatiolajitunnus
+
 -- name: update-hakemuskausi-set-hakuohje-sisalto!
 update hakemuskausi set hakuohje_sisalto = :sisalto
 where vuosi = :vuosi

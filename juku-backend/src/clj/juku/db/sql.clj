@@ -75,6 +75,11 @@
 (defn update-where-id [db table obj id]
   (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
 
+(defn update-where! [db table obj where]
+  (let [separator " and "
+        where-clause  (str/join separator (map assignment-expression (keys where)))]
+    (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where " where-clause) (concat (vals obj) (vals where))))))
+
 (defmacro assert-update
 
   "Asserts that the update statement is successfully executed. Statement is successfull,
