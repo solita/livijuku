@@ -27,6 +27,9 @@
 (defn find-user [tunnus]
   (coerce-user(m/dissoc-if-nil(first (select-user {:tunnus tunnus})) :nimi :etunimi :sukuni)))
 
+(defn find-privileges [roolit]
+  (map :tunnus (select-oikeudet-where-roolit-in {:roolit roolit})))
+
 (defn find-users-by-organization [organisaatioid]
   (map (comp coerce-user (fn [user] (m/dissoc-if-nil user :nimi :etunimi :sukunimi)))
        (select-users-where-organization {:organisaatioid organisaatioid})))

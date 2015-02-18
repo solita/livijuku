@@ -16,8 +16,9 @@
       (current-user/with-user-id uid
         (c/if-let* [group-txt (:oam-groups headers)
                     roles (str/split group-txt #",")
+                    privileges (user/find-privileges roles)
                     user (user/find-user uid)]
-               (user/with-user (assoc user :roles roles) (handler request))
+               (user/with-user (assoc user :privileges privileges) (handler request))
                (r/forbidden (str "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
       (r/forbidden "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user."))))
 
