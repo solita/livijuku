@@ -62,7 +62,7 @@ insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
 select * from 
 (select column_value from table(sys.odcivarchar2list('PK', 'PA', 'KA')))
 cross join 
-(select tunnus from kayttooikeus);
+(select tunnus from kayttooikeus where tunnus not in ('view-omat-hakemukset'));
 
 -- Hakijaroolien oikeudet
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
