@@ -8,7 +8,7 @@
 
 (defroutes* user-routes
     (GET* "/user" []
-          :return User+Roles
+          :return User+Privileges
           :summary "Hae nykyisen käyttäjän tiedot."
           (ok service/*current-user*))
     (GET* "/organisaatio/:organisaatioid/users" []
