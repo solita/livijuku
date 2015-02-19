@@ -25,11 +25,21 @@ create or replace package body testing as
     end;
   end;
   
-  procedure revert_to (restorepoint varchar2) is
-    var_user_tables varchar(4000 char);
+  function list_to_char (l in sys.odcivarchar2list, separator in varchar2) 
+  return varchar2 is
+    r varchar2(32767 char) := case when l.count > 0 then l(1) else '' end;
   begin
-    select listagg(table_name, ',') within group (order by table_name) into var_user_tables from user_tables where temporary = 'N';
-    run('flashback table ' || var_user_tables || ' to restore point ' || user || '_' || restorepoint);
+    for i in 2..l.count loop
+      r := r || separator || l(i);
+    end loop;
+    return r;
+  end;
+  
+  procedure revert_to (restorepoint varchar2) is
+    var_user_tables sys.odcivarchar2list;
+  begin
+    select cast(collect(to_char(table_name)) as sys.odcivarchar2list) into var_user_tables from user_tables where temporary = 'N';
+    run('flashback table ' || list_to_char(var_user_tables, ', ') || ' to restore point ' || user || '_' || restorepoint);
   end;
   
 end;
