@@ -26,6 +26,13 @@
             [hakemusid :as {{{tempfile :tempfile filename :filename contenttype :content-type} :liite} :params}]
             (ok (service/add-liite! {:hakemusid hakemusid :nimi filename :contenttype contenttype} (io/input-stream tempfile))))
 
+    (PUT* "/hakemus/:hakemusid/liite/:liitenumero" []
+             :return nil
+             :path-params [hakemusid :- Long, liitenumero :- Long]
+             :body-params     [nimi :- s/Str]
+             :summary "Päivitä liitteen nimi"
+             (ok (service/update-liite-nimi! hakemusid liitenumero nimi)))
+
     (DELETE* "/hakemus/:hakemusid/liite/:liitenumero" []
          :return nil
          :path-params [hakemusid :- Long, liitenumero :- Long]

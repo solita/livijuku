@@ -27,6 +27,10 @@
   (update-liite-set-poistoaika! {:hakemusid hakemusid :liitenumero liitenumero})
   nil)
 
+(defn update-liite-nimi! [hakemusid liitenumero nimi]
+  (update-liite-set-nimi! {:hakemusid hakemusid :liitenumero liitenumero :nimi nimi})
+  nil)
+
 (defn find-liite-sisalto [hakemusid liitenumero]
   (if-let [liite (first (select-liite-sisalto {:hakemusid hakemusid :liitenumero liitenumero}))]
     (update-in liite [:sisalto] #(.getBinaryStream %))))

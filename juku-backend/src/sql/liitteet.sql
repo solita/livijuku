@@ -15,3 +15,7 @@ values (:hakemusid,
 -- name: update-liite-set-poistoaika!
 update liite set poistoaika = sysdate
 where hakemusid = :hakemusid and liitenumero = :liitenumero
+
+-- name: update-liite-set-nimi!
+update liite set nimi = :nimi
+where hakemusid = :hakemusid and liitenumero = :liitenumero
