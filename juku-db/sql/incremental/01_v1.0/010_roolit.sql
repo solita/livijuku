@@ -27,7 +27,7 @@ begin
 end;
 /
 declare
-  e entity%rowtype := model.new_entity('kayttooikeus', 'Käyttöoikeus', 'KOIKEUS');
+  e entity%rowtype := model.new_entity('kayttooikeus', 'Käyttöoikeus', 'OIKEUS');
 begin
   model.define_mutable(e);
   model.rename_fk_constraints(e);
