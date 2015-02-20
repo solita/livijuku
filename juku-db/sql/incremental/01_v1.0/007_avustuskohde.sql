@@ -23,8 +23,8 @@ insert into avustuskohdelaji (tunnus, nimi) values ('K-M', 'Muu hanke');
 create table avustuskohde (
   hakemusid not null references hakemus (id),
   avustuskohdelajitunnus references avustuskohdelaji (tunnus),
-  haettavaavustus number(9,2),
-  omarahoitus number(9,2),
+  haettavaavustus number(11,2),
+  omarahoitus number(11,2),
 
   constraint avustuskohde_pk primary key (hakemusid, avustuskohdelajitunnus)
 );
