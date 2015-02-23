@@ -2,9 +2,11 @@
 swagger: '2.0'
 
 info:
-  version: "0.0.1"
+  version: "0.0.2"
   title: Livi-juku asiahallinta rajapinta
-  description: Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
+  description: 
+    Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
+    Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA.
   
 schemes: [http]
 produces: [text/plain; charset=utf-8]
@@ -12,16 +14,22 @@ produces: [text/plain; charset=utf-8]
 paths:
   /hakemuskausi:
     post:
+      consumes: [multipart/form-data]
       description: Uuden hakemuskauden avaaminen
       parameters:
         -
-          name: vuosi
-          in: query
-          description: Hakemuskauden vuosi
+          name: hakemuskausi
+          in: body
+          description: Hakemuskauden tiedot
           required: true
-          type: number
-          format: int
-          
+          schema: 
+            $ref: '#/definitions/Hakemuskausi'
+        -
+          name: hakuohje-asiakirja
+          in: formData
+          description: Hakemuskauden hakuohje (pdf/a)
+          required: true
+          type: file  
       responses:
         200:
           description: Uusi hakemuskausi on avattu
@@ -29,8 +37,8 @@ paths:
             description: Hakemuskauden diaarinumero
             type: string
             
-  /hakemuskausi/{diaarinumero}:   
-    delete: 
+  /hakemuskausi/{diaarinumero}/sulje:   
+    put: 
       description: Hakemuskauden sulkeminen asiahallintajärjestelmään
       parameters:
         -
@@ -49,7 +57,10 @@ paths:
   /hakemus:
     post:
       consumes: [multipart/form-data]
-      description: Hakija lähettää avustushakemuksen juku-järjstelmään
+      description: 
+        Hakija lähettää avustushakemuksen tai maksatushakemuksen juku-järjstelmään. 
+        Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
+        mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
       parameters:
         -
           name: hakemus
@@ -59,7 +70,7 @@ paths:
           schema: 
             $ref: '#/definitions/Hakemus'
         -
-          name: dokumentti
+          name: hakemus-asiakirja
           in: formData
           description: Avustushakemuksen dokumentti (pdf/a)
           required: true
@@ -74,7 +85,23 @@ paths:
           description: Hakemuskautta {diaarinumero} ei ole olemassa
             
   /hakemus/{diaarinumero}/kasittely:
-    post:
+    put:
+      description: Käsittelijä ottaa hakemuksen käsittelyyn
+      parameters:
+        -
+          name: diaarinumero
+          in: path
+          description: Hakemuksen diaarinumero
+          required: true
+          type: string
+      responses:
+        200:
+          description: Hakemuksen tila on käsittelyssä
+        404:
+          description: Hakemusta {diaarinumero} ei ole olemassa
+          
+  /hakemus/{diaarinumero}/tarkastettu:
+    put:
       description: Käsittelijä ottaa hakemuksen käsittelyyn
       parameters:
         -
@@ -91,7 +118,6 @@ paths:
           
   /hakemus/{diaarinumero}/taydennyspyynto:
     post:
-      consumes: [multipart/form-data]
       description: Hakemukseen tehdään täydennyspyyntö
       parameters:
         -
@@ -107,12 +133,6 @@ paths:
           required: true
           schema: 
             $ref: '#/definitions/Taydennyspyynto'
-        -
-          name: dokumentti
-          in: formData
-          description: Täydennyspyynnön dokumentti (pdf/a)
-          required: true
-          type: file
       responses:
         200:
           description: Hakemukseen on liitetty täydennyspyyntö
@@ -122,7 +142,7 @@ paths:
   /hakemus/{diaarinumero}/taydennys:
     post:
       consumes: [multipart/form-data]
-      description: Hakija lähettää täydennyksen hakemukseen
+      description: Hakija lähettää täydennyksen hakemukseen. 
       parameters:
         -
           name: diaarinumero
@@ -138,9 +158,9 @@ paths:
           schema: 
             $ref: '#/definitions/Taydennys'
         -
-          name: dokumentti
+          name: hakemus-asiakirja
           in: formData
-          description: Täydennyspyynnön dokumentti (pdf/a)
+          description: Täydennetty hakemus dokumentti (pdf/a)
           required: true
           type: file
       responses:
@@ -161,43 +181,6 @@ paths:
           required: true
           type: string
         -
-          name: paatos
-          in: body
-          description: Päätöksen tiedot 
-          required: true
-          schema: 
-            $ref: '#/definitions/Paatos'
-        -
-          name: dokumentti
-          in: formData
-          description: Täydennyspyynnön dokumentti (pdf/a)
-          required: true
-          type: file
-      responses:
-        200:
-          description: Hakemukseen on liitetty päätös
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
-  /hakemus/{diaarinumero}/maksatushakemus:
-    post:
-      consumes: [multipart/form-data]
-      description: Käsittelijä on mekinnyt ko. hakemuksen tarkastetuksi
-      parameters:
-        -
-          name: diaarinumero
-          in: path
-          description: Hakemuksen diaarinumero
-          required: true
-          type: string
-        -
-          name: maksatushakemus
-          in: body
-          description: Maksatushakemuksen tiedot 
-          required: true
-          schema: 
-            $ref: '#/definitions/Maksatushakemus'
-        -
           name: dokumentti
           in: formData
           description: Täydennyspyynnön dokumentti (pdf/a)
@@ -210,114 +193,45 @@ paths:
           description: Hakemusta {diaarinumero} ei ole olemassa
           
 definitions:
+  Hakemuskausi:
+    properties:
+      asianNimi: 
+        type: string
+        description: 
+          Vapaamuotoinen tekstikenttä, johon tulee teksti 
+          "Hakemuskausi {hakemuskauden vuosi}" esim. "Hakemuskausi 2016"
+      omistavaOrganisaatio: 
+        type: string
+        description: Kauden avanneen käyttäjän organisaatio
+      omistavaHenkilo: 
+        type: string
+        description: Kauden (JUKUn käyttöliittymästä) avannut käyttäjä
   Hakemus:
     properties:
-      hakemuskausi:
+      kausi:
         type: string
         description: Hakemuskauden yksilöivä diaarinumero
-      tehtäväluokka: 
+      omistavaOrganisaatio: 
         type: string
-        description: Vakioteksti '07.00.01 joukkoliikenteen rahoitus'
-        default: 07.00.01 joukkoliikenteen rahoitus
-      menettely: 
+        description: Kauden avanneen käyttäjän organisaatio
+      omistavaHenkilo: 
         type: string
-        description: Vakioteksti - TODO määritetään myöhemmin
-      asiannimi: 
-        type: string
-        description: Vakioteksti 'Uusi avustushakemus'
-        default: Uusi avustushakemus
-      asianomistaja1: 
-        type: string
-        description: Vakioteksti 'Joukkoliikenteen palvelut'
-        default: Joukkoliikenteen palvelut
-      asianomistaja2: 
-        type: string
-        description: Vakioteksti 'Eskola Jenni'
-        default: Eskola Jenni
-      asiakirjanotsikko: 
-        type: string
-        description: |
-          Avustushakemus_vvvv_tvv, jossa vvvv on vuosi ja tvv on hakemuksen hakijaorganisaatio 
-          esim. 'Avustushakemus_2015_Tampere'
-      suunta:
-        type: string
-        description: Vakioteksti 'saapuva'
-        default: saapuva
+        description: Kauden (JUKUn käyttöliittymästä) avannut käyttäjä
   Taydennyspyynto:
     properties:
-      nimi: 
-        type: string
-        description: vakio, tulee ASHAsta
       maaraaika: 
         type: string
         format: date
-        description: Täydennyspyynnön määräaika, johon mennessä tähän pyyntöön pitää vastata
+        description: Täydennyspyynnön määräaika (minuutin tarkkuudella), johon mennessä tähän pyyntöön pitää vastata
       kasittelija: 
         type: string
         description: Täydennyspyynnön lähettäjän nimi muodossa sukunimi etunimi, esim "Bärman Toni"
-      osapuoli: 
-        type: string
-        description:  Vakioteksti 'Vastaanottaja'
-        default: Vastaanottaja
-      hakemuskausi: 
-        type: string
-        description: |
-          Hakemuskauden yksilöivä diaarinumero 
-          TODO tälle ei pitäisi olla tarvetta hakemus kuuluu jo valmiiksi aina johonkin kauteen
-      suunta: 
-        type: string
-        description:  Vakioteksti 'lähtevä'
-        default: lähtevä
   Taydennys:
     properties:
-      nimi: 
-        type: string
-        description: vakio, tulee ASHAsta
       käsittelijä: 
         type: string
-        description: täydennyspyynnön lähettäjä, esim "Bärman Toni" 
-      osapuoli:  
-        type: string
-        description: Vakioteksti 'Lähettäjä'
-        default: Lähettäjä
-      asiakirjanotsikko: 
-        type: string
-        description: ??? TODO
-      hakemuskausi:  
-        type: string
-        description: Hakemuskauden yksilöivä diaarinumero
-      suunta:   
-        type: string
-        description: Vakioteksti 'saapuva'
-        default: saapuva
-  Paatos:
-    properties:
-      asiakirjanotsikko: 
-        type: string
-        description: ??? TODO
-  Maksatushakemus:
-    properties:
-      asiannimi: 
-        type: string
-        description: vakioteksti 'Uusi maksatushakemus'
-        default: Uusi maksatushakemus
-      käsittelijä: 
-        type: string
-        description:  tähän liittyvän avustushakemuksen käsittelijän nimi
-      osapuoli:  
-        type: string
-        description: Vakioteksti 'Lähettäjä'
-        default: Lähettäjä
-      hakemuskausi: 
-        type: string
-        description: Hakemuskauden yksilöivä diaarinumero
-      suunta:
-        type: string
-        description: Vakioteksti 'saapuva'
-        default: saapuva
-      asiakirjanotsikko:  
-        type: string
-        description: ??? TODO
+        description: 
+          Täydennyspyynnön lähettäjä - sama tieto kuin vastaavassa täydennyspyynnössä.
     
 
   
