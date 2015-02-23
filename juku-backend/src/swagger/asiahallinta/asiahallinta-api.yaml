@@ -2,11 +2,11 @@
 swagger: '2.0'
 
 info:
-  version: "0.0.2"
+  version: "0.0.3"
   title: Livi-juku asiahallinta rajapinta
   description: 
     Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
-    Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA.
+    Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA (23.2.15).
   
 schemes: [http]
 produces: [text/plain; charset=utf-8]
@@ -58,7 +58,7 @@ paths:
     post:
       consumes: [multipart/form-data]
       description: 
-        Hakija lähettää avustushakemuksen tai maksatushakemuksen juku-järjstelmään. 
+        Hakija lähettää avustushakemuksen juku-järjstelmään. 
         Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
         mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
       parameters:
@@ -112,7 +112,7 @@ paths:
           type: string
       responses:
         200:
-          description: Hakemuksen tila on käsittelyssä
+          description: Hakemuksen tila on tarkastettu
         404:
           description: Hakemusta {diaarinumero} ei ole olemassa
           
@@ -142,7 +142,10 @@ paths:
   /hakemus/{diaarinumero}/taydennys:
     post:
       consumes: [multipart/form-data]
-      description: Hakija lähettää täydennyksen hakemukseen. 
+      description: 
+        Hakija lähettää täydennyksen hakemukseen. 
+        Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
+        mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
       parameters:
         -
           name: diaarinumero
@@ -172,7 +175,7 @@ paths:
   /hakemus/{diaarinumero}/paatos:
     post:
       consumes: [multipart/form-data]
-      description: Käsittelijä on mekinnyt ko. hakemuksen tarkastetuksi
+      description: Hakemukseen on tehty päätös.
       parameters:
         -
           name: diaarinumero
@@ -181,14 +184,47 @@ paths:
           required: true
           type: string
         -
-          name: dokumentti
+          name: asiakirja
           in: formData
-          description: Täydennyspyynnön dokumentti (pdf/a)
+          description: Päätösdokumentti (pdf/a)
           required: true
           type: file
       responses:
         200:
           description: Hakemukseen on liitetty päätös
+        404:
+          description: Hakemusta {diaarinumero} ei ole olemassa
+          
+  /hakemus/{diaarinumero}/maksatushakemus:
+    post:
+      consumes: [multipart/form-data]
+      description: 
+        Hakija lähettää maksatushakemuksen juku-järjstelmään. 
+        Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
+        mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
+      parameters:
+        -
+          name: diaarinumero
+          in: path
+          description: Hakemuksen diaarinumero. 
+          required: true
+          type: string
+        -
+          name: maksatushakemus
+          in: body
+          description: Maksatushakemuksen tiedot 
+          required: true
+          schema: 
+            $ref: '#/definitions/Taydennys'
+        -
+          name: hakemus-asiakirja
+          in: formData
+          description: Maksatushakemuksen dokumentti (pdf/a)
+          required: true
+          type: file
+      responses:
+        200:
+          description: Uusi maksatushakemus on tallennettu asiahallintaan
         404:
           description: Hakemusta {diaarinumero} ei ole olemassa
           
@@ -225,15 +261,10 @@ definitions:
         description: Täydennyspyynnön määräaika (minuutin tarkkuudella), johon mennessä tähän pyyntöön pitää vastata
       kasittelija: 
         type: string
-        description: Täydennyspyynnön lähettäjän nimi muodossa sukunimi etunimi, esim "Bärman Toni"
+        description: Hakemuksen käsittelijän nimi muodossa sukunimi etunimi, esim "Bärman Toni".
   Taydennys:
     properties:
       käsittelijä: 
         type: string
         description: 
-          Täydennyspyynnön lähettäjä - sama tieto kuin vastaavassa täydennyspyynnössä.
-    
-
-  
-
-      
+          Hakemuksen käsittelijän nimi muodossa sukunimi etunimi, esim "Bärman Toni".
