@@ -49,10 +49,11 @@ insert into kayttajarooli (tunnus, nimi, ssonimi) values ('PK', 'Pääkäyttäj�
 
 insert into kayttooikeus (tunnus, nimi) values ('view-omat-hakemukset', 'Omien hakemusten katseluoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('view-kaikki-hakemukset', 'Kaikkien hakemusten katseluoikeus');
-insert into kayttooikeus (tunnus, nimi) values ('modify-hakemuskausi', 'Hakemuskauden hallinnointioikeus');
+insert into kayttooikeus (tunnus, nimi) values ('view-hakemuskausi', 'Hakemuskauden katseluoikeus');
 
+insert into kayttooikeus (tunnus, nimi) values ('modify-hakemuskausi', 'Hakemuskauden hallinnointioikeus');
 insert into kayttooikeus (tunnus, nimi) values ('modify-oma-hakemus', 'Oman hakemuksen muokkausoikeus');
-insert into kayttooikeus (tunnus, nimi) values ('paatosuunnittelu', 'Päätösten suunnitteluoikeus');
+insert into kayttooikeus (tunnus, nimi) values ('paatos-suunnittelu', 'Päätösten suunnitteluoikeus');
 
 insert into kayttooikeus (tunnus, nimi) values ('allekirjoita-hakemus', 'Hakemuksen allekirjoitusoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('hyvaksy-paatos', 'Päätöksen hyväksymisoikeus');
@@ -69,4 +70,4 @@ insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
 select * from 
 (select column_value from table(sys.odcivarchar2list('HA', 'AK')))
 cross join 
-(select tunnus from kayttooikeus where tunnus not in ('modify-hakemuskausi', 'paatosuunnittelu', 'hyvaksy-paatos'));
+(select tunnus from kayttooikeus where tunnus not in ('view-hakemuskausi', 'modify-hakemuskausi', 'paatos-suunnittelu', 'hyvaksy-paatos'));
