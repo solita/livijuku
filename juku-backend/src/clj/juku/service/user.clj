@@ -24,8 +24,11 @@
 
 (def coerce-user (scoerce/coercer s/User coerce/db-coercion-matcher))
 
+(defn process-names [user]
+  (m/dissoc-if-nil user :nimi :etunimi :sukunimi))
+
 (defn find-user [tunnus]
-  (coerce-user(m/dissoc-if-nil(first (select-user {:tunnus tunnus})) :nimi :etunimi :sukuni)))
+  (first(map (comp coerce-user process-names) (select-user {:tunnus tunnus}))))
 
 (defn find-privileges [roolit]
   (map :tunnus (select-oikeudet-where-roolit-in {:roolit roolit})))
