@@ -47,7 +47,7 @@ insert into kayttajarooli (tunnus, nimi, ssonimi) values ('KA', 'Käsittelijä',
 insert into kayttajarooli (tunnus, nimi, ssonimi) values ('PA', 'Päätöksentekijä', 'juku_paatoksentekija');
 insert into kayttajarooli (tunnus, nimi, ssonimi) values ('PK', 'Pääkäyttäjä', 'juku_paakayttaja');
 
-insert into kayttooikeus (tunnus, nimi) values ('view-omat-hakemukset', 'Omien hakemusten katseluoikeus');
+insert into kayttooikeus (tunnus, nimi) values ('view-oma-hakemus', 'Omien hakemusten katseluoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('view-kaikki-hakemukset', 'Kaikkien hakemusten katseluoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('view-hakemuskausi', 'Hakemuskauden katseluoikeus');
 
@@ -55,7 +55,7 @@ insert into kayttooikeus (tunnus, nimi) values ('modify-hakemuskausi', 'Hakemusk
 insert into kayttooikeus (tunnus, nimi) values ('modify-oma-hakemus', 'Oman hakemuksen muokkausoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('kasittely-hakemus', 'Hakemuksien käsittely- ja päätösten valmisteluoikeus');
 
-insert into kayttooikeus (tunnus, nimi) values ('allekirjoita-hakemus', 'Hakemuksen allekirjoitusoikeus');
+insert into kayttooikeus (tunnus, nimi) values ('allekirjoita-oma-hakemus', 'Oman hakemuksen allekirjoitusoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('hyvaksy-paatos', 'Päätöksen hyväksymisoikeus');
 
 -- Käsittelijäroolien oikeudet
