@@ -44,7 +44,7 @@ paths:
         -
           name: diaarinumero
           in: path
-          description: Hakemuskauden vuosi
+          description: Hakemuskauden diaarinumero
           required: true
           type: number
           format: int
