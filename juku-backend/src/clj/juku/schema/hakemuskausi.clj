@@ -5,7 +5,7 @@
 
 (s/defschema Hakemuskausi+ {:vuosi      s/Int
                             :tilatunnus s/Str
-                            :hakuohje_contenttype s/Str
+                            (s/optional-key :hakuohje_contenttype) s/Str
                             :hakemukset #{h/Hakemus}})
 
 (s/defschema Maararaha {:maararaha s/Num

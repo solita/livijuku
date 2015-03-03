@@ -18,6 +18,9 @@
 (defn starts-with [getter txt]
   (fn [obj] (.startsWith ^String (getter obj) txt)))
 
+(defn eq [getter value]
+  (fn [obj] (= (getter obj) value)))
+
 (defn assoc-left-join [new-key target-rel join-rel & eq-join-keys]
   (let [index (set/index join-rel eq-join-keys)]
     (map (fn [parent]

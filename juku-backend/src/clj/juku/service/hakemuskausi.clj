@@ -25,6 +25,15 @@
         hakemukset (hakemus/find-all-hakemukset)]
     (c/assoc-left-join :hakemukset hakemuskaudet hakemukset :vuosi)))
 
+(defn- oletushakemuskausi [vuosi] {:vuosi vuosi :tilatunnus "0" :hakemukset []})
+
+(defn find-all-hakemuskaudet+seuraava-kausi []
+  (let [hakemuskaudet (find-hakemuskaudet)
+        nextvuosi (+ (time/year (time/now)) 1)]
+    (if (some (c/eq :vuosi nextvuosi) hakemuskaudet)
+      hakemuskaudet
+      (conj hakemuskaudet (oletushakemuskausi nextvuosi)))))
+
 (defn save-hakuohje [vuosi nimi content-type ^java.io.InputStream hakuohje]
   (jdbc/with-db-transaction [db-spec db]
     (merge-hakemuskausi-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type})
