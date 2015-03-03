@@ -103,4 +103,9 @@
 (defn tarkasta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
 
+(defn taydennyspyynto! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"}))
+
+(defn laheta-taydennys! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"}))
 
