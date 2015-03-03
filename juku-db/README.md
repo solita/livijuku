@@ -71,6 +71,9 @@ Kehitysympäristön tietokannan voi alustaa komennolla:
 Tuotantoasennus
 ---------------
 
+Tuotantoasennuksessa käytetään lein-työkalun sijasta itsenäistä java-ohjelmaa juku-db.jar.
+Tämä paketti sisältää kaiken tarvittavan tietokannan päivittämiseen.
+
 Tuotantoasennuksessa tuotantokannan osoite ja salasana annetaan ympäristömuuttujina esim.
 
-    DB_URL=oracle.livi.fi:1521/juku.livi.fi DB_PASSWORD=trustno1 lein with-profiles +test-data do clear-db, update-db
+    DB_URL=oracle.livi.fi:1521/juku.livi.fi DB_PASSWORD=trustno1 java -jar juku-db.jar update-db
