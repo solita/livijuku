@@ -58,16 +58,36 @@ insert into kayttooikeus (tunnus, nimi) values ('kasittely-hakemus', 'Hakemuksie
 insert into kayttooikeus (tunnus, nimi) values ('allekirjoita-oma-hakemus', 'Oman hakemuksen allekirjoitusoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('hyvaksy-paatos', 'Päätöksen hyväksymisoikeus');
 
--- Käsittelijäroolien oikeudet
-insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
-select * from 
-(select column_value from table(sys.odcivarchar2list('PK', 'PA', 'KA')))
-cross join 
-(select tunnus from kayttooikeus where tunnus not in ('view-oma-hakemus', 'modify-oma-hakemus', 'allekirjoita-oma-hakemus'));
 
--- Hakijaroolien oikeudet
+-- Käsittelijän oikeudet
+insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
+select 'KA', column_value from table(sys.odcivarchar2list('view-hakemuskausi', 'modify-hakemuskausi', 'kasittely-hakemus'))
+;
+
+-- Pääkäyttäjän ja päätöksentekijän oikeudet oikeudet
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
 select * from 
-(select column_value from table(sys.odcivarchar2list('HA', 'AK')))
+(select column_value from table(sys.odcivarchar2list('PK', 'PA')))
 cross join 
-(select tunnus from kayttooikeus where tunnus not in ('view-hakemuskausi', 'modify-hakemuskausi', 'kasittely-hakemus', 'hyvaksy-paatos'));
+(select kayttooikeustunnus from kayttajaroolioikeus ka_oikeudet where ka_oikeudet.kayttajaroolitunnus = 'KA'
+union all select * from table(sys.odcivarchar2list('hyvaksy-paatos')))
+;
+
+-- Hakijan oikeudet --
+insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
+select 'HA', column_value from table(sys.odcivarchar2list('view-oma-hakemus', 'modify-oma-hakemus'));
+
+-- Allekirjoittajan oikeudet
+insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
+select 'AK', kayttooikeustunnus 
+from kayttajaroolioikeus ha_oikeudet where ha_oikeudet.kayttajaroolitunnus = 'HA'
+union all select 'AK', column_value from table(sys.odcivarchar2list('allekirjoita-oma-hakemus'))
+;
+
+-- Kaikkien oikeudet --
+insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
+select * from 
+(select tunnus from kayttajarooli)
+cross join
+(select * from table(sys.odcivarchar2list('view-kaikki-hakemukset')))
+;
