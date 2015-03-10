@@ -21,12 +21,12 @@ update hakemuskausi set tilatunnus = :newtunnus
 where vuosi = :vuosi and tilatunnus = :expectedtunnus
 
 -- name: count-hakemustilat-for-vuosi-hakemustyyppi
-select vuosi, hakemustyyppitunnus, count(*) 
+select vuosi, hakemustyyppitunnus, hakemustilatunnus, count(*) count
 from hakemus
 group by vuosi, hakemustyyppitunnus, hakemustilatunnus
 
 -- name: select-all-hakuajat
-select vuosi, hakemustyyppitunnus, alkupvm, loppupvm
+select vuosi, hakemustyyppitunnus, alkupvm hakuaika_alkupvm, loppupvm hakuaika_loppupvm
 from hakuaika
 
 -- name: insert-hakemuskausi-if-not-exists!

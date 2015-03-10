@@ -10,12 +10,12 @@
 
 (defroutes* hakemuskausi-routes
       (GET* "/hakemuskaudet" []
-            :return [Hakemuskausi+]
+            :return [Hakemuskausi+Hakemukset]
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
             (ok (service/find-hakemuskaudet+hakemukset)))
 
-      #_(GET* "/hakemuskaudet/yhteenveto" []
-            :return [Hakemuskausi+]
+      (GET* "/hakemuskaudet/yhteenveto" []
+            :return [Hakemuskausi+Summary]
             :summary "Hae kaikki hakemuskaudet ja yhteenvedon jokaisen hakemuskauden tiloista ja hakuajoista."
             (ok (service/find-hakemuskaudet+summary)))
 
@@ -37,6 +37,13 @@
             (if-let [hakuohje (service/find-hakuohje-sisalto vuosi)]
               (content-type (ok (:sisalto hakuohje)) (:contenttype hakuohje))
               (not-found (str "Hakemuskaudella " vuosi " ei ole ohjetta."))))
+
+      (PUT* "/hakemuskausi/:vuosi/hakuajat" []
+            :return   nil
+            :path-params [vuosi :- s/Int]
+            :body     [hakuajat [Hakuaika+]]
+            :summary  "Päivittää hakemuskauden hakuajat."
+            (ok (service/save-hakemuskauden-hakuajat! vuosi hakuajat)))
 
       (PUT* "/maararaha/:vuosi/:organisaatiolajitunnus" []
             :return   nil
