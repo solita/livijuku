@@ -7,7 +7,7 @@
             [juku.service.test :as test]))
 
 (fact "Päätöksen tallentaminen ja hakeminen"
-  (u/with-user {:tunnus "harri"}
+  (u/with-user {:tunnus "juku_kasittelija"}
       (let [hakemuskausi (test/next-hakemuskausi!)
             vuosi (:vuosi hakemuskausi)
             organisaatioid 1
