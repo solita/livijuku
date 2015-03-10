@@ -15,6 +15,23 @@ insert into hakemustyyppi (tunnus, nimi) values ('AH0', 'Avustushakemus');
 insert into hakemustyyppi (tunnus, nimi) values ('MH1', '1. maksatushakemus');
 insert into hakemustyyppi (tunnus, nimi) values ('MH2', '2. maksatushakemus');
 
+create table hakuaika (
+  vuosi number(4) not null references hakemuskausi (vuosi),
+  hakemustyyppitunnus not null references hakemustyyppi (tunnus),
+  alkupvm date not null,
+  loppupvm date not null,
+  
+  constraint hakuaika_pk primary key (vuosi, hakemustyyppitunnus)
+);
+
+declare
+  e entity%rowtype := model.new_entity('hakuaika', 'Hakuaika', 'HAIKA');
+begin
+  model.define_mutable(e);
+  model.rename_fk_constraints(e);
+end;
+/
+
 create table hakemustila (
   tunnus varchar2(2 char) constraint hakemustila_pk primary key,
   nimi varchar2(100 char),
@@ -31,12 +48,12 @@ insert into hakemustila (tunnus, nimi) values ('M', 'Maksettu');
 
 create table hakemus (
   id number constraint hakemus_pk primary key,
-  vuosi number(4) not null, --references hakemuskausi (vuosi),
+  vuosi number(4) not null references hakemuskausi (vuosi),
   organisaatioid not null references organisaatio (id),
   hakemustyyppitunnus not null references hakemustyyppi (tunnus),
   hakemustilatunnus varchar2(2 char) default 'K' not null references hakemustila (tunnus),
-  hakuaika_alkupvm date not null,
-  hakuaika_loppupvm date not null,
+  --hakuaika_alkupvm date not null,
+  --hakuaika_loppupvm date not null,
   suunniteltuavustus number(9,2),
   kasittelija constraint hakemus_kasittelija_fk references kayttaja (tunnus),
   selite clob
