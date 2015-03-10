@@ -21,7 +21,7 @@
 (def constraint-errors
   {:hakemuskausi_pk {:http-response r/bad-request :message "Hakemuskausi on jo avattu vuodelle: {vuosi}"}})
 
-(defn- oletushakemuskausi [vuosi] {:vuosi vuosi :tilatunnus "0"})
+(defn- oletushakemuskausi [vuosi] {:vuosi vuosi :tilatunnus "0" :hakuohje_contenttype nil})
 
 (defn- find-all-hakemuskaudet+seuraava-kausi [init-hakemuskausi]
   (let [hakemuskaudet (map (fn [kausi] (update-in kausi [:vuosi] int)) (select-all-hakemuskaudet))
