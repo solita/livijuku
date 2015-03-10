@@ -21,7 +21,7 @@
 (defn eq [getter value]
   (fn [obj] (= (getter obj) value)))
 
-(defn assoc-left-join [new-key target-rel join-rel & eq-join-keys]
+(defn assoc-left-join [target-rel new-key join-rel & eq-join-keys]
   (let [index (set/index join-rel eq-join-keys)]
     (map (fn [parent]
            (let [foreign-key (select-keys parent eq-join-keys)

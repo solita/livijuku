@@ -11,4 +11,14 @@
 (s/defschema Maararaha {:maararaha s/Num
                         :ylijaama s/Num})
 
+(s/defschema HakemustilaCount {:hakemustilatunnus s/Str
+                               :count s/Num})
 
+(s/defschema HakemusSummary {:hakemustyyppitunnus s/Str
+                             :hakemustilat [HakemustilaCount]
+                             :hakuaika h/Hakuaika})
+
+(s/defschema Hakemuskausi+Summary {:vuosi      s/Int
+                                   :tilatunnus s/Str
+                                   (s/optional-key :hakuohje_contenttype) s/Str
+                                   :hakemukset #{HakemusSummary}})

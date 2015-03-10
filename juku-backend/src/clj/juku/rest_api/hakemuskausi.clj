@@ -12,7 +12,12 @@
       (GET* "/hakemuskaudet" []
             :return [Hakemuskausi+]
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
-            (ok (service/find-all-hakemuskaudet+seuraava-kausi)))
+            (ok (service/find-hakemuskaudet+hakemukset)))
+
+      #_(GET* "/hakemuskaudet/yhteenveto" []
+            :return [Hakemuskausi+]
+            :summary "Hae kaikki hakemuskaudet ja yhteenvedon jokaisen hakemuskauden tiloista ja hakuajoista."
+            (ok (service/find-hakemuskaudet+summary)))
 
       (POST* "/hakemuskausi" []
              :return   nil

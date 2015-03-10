@@ -1,8 +1,17 @@
 (ns juku.service.test
-  (:require [juku.db.database :refer [db]]
+  (:require [common.collection :as c]
+            [juku.service.hakemuskausi :as k]
+            [juku.db.database :refer [db]]
             [yesql.core :as sql]))
 
 (sql/defqueries "juku/service/test.sql" {:connection db})
 
 (defn find-next-notcreated-hakemuskausi []
-  (+ (:next (first (select-max-vuosi-from-hakemuskausi))) 1))
+  (int (+ (:next (first (select-max-vuosi-from-hakemuskausi))) 1)))
+
+(defn init-hakemuskausi! [vuosi]
+  (k/init-hakemuskausi! vuosi)
+  (first (filter (c/eq :vuosi vuosi) (k/find-hakemuskaudet+hakemukset))))
+
+(defn next-hakemuskausi! []
+  (let [vuosi (find-next-notcreated-hakemuskausi)] (init-hakemuskausi! vuosi)))

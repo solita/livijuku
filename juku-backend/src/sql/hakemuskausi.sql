@@ -9,19 +9,9 @@ select vuosi from hakemuskausi where vuosi = :vuosi
 select maararaha, ylijaama
 from maararaha where vuosi = :vuosi and organisaatiolajitunnus = :organisaatiolajitunnus
 
--- name: update-hakemuskausi-set-hakuohje-sisalto!
-update hakemuskausi set hakuohje_sisalto = :sisalto
+-- name: update-hakemuskausi-set-hakuohje!
+update hakemuskausi set hakuohje_sisalto = :sisalto, hakuohje_nimi = :nimi, hakuohje_contenttype = :contenttype
 where vuosi = :vuosi
-
--- name: merge-hakemuskausi-hakuohje!
-merge into hakemuskausi
-using (select :vuosi value from dual) vuosi
-  on (hakemuskausi.vuosi = vuosi.value)
-when matched then
-  update set hakuohje_nimi = :nimi, hakuohje_contenttype = :contenttype
-when not matched then
-  insert (vuosi, hakuohje_nimi, hakuohje_contenttype)
-  values (:vuosi, :nimi, :contenttype)
 
 -- name: select-hakuohje-sisalto
 select hakuohje_contenttype contenttype, hakuohje_sisalto sisalto from hakemuskausi where vuosi = :vuosi
@@ -29,3 +19,17 @@ select hakuohje_contenttype contenttype, hakuohje_sisalto sisalto from hakemuska
 -- name: update-hakemuskausi-set-tila!
 update hakemuskausi set tilatunnus = :newtunnus
 where vuosi = :vuosi and tilatunnus = :expectedtunnus
+
+-- name: count-hakemustilat-for-vuosi-hakemustyyppi
+select vuosi, hakemustyyppitunnus, count(*) 
+from hakemus
+group by vuosi, hakemustyyppitunnus, hakemustilatunnus
+
+-- name: select-all-hakuajat
+select vuosi, hakemustyyppitunnus, alkupvm, loppupvm
+from hakuaika
+
+-- name: insert-hakemuskausi-if-not-exists!
+insert into hakemuskausi (vuosi)
+select :vuosi from dual 
+where not exists (select 1 from hakemuskausi where vuosi = :vuosi)
