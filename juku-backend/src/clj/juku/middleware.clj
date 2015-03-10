@@ -7,7 +7,8 @@
             [slingshot.slingshot :as ss]
             [clojure.walk :as w]
             [ring.util.http-response :as r]
-            [compojure.api.middleware :as cm]))
+            [compojure.api.middleware :as cm]
+            [clojure.tools.logging :as log]))
 
 (defn wrap-user [handler]
   (fn [request]
@@ -41,10 +42,16 @@
       (handler request)
       (catch :http-response {:keys [http-response] :as e}
         (let [error-body (error->json (dissoc e :http-response))]
+          (log/info e (.getMessage e))
           (http-response (assoc-throw-context error-body &throw-context))))
       (catch map? e
         (let [error-body (error->json e)]
-          (r/internal-server-error (assoc-throw-context error-body &throw-context)))))))
+          (log/error e (.getMessage e))
+          (r/internal-server-error (assoc-throw-context error-body &throw-context))))
+      (catch Throwable t
+        (log/error t (.getMessage t))
+        (throw t)))))
 
 (alter-var-root #'cm/ex-info-support (constantly ex-info-support))
+
 

@@ -102,13 +102,13 @@
     (doseq [hakuaika hakuajat] (update-hakuaika! (assoc hakuaika :vuosi vuosi)))
     nil))
 
-(defn save-hakuohje [vuosi nimi content-type ^InputStream hakuohje]
+(defn save-hakuohje [^Integer vuosi nimi content-type ^InputStream hakuohje]
   (jdbc/with-db-transaction [db-spec db]
     (init-hakemuskausi! vuosi)
     (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
     nil))
 
-(defn avaa-hakemuskausi! [vuosi]
+(defn avaa-hakemuskausi! [^Integer vuosi]
   (jdbc/with-db-transaction [db-spec db]
     (init-hakemuskausi! vuosi)
     (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
