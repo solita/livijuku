@@ -1,28 +1,49 @@
-
--- Vanha tunnus, jota ei pitäisi enää näkyä missään.
-insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
-  values ('harri', 'Harri Henrik', 'Hakija', 1, 0);
-
--- Vanha tunnus, jota ei pitäisi enää näkyä missään.
-insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
-  values ('katri', 'Katri Karoliina', 'Käsittelijä', (select id from organisaatio where lajitunnus = 'LV'), 0);
-
 -- roolikohtaiset testikäyttäjät livi-ympäristössä --
 -- hakijaroolit: juku_hakija, juku_allekirjoittaja
 
+--************************************************************
+-- Kehitysympäristän OAM-testitunnusten mukaiset tunnukset   *
+--************************************************************
+
+-- HSL, KS1
 insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
-values ('juku_hakija', 'Harri', 'Hakija', 1, 0);
-
+values ('juku_hakija', 'Harri', 'Helsinki', (select id from organisaatio where nimi = 'Helsingin seudun liikenne'), 0);
 insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
-values ('juku_allekirjoittaja', 'Allu', 'Allekirjoittaja', 1, 0);
+values ('juku_allekirjoittaja', 'Allu', 'Allekirjoittaja', (select id from organisaatio where nimi = 'Helsingin seudun liikenne'), 0);
 
--- käsittelijäroolit: juku_kasittelija, juku_paatoksentekija
+-- Tampere, KS1
+insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
+values ('juku_hakija_tampere', 'Tatu', 'Tampere', (select id from organisaatio where nimi = 'Tampere'), 0);
+-- Oulu, KS1
+insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
+values ('juku_hakija_oulu', 'Olli', 'Oulu', (select id from organisaatio where nimi = 'Oulu'), 0);
 
+-- Pori, KS2
+insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
+values ('juku_hakija_pori', 'Pekka', 'Pori', (select id from organisaatio where nimi = 'Pori'), 0);
+-- Kotka, KS2
+insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
+values ('juku_hakija_kotka', 'Kalle', 'Kotka', (select id from organisaatio where nimi = 'Kotka'), 0);
+
+-- Etelä-Pohjanmaa, ELY
+insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
+values ('juku_hakija_epo', 'Ellu', 'Etelä-Pohjanmaa', (select id from organisaatio where nimi = 'Etelä-Pohjanmaa'), 0);
+-- Lappi, ELY
+insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
+values ('juku_hakija_lappi', 'Liisa', 'Lappi', (select id from organisaatio where nimi = 'Lappi'), 0);
+
+
+-- käsittelijäroolit: juku_kasittelija, juku_paatoksentekija, LV
 insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
 values ('juku_kasittelija', 'Katri', 'Käsittelijä', (select id from organisaatio where lajitunnus = 'LV'), 0);
 
 insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
 values ('juku_paatoksentekija', 'Päivi', 'Päätöksentekijä', (select id from organisaatio where lajitunnus = 'LV'), 0);
 
+-- pääkäyttäjä, LV
 insert into kayttaja (tunnus, etunimi, sukunimi, organisaatioid, jarjestelma)
 values ('juku_paakayttaja', 'Jussi', 'Koskinen', (select id from organisaatio where lajitunnus = 'LV'), 0);
+
+--*******************************************************************
+-- END OF Kehitysympäristön OAM-testitunnusten mukaiset tunnukset   *
+--*******************************************************************
