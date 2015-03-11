@@ -16,7 +16,7 @@
     (PUT* "/hakemus/:hakemusid/paatos" []
           :return  nil
           :path-params [hakemusid :- Long]
-          :body [paatos Edit-Paatos]
+          :body [paatos EditPaatos]
           :summary "Tallenna hakemuksen päätöksen tiedot."
           (ok (service/save-paatos! paatos)))
 

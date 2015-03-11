@@ -10,6 +10,6 @@
                      :paattaja          (s/maybe s/Str)
                      :selite            (s/maybe s/Str)})
 
-(s/defschema Edit-Paatos {:hakemusid         s/Num
+(s/defschema EditPaatos {:hakemusid         s/Num
                           :myonnettyavustus  s/Num
                           :selite            s/Str})
