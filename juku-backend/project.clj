@@ -21,13 +21,12 @@
                            [ch.qos.logback/logback-classic "1.1.2"]
                            [com.google.guava/guava "18.0"]
                            [com.zaxxer/HikariCP-java6 "2.2.5"]
-                           ;; Clojure i18n & L10n library
-                           [com.taoensso/tower "3.0.2"]
+
                            ;; Library for managing environment variables in Clojure.
                            [environ "1.0.0"]
                            ;; Timbre brings functional, Clojure-y goodness to all your logging needs.
                            [com.taoensso/timbre "3.3.1"]
-                           [enlive "1.1.5"]
+
                            [slingshot "0.12.1"]]
 
             :plugins [[test2junit "1.1.0"]
