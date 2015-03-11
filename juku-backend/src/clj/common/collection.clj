@@ -32,14 +32,6 @@
              (assoc parent new-key value)))
          target-rel)))
 
-(defn assoc-left-join [target-rel new-key join-rel & eq-join-keys]
-  (let [index (set/index join-rel eq-join-keys)]
-    (map (fn [parent]
-           (let [foreign-key (select-keys parent eq-join-keys)
-                 value (or (get index foreign-key) #{})]
-             (assoc parent new-key value)))
-         target-rel)))
-
 (defn assoc-left-join- [target-rel new-key join-rel & eq-join-keys]
   (let [index (set/index join-rel eq-join-keys)]
     (map (fn [parent]

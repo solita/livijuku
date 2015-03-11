@@ -8,11 +8,12 @@
 
 (defn diaarinumero [id vuosi] (str "LIVI/" id "/07.00.01/" vuosi))
 
-(let [hakemuskausi (test/next-hakemuskausi!)
-      vuosi (:vuosi hakemuskausi)
-      hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0"))
-      assoc-hakemus-defaults (fn [hakemus id]
-        (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero (diaarinumero id vuosi), :hakuaika hakuaika))]
+(def hakemuskausi (test/next-hakemuskausi!))
+(def vuosi (:vuosi hakemuskausi))
+(def hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0")))
+
+(defn assoc-hakemus-defaults [hakemus id]
+  (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero (diaarinumero id vuosi), :hakuaika hakuaika))
 
 (facts "-- Hakemus testit --"
 
@@ -30,6 +31,14 @@
 
       (h/add-hakemus! hakemus) => (throws (str "Hakemuksen organisaatiota " organisaatioid " ei ole olemassa." ))))
 
+  (fact "Uuden hakemuksen luonti - hakemuskausi ei ole olemassa"
+        (let [organisaatioid 1M
+              none-vuosi 9999
+              hakemus {:vuosi none-vuosi :hakemustyyppitunnus "AH0"
+                       :organisaatioid organisaatioid}]
+
+          (h/add-hakemus! hakemus) => (throws (str "Hakemuskautta " none-vuosi " ei ole olemassa." ))))
+
   (fact "Hakemuksen selitteen päivittäminen"
         (let [organisaatioid 1M
               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
@@ -42,9 +51,14 @@
   (fact "Organisaation hakemusten haku"
       (let [organisaatioid 1M
             hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-            id (h/add-hakemus! hakemus)]
+            id (h/add-hakemus! hakemus)
+            organisaation-hakemukset  (h/find-organisaation-hakemukset organisaatioid)]
 
-        (dissoc (c/find-first (find-by-id id) (h/find-organisaation-hakemukset organisaatioid)) :muokkausaika)
+        ;; kaikki hakemukset ovat ko. organisaatiosta
+        organisaation-hakemukset => (partial every? (c/eq :organisaatioid organisaatioid))
+
+        ;; hakemus (:id = id) löytyy hakutuloksista
+        (dissoc (c/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
           => (assoc-hakemus-defaults hakemus id))))
 
 (facts "-- Avustuskohteiden testit --"
@@ -82,5 +96,5 @@
           avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
 
         (h/save-avustuskohteet![avustuskohde])
-        (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]))))
+        (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde])))
 

@@ -9,23 +9,28 @@
             [ring.util.http-response :as r]
             [common.collection :as c]))
 
-
+; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "hakemus.sql" {:connection db})
 
+; *** Hakemus skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 (def coerce-hakemus (scoerce/coercer Hakemus coerce/db-coercion-matcher))
 (def coerce-hakemus+ (scoerce/coercer Hakemus+ coerce/db-coercion-matcher))
 (def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnitelma coerce/db-coercion-matcher))
 
 (def coerce-avustuskohde (scoerce/coercer Avustuskohde coerce/db-coercion-matcher))
 
+; *** Virheviestit tietokannan rajoitteista ***
 (def constraint-errors
   {:hakemus_hakemustyyppi_fk {:http-response r/not-found :message "Hakemustyyppiä {hakemustyyppitunnus} ei ole olemassa."}
    :hakemus_organisaatio_fk {:http-response r/not-found :message "Hakemuksen organisaatiota {organisaatioid} ei ole olemassa."}
    :hakemus_kasittelija_fk {:http-response r/not-found :message "Hakemuksen käsittelijää {kasittelija} ei ole olemassa."}
+   :hakemus_hakemuskausi_fk {:http-response r/not-found :message "Hakemuskautta {vuosi} ei ole olemassa."}
 
    :avustuskohde_pk {:http-response r/bad-request :message "Avustuskohde {avustuskohdelajitunnus} on jo olemassa hakemuksella (id = {hakemusid})."}
    :avustuskohde_hakemus_fk {:http-response r/not-found :message "Avustuskohteen {avustuskohdelajitunnus} hakemusta (id = {hakemusid}) ei ole olemassa."}
    :avustuskohde_aklaji_fk {:http-response r/not-found :message "Avustuskohdelajia {avustuskohdelajitunnus} ei ole olemassa."}})
+
+; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
 
 (defn find-organisaation-hakemukset [organisaatioid]
   (map (comp coerce-hakemus coerce/row->object)
