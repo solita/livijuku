@@ -22,7 +22,7 @@
 
 (s/defschema Hakemus+ (assoc Hakemus :selite (s/maybe s/Str)))
 
-(s/defschema New-Hakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika))
+(s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika))
 
 (s/defschema Hakemukset [Hakemus])
 

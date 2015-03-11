@@ -28,7 +28,7 @@
             (ok (service/find-avustuskohteet-by-hakemusid hakemusid)))
       (POST* "/hakemus" []
              :return   s/Num
-             :body     [hakemus New-Hakemus]
+             :body     [hakemus NewHakemus]
              :summary  "Lisää yksittäinen hakemus."
              (ok (service/add-hakemus! hakemus)))
       (POST* "/avustuskohde" []
