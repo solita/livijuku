@@ -15,6 +15,9 @@
   (assert-not-empty! coll type parameters message)
   (first coll))
 
+(defn find-first [predicate collection]
+  (first (filter predicate collection)))
+
 (defn starts-with [getter txt]
   (fn [obj] (.startsWith ^String (getter obj) txt)))
 
