@@ -2,6 +2,7 @@
   (:require [org.httpkit.server :as http-kit]
             [clojure.string :as str]
             [juku.handler :as handler]
+            [clojure.tools.logging :as log]
             [juku.settings :refer [settings]]))
 
 ;;
@@ -16,7 +17,7 @@
 
 (defn start-server [handler port]
   (stop-server)
-  (println (str "Starting web server on port " port))
+  (log/info (str "Starting web server on port " port))
   (reset! server (http-kit/run-server handler {:port port})))
 
 (defn start []

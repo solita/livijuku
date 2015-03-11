@@ -2,6 +2,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [juku.db.jdbc_monkey_patch]
             [juku.db.yesql-patch]
+            [clojure.tools.logging :as log]
             [juku.settings :refer [settings]])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]
            (java.io InputStream)
@@ -11,7 +12,7 @@
 (def db-settings (:db settings))
 
 (defn data-source [settings]
-  (println (:url settings) (:user settings) "****")
+  (log/info "Starting database connection pool: " (:url settings) (:user settings) "****")
   (HikariDataSource. (doto (HikariConfig.)
                        (.setMaximumPoolSize 10)
                        (.setDriverClassName "oracle.jdbc.OracleDriver")
