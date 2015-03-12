@@ -1,6 +1,6 @@
 (ns common.collection
   (:require [clojure.set :as set]
-            [common.map :as m]
+            [common.core :as c]
             [slingshot.slingshot :as ss]
             [ring.util.http-response :as http]))
 
@@ -24,18 +24,32 @@
 (defn eq [getter value]
   (fn [obj] (= (getter obj) value)))
 
-(defn assoc-left-join [target-rel new-key join-rel & eq-join-keys]
-  (let [index (set/index join-rel eq-join-keys)]
-    (map (fn [parent]
-           (let [foreign-key (select-keys parent eq-join-keys)
-                 value (or (get index foreign-key) #{})]
-             (assoc parent new-key value)))
-         target-rel)))
+(defn join [target join-fn source eq-join-keys]
 
-(defn assoc-left-join- [target-rel new-key join-rel & eq-join-keys]
-  (let [index (set/index join-rel eq-join-keys)]
+  "Join function joins a subset of objects from the source collection to an object in the target collection.
+  The source subset (joinset) for a target object is identified using the join-keys.
+  Joined source objects and the target object have same join-key values.
+  The result of this join is determined using the join-fn function."
+
+  (let [index (set/index source eq-join-keys)]
     (map (fn [parent]
            (let [foreign-key (select-keys parent eq-join-keys)
-                 value (set (map (fn [v] (apply dissoc v eq-join-keys)) (or (get index foreign-key) #{})))]
-             (assoc parent new-key value)))
-         target-rel)))
+                 matching-objects (get index foreign-key)]
+             (join-fn parent matching-objects)))
+         target)))
+
+(defn assoc-left-join [target-rel new-key join-rel & eq-join-keys]
+  (join target-rel (fn [parent value] (assoc parent new-key (or value #{}))) join-rel eq-join-keys))
+
+(defn- dissoc-keys [collection keys] (set (map (fn [v] (apply dissoc v keys)) collection)))
+
+(defn assoc-left-join*
+  ([target-rel new-key join-rel default-value eq-join-keys]
+    (join target-rel
+          (fn [parent child-set] (assoc parent new-key (dissoc-keys (or child-set default-value) eq-join-keys)))
+          join-rel eq-join-keys))
+
+  ([target-rel new-key join-rel eq-join-keys]
+    (join target-rel
+          (fn [parent child-set] (if child-set (assoc parent new-key (dissoc-keys child-set eq-join-keys)) parent))
+          join-rel eq-join-keys)))

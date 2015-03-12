@@ -73,19 +73,26 @@
        :alkupvm (time/local-date (+ vuosi 1) 1 1)
        :loppupvm (time/local-date (+ vuosi 1) 1 31)})
 
+(defn hakuaika->hakemus-summary [hakuaika]
+  {:hakemustyyppitunnus (:hakemustyyppitunnus hakuaika)
+   :hakuaika {
+              :alkupvm (:alkupvm hakuaika)
+              :loppupvm (:loppupvm hakuaika)}
+   :hakemustilat #{}})
+
 (defn- oletus-hakemuskausi [vuosi]
-  (assoc (oletushakemuskausi vuosi) :hakemustyypit
-       [(oletus-avustus-hakuaika vuosi)
-        (oletus-maksatus-hakuaika1 vuosi)
-        (oletus-maksatus-hakuaika2 vuosi)]))
+  (assoc (oletushakemuskausi vuosi) :hakemukset
+       #{(hakuaika->hakemus-summary(oletus-avustus-hakuaika vuosi))
+         (hakuaika->hakemus-summary(oletus-maksatus-hakuaika1 vuosi))
+         (hakuaika->hakemus-summary(oletus-maksatus-hakuaika2 vuosi))}))
 
 (defn find-hakemuskaudet+summary []
   (let [hakemuskaudet (find-all-hakemuskaudet+seuraava-kausi oletus-hakemuskausi)
         hakemustyypit (map (comp coerce/row->object coerce-vuosiluku->int) (select-all-hakuajat))
         hakemustilat (map coerce-vuosiluku->int (count-hakemustilat-for-vuosi-hakemustyyppi))
-        hakemustyypit+hakemustilat (c/assoc-left-join- hakemustyypit :hakemustilat hakemustilat :vuosi :hakemustyyppitunnus)]
+        hakemustyypit+hakemustilat (c/assoc-left-join* hakemustyypit :hakemustilat hakemustilat #{} [:vuosi :hakemustyyppitunnus])]
 
-    (map coerce-hakemuskausi-summary (c/assoc-left-join- hakemuskaudet :hakemukset hakemustyypit+hakemustilat :vuosi))))
+    (map coerce-hakemuskausi-summary (c/assoc-left-join* hakemuskaudet :hakemukset hakemustyypit+hakemustilat [:vuosi]))))
 
 (defn- insert-hakuaika! [hakuaika]
   (dml/insert db "hakuaika" (coerce/localdate->sql-date hakuaika) constraint-errors hakuaika))
