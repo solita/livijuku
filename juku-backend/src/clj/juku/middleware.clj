@@ -42,11 +42,11 @@
       (handler request)
       (catch :http-response {:keys [http-response] :as e}
         (let [error-body (error->json (dissoc e :http-response))]
-          (log/info e (.getMessage e))
+          (log/info (:throwable &throw-context))
           (http-response (assoc-throw-context error-body &throw-context))))
       (catch map? e
         (let [error-body (error->json e)]
-          (log/error e (.getMessage e))
+          (log/error (:throwable  &throw-context))
           (r/internal-server-error (assoc-throw-context error-body &throw-context))))
       (catch Throwable t
         (log/error t (.getMessage t))
