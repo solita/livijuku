@@ -20,7 +20,7 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkaus
   (select nvl(sum(avustuskohde.haettavaavustus), 0) from avustuskohde
   where hakemusid = hakemus.id) "haettu-avustus",
   nvl(suunniteltuavustus, 0) "myonnettava-avustus"
-from hakemus_view
+from hakemus_view hakemus
 where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
 
 -- name: select-avustuskohteet
