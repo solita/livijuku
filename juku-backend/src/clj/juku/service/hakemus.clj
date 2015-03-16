@@ -82,12 +82,12 @@
                            constraint-errors avustuskohde)))
 
 (defn save-avustuskohde! [avustuskohde]
-  (update-avustuskohde! avustuskohde) nil)
+  (if (= (update-avustuskohde! avustuskohde) 0)
+    (add-avustuskohde! avustuskohde)))
 
 (defn save-avustuskohteet! [avustuskohteet]
   (doseq [avustuskohde avustuskohteet]
-    (if (= (update-avustuskohde! avustuskohde) 0)
-      (add-avustuskohde! avustuskohde))))
+    (save-avustuskohde! avustuskohde)))
 
 (defn- update-hakemus-by-id [hakemus hakemusid]
   (dml/update-where-id db "hakemus" hakemus hakemusid))

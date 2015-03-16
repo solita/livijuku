@@ -39,7 +39,7 @@
       (PUT* "/avustuskohde" []
              :return   nil
              :body     [avustuskohde Avustuskohde]
-             :summary  "Päivittää olemassaolevan avustuskohteen tiedot."
+             :summary  "Päivittää avustuskohteen tiedot tai lisää uuden avustuskohteen."
              (ok (service/save-avustuskohde! avustuskohde)))
       (PUT* "/avustuskohteet" []
             :return   nil

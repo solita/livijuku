@@ -1,5 +1,6 @@
 (ns juku.service.hakemus_test
   (:require [midje.sweet :refer :all]
+            [clojure.string :as str]
             [common.collection :as c]
             [juku.service.hakemus :as h]
             [juku.service.test :as test]))
@@ -40,10 +41,17 @@
           (h/add-hakemus! hakemus) => (throws (str "Hakemuskautta " none-vuosi " ei ole olemassa." ))))
 
   (fact "Hakemuksen selitteen päivittäminen"
-        (let [organisaatioid 1M
-              hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+        (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
               id (h/add-hakemus! hakemus)
               selite "selite"]
+
+          (h/save-hakemus-selite! id selite)
+          (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
+
+  (fact "Hakemuksen selitteen päivittäminen - yli 4000 merkkiä ja sisältää ei ascii merkkejä"
+        (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+              id (h/add-hakemus! hakemus)
+              selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
 
           (h/save-hakemus-selite! id selite)
           (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
@@ -59,7 +67,23 @@
 
         ;; hakemus (:id = id) löytyy hakutuloksista
         (dissoc (c/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
-          => (assoc-hakemus-defaults hakemus id))))
+          => (assoc-hakemus-defaults hakemus id)))
+
+  (fact "Hakemussuunnitelmien haku"
+      (let [organisaatioid 1M
+            hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+            id (h/add-hakemus! hakemus)
+            hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
+
+        ;; kaikki hakemukset ovat samalta vuodelta
+        hakemussuunnitelmat => (partial every? (c/eq :vuosi vuosi))
+
+        ;; kaikki hakemukset ovat samaa tyyppiä
+        hakemussuunnitelmat => (partial every? (c/eq :hakemustyyppitunnus "AH0"))
+
+        ;; hakemus (:id = id) löytyy hakutuloksista
+        (dissoc (c/find-first (find-by-id id) hakemussuunnitelmat) :muokkausaika)
+          => (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus 0M :myonnettava-avustus 0M))))
 
 (facts "-- Avustuskohteiden testit --"
 
