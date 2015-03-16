@@ -16,6 +16,11 @@
 (defn assoc-hakemus-defaults [hakemus id]
   (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero (diaarinumero id vuosi), :hakuaika hakuaika))
 
+(defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
+  (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))
+
+;; ************ Hakemuksen käsittely ja haut ***********
+
 (facts "-- Hakemus testit --"
 
   (fact "Uuden hakemuksen luonti"
@@ -33,57 +38,89 @@
       (h/add-hakemus! hakemus) => (throws (str "Hakemuksen organisaatiota " organisaatioid " ei ole olemassa." ))))
 
   (fact "Uuden hakemuksen luonti - hakemuskausi ei ole olemassa"
-        (let [organisaatioid 1M
-              none-vuosi 9999
-              hakemus {:vuosi none-vuosi :hakemustyyppitunnus "AH0"
-                       :organisaatioid organisaatioid}]
+    (let [organisaatioid 1M
+          none-vuosi 9999
+          hakemus {:vuosi none-vuosi :hakemustyyppitunnus "AH0"
+                   :organisaatioid organisaatioid}]
 
-          (h/add-hakemus! hakemus) => (throws (str "Hakemuskautta " none-vuosi " ei ole olemassa." ))))
+      (h/add-hakemus! hakemus) => (throws (str "Hakemuskautta " none-vuosi " ei ole olemassa." ))))
 
   (fact "Hakemuksen selitteen päivittäminen"
-        (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
-              id (h/add-hakemus! hakemus)
-              selite "selite"]
+    (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+          id (h/add-hakemus! hakemus)
+          selite "selite"]
 
-          (h/save-hakemus-selite! id selite)
-          (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
+      (h/save-hakemus-selite! id selite)
+      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
 
   (fact "Hakemuksen selitteen päivittäminen - yli 4000 merkkiä ja sisältää ei ascii merkkejä"
-        (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
-              id (h/add-hakemus! hakemus)
-              selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
+    (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+          id (h/add-hakemus! hakemus)
+          selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
 
-          (h/save-hakemus-selite! id selite)
-          (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
+      (h/save-hakemus-selite! id selite)
+      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
 
   (fact "Organisaation hakemusten haku"
-      (let [organisaatioid 1M
-            hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-            id (h/add-hakemus! hakemus)
-            organisaation-hakemukset  (h/find-organisaation-hakemukset organisaatioid)]
+    (let [organisaatioid 1M
+          hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+          id (h/add-hakemus! hakemus)
+          organisaation-hakemukset  (h/find-organisaation-hakemukset organisaatioid)]
 
-        ;; kaikki hakemukset ovat ko. organisaatiosta
-        organisaation-hakemukset => (partial every? (c/eq :organisaatioid organisaatioid))
+      ;; kaikki hakemukset ovat ko. organisaatiosta
+      organisaation-hakemukset => (partial every? (c/eq :organisaatioid organisaatioid))
 
-        ;; hakemus (:id = id) löytyy hakutuloksista
-        (dissoc (c/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
-          => (assoc-hakemus-defaults hakemus id)))
+      ;; hakemus (:id = id) löytyy hakutuloksista
+      (dissoc (c/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
+        => (assoc-hakemus-defaults hakemus id)))
 
   (fact "Hakemussuunnitelmien haku"
-      (let [organisaatioid 1M
-            hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-            id (h/add-hakemus! hakemus)
-            hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
+    (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+          id (h/add-hakemus! hakemus)
+          hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
 
-        ;; kaikki hakemukset ovat samalta vuodelta
-        hakemussuunnitelmat => (partial every? (c/eq :vuosi vuosi))
+      ;; kaikki hakemukset ovat samalta vuodelta
+      hakemussuunnitelmat => (partial every? (c/eq :vuosi vuosi))
 
-        ;; kaikki hakemukset ovat samaa tyyppiä
-        hakemussuunnitelmat => (partial every? (c/eq :hakemustyyppitunnus "AH0"))
+      ;; kaikki hakemukset ovat samaa tyyppiä
+      hakemussuunnitelmat => (partial every? (c/eq :hakemustyyppitunnus "AH0"))
 
-        ;; hakemus (:id = id) löytyy hakutuloksista
-        (dissoc (c/find-first (find-by-id id) hakemussuunnitelmat) :muokkausaika)
-          => (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus 0M :myonnettava-avustus 0M))))
+      ;; hakemus (:id = id) löytyy hakutuloksista
+      (dissoc (c/find-first (find-by-id id) hakemussuunnitelmat) :muokkausaika)
+        => (expected-hakemussuunnitelma id hakemus 0M 0M)))
+
+  (fact "Hakemussuunnitelmien haku - lisätty avustuskohde ja myönnetty avustus"
+    (let [hakemus (fn [organisaatioid] {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid})
+          id1 (h/add-hakemus! (hakemus 1M))
+          id2 (h/add-hakemus! (hakemus 2M))
+          avustuskohde (fn [hakemusid] {:hakemusid hakemusid, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 2M, :omarahoitus 2M})]
+
+      ;; aseta haetut avustukset
+      (h/add-avustuskohde! (avustuskohde id1))
+      (h/add-avustuskohde! (avustuskohde id2))
+
+      ;; aseta myonnettava avustus
+      (h/save-hakemus-suunniteltuavustus! id1 1)
+      (h/save-hakemus-suunniteltuavustus! id2 1)
+
+      (let [hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
+
+          ;; kaikki hakemukset ovat samalta vuodelta
+          hakemussuunnitelmat => (partial every? (c/eq :vuosi vuosi))
+
+          ;; kaikki hakemukset ovat samaa tyyppiä
+          hakemussuunnitelmat => (partial every? (c/eq :hakemustyyppitunnus "AH0"))
+
+          ;; hakemus (:id = id) löytyy hakutuloksista
+          (dissoc (c/find-first (find-by-id id1) hakemussuunnitelmat) :muokkausaika)
+            => (expected-hakemussuunnitelma id1 (hakemus 1M) 2M 1M)
+
+          ;; hakemus (:id = id) löytyy hakutuloksista
+          (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
+            => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M)))))
+
+
+;; ************ Avustuskohteet ***********
 
 (facts "-- Avustuskohteiden testit --"
 
