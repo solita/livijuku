@@ -13,7 +13,7 @@
             [common.collection :as c]
             [clojure.java.io :as io]
             [clj-time.core :as time])
-  (:import (java.time LocalDate)))
+  (:import (org.joda.time LocalDate)))
 
 (sql/defqueries "paatos.sql" {:connection db})
 
