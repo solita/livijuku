@@ -18,4 +18,4 @@
 
 
           (p/save-paatos! paatos)
-          (p/find-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :poistoaika nil, :voimaantuloaika nil))))
+          (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :poistoaika nil, :voimaantuloaika nil))))

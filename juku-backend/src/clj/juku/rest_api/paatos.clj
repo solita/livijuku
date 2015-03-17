@@ -11,13 +11,19 @@
           :return (s/maybe Paatos)
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen nykyinen päätös."
-          (ok (service/find-paatos hakemusid)))
+          (ok (service/find-current-paatos hakemusid)))
+
+    (GET* "/hakemus/:hakemusid/paatos/:paatosnumero/pdf" []
+          :return (s/maybe Paatos)
+          :path-params [hakemusid :- Long, paatosnumero :- Integer]
+          :summary "Hae tietyn päätöksen päätösasiakirja."
+          (ok (service/find-current-paatos hakemusid)))
 
     (PUT* "/hakemus/:hakemusid/paatos" []
           :return  nil
           :path-params [hakemusid :- Long]
           :body [paatos EditPaatos]
-          :summary "Tallenna hakemuksen päätöksen tiedot."
+          :summary "Tallenna hakemuksen nykyisen päätöksen tiedot."
           (ok (service/save-paatos! paatos)))
 
     (POST* "/hakemus/:hakemusid/hyvaksy-paatos" []

@@ -18,11 +18,14 @@
 (defn find-first [predicate collection]
   (first (filter predicate collection)))
 
+(defn predicate [operator getter value]
+  (fn [obj] (operator (getter obj) value)))
+
 (defn starts-with [getter txt]
   (fn [obj] (.startsWith ^String (getter obj) txt)))
 
 (defn eq [getter value]
-  (fn [obj] (= (getter obj) value)))
+  (predicate = getter value))
 
 (defn join [target join-fn source eq-join-keys]
 

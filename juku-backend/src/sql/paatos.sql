@@ -1,9 +1,15 @@
 
--- name: select-paatos
+-- name: select-current-paatos
 select
   hakemusid, paatosnumero, paattaja, myonnettyavustus,
   voimaantuloaika, poistoaika, selite
 from paatos where hakemusid = :hakemusid and poistoaika is null
+
+-- name: select-paatos
+select
+  hakemusid, paatosnumero, paattaja, myonnettyavustus,
+  voimaantuloaika, poistoaika, selite
+from paatos where hakemusid = :hakemusid and paatosnumero = :paatosnumero
 
 -- name: update-paatos!
 update paatos set selite = :selite, myonnettyavustus = :myonnettyavustus

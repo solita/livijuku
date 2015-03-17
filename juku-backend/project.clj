@@ -8,6 +8,7 @@
                            [slingshot "0.12.1"]
                            [clj-time "0.8.0"]
                            [com.google.guava/guava "18.0"]
+                           [org.apache.pdfbox/pdfbox "1.8.8"]
 
                            [environ "1.0.0"] ;; Library for managing environment variables in Clojure.
 

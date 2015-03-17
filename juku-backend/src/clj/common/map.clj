@@ -4,6 +4,9 @@
 (defn remove-keys [m keys]
   (apply dissoc (concat [m] keys)))
 
+(defn update-in-if-exists [m key-path f & args]
+  (if (get-in m key-path) (apply update-in m key-path f args) m))
+
 (defn deep-merge
   "Deeply merges maps"
   [& vs]
