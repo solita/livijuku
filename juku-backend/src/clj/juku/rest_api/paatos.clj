@@ -14,10 +14,10 @@
           (ok (service/find-current-paatos hakemusid)))
 
     (GET* "/hakemus/:hakemusid/paatos/:paatosnumero/pdf" []
-          :return (s/maybe Paatos)
-          :path-params [hakemusid :- Long, paatosnumero :- Integer]
-          :summary "Hae tietyn päätöksen päätösasiakirja."
-          (ok (service/find-current-paatos hakemusid)))
+          :path-params [hakemusid :- Long, paatosnumero :- Long]
+          :summary "Hae hakemuksen (hakemusid) päätöksen (päätösnumero) päätösasiakirja."
+          (content-type (ok (service/paatos-pdf hakemusid paatosnumero))
+                        "application/pdf"))
 
     (PUT* "/hakemus/:hakemusid/paatos" []
           :return  nil
