@@ -59,7 +59,7 @@
             (if mahtuu-sivulle
               uusi-elementti
               (-> uusi-elementti
-                  (update-in [:x] + vasen-marginaali)
+                  (update-in [:x] + viimeinen-x-positio)
                   (update-in [:y] + ylamarginaali)))))
     [(assoc uusi-elementti :sivu 1)]))
 
@@ -147,7 +147,7 @@
           skaalattu-korkeus (* skaalaus korkeus)
           ylareuna (.getUpperRightY sivukoko)
           aft (AffineTransform. skaalaus 0.0 0.0 skaalaus vasen-marginaali (- ylareuna (+ 28 skaalattu-korkeus))) ]
-      (.appendFormAsLayer layer sivu logo aft "OPH-LOGO"))))
+      (.appendFormAsLayer layer sivu logo aft "LIVI-LOGO"))))
 
 (defn muodosta-osat
   [fontti bold-fontti osat]

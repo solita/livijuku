@@ -32,19 +32,24 @@
 *Maksatus
 
 	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun {organisaatio-nimi} on toimittanut seurantatiedot ajalta [Puolivuotiskausi1] [Maksatushakemuskausi1] mennessä. Toinen erä maksetaan, kun {organisaatio-nimi} on toimittanut [Puolivuotiskausi2] [Maksatushakemuskausi2] mennessä. Ohjeet ja lomakkeet, joita tulee seurantatietojen ilmoittamiseksi käyttää, ovat saatavilla Liikenneviraston internetsivuilta:
-	http://portal.liikennevirasto.fi/sivu/www/f/ liikenneverkko/liikennejarjestelma/ joukkoliikenne/viranomaiset/Valtionavustukset
+
+	http://portal.liikennevirasto.fi/sivu/www/f/liikenneverkko/liikennejarjestelma/joukkoliikenne/viranomaiset/Valtionavustukset
+
 	Lisäksi Liikennevirastolla on oikeus pyytää tuen saajalta myös muita selvityksiä valtionavustuksen käytöstä.
 
 *Muut ehdot
 
 	Valtionavustusta saa käyttää ainoastaan tässä päätöksessä määrättyyn tarkoitukseen. Avustuksen saajan tulee ilmoittaa kirjallisesti viipymättä Liikennevirastolle avustuksen käyttötarkoituksen muutoksesta ja muista avustuksen käyttöön vaikuttavista seikoista.
+
 	Liikennevirastolla on oikeus suorittaa valtionavustuksen saajan talouteen ja toimintaan kohdistuvia tarkastuksia siten kuin valtionavustuslain 16 ja 17 §:ssä säädetään. Liikennevirasto voi määrätä valtionavustuksen maksamisen keskeytettäväksi, jos on perusteltua aihetta epäillä, että avustusta on käytetty muuhun kuin myönnettyyn tarkoitukseen tai saaja on laiminlyönyt ilmoitusvelvollisuutensa taikka ne perusteet, joilla avustusta on myönnetty, ovat olennaisesti muuttuneet samoin kuin silloin kun Euroopan yhteisön lainsäädännössä edellytetään maksamisen keskeyttämistä.
+
 	Valtionavustuksen saajan tulee viipymättä palauttaa virheellisesti, liikaa tai ilmeisen perusteettomasti saamansa valtionavustus tai sen osa.
+
 	Liikennevirasto määrää valtionavustuksen maksamisen lopetettavaksi ja jo maksetun avustuksen takaisin perittäväksi, jos valtionavustuslain 21 §:ssä säädetyt edellytykset täyttyvät. Liikennevirasto voi määrätä valtionavustuksen maksamisen lopetettavaksi ja jo maksetun avustuksen takaisin perittäväksi, jos valtionavustuslain 22 §:ssä säädetyt edellytykset täyttyvät. Palautettavan tai takaisin perittävän valtionavustuksen korosta on säädetty valtionavustuslain 24 ja 25 §:ssä.
 
 *Seuranta ja vaadittavat selvitykset 
 
-	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää [Hakijan] ja Liikenneviraston yhteisen seurantapalaverin vuoden [Hakuvuosi] syyskuussa.  Palaverissa laaditaan yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
+	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää {organisaatio-nimi} ja Liikenneviraston yhteisen seurantapalaverin vuoden {vuosi} syyskuussa.  Palaverissa laaditaan yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
 
 *Sovellettava lainsäädäntö
 
