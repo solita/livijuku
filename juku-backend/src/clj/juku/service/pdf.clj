@@ -12,7 +12,6 @@
   (:require [clojure.java.io :as io]
             [common.map :as m]))
 
-
 (def sivukoko (PDPage/PAGE_SIZE_A4))
 (def ylamarginaali (- (.getUpperRightY sivukoko) 28))
 (def ensimmainen-rivi (- ylamarginaali 12))
@@ -60,7 +59,7 @@
               uusi-elementti
               (-> uusi-elementti
                   (update-in [:x] + viimeinen-x-positio)
-                  (update-in [:y] + ylamarginaali)))))
+                  (update-in [:y] + ensimmainen-rivi -12)))))
     [(assoc uusi-elementti :sivu 1)]))
 
 (defn tekstin-pituus
@@ -224,3 +223,4 @@
         (.addPage dokumentti sivu))
       (.save dokumentti output)
       (ByteArrayInputStream. (.toByteArray output)))))
+
