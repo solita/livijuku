@@ -19,3 +19,5 @@ juku-backend/target
 juku-db/target
 
 juku-backend/juku.properties
+
+juku-backend/juku-letto-petrisi.properties
