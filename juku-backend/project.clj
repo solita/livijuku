@@ -10,6 +10,8 @@
                            [com.google.guava/guava "18.0"]
                            [org.apache.pdfbox/pdfbox "1.8.8"]
 
+                           [clj-http "1.1.0"]
+
                            [environ "1.0.0"] ;; Library for managing environment variables in Clojure.
 
                            ;; *** web application ***
@@ -43,7 +45,8 @@
             :profiles {:dev     {:dependencies [[javax.servlet/servlet-api "2.5"]
                                                 [ring-mock "0.1.5"]
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
-                                                [midje "1.6.3"]]
+                                                [midje "1.6.3"]
+                                                [clj-http-fake "1.0.1"]]
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.
                                                 [lein-pdo "0.1.1"]

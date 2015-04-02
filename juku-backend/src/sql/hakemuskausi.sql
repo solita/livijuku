@@ -14,7 +14,7 @@ update hakemuskausi set hakuohje_sisalto = :sisalto, hakuohje_nimi = :nimi, haku
 where vuosi = :vuosi
 
 -- name: select-hakuohje-sisalto
-select hakuohje_contenttype contenttype, hakuohje_sisalto sisalto from hakemuskausi where vuosi = :vuosi
+select hakuohje_contenttype contenttype, hakuohje_sisalto sisalto from hakemuskausi where vuosi = :vuosi and hakuohje_sisalto is not null
 
 -- name: update-hakemuskausi-set-tila!
 update hakemuskausi set tilatunnus = :newtunnus

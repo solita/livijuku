@@ -1,16 +1,23 @@
 (ns juku.service.hakemuskausi
   (:require [juku.service.organisaatio :as organisaatio]
             [juku.service.hakemus :as hakemus]
+            [juku.service.asiahallinta :as asha]
+            [juku.service.user :as user]
+            [juku.service.organisaatio :as org]
             [juku.schema.hakemuskausi :as s]
+
             [juku.db.database :refer [db]]
             [clojure.java.jdbc :as jdbc]
+            [clojure.set :as set]
             [juku.db.sql :as dml]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [yesql.core :as sql]
-            [common.collection :as c]
+            [common.collection :as col]
+            [common.core :as c]
             [ring.util.http-response :as r]
             [clj-time.core :as time])
+
   (:import (java.sql Blob)
            (java.io InputStream)))
 
@@ -30,7 +37,7 @@
 (defn- find-all-hakemuskaudet+seuraava-kausi [new-hakemuskausi]
   (let [hakemuskaudet (map coerce-vuosiluku->int (select-all-hakemuskaudet))
         nextvuosi (+ (time/year (time/now)) 1)]
-    (if (some (c/eq :vuosi nextvuosi) hakemuskaudet)
+    (if (some (col/eq :vuosi nextvuosi) hakemuskaudet)
       hakemuskaudet
       (conj hakemuskaudet (new-hakemuskausi nextvuosi)))))
 
@@ -38,7 +45,7 @@
   (let [init-hakemuskausi (fn [vuosi] (assoc (oletushakemuskausi vuosi) :hakemukset []))
         hakemuskaudet (find-all-hakemuskaudet+seuraava-kausi init-hakemuskausi)
         hakemukset (hakemus/find-all-hakemukset)]
-    (c/assoc-left-join hakemuskaudet :hakemukset hakemukset :vuosi)))
+    (col/assoc-left-join hakemuskaudet :hakemukset hakemukset :vuosi)))
 
 (defn find-hakuohje-sisalto [vuosi]
   (if-let [ohje (first (select-hakuohje-sisalto {:vuosi vuosi}))]
@@ -90,9 +97,9 @@
   (let [hakemuskaudet (find-all-hakemuskaudet+seuraava-kausi oletus-hakemuskausi)
         hakemustyypit (map (comp coerce/row->object coerce-vuosiluku->int) (select-all-hakuajat))
         hakemustilat (map coerce-vuosiluku->int (count-hakemustilat-for-vuosi-hakemustyyppi))
-        hakemustyypit+hakemustilat (c/assoc-left-join* hakemustyypit :hakemustilat hakemustilat #{} [:vuosi :hakemustyyppitunnus])]
+        hakemustyypit+hakemustilat (col/assoc-left-join* hakemustyypit :hakemustilat hakemustilat #{} [:vuosi :hakemustyyppitunnus])]
 
-    (map coerce-hakemuskausi-summary (c/assoc-left-join* hakemuskaudet :hakemukset hakemustyypit+hakemustilat [:vuosi]))))
+    (map coerce-hakemuskausi-summary (col/assoc-left-join* hakemuskaudet :hakemukset hakemustyypit+hakemustilat [:vuosi]))))
 
 (defn- insert-hakuaika! [hakuaika]
   (dml/insert db "hakuaika" (coerce/localdate->sql-date hakuaika) constraint-errors hakuaika))
@@ -125,14 +132,28 @@
     nil))
 
 (defn avaa-hakemuskausi! [^Integer vuosi]
-  (jdbc/with-db-transaction [db-spec db]
-    (init-hakemuskausi! vuosi)
-    (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
-      {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi})
+  (jdbc/with-db-transaction [tx db]
+
+    (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"} {:connection tx})
+       (if (empty? (select-hakemuskausi {:vuosi vuosi}))
+         {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
+         {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
+
     (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
       (let [hakemus (fn [hakemustyyppitunnus] {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus :organisaatioid (:id organisaatio)})]
         (hakemus/add-hakemus! (hakemus "AH0"))
         (hakemus/add-hakemus! (hakemus "MH1"))
-        (hakemus/add-hakemus! (hakemus "MH2"))))))
+        (hakemus/add-hakemus! (hakemus "MH2"))))
+
+    ;; -- diaarioi hakemuskauden avaaminen --
+    (c/if-let3! [hakuohje     (find-hakuohje-sisalto vuosi)
+                              {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}
+                 organisaatio (org/find-organisaatio-of user/*current-user*)
+                              {:http-response r/not-found :message (str "Käyttäjällä: '" (:tunnus user/*current-user*) "' ei ole organisaatiota")}]
+
+      (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
+                               :omistavaOrganisaatio  (:nimi organisaatio)
+                               :omistavaHenkilo       (user/user-fullname user/*current-user*)}
+                              (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type})))))
 
 

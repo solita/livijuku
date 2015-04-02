@@ -4,22 +4,34 @@
             [juku.service.hakemus :as h]
             [common.collection :as c]
             [juku.service.test :as test]
-            [clj-time.core :as time])
+            [clj-time.core :as time]
+            [clojure.tools.logging :as log]
+            [clj-http.fake :as fake])
   (:import (java.io ByteArrayInputStream)))
 
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
 
-(fact "Avaa hakemuskausi"
-  (let [vuosi (test/find-next-notcreated-hakemuskausi)]
-    (hk/avaa-hakemuskausi! vuosi)))
+(defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
+
+(test/with-user "juku_kasittelija" ["juku_kasittelija"]
+(fake/with-fake-routes {
+    #"http://(.+)/hakemuskausi" (fn [req] {:status 200 :headers {} :body "trololo"})}
+
+  (fact "Avaa hakemuskausi"
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+      (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+      (hk/avaa-hakemuskausi! vuosi)))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
   (let [hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
 
-    (hk/save-hakuohje vuosi "test" "text/plain" (ByteArrayInputStream. (.getBytes "test")))
+    (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
     (slurp (:sisalto (hk/find-hakuohje-sisalto vuosi))) => "test"))
 
+(fact "Hakuohjeen hakeminen - tyhjä hakuohje"
+  (let [hakemuskausi (test/next-hakemuskausi!)]
+    (hk/find-hakuohje-sisalto (:vuosi hakemuskausi)) => nil))
 
 (fact "Tallenna ja lataa määräräha"
   (let [maararaha {:vuosi vuosi :organisaatiolajitunnus "ELY" :maararaha 1M :ylijaama 1M}]

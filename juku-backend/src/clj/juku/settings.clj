@@ -10,15 +10,24 @@
                  :user        s/Str
                  :password    s/Str})
 
+(s/defschema Service {:url         s/Str
+                      :user        s/Str
+                      :password    s/Str})
+
 (s/defschema Settings {:server Server
-                       :db Db})
+                       :db Db
+                       :asiahallinta Service})
 
 (def default-settings {
            :server {:port 8082}
            :db {
               :url "jdbc:oracle:thin:@localhost:1521:orcl"
               :user "juku_app"
-              :password "juku"}})
+              :password "juku"}
+           :asiahallinta {
+                :url "http://asha.livijuku.solita.fi/api"
+                :user "test"
+                :password "test"}})
 
 (def settings (read-settings (io/file (or (env :properties-file) "./juku.properties")) default-settings Settings))
 
