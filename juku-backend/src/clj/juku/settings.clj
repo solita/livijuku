@@ -16,7 +16,7 @@
 
 (s/defschema Settings {:server Server
                        :db Db
-                       :asiahallinta Service})
+                       :asiahallinta (s/either Service (s/eq "off"))})
 
 (def default-settings {
            :server {:port 8082}

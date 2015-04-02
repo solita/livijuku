@@ -29,7 +29,9 @@
                            :omistavaHenkilo       s/Str})
 
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
-  (let [json-part {:name json-part-name
+
+  (if (not= (:asiahallinta settings) "off")
+    (let [json-part {:name json-part-name
                    :content (json/generate-string (swagger/coerce! json-schema json-object))
                    :mime-type "application/json"
                    :encoding "utf-8"}
@@ -39,7 +41,9 @@
         url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
     (log/info "post" url request)
-    (client/post url request)))
+    (client/post url request))
+
+    (log/info "Asiahallinta ei ole päällä - toiminto: " operation " viesti (" json-part-name "):" json-object)))
 
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (post-with-liitteet "hakemuskausi" "AvaaKausi" "hakemuskausi"
