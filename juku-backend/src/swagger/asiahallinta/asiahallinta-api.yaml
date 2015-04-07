@@ -2,11 +2,11 @@
 swagger: '2.0'
 
 info:
-  version: "0.0.3"
+  version: "0.0.4"
   title: Livi-juku asiahallinta rajapinta
   description: 
     Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
-    Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA (23.2.15).
+    Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA (13.3.2015) v0.8.
   
 schemes: [http]
 produces: [text/plain; charset=utf-8]
@@ -253,6 +253,9 @@ definitions:
       omistavaHenkilo: 
         type: string
         description: Kauden (JUKUn käyttöliittymästä) avannut käyttäjä
+      hakija:
+        type: string
+        description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
   Taydennyspyynto:
     properties:
       maaraaika: 
@@ -262,9 +265,15 @@ definitions:
       kasittelija: 
         type: string
         description: Hakemuksen käsittelijän nimi muodossa sukunimi etunimi, esim "Bärman Toni".
+      vastaanottaja:
+        type: string
+        description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
   Taydennys:
     properties:
       käsittelijä: 
         type: string
         description: 
           Hakemuksen käsittelijän nimi muodossa sukunimi etunimi, esim "Bärman Toni".
+      lahettaja:
+        type: string
+        description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
