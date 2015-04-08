@@ -46,6 +46,7 @@
                                                 [ring-mock "0.1.5"]
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
                                                 [midje "1.6.3"]
+                                                [midje-junit-formatter "0.1.0-SNAPSHOT"]
                                                 [clj-http-fake "1.0.1"]]
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.
