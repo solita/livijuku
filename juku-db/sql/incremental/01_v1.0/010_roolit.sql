@@ -61,7 +61,7 @@ insert into kayttooikeus (tunnus, nimi) values ('hyvaksy-paatos', 'Päätöksen 
 
 -- Käsittelijän oikeudet
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
-select 'KA', column_value from table(sys.odcivarchar2list('view-hakemuskausi', 'modify-hakemuskausi', 'kasittely-hakemus'))
+select 'KA', column_value from table(sys.odcivarchar2list('view-hakemuskausi', 'modify-hakemuskausi', 'kasittely-hakemus', 'hyvaksy-paatos'))
 ;
 
 -- Pääkäyttäjän ja päätöksentekijän oikeudet oikeudet
@@ -69,19 +69,19 @@ insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
 select * from 
 (select column_value from table(sys.odcivarchar2list('PK', 'PA')))
 cross join 
-(select kayttooikeustunnus from kayttajaroolioikeus ka_oikeudet where ka_oikeudet.kayttajaroolitunnus = 'KA'
-union all select * from table(sys.odcivarchar2list('hyvaksy-paatos')))
+(select kayttooikeustunnus from kayttajaroolioikeus ka_oikeudet where ka_oikeudet.kayttajaroolitunnus = 'KA')
+--union all select * from table(sys.odcivarchar2list('hyvaksy-paatos')))
 ;
 
 -- Hakijan oikeudet --
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
-select 'HA', column_value from table(sys.odcivarchar2list('view-oma-hakemus', 'modify-oma-hakemus'));
+select 'HA', column_value from table(sys.odcivarchar2list('view-oma-hakemus', 'modify-oma-hakemus', 'allekirjoita-oma-hakemus'));
 
 -- Allekirjoittajan oikeudet
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
 select 'AK', kayttooikeustunnus 
 from kayttajaroolioikeus ha_oikeudet where ha_oikeudet.kayttajaroolitunnus = 'HA'
-union all select 'AK', column_value from table(sys.odcivarchar2list('allekirjoita-oma-hakemus'))
+--union all select 'AK', column_value from table(sys.odcivarchar2list('allekirjoita-oma-hakemus'))
 ;
 
 -- Kaikkien oikeudet --
