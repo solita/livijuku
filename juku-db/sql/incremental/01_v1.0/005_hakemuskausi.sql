@@ -14,7 +14,9 @@ create table hakemuskausi (
 
   hakuohje_nimi varchar2 (200 char),
   hakuohje_contenttype varchar2 (200 char),
-  hakuohje_sisalto blob
+  hakuohje_sisalto blob,
+  
+  diaarinumero varchar2(30 char)
 );
 
 declare

@@ -4,6 +4,7 @@
             [slingshot.slingshot :as ss]
             [juku.service.hakemuskausi :as k]
             [juku.service.user :as user]
+            [juku.user :as u]
             [juku.db.database :refer [db]]
             [yesql.core :as sql]))
 
@@ -25,5 +26,5 @@
 (defmacro with-user [uid roles & test]
   `(c/if-let* [privileges# (user/find-privileges ~roles)
                user# (user/find-user ~uid)]
-       (user/with-user (assoc user# :privileges privileges#) ~@test)
+       (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test))
        (ss/throw+ (str "Käyttäjällä " ~uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))

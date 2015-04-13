@@ -15,13 +15,21 @@
 (defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
 
 (test/with-user "juku_kasittelija" ["juku_kasittelija"]
-(fake/with-fake-routes {
-    #"http://(.+)/hakemuskausi" (fn [req] {:status 200 :headers {} :body "trololo"})}
+  (fake/with-fake-routes {
+      #"http://(.+)/hakemuskausi" (fn [req] {:status 200 :headers {} :body "testing\n"})
+      #"http://(.+)/hakemuskausi/(.+)/sulje" (fn [req] (println req) {:status 200 :headers {} :body ""})}
 
-  (fact "Avaa hakemuskausi"
-    (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-      (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
-      (hk/avaa-hakemuskausi! vuosi)))))
+    (fact "Avaa hakemuskausi"
+      (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+        (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+        (hk/avaa-hakemuskausi! vuosi)
+        (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"))
+
+    (fact "Sulje hakemuskausi"
+      (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+        (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+        (hk/avaa-hakemuskausi! vuosi)
+        (hk/sulje-hakemuskausi! vuosi)))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
   (let [hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
@@ -62,6 +70,5 @@
                                    :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat #{}, :hakemustyyppitunnus "MH1"}
 
                        {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
-                                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat #{}, :hakemustyyppitunnus "MH2"}}}
-    ))
+                                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat #{}, :hakemustyyppitunnus "MH2"}}}))
 

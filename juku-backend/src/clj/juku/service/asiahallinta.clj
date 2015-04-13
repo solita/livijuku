@@ -5,6 +5,7 @@
             [ring.swagger.schema :as swagger]
             [schema.core :as s]
             [cheshire.core :as json]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [juku.settings :refer [settings]])
   (:import (java.util UUID)))
@@ -43,10 +44,25 @@
     (log/info "post" url request)
     (client/post url request))
 
-    (log/info "Asiahallinta ei ole päällä - toiminto: " operation " viesti (" json-part-name "):" json-object)))
+    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)))
+
+(defn- put [path operation]
+
+  (if (not= (:asiahallinta settings) "off")
+    (let [request (default-request operation)
+          url (str (get-in settings [:asiahallinta :url]) "/" path)]
+
+      (log/info "post" url request)
+      (client/put url request))
+
+    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )))
 
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
-  (post-with-liitteet "hakemuskausi" "AvaaKausi" "hakemuskausi"
-                       Hakemuskausi hakemuskausi [(assoc hakuohje :name "hakuohje")]))
+  (str/trim (:body (post-with-liitteet
+                     "hakemuskausi" "AvaaKausi" "hakemuskausi"
+                     Hakemuskausi hakemuskausi [(assoc hakuohje :name "hakuohje")]))))
+
+(defn sulje-hakemuskausi [diaarinumero]
+  (put (str "hakemuskausi/" diaarinumero "/sulje") "SuljeKausi"))
 
 

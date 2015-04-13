@@ -16,7 +16,8 @@
             [common.collection :as col]
             [common.core :as c]
             [ring.util.http-response :as r]
-            [clj-time.core :as time])
+            [clj-time.core :as time]
+            [slingshot.slingshot :as ss])
 
   (:import (java.sql Blob)
            (java.io InputStream)))
@@ -53,6 +54,9 @@
 
 (defn find-maararaha [vuosi organisaatiolajitunnus]
   (first (map coerce-maararaha (select-maararaha {:vuosi vuosi :organisaatiolajitunnus organisaatiolajitunnus}))))
+
+(defn find-hakemuskausi [vuosi]
+  (first (select-hakemuskausi vuosi)))
 
 (defn- update-maararaha! [maararaha]
   (dml/update-where! db "maararaha"
@@ -151,9 +155,20 @@
                  organisaatio (org/find-organisaatio-of user/*current-user*)
                               {:http-response r/not-found :message (str "Käyttäjällä: '" (:tunnus user/*current-user*) "' ei ole organisaatiota")}]
 
-      (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
-                               :omistavaOrganisaatio  (:nimi organisaatio)
-                               :omistavaHenkilo       (user/user-fullname user/*current-user*)}
-                              (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type})))))
+      (update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero
+        (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
+                                 :omistavaOrganisaatio  (:nimi organisaatio)
+                                 :omistavaHenkilo       (user/user-fullname user/*current-user*)}
+                                (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))} {:connection tx}))))
+
+(defn sulje-hakemuskausi! [^Integer vuosi]
+  (if-let [hakemuskausi (find-hakemuskausi {:vuosi vuosi})]
+    (do
+      (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "S" :expectedtunnus "K"})
+          {:http-response r/method-not-allowed :message (str "Hakemuskausi ei ole avattu vuodelle: " vuosi) :vuosi vuosi})
+
+      (asha/sulje-hakemuskausi (:diaarinumero hakemuskausi)))
+
+    (ss/throw+ {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi})))
 
 
