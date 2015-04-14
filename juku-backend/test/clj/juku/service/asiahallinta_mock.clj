@@ -1,4 +1,4 @@
-(ns juku.service.asiahallinta
+(ns juku.service.asiahallinta-mock
   (:require [juku.user :as user]))
 
 (def ^:dynamic *asha*)

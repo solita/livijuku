@@ -5,7 +5,7 @@
             [common.collection :as c]
             [common.string :as str]
             [juku.service.test :as test]
-            [juku.service.asiahallinta :as asha]
+            [juku.service.asiahallinta-mock :as asha]
             [clj-time.core :as time]
             [clojure.tools.logging :as log]
             [clj-http.fake :as fake])
@@ -29,7 +29,7 @@
           (hk/avaa-hakemuskausi! vuosi)
 
           (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"
-          (asha/headers :avaus) => valid-headers?)))
+          (asha/headers :avaus) => asha/valid-headers?)))
 
     (fact "Sulje hakemuskausi"
       (asha/with-asha
@@ -38,7 +38,7 @@
           (hk/avaa-hakemuskausi! vuosi)
           (hk/sulje-hakemuskausi! vuosi)
 
-          (asha/headers :sulkeminen) => valid-headers?
+          (asha/headers :sulkeminen) => asha/valid-headers?
           (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje"))))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
