@@ -159,7 +159,8 @@
         (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
                                  :omistavaOrganisaatio  (:nimi organisaatio)
                                  :omistavaHenkilo       (user/user-fullname user/*current-user*)}
-                                (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))} {:connection tx}))))
+                                (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))} {:connection tx})))
+    nil)
 
 (defn sulje-hakemuskausi! [^Integer vuosi]
   (if-let [hakemuskausi (find-hakemuskausi {:vuosi vuosi})]
