@@ -3,7 +3,9 @@
             [juku.service.hakemuskausi :as hk]
             [juku.service.hakemus :as h]
             [common.collection :as c]
+            [common.string :as str]
             [juku.service.test :as test]
+            [juku.service.asiahallinta :as asha]
             [clj-time.core :as time]
             [clojure.tools.logging :as log]
             [clj-http.fake :as fake])
@@ -16,20 +18,28 @@
 
 (test/with-user "juku_kasittelija" ["juku_kasittelija"]
   (fake/with-fake-routes {
-      #"http://(.+)/hakemuskausi" (fn [req] {:status 200 :headers {} :body "testing\n"})
-      #"http://(.+)/hakemuskausi/(.+)/sulje" (fn [req] (println req) {:status 200 :headers {} :body ""})}
+      #"http://(.+)/hakemuskausi" (asha/asha-handler :avaus "testing\n")
+      #"http://(.+)/hakemuskausi/(.+)/sulje" (asha/asha-handler :sulkeminen "")}
+
 
     (fact "Avaa hakemuskausi"
-      (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-        (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
-        (hk/avaa-hakemuskausi! vuosi)
-        (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"))
+      (asha/with-asha
+        (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+          (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+          (hk/avaa-hakemuskausi! vuosi)
+
+          (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"
+          (asha/headers :avaus) => valid-headers?)))
 
     (fact "Sulje hakemuskausi"
-      (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-        (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
-        (hk/avaa-hakemuskausi! vuosi)
-        (hk/sulje-hakemuskausi! vuosi)))))
+      (asha/with-asha
+        (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+          (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+          (hk/avaa-hakemuskausi! vuosi)
+          (hk/sulje-hakemuskausi! vuosi)
+
+          (asha/headers :sulkeminen) => valid-headers?
+          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje"))))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
   (let [hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
