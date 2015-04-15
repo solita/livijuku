@@ -16,6 +16,8 @@
 
 (defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
 
+(facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen --"
+
 (test/with-user "juku_kasittelija" ["juku_kasittelija"]
   (fake/with-fake-routes {
       #"http://(.+)/hakemuskausi" (asha/asha-handler :avaus "testing\n")
@@ -39,7 +41,7 @@
           (hk/sulje-hakemuskausi! vuosi)
 
           (asha/headers :sulkeminen) => asha/valid-headers?
-          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje"))))))
+          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje")))))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
   (let [hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
