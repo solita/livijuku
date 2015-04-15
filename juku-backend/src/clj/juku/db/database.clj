@@ -18,7 +18,8 @@
                        (.setDriverClassName "oracle.jdbc.OracleDriver")
                        (.setJdbcUrl (:url settings))
                        (.setUsername (:user settings))
-                       (.setPassword (:password settings)))))
+                       (.setPassword (:password settings))
+                       (.setAutoCommit false))))
   #_
   (doto (com.jolbox.bonecp.BoneCPDataSource.)
                (.setJdbcUrl (:url settings))
