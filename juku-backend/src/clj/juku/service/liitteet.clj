@@ -1,5 +1,5 @@
 (ns juku.service.liitteet
-  (:require [yesql.core :as sql]
+  (:require [juku.db.yesql-patch :as sql]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
@@ -12,7 +12,7 @@
   {:liite_pk {:http-response r/conflict :message "Kaksi eri käyttäjää on lisännyt liitteen samanaikaisesti."}
    :liite_hakemus_fk {:http-response r/not-found :message "Liitteen hakemusta (id = {hakemusid}) ei ole olemassa."}})
 
-(sql/defqueries "liitteet.sql" {:connection db :constraint-errors constraint-errors})
+(sql/defqueries "liitteet.sql" {:constraint-errors constraint-errors})
 
 (def coerce-liite (scoerce/coercer s/Liite coerce/db-coercion-matcher))
 

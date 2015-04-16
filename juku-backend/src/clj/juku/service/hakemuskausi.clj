@@ -6,13 +6,13 @@
             [juku.service.organisaatio :as org]
             [juku.schema.hakemuskausi :as s]
 
-            [juku.db.database :refer [db]]
+            [juku.db.database :refer [db with-transaction]]
             [clojure.java.jdbc :as jdbc]
             [clojure.set :as set]
             [juku.db.sql :as dml]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
-            [yesql.core :as sql]
+            [juku.db.yesql-patch :as sql]
             [common.collection :as col]
             [common.core :as c]
             [ring.util.http-response :as r]
@@ -22,7 +22,7 @@
   (:import (java.sql Blob)
            (java.io InputStream)))
 
-(sql/defqueries "hakemuskausi.sql" {:connection db})
+(sql/defqueries "hakemuskausi.sql")
 
 (def coerce-maararaha (scoerce/coercer s/Maararaha coerce/db-coercion-matcher))
 
@@ -124,21 +124,21 @@
      (select-keys hakuaika [:vuosi :hakemustyyppitunnus])))
 
 (defn save-hakemuskauden-hakuajat! [vuosi hakuajat]
-  (jdbc/with-db-transaction [db-spec db]
+  (with-transaction
     (init-hakemuskausi! vuosi)
     (doseq [hakuaika hakuajat] (update-hakuaika! (assoc hakuaika :vuosi vuosi)))
     nil))
 
 (defn save-hakuohje [^Integer vuosi nimi content-type ^InputStream hakuohje]
-  (jdbc/with-db-transaction [db-spec db]
+  (with-transaction
     (init-hakemuskausi! vuosi)
     (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
     nil))
 
 (defn avaa-hakemuskausi! [^Integer vuosi]
-  (jdbc/with-db-transaction [tx db]
+  (with-transaction
 
-    (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"} {:connection tx})
+    (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
        (if (empty? (select-hakemuskausi {:vuosi vuosi}))
          {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
          {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
@@ -159,12 +159,13 @@
         (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
                                  :omistavaOrganisaatio  (:nimi organisaatio)
                                  :omistavaHenkilo       (user/user-fullname user/*current-user*)}
-                                (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))} {:connection tx})))
+                                (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))})))
     nil)
 
 (defn sulje-hakemuskausi! [^Integer vuosi]
   (if-let [hakemuskausi (find-hakemuskausi {:vuosi vuosi})]
-    (do
+    (with-transaction
+
       (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "S" :expectedtunnus "K"})
           {:http-response r/method-not-allowed :message (str "Hakemuskausi ei ole avattu vuodelle: " vuosi) :vuosi vuosi})
 

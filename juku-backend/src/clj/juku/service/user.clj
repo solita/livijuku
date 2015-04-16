@@ -1,5 +1,5 @@
 (ns juku.service.user
-  (:require [yesql.core :as sql]
+  (:require [juku.db.yesql-patch :as sql]
             [clojure.java.jdbc :as jdbc]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
@@ -8,7 +8,7 @@
             [clojure.string :as str]
             [common.map :as m]))
 
-(sql/defqueries "user.sql" {:connection db})
+(sql/defqueries "user.sql")
 
 (def ^:dynamic *current-user*)
 

@@ -1,5 +1,5 @@
 (ns juku.service.paatos
-  (:require [yesql.core :as sql]
+  (:require [juku.db.yesql-patch :as sql]
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]
             [common.string :as xstr]
@@ -15,7 +15,7 @@
             [clj-time.core :as time])
   (:import (org.joda.time LocalDate)))
 
-(sql/defqueries "paatos.sql" {:connection db})
+(sql/defqueries "paatos.sql")
 
 (def coerce-paatos (scoerce/coercer s/Paatos coerce/db-coercion-matcher))
 

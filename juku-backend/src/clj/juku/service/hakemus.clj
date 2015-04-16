@@ -1,5 +1,5 @@
 (ns juku.service.hakemus
-  (:require [yesql.core :as sql]
+  (:require [juku.db.yesql-patch :as sql]
             [juku.service.user :as user]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
@@ -10,7 +10,7 @@
             [common.collection :as c]))
 
 ; *** Hakemukseen liittyvät kyselyt ***
-(sql/defqueries "hakemus.sql" {:connection db})
+(sql/defqueries "hakemus.sql")
 
 ; *** Hakemus skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 (def coerce-hakemus (scoerce/coercer Hakemus coerce/db-coercion-matcher))
