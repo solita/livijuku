@@ -18,7 +18,7 @@
 (defn start-server [handler port]
   (stop-server)
   (log/info (str "Starting web server on port " port))
-  (reset! server (http-kit/run-server handler {:port port})))
+  (reset! server (http-kit/run-server handler {:port port :max-body 209715200})))
 
 (defn start []
   (let [env-port (System/getenv "SERVER_PORT")
