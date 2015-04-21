@@ -4,7 +4,7 @@ select hakemusid, liitenumero, nimi, contenttype
 from liite where hakemusid = :hakemusid and poistoaika is null
 
 -- name: select-liite-sisalto
-select contenttype, sisalto from liite where hakemusid = :hakemusid and liitenumero = :liitenumero
+select nimi, contenttype, sisalto from liite where hakemusid = :hakemusid and liitenumero = :liitenumero
 
 -- name: insert-liite!
 insert into liite (hakemusid, liitenumero, nimi, contenttype, sisalto)

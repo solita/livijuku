@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.legacy :refer :all]
             [juku.service.liitteet :as service]
+            [juku.rest-api.response :as response]
             [juku.schema.liitteet :refer :all]
             [ring.util.http-response :refer :all]
             [ring.swagger.schema :refer [describe]]
@@ -18,6 +19,13 @@
     (GET* "/hakemus/:hakemusid/liite/:liitenumero" []
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö."
+          (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
+            (response/content-disposition-inline (:nimi liite) (content-type (ok (:sisalto liite)) (:contenttype liite)))
+            (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
+
+    (GET* "/hakemus/:hakemusid/liite/:liitenumero/*" []
+          :path-params [hakemusid :- Long, liitenumero :- Long]
+          :summary "Lataa liitteen sisältö - liitenumeron jälkeen annetaan haluttu tiedostonimi selaimelle, joka ei tue rfc6266 ja rfc5987."
           (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
             (content-type (ok (:sisalto liite)) (:contenttype liite))
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
