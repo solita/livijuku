@@ -15,6 +15,11 @@
   (assert-not-empty! coll type parameters message)
   (first coll))
 
+(defn single-result [coll]
+  (if (> (count coll) 1) nil (first coll)))
+
+(defn nil-if-empty [col] (if (empty? col) nil col))
+
 (defn find-first [predicate collection]
   (first (filter predicate collection)))
 

@@ -9,6 +9,8 @@
 
 (defn third [collection] (first (next (next collection))))
 
+(def not-nil? (comp not nil?))
+
 (defmacro if-let* [bindings expr else]
   (if (seq bindings)
     `(if-let [~(first bindings) ~(second bindings)]

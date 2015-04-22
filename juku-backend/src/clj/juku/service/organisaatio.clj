@@ -16,3 +16,6 @@
 (defn find-organisaatio [id] (c/find-first (c/eq :id id) (select-organisaatiot)))
 
 (defn find-organisaatio-of [user] (find-organisaatio (:organisaatioid user)))
+
+(defn find-unique-organisaatio-ext-tunnus-like [tunnus]
+  (c/single-result (select-organisaatio-like-exttunnus {:tunnus tunnus})))
