@@ -67,12 +67,12 @@
               v])))
 
 (defn dissoc-if
-  "Filter an associative structure (map) based on values. It is optionally possible to limit filtering only to certain keys."
+  "Remove keys from an associative structure based on values. It is optionally possible to limit removing only to certain keys."
   ([m predicate & keys] (reduce (fn [r key] (if (predicate (key r)) (dissoc r key) r)) m keys))
   ([m predicate] (into {} (remove #(predicate (second %)) m))))
 
 (defn dissoc-if-nil
-  "Filter null values from a map. It is optionally possible to limit filtering only to certain keys."
+  "Remove null values from a map. It is optionally possible to limit filtering only to certain keys."
   ([m & keys] (apply dissoc-if m nil? keys))
   ([m] (dissoc-if m nil?)))
 
