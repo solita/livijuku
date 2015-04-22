@@ -64,7 +64,7 @@
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
-                     Hakemuskausi hakemuskausi [(assoc hakuohje :name "hakuohje")]))))
+                     Hakemuskausi hakemuskausi [(assoc hakuohje :name "hakuohje-asiakirja")]))))
 
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" diaarinumero "/sulje") "SuljeKausi"))
