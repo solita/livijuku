@@ -29,6 +29,8 @@
                            :omistavaOrganisaatio  s/Str
                            :omistavaHenkilo       s/Str})
 
+(def default-diaarinumero {:body "Ei diaariointia"})
+
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
   (if (not= (:asiahallinta settings) "off")
@@ -46,7 +48,7 @@
 
     (do
       (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)
-      "Ei diaariointia")))
+      default-diaarinumero)))
 
 (defn- put [path operation]
 
@@ -59,7 +61,7 @@
 
     (do
       (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )
-      "Ei diaariointia")))
+      default-diaarinumero)))
 
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
