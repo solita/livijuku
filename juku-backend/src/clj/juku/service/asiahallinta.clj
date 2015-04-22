@@ -5,7 +5,7 @@
             [ring.swagger.schema :as swagger]
             [schema.core :as s]
             [cheshire.core :as json]
-            [clojure.string :as str]
+            [common.string :as str]
             [clojure.tools.logging :as log]
             [juku.settings :refer [settings]])
   (:import (java.util UUID)))
@@ -29,8 +29,6 @@
                            :omistavaOrganisaatio  s/Str
                            :omistavaHenkilo       s/Str})
 
-(def default-diaarinumero {:body "Ei diaariointia"})
-
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
   (if (not= (:asiahallinta settings) "off")
@@ -47,8 +45,7 @@
     (client/post url request))
 
     (do
-      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)
-      default-diaarinumero)))
+      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object))))
 
 (defn- put [path operation]
 
@@ -60,8 +57,7 @@
       (client/put url request))
 
     (do
-      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )
-      default-diaarinumero)))
+      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation ))))
 
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet

@@ -5,6 +5,7 @@
             [common.collection :as c]
             [common.string :as str]
             [juku.service.test :as test]
+            [juku.settings :as s]
             [juku.service.asiahallinta-mock :as asha]
             [clj-time.core :as time]
             [clojure.tools.logging :as log]
@@ -42,6 +43,23 @@
 
           (asha/headers :sulkeminen) => asha/valid-headers?
           (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje")))))))
+
+(facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen - asiahallinta kytketty pois päältä--"
+
+(test/with-user "juku_kasittelija" ["juku_kasittelija"]
+  (with-redefs [s/settings (assoc s/settings :asiahallinta "off")]
+    (fact "Avaa hakemuskausi"
+      (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+          (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+          (hk/avaa-hakemuskausi! vuosi)
+
+          (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => nil)
+
+    (fact "Sulje hakemuskausi"
+      (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+        (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+        (hk/avaa-hakemuskausi! vuosi)
+        (hk/sulje-hakemuskausi! vuosi)))))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
   (let [hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
