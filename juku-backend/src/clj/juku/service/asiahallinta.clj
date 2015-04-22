@@ -44,7 +44,9 @@
     (log/info "post" url request)
     (client/post url request))
 
-    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)))
+    (do
+      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)
+      "Ei diaariointia")))
 
 (defn- put [path operation]
 
@@ -55,7 +57,9 @@
       (log/info "post" url request)
       (client/put url request))
 
-    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )))
+    (do
+      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )
+      "Ei diaariointia")))
 
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
