@@ -3,10 +3,10 @@
             [common.map :as m]
             [clojure.string :as str]))
 
-(facts "Tests for filtering map values"
+(facts "Tests for removing map values"
    (fact (m/dissoc-if {:a "1"} str/blank?) => {:a "1"} )
    (fact (m/dissoc-if {:a "1" :b nil :c ""} str/blank?) => {:a "1"} ))
 
-(facts "Tests for filtering nil values from a map"
+(facts "Tests for removing nil values from a map"
   (fact (m/dissoc-if-nil {:a 1}) => {:a 1})
   (fact (m/dissoc-if-nil {:a 1 :b nil}) => {:a 1}))
