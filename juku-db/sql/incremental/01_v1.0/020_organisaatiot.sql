@@ -40,15 +40,15 @@ save_osastot(OrganisaatioList(
   new_organisaatio('Liikennevirasto', 'LV', 'liikennevirasto%'),
 
   -- ELY:t --
-  new_organisaatio('Uusimaa', 'ELY', 'ELY-1'),
-  new_organisaatio('Varsinais-Suomi', 'ELY', 'ELY-2'),
-  new_organisaatio('Kaakkois-Suomi', 'ELY', 'ELY-3'),
-  new_organisaatio('Pirkanmaa', 'ELY', 'ELY-4'),
-  new_organisaatio('Pohjois-Savo', 'ELY', 'ELY-8'),
-  new_organisaatio('Keski-Suomi', 'ELY', 'ELY-9'),
-  new_organisaatio('Etelä-Pohjanmaa', 'ELY', 'ELY-10'),
-  new_organisaatio('Pohjois-Pohjanmaa', 'ELY', 'ELY-12'),
-  new_organisaatio('Lappi', 'ELY', 'ELY-14')
+  new_organisaatio('Uusimaa', 'ELY', 'ELY/1'),
+  new_organisaatio('Varsinais-Suomi', 'ELY', 'ELY/2'),
+  new_organisaatio('Kaakkois-Suomi', 'ELY', 'ELY/3'),
+  new_organisaatio('Pirkanmaa', 'ELY', 'ELY/4'),
+  new_organisaatio('Pohjois-Savo', 'ELY', 'ELY/8'),
+  new_organisaatio('Keski-Suomi', 'ELY', 'ELY/9'),
+  new_organisaatio('Etelä-Pohjanmaa', 'ELY', 'ELY/10'),
+  new_organisaatio('Pohjois-Pohjanmaa', 'ELY', 'ELY/12'),
+  new_organisaatio('Lappi', 'ELY', 'ELY/14')
 ));
 
 end;

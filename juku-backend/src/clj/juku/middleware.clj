@@ -17,8 +17,7 @@
 (defn find-matching-organisaatio [organisaatio-name department]
   (c/if-let* [normalized-org-name (-> organisaatio-name str/trim str/lower-case (str/replace #"(\s)+" "-"))
 
-              organisaatio (org/find-unique-organisaatio-ext-tunnus-like (c/maybe-nil (partial str normalized-org-name "-")
-                                                                                      normalized-org-name department))]
+              organisaatio (org/find-unique-organisaatio-ext-tunnus-like (str normalized-org-name "/" (or department "-")))]
            (:id organisaatio) nil))
 
 (defn- headers->user-data [orgnisaatio-id headers]
