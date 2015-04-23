@@ -3,6 +3,7 @@
             [clj-time.core :as t]
             [juku.service.hakemus :as h]
             [juku.service.paatos :as p]
+            [common.core :as c]
             [juku.service.user :as u]
             [juku.service.test :as test]))
 
@@ -38,7 +39,7 @@
 
       (let [hyvaksytty-paatos (p/find-current-paatos id)]
         (:paattaja hyvaksytty-paatos) => "juku_kasittelija"
-        (:voimaantuloaika hyvaksytty-paatos) => test/before-now?
+        (:voimaantuloaika hyvaksytty-paatos) => c/not-nil?
         (:poistoaika hyvaksytty-paatos) => nil))))
 
 (fact "Päätöksen peruuttaminen"
