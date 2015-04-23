@@ -7,7 +7,7 @@
             [juku.service.test :as test]))
 
 (fact "Päätöksen tallentaminen ja hakeminen"
-  (u/with-user {:tunnus "juku_kasittelija"}
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
       (let [hakemuskausi (test/next-hakemuskausi!)
             vuosi (:vuosi hakemuskausi)
             organisaatioid 1
@@ -19,3 +19,42 @@
 
           (p/save-paatos! paatos)
           (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :poistoaika nil, :voimaantuloaika nil))))
+
+(fact "Päätöksen hyväksyminen"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (let [hakemuskausi (test/next-hakemuskausi!)
+          vuosi (:vuosi hakemuskausi)
+          organisaatioid 1
+          hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+
+          id (h/add-hakemus! hakemus)
+          paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
+
+
+      (p/save-paatos! paatos)
+      (p/hyvaksy-paatos! id)
+
+      (:hakemustilatunnus (h/get-hakemus-by-id id)) => "P"
+
+      (let [hyvaksytty-paatos (p/find-current-paatos id)]
+        (:paattaja hyvaksytty-paatos) => "juku_kasittelija"
+        (:voimaantuloaika hyvaksytty-paatos) => test/before-now?
+        (:poistoaika hyvaksytty-paatos) => nil))))
+
+(fact "Päätöksen peruuttaminen"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (let [hakemuskausi (test/next-hakemuskausi!)
+          vuosi (:vuosi hakemuskausi)
+          organisaatioid 1
+          hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+
+          id (h/add-hakemus! hakemus)
+          paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
+
+
+      (p/save-paatos! paatos)
+      (p/hyvaksy-paatos! id)
+      (p/peruuta-paatos! id)
+
+      (p/find-current-paatos id) => nil
+      (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T")))

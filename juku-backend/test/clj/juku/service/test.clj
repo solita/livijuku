@@ -6,7 +6,8 @@
             [juku.service.user :as user]
             [juku.user :as u]
             [juku.db.database :refer [db]]
-            [yesql.core :as sql]))
+            [yesql.core :as sql]
+            [clj-time.core :as time]))
 
 (sql/defqueries "juku/service/test.sql" {:connection db})
 
@@ -28,3 +29,6 @@
                user# (user/find-user ~uid)]
        (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test))
        (ss/throw+ (str "Käyttäjällä " ~uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
+
+(defn before-now? [time]
+  (time/before? time (time/now)))

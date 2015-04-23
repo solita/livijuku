@@ -22,5 +22,9 @@ values (:hakemusid,
         :myonnettyavustus, :selite)
 
 -- name: update-paatos-hyvaksytty!
-update paatos set voimaantuloaika = sysdate
+update paatos set voimaantuloaika = sysdate, paattaja = sys_context('userenv', 'CLIENT_IDENTIFIER')
 where hakemusid = :hakemusid and poistoaika is null and voimaantuloaika is null
+
+-- name: update-paatos-hylatty!
+update paatos set poistoaika = sysdate
+where hakemusid = :hakemusid and poistoaika is null and voimaantuloaika is not null

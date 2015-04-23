@@ -30,4 +30,10 @@
           :return  nil
           :path-params [hakemusid :- Long]
           :summary "Hyväksy hakemuksen avoinna oleva päätös."
-          (ok (service/hyvaksy-paatos! hakemusid))))
+          (ok (service/hyvaksy-paatos! hakemusid)))
+
+    (POST* "/hakemus/:hakemusid/peruuta-paatos" []
+           :return  nil
+           :path-params [hakemusid :- Long]
+           :summary "Peruuta hakemuksen hyväksytty päätös."
+           (ok (service/peruuta-paatos! hakemusid))))

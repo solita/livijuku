@@ -1,9 +1,8 @@
 (ns juku.service.paatos
   (:require [juku.db.yesql-patch :as sql]
-            [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]
             [common.string :as xstr]
-            [juku.db.database :refer [db]]
+            [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.service.hakemus :as h]
             [juku.service.pdf :as pdf]
@@ -37,7 +36,7 @@
     nil))
 
 (defn hyvaksy-paatos! [hakemusid]
-  (jdbc/with-db-transaction [db-spec db]
+  (with-transaction
      (let [updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})]
         (assert-update updated hakemusid)
         (cond
@@ -72,3 +71,12 @@
                           :omarahoitus total-omarahoitus
                           :myonnettyavustus (:myonnettyavustus paatos)})
            :footer "Footer"})))
+
+(defn peruuta-paatos! [hakemusid]
+  (with-transaction
+    (let [updated (update-paatos-hylatty! {:hakemusid hakemusid})]
+      (assert-update updated hakemusid)
+      (cond
+        (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
+        (== updated 0) (c/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
+  nil)
