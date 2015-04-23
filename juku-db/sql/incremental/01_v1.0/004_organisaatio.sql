@@ -24,11 +24,8 @@ create table organisaatio (
   pankkitilinumero varchar2(34 char)
 );
 
-declare
-  e entity%rowtype := model.new_entity('organisaatio', 'Organisaatio', 'ORG');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('organisaatio', 'Organisaatio', 'ORG'));
 end;
 /
 

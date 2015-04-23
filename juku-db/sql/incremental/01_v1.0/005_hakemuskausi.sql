@@ -19,11 +19,8 @@ create table hakemuskausi (
   diaarinumero varchar2(30 char)
 );
 
-declare
-  e entity%rowtype := model.new_entity('hakemuskausi', 'Hakemuskausi', 'HK');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('hakemuskausi', 'Hakemuskausi', 'HK'));
 end;
 /
 
@@ -37,10 +34,7 @@ create table maararaha (
   constraint maararaha_pk primary key (vuosi, organisaatiolajitunnus)
 );
 
-declare
-  e entity%rowtype := model.new_entity('maararaha', 'Maararaha', 'MR');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('maararaha', 'Maararaha', 'MR'));
 end;
 /

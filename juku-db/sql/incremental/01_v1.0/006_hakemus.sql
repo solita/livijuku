@@ -24,11 +24,8 @@ create table hakuaika (
   constraint hakuaika_pk primary key (vuosi, hakemustyyppitunnus)
 );
 
-declare
-  e entity%rowtype := model.new_entity('hakuaika', 'Hakuaika', 'HAIKA');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('hakuaika', 'Hakuaika', 'HAIKA'));
 end;
 /
 
@@ -59,11 +56,8 @@ create table hakemus (
   selite clob
 );
 
-declare
-  e entity%rowtype := model.new_entity('hakemus', 'Hakemus', 'HA');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('hakemus', 'Hakemus', 'HA'));
 end;
 /
 
