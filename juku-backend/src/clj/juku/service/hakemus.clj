@@ -1,7 +1,7 @@
 (ns juku.service.hakemus
   (:require [juku.db.yesql-patch :as sql]
             [juku.service.user :as user]
-            [juku.db.database :refer [db]]
+            [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [schema.coerce :as scoerce]
@@ -86,8 +86,9 @@
     (add-avustuskohde! avustuskohde)))
 
 (defn save-avustuskohteet! [avustuskohteet]
-  (doseq [avustuskohde avustuskohteet]
-    (save-avustuskohde! avustuskohde)))
+  (with-transaction
+    (doseq [avustuskohde avustuskohteet]
+      (save-avustuskohde! avustuskohde))))
 
 (defn- update-hakemus-by-id [hakemus hakemusid]
   (dml/update-where-id db "hakemus" hakemus hakemusid))
