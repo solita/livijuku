@@ -80,5 +80,9 @@
              :return  s/Num
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
-             (ok (service/tarkasta-hakemus! hakemusid))))
+             (ok (service/tarkasta-hakemus! hakemusid)))
+      (GET* "/avustuskohdeluokittelu" []
+             :return [Avustuskohdeluokka]
+             :summary "Hae avustuskohteiden luokittelu: kaikki luokat ja lajit"
+            (ok (service/avustuskohde-luokittelu))))
 

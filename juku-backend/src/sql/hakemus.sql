@@ -38,3 +38,9 @@ where hakemusid = :hakemusid and
 -- name: update-hakemustila!
 update hakemus set hakemustilatunnus = :hakemustilatunnus
 where id = :hakemusid
+
+-- name: select-avustuskohdeluokat
+select tunnus, nimi, jarjetys from avustuskohdeluokka
+
+-- name: select-avustuskohdelajit
+select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji

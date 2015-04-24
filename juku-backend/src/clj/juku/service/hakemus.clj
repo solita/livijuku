@@ -115,3 +115,9 @@
 (defn laheta-taydennys! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"}))
 
+(defn avustuskohde-luokittelu []
+  (let [luokat (select-avustuskohdeluokat)
+        lajit (select-avustuskohdelajit)
+        lajit-group-by-luokka (group-by :avustuskohdeluokkatunnus lajit)
+        assoc-avustuskohdelajit (fn [luokka] (assoc luokka :avustuskohdelajit (get lajit-group-by-luokka (:tunnus luokka))))]
+    (map assoc-avustuskohdelajit luokat)))
