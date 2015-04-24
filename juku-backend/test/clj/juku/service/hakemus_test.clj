@@ -93,7 +93,7 @@
     (let [hakemus (fn [organisaatioid] {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid})
           id1 (h/add-hakemus! (hakemus 1M))
           id2 (h/add-hakemus! (hakemus 2M))
-          avustuskohde (fn [hakemusid] {:hakemusid hakemusid, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 2M, :omarahoitus 2M})]
+          avustuskohde (fn [hakemusid] {:hakemusid hakemusid, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 2M, :omarahoitus 2M})]
 
       ;; aseta haetut avustukset
       (h/add-avustuskohde! (avustuskohde id1))
@@ -129,7 +129,7 @@
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
 
           id (h/add-hakemus! hakemus)
-          avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+          avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
       (h/add-avustuskohde! avustuskohde)
       (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]))
@@ -139,23 +139,37 @@
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
 
           id (h/add-hakemus! hakemus)
-          avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+          avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
       (h/add-avustuskohde! avustuskohde)
       (h/add-avustuskohde! avustuskohde) => (throws (str "Avustuskohde PSA-1 on jo olemassa hakemuksella (id = " id ")." ))))
 
   (fact "Avustuskohteen lisääminen - hakemusta ei löydy"
-    (let [avustuskohde {:hakemusid 1324123434, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+    (let [avustuskohde {:hakemusid 1324123434, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
       (h/add-avustuskohde! avustuskohde) => (throws "Avustuskohteen PSA-1 hakemusta (id = 1324123434) ei ole olemassa.")))
 
-  (fact "Avustuskohteiden tallentaminen ja hakeminen"
+  (fact "Avustuskohteen tallentaminen ja hakeminen - uusi avustukohde"
     (let [organisaatioid 1
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
 
           id (h/add-hakemus! hakemus)
-          avustuskohde {:hakemusid id, :avustuskohdelajitunnus "PSA-1", :haettavaavustus 1M, :omarahoitus 1M}]
+          avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
         (h/save-avustuskohteet![avustuskohde])
-        (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde])))
+        (h/find-avustuskohteet-by-hakemusid id) => [avustuskohde]))
+
+  (fact "Avustuskohteiden päivittäminen"
+     (let [organisaatioid 1
+           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+
+           id (h/add-hakemus! hakemus)
+           ak1 {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}
+           ak2 (assoc ak1 :avustuskohdelajitunnus "2")]
+
+       (h/save-avustuskohteet![ak1 ak2])
+       (h/find-avustuskohteet-by-hakemusid id) => [ak1 ak2]
+
+       (h/save-avustuskohteet![ak1 (assoc ak2 :haettavaavustus 2M)])
+       (h/find-avustuskohteet-by-hakemusid id) => [ak1 (assoc ak2 :haettavaavustus 2M)])))
 

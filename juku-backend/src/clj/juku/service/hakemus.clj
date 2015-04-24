@@ -26,9 +26,9 @@
    :hakemus_kasittelija_fk {:http-response r/not-found :message "Hakemuksen käsittelijää {kasittelija} ei ole olemassa."}
    :hakemus_hakemuskausi_fk {:http-response r/not-found :message "Hakemuskautta {vuosi} ei ole olemassa."}
 
-   :avustuskohde_pk {:http-response r/bad-request :message "Avustuskohde {avustuskohdelajitunnus} on jo olemassa hakemuksella (id = {hakemusid})."}
-   :avustuskohde_hakemus_fk {:http-response r/not-found :message "Avustuskohteen {avustuskohdelajitunnus} hakemusta (id = {hakemusid}) ei ole olemassa."}
-   :avustuskohde_aklaji_fk {:http-response r/not-found :message "Avustuskohdelajia {avustuskohdelajitunnus} ei ole olemassa."}})
+   :avustuskohde_pk {:http-response r/bad-request :message "Avustuskohde {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} on jo olemassa hakemuksella (id = {hakemusid})."}
+   :avustuskohde_hakemus_fk {:http-response r/not-found :message "Avustuskohteen {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} hakemusta (id = {hakemusid}) ei ole olemassa."}
+   :avustuskohde_aklaji_fk {:http-response r/not-found :message "Avustuskohdelajia {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} ei ole olemassa."}})
 
 ; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
 

@@ -32,6 +32,7 @@
 (s/defschema Hakemuskaudet [Hakemuskausi])
 
 (s/defschema Avustuskohde {:hakemusid     s/Num
+                           :avustuskohdeluokkatunnus s/Str
                            :avustuskohdelajitunnus s/Str
                            :haettavaavustus s/Num,
                            :omarahoitus s/Num})
