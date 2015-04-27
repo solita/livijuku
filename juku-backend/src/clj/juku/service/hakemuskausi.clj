@@ -149,6 +149,8 @@
         (hakemus/add-hakemus! (hakemus "MH1"))
         (hakemus/add-hakemus! (hakemus "MH2"))))
 
+    (insert-avustuskohteet-for-kausi! {:vuosi vuosi})
+
     ;; -- diaarioi hakemuskauden avaaminen --
     (c/if-let3! [hakuohje     (find-hakuohje-sisalto vuosi)
                               {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}

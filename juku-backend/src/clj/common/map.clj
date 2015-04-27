@@ -76,3 +76,4 @@
   ([m & keys] (apply dissoc-if m nil? keys))
   ([m] (dissoc-if m nil?)))
 
+(defn map-values [f m] (into {} (map (fn [[k, v]] [k (f v)]) m)))

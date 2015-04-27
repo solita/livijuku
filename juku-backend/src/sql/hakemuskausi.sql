@@ -36,3 +36,18 @@ from hakuaika
 insert into hakemuskausi (vuosi)
 select :vuosi from dual 
 where not exists (select 1 from hakemuskausi where vuosi = :vuosi)
+
+-- name: insert-avustuskohteet-for-kausi!
+insert into avustuskohde (hakemusid, avustuskohdeluokkatunnus, avustuskohdelajitunnus)
+select hakemus.id,
+  avustuskohdelaji.avustuskohdeluokkatunnus,
+  avustuskohdelaji.tunnus
+from hakemus
+  inner join organisaatio on organisaatio.id = hakemus.organisaatioid
+  cross join avustuskohdelaji
+where hakemus.vuosi = :vuosi and
+      avustuskohdelaji.voimaantulovuosi <= :vuosi and
+      avustuskohdelaji.lakkaamisvuosi > :vuosi and
+      (avustuskohdelaji.avustuskohdeluokkatunnus != 'K' or
+       avustuskohdelaji.tunnus != 'RT' or
+       organisaatio.lajitunnus = 'KS1')

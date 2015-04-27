@@ -4,6 +4,7 @@
             [juku.service.hakemus :as h]
             [common.collection :as c]
             [common.string :as str]
+            [common.map :as m]
             [juku.service.test :as test]
             [juku.settings :as s]
             [juku.service.asiahallinta-mock :as asha]
@@ -16,6 +17,17 @@
 (def vuosi (:vuosi hakemuskausi))
 
 (defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
+
+(defn assert-avustuskohteet [vuosi]
+  (fact (str "Test avustuskohteet on luotu oikein avauksen jälkeen vuodelle: " vuosi)
+    (let [stats (m/map-values first (group-by :lajitunnus (test/select-akohde-amounts-broup-by-organisaatiolaji)))
+          aklaji-count (:amount (first (test/select-count-akohdelaji)))
+          distinct (map :distinctvalues (vals stats))]
+      (get-in stats ["KS1" :akohdeamount]) => aklaji-count
+      (get-in stats ["KS2" :akohdeamount]) => (- aklaji-count 1)
+      (get-in stats ["ELY" :akohdeamount]) => (- aklaji-count 1)
+      (get-in stats ["LV" :akohdeamount]) => nil
+      distinct => [1M 1M 1M])))
 
 (facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen --"
 
@@ -31,6 +43,7 @@
           (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
           (hk/avaa-hakemuskausi! vuosi)
 
+          (assert-avustuskohteet vuosi)
           (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"
           (asha/headers :avaus) => asha/valid-headers?)))
 
@@ -53,6 +66,7 @@
           (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
           (hk/avaa-hakemuskausi! vuosi)
 
+          (assert-avustuskohteet vuosi)
           (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => nil)
 
     (fact "Sulje hakemuskausi"
