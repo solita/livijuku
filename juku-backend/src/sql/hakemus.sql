@@ -24,8 +24,14 @@ from hakemus_view hakemus
 where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
 
 -- name: select-avustuskohteet
-select hakemusid, avustuskohdeluokkatunnus, avustuskohdelajitunnus, haettavaavustus, omarahoitus
-from avustuskohde where hakemusid = :hakemusid
+select avustuskohde.hakemusid,
+  avustuskohde.avustuskohdeluokkatunnus, avustuskohde.avustuskohdelajitunnus,
+  avustuskohde.haettavaavustus, avustuskohde.omarahoitus
+from avustuskohde
+  inner join avustuskohdeluokka akluokka on akluokka.tunnus = avustuskohde.avustuskohdeluokkatunnus
+  inner join avustuskohdelaji aklaji on aklaji.avustuskohdeluokkatunnus = avustuskohde.avustuskohdeluokkatunnus and aklaji.tunnus = avustuskohde.avustuskohdelajitunnus
+where avustuskohde.hakemusid = :hakemusid
+order by akluokka.jarjetys, aklaji.jarjetys
 
 -- name: update-avustuskohde!
 update avustuskohde set
