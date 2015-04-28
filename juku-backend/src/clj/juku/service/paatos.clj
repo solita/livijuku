@@ -48,7 +48,7 @@
   (let [paatos (find-paatos hakemusid paatosnumero)
         paatospvm-txt (.toString ^LocalDate (or (:voimaantuloaika paatos) (time/today)) "d.M.y")
         hakemus (h/get-hakemus-by-id hakemusid)
-        organisaatio (c/find-first (c/eq :id (:organisaatioid hakemus)) (o/organisaatiot))
+        organisaatio (o/find-organisaatio (:organisaatioid hakemus))
         avustuskohteet (h/find-avustuskohteet-by-hakemusid hakemusid)
 
         total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))

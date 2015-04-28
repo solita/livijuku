@@ -4,10 +4,17 @@
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
+            [juku.service.organisaatio :as o]
+            [common.string :as xstr]
+            [clojure.string :as str]
+            [clj-time.core :as time]
             [schema.coerce :as scoerce]
+            [clojure.java.io :as io]
+            [juku.service.pdf :as pdf]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
-            [common.collection :as c]))
+            [common.collection :as c])
+  (:import (org.joda.time LocalDate)))
 
 ; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "hakemus.sql")
@@ -121,3 +128,29 @@
         lajit-group-by-luokka (group-by :avustuskohdeluokkatunnus lajit)
         assoc-avustuskohdelajit (fn [luokka] (assoc luokka :avustuskohdelajit (get lajit-group-by-luokka (:tunnus luokka))))]
     (map assoc-avustuskohdelajit luokat)))
+
+(defn hakemus-pdf [hakemusid]
+  (let [vireillepvm-txt (.toString ^LocalDate (time/today) "d.M.y")
+        hakemus (get-hakemus-by-id hakemusid)
+        organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+        avustuskohteet (find-avustuskohteet-by-hakemusid hakemusid)
+
+        total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
+        total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
+
+        avustuskohde-template "\t{avustuskohdelajitunnus},\t{haettavaavustus} euroa"
+        avustuskohteet-section (str/join "\n" (map (partial xstr/interpolate avustuskohde-template)
+                                                   (filter (c/predicate > :haettavaavustus 0) avustuskohteet)))
+
+        template (slurp (io/reader (io/resource "pdf-sisalto/templates/hakemus.txt")))]
+
+    (pdf/muodosta-pdf
+      {:otsikko {:teksti "Valtionavustushakemus" :paivays vireillepvm-txt :diaarinumero (:diaarinumero hakemus)}
+       :teksti (xstr/interpolate template
+                                 {:organisaatio-nimi (:nimi organisaatio)
+                                  :vireillepvm vireillepvm-txt
+                                  :vuosi (:vuosi hakemus)
+                                  :avustuskohteet avustuskohteet-section
+                                  :haettuavustus total-haettavaavustus
+                                  :omarahoitus total-omarahoitus})
+       :footer "Footer"})))

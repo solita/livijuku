@@ -81,6 +81,13 @@
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
+
+      (GET* "/hakemus/:hakemusid/pdf" []
+            :path-params [hakemusid :- Long]
+            :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."
+            (content-type (ok (service/hakemus-pdf hakemusid))
+                          "application/pdf"))
+
       (GET* "/avustuskohdeluokittelu" []
              :return [Avustuskohdeluokka]
              :summary "Hae avustuskohteiden luokittelu: kaikki luokat ja lajit"
