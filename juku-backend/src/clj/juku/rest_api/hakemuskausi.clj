@@ -56,6 +56,7 @@
             [vuosi :as {{{tempfile :tempfile filename :filename content-type :content-type} :hakuohje} :params}]
             (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile))))
 
+      ;; this end point is for legacy UAs which does not support put requests
       (POST "/hakemuskausi/:vuosi/hakuohje"
            [vuosi :as {{{tempfile :tempfile filename :filename content-type :content-type} :hakuohje} :params}]
            (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile)))))
