@@ -41,13 +41,6 @@
              :summary "Päivitä liitteen nimi"
              (ok (service/update-liite-nimi! hakemusid liitenumero nimi)))
 
-    (POST* "/hakemus/:hakemusid/liite/:liitenumero" []
-          :return nil
-          :path-params [hakemusid :- Long, liitenumero :- Long]
-          :body-params     [nimi :- s/Str]
-          :summary "Päivitä liitteen nimi"
-          (ok (service/update-liite-nimi! hakemusid liitenumero nimi)))
-
     (DELETE* "/hakemus/:hakemusid/liite/:liitenumero" []
          :return nil
          :path-params [hakemusid :- Long, liitenumero :- Long]
