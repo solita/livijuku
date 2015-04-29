@@ -54,19 +54,16 @@
         total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
         total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
-        avustuskohde-template "\t{avustuskohdelajitunnus},\t{haettavaavustus} euroa"
-        avustuskohteet-section (str/join "\n" (map (partial xstr/interpolate avustuskohde-template)
-                                                   (filter (c/predicate > :haettavaavustus 0) avustuskohteet)))
-
         template (slurp (io/reader (io/resource "pdf-sisalto/templates/paatos.txt")))]
 
       (pdf/muodosta-pdf
           {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
            :teksti (xstr/interpolate template
                          {:organisaatio-nimi (:nimi organisaatio)
+                          :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
                           :paatosspvm paatospvm-txt
                           :vuosi (:vuosi hakemus)
-                          :avustuskohteet avustuskohteet-section
+                          :avustuskohteet (h/avustuskohteet-section avustuskohteet)
                           :haettuavustus total-haettavaavustus
                           :omarahoitus total-omarahoitus
                           :myonnettyavustus (:myonnettyavustus paatos)})

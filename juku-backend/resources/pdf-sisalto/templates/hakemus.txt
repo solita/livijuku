@@ -6,7 +6,7 @@
 
 	Hakija: {organisaatio-nimi}
 
-	Hakija hakee vuonna {vuosi} {organisaatiolaji-gen-pl} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
+	Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 
 {avustuskohteet}
 

@@ -13,7 +13,8 @@
             [juku.service.pdf :as pdf]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
-            [common.collection :as c])
+            [common.collection :as c]
+            [clojure.set :as set])
   (:import (org.joda.time LocalDate)))
 
 ; *** Hakemukseen liittyvät kyselyt ***
@@ -129,6 +130,21 @@
         assoc-avustuskohdelajit (fn [luokka] (assoc luokka :avustuskohdelajit (get lajit-group-by-luokka (:tunnus luokka))))]
     (map assoc-avustuskohdelajit luokat)))
 
+(def organisaatiolaji->plural-genetive
+  {"KS1" "suurten kaupunkiseutujen",
+   "KS2" "keskisuurten kaupunkiseutujen",
+   "ELY" "ELY-keskusten"})
+
+(defn avustuskohteet-section [avustuskohteet]
+  (let [avustuskohde-template "\t{avustuskohdenimi},\t{haettavaavustus} euroa"
+        avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
+        avustuskohteet (filter (c/predicate > :haettavaavustus 0) avustuskohteet)
+        avustuskohteet+nimi (c/join avustuskohteet
+                                    (fn [akohde, aklajiseq] (assoc akohde :avustuskohdenimi (:nimi (first aklajiseq))))
+                                    avustuskohdelajit [:avustuskohdeluokkatunnus :avustuskohdelajitunnus])]
+
+    (str/join "\n" (map (partial xstr/interpolate avustuskohde-template) avustuskohteet+nimi))))
+
 (defn hakemus-pdf [hakemusid]
   (let [vireillepvm-txt (.toString ^LocalDate (time/today) "d.M.y")
         hakemus (get-hakemus-by-id hakemusid)
@@ -138,19 +154,16 @@
         total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
         total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
-        avustuskohde-template "\t{avustuskohdelajitunnus},\t{haettavaavustus} euroa"
-        avustuskohteet-section (str/join "\n" (map (partial xstr/interpolate avustuskohde-template)
-                                                   (filter (c/predicate > :haettavaavustus 0) avustuskohteet)))
-
         template (slurp (io/reader (io/resource "pdf-sisalto/templates/hakemus.txt")))]
 
     (pdf/muodosta-pdf
       {:otsikko {:teksti "Valtionavustushakemus" :paivays vireillepvm-txt :diaarinumero (:diaarinumero hakemus)}
        :teksti (xstr/interpolate template
                                  {:organisaatio-nimi (:nimi organisaatio)
+                                  :organisaatiolaji-pl-gen (organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
                                   :vireillepvm vireillepvm-txt
                                   :vuosi (:vuosi hakemus)
-                                  :avustuskohteet avustuskohteet-section
+                                  :avustuskohteet (avustuskohteet-section avustuskohteet)
                                   :haettuavustus total-haettavaavustus
                                   :omarahoitus total-omarahoitus})
        :footer "Footer"})))
