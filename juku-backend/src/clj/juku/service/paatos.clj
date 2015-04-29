@@ -9,7 +9,8 @@
             [juku.service.organisaatio :as o]
             [schema.coerce :as scoerce]
             [juku.schema.paatos :as s]
-            [common.collection :as c]
+            [common.collection :as col]
+            [common.core :as c]
             [clojure.java.io :as io]
             [clj-time.core :as time])
   (:import (org.joda.time LocalDate)))
@@ -41,7 +42,7 @@
         (assert-update updated hakemusid)
         (cond
            (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "P"})
-           (== updated 0) (c/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))))
+           (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))))
   nil)
 
 (defn paatos-pdf [hakemusid, paatosnumero]
@@ -65,6 +66,7 @@
                           :vuosi (:vuosi hakemus)
                           :avustuskohteet (h/avustuskohteet-section avustuskohteet)
                           :haettuavustus total-haettavaavustus
+                          :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
                           :omarahoitus total-omarahoitus
                           :myonnettyavustus (:myonnettyavustus paatos)})
            :footer "Footer"})))
@@ -75,5 +77,5 @@
       (assert-update updated hakemusid)
       (cond
         (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
-        (== updated 0) (c/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
+        (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
   nil)

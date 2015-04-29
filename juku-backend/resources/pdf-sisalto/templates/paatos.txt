@@ -19,7 +19,7 @@
 
 	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustuksena enintään {myonnettyavustus} euroa (sis. alv) {organisaatiolaji-gen-pl} joukkoliikenteen osoitetusta talousarvion momentin 31.30.63.11 määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.
 
-	{perustelu} Avustusta ei myönnetä haetun suuruisena määrärahan suuruuden vuoksi. Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
+	{selite}Avustusta ei myönnetä haetun suuruisena määrärahan suuruuden vuoksi. Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
 
 *Valtionavustuksen määrä ja saamisen edellytykset
 
