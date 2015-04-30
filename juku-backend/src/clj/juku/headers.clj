@@ -1,8 +1,9 @@
 (ns juku.headers
   (:require [ring.util.codec :as codec]
-            [common.core :as c]))
+            [common.core :as c])
+  (:import (java.nio.charset Charset)))
 
-;; Header-arvojen base64-enkoodaukseen k‰ytetty muoto
+;; Header-arvojen base64-enkoodaukseen k√§ytetty muoto
 (def base64-header-form #"=\?UTF-8\?B\?(.+)\?=")
 
 (defn parse-header
@@ -13,7 +14,7 @@
 
       (if-let [value (get headers header)]
         (if-let [base64-value (re-find base64-header-form value)]
-          (codec/base64-decode (second base64-value)) value)
+          (String. (codec/base64-decode (second base64-value)) (Charset/forName "utf-8")) value)
         not-found))
 
    ([headers header] (parse-header headers header nil)))

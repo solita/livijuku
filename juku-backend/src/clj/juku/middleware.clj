@@ -21,8 +21,8 @@
            (:id organisaatio) nil))
 
 (defn- headers->user-data [orgnisaatio-id headers]
-  (assoc (m/dissoc-if {:etunimi "LIVIJUKU-255"
-                       :sukunimi "LIVIJUKU-255"} str/blank?)
+  (assoc (m/dissoc-if {:etunimi (strx/trim (h/parse-header headers :oam-user-first-name))
+                       :sukunimi (strx/trim (h/parse-header headers :oam-user-last-name))} str/blank?)
                        :organisaatioid orgnisaatio-id))
 
 (defn save-user [uid orgnisaatio-id headers]
@@ -33,7 +33,7 @@
         updated-user)
       (do
         (user/create-user! uid user-data)
-        (assoc user-data :tunnus uid)))))
+        (assoc user-data :tunnus uid :jarjestelma false)))))
 
 (defn- error [type & msg]
   (log/error msg)
