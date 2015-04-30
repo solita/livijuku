@@ -21,7 +21,7 @@
            (:id organisaatio) nil))
 
 (defn- headers->user-data [orgnisaatio-id headers]
-  (assoc (m/dissoc-if {:etunimi (strx/trim (h/parse-header headers :oam-user-first-name))
+  (assoc (m/dissoc-if {:etunimi "LIVIJUKU-255"
                        :sukunimi "LIVIJUKU-255"} str/blank?)
                        :organisaatioid orgnisaatio-id))
 
