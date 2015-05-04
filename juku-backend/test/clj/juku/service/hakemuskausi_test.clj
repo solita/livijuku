@@ -9,7 +9,6 @@
             [juku.settings :as s]
             [juku.service.asiahallinta-mock :as asha]
             [clj-time.core :as time]
-            [clojure.tools.logging :as log]
             [clj-http.fake :as fake])
   (:import (java.io ByteArrayInputStream)))
 

@@ -50,3 +50,6 @@ select tunnus, nimi, jarjetys from avustuskohdeluokka
 
 -- name: select-avustuskohdelajit
 select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji
+
+-- name: update-hakemus-set-diaarinumero!
+update hakemus set diaarinumero = :diaarinumero where id = :hakemusid

@@ -3,7 +3,9 @@
             [clojure.string :as str]
             [common.collection :as c]
             [juku.service.hakemus :as h]
-            [juku.service.test :as test]))
+            [juku.service.asiahallinta-mock :as asha]
+            [juku.service.test :as test]
+            [clj-http.fake :as fake]))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
@@ -14,7 +16,7 @@
 (def hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0")))
 
 (defn assoc-hakemus-defaults [hakemus id]
-  (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero (diaarinumero id vuosi), :hakuaika hakuaika))
+  (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
   (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))
@@ -118,6 +120,21 @@
           ;; hakemus (:id = id) löytyy hakutuloksista
           (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
             => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M)))))
+
+
+(facts "Hakemuksen tilan hallinta - asiahallinta testit"
+  (test/with-user "juku_kasittelija" ["juku_hakija"]
+    (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")}
+      (fact "Hakemuksen lähettäminen"
+        (asha/with-asha
+          (let [organisaatioid 1M
+                hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+                id (h/add-hakemus! hakemus)]
+
+            (h/laheta-hakemus! id)
+
+            (asha/headers :vireille) => asha/valid-headers?
+            (:diaarinumero (h/get-hakemus-by-id id)) => "testing"))))))
 
 
 ;; ************ Avustuskohteet ***********

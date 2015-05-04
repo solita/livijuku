@@ -152,15 +152,10 @@
     (insert-avustuskohteet-for-kausi! {:vuosi vuosi})
 
     ;; -- diaarioi hakemuskauden avaaminen --
-    (c/if-let3! [hakuohje     (find-hakuohje-sisalto vuosi)
-                              {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}
-                 organisaatio (org/find-organisaatio-of user/*current-user*)
-                              {:http-response r/not-found :message (str "Käyttäjällä: '" (:tunnus user/*current-user*) "' ei ole organisaatiota")}]
+    (c/if-let3! [hakuohje (find-hakuohje-sisalto vuosi) {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}]
 
       (update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero
-        (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
-                                 :omistavaOrganisaatio  "Liikennevirasto"                                    ;; (:nimi organisaatio)
-                                 :omistavaHenkilo       (get-in settings [:asiahallinta :omistavahenkilo])}  ;; (user/user-fullname user/*current-user*)
+        (asha/avaa-hakemuskausi {:asianNimi (str "Hakemuskausi " vuosi)}
                                 (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))})))
     nil)
 

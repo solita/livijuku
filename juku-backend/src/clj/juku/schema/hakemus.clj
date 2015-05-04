@@ -8,7 +8,7 @@
                        :loppupvm LocalDate})
 
 (s/defschema Hakemus {:id     s/Num
-                      :diaarinumero     s/Str
+                      :diaarinumero     (s/maybe s/Str)
                       :vuosi  s/Int
                       :hakemustyyppitunnus s/Str
                       :hakemustilatunnus s/Str

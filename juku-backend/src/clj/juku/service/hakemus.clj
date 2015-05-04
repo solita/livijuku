@@ -5,6 +5,7 @@
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [juku.service.organisaatio :as o]
+            [juku.service.asiahallinta :as asha]
             [common.string :as xstr]
             [clojure.string :as str]
             [clj-time.core :as time]
@@ -111,9 +112,6 @@
 (defn save-hakemus-kasittelija! [hakemusid kasittelija]
   (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
 
-(defn laheta-hakemus! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"}))
-
 (defn tarkasta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
 
@@ -167,3 +165,15 @@
                                   :haettuavustus total-haettavaavustus
                                   :omarahoitus total-omarahoitus})
        :footer "Footer"})))
+
+(defn laheta-hakemus! [hakemusid]
+  (with-transaction
+    (let [hakemus (get-hakemus-by-id hakemusid)
+          hakemus-asiakirja (hakemus-pdf hakemusid)
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
+
+      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"})
+      (update-hakemus-set-diaarinumero!
+        {:hakemusid hakemusid
+         :diaarinumero (asha/hakemus-vireille {:kausi (:vuosi hakemus) :hakija (:nimi organisaatio)}
+                                              hakemus-asiakirja [])}))))

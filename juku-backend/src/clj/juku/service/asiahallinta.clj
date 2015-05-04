@@ -29,6 +29,14 @@
                            :omistavaOrganisaatio  s/Str
                            :omistavaHenkilo       s/Str})
 
+(s/defschema Hakemus {:kausi                 s/Int
+                      :hakija                s/Str
+                      :omistavaOrganisaatio  s/Str
+                      :omistavaHenkilo       s/Str})
+
+(def omistaja {:omistavaOrganisaatio "Liikennevirasto"
+               :omistavaHenkilo (get-in settings [:asiahallinta :omistavahenkilo])})
+
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
   (if (not= (:asiahallinta settings) "off")
@@ -62,7 +70,13 @@
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
-                     Hakemuskausi hakemuskausi [(assoc hakuohje :name "hakuohje-asiakirja")]))))
+                     Hakemuskausi (merge hakemuskausi omistaja) [(assoc hakuohje :name "hakuohje-asiakirja")]))))
+
+(defn hakemus-vireille [hakemus hakemusasiakirja liitteet]
+  (str/trim (:body (post-with-liitteet
+                     "hakemus" "Vireilla"
+                     "hakemus" Hakemus (merge hakemus omistaja)
+                     (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"} liitteet)))))
 
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" diaarinumero "/sulje") "SuljeKausi"))
