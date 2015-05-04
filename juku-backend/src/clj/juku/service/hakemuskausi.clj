@@ -7,12 +7,12 @@
             [juku.schema.hakemuskausi :as s]
 
             [juku.db.database :refer [db with-transaction]]
-            [clojure.java.jdbc :as jdbc]
             [clojure.set :as set]
             [juku.db.sql :as dml]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [juku.db.yesql-patch :as sql]
+            [juku.settings :refer [settings]]
             [common.collection :as col]
             [common.core :as c]
             [ring.util.http-response :as r]
@@ -159,8 +159,8 @@
 
       (update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero
         (asha/avaa-hakemuskausi {:asianNimi             (str "Hakemuskausi " vuosi)
-                                 :omistavaOrganisaatio  (:nimi organisaatio)
-                                 :omistavaHenkilo       (user/user-fullname user/*current-user*)}
+                                 :omistavaOrganisaatio  "Liikennevirasto"                                    ;; (:nimi organisaatio)
+                                 :omistavaHenkilo       (get-in settings [:asiahallinta :omistavahenkilo])}  ;; (user/user-fullname user/*current-user*)
                                 (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))})))
     nil)
 

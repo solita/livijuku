@@ -8,6 +8,7 @@ from (
   select hakemus.id, organisaatio.lajitunnus, count(*) amount from hakemus
     inner join avustuskohde on hakemus.id = avustuskohde.hakemusid
     inner join organisaatio on organisaatio.id = hakemus.organisaatioid
+  where hakemus.vuosi = :vuosi
   group by hakemus.id, organisaatio.lajitunnus)
 group by lajitunnus
 

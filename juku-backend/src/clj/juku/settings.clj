@@ -14,9 +14,11 @@
                       :user        s/Str
                       :password    s/Str})
 
+(s/defschema Asiahallinta (assoc Service :omistavahenkilo s/Str))
+
 (s/defschema Settings {:server Server
                        :db Db
-                       :asiahallinta (s/either Service (s/eq "off"))})
+                       :asiahallinta (s/either Asiahallinta (s/eq "off"))})
 
 (def default-settings {
            :server {:port 8082}
@@ -27,7 +29,9 @@
            :asiahallinta {
                 :url "http://asha.livijuku.solita.fi/api"
                 :user "test"
-                :password "test"}})
+                :password "test"
+                ;; asioiden omistavan henkilön käyttäjätunnus
+                :omistavahenkilo "test"}})
 
 (def settings (read-settings (io/file (or (env :properties-file) "./juku.properties")) default-settings Settings))
 

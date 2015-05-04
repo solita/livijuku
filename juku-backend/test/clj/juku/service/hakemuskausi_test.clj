@@ -20,7 +20,7 @@
 
 (defn assert-avustuskohteet [vuosi]
   (fact (str "Test avustuskohteet on luotu oikein avauksen jälkeen vuodelle: " vuosi)
-    (let [stats (m/map-values first (group-by :lajitunnus (test/select-akohde-amounts-broup-by-organisaatiolaji)))
+    (let [stats (m/map-values first (group-by :lajitunnus (test/select-akohde-amounts-broup-by-organisaatiolaji {:vuosi vuosi})))
           aklaji-count (:amount (first (test/select-count-akohdelaji)))
           distinct (map :distinctvalues (vals stats))]
       (get-in stats ["KS1" :akohdeamount]) => aklaji-count
@@ -45,7 +45,9 @@
 
           (assert-avustuskohteet vuosi)
           (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"
-          (asha/headers :avaus) => asha/valid-headers?)))
+          (asha/headers :avaus) => asha/valid-headers?
+          (:content (first (:multipart (asha/request :avaus)))) =>
+            (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"asianNimi\":\"Hakemuskausi " vuosi "\"}"))))
 
     (fact "Sulje hakemuskausi"
       (asha/with-asha
