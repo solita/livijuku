@@ -7,7 +7,8 @@
             [juku.user :as u]
             [juku.db.database :refer [db]]
             [yesql.core :as sql]
-            [clj-time.core :as time]))
+            [clj-time.core :as time])
+  (:import (java.io ByteArrayInputStream)))
 
 (sql/defqueries "juku/service/test.sql" {:connection db})
 
@@ -32,3 +33,5 @@
 
 (defn before-now? [time]
   (time/before? time (time/now)))
+
+(defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))

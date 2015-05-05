@@ -2,10 +2,13 @@
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
             [common.collection :as c]
+            [common.map :as m]
             [juku.service.hakemus :as h]
+            [juku.service.liitteet :as l]
             [juku.service.avustuskohde :as ak]
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.test :as test]
+            [juku.headers :as headers]
             [clj-http.fake :as fake]))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
@@ -123,8 +126,10 @@
 ;; ************ Hakemuksen tilan hallinta ***********
 
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
+
   (test/with-user "juku_hakija" ["juku_hakija"]
     (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")}
+
       (fact "Hakemuksen lähettäminen"
         (asha/with-asha
           (let [organisaatioid 1M
@@ -134,5 +139,40 @@
             (h/laheta-hakemus! id)
 
             (asha/headers :vireille) => asha/valid-headers?
-            (:diaarinumero (h/get-hakemus-by-id id)) => "testing"))))))
+            (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
+
+      (fact "Hakemuksen lähettäminen - asiahallinta on pois päältä"
+        (asha/with-asha-off
+          (let [organisaatioid 1M
+               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+               id (h/add-hakemus! hakemus)]
+
+           (h/laheta-hakemus! id)
+           (:diaarinumero (h/get-hakemus-by-id id)) => nil)))
+
+      (fact "Hakemuksen lähettäminen - liitteet"
+        (asha/with-asha
+         (let [organisaatioid 1M
+               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+               id (h/add-hakemus! hakemus)
+               liite1 {:hakemusid id :nimi "t-1" :contenttype "text/plain"}
+               liite2 {:hakemusid id :nimi "t-åäö" :contenttype "text/plain"}]
+
+           (l/add-liite! liite1 (test/inputstream-from "test-1"))
+           (l/add-liite! liite2 (test/inputstream-from "test-2"))
+
+           (h/laheta-hakemus! id)
+           (asha/headers :vireille) => asha/valid-headers?
+
+           (let [request (asha/request :vireille)
+                 multipart (m/map-values first (group-by :name (:multipart request)))]
+
+             (get-in multipart ["hakemus" :content]) =>
+                (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"hakija\":\"Helsingin seudun liikenne\",\"kausi\":" vuosi "}")
+
+             (get-in multipart ["hakemus-asiakirja" :mime-type]) => "application/pdf"
+             (slurp (get-in multipart ["t-1" :content])) => "test-1"
+             (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
+
+           (:diaarinumero (h/get-hakemus-by-id id)) => "testing"))))))
 
