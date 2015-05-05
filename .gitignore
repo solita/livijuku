@@ -1,12 +1,12 @@
 *.class
 *.log
-.vagrant
 
 # Vagrantin tila
 .vagrant
 
 # IntelliJ IDEA
 *.iml
+.idea
 
 # clojure
 .lein-env
