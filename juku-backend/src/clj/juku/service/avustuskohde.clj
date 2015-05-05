@@ -1,22 +1,15 @@
 (ns juku.service.avustuskohde
   (:require [juku.db.yesql-patch :as sql]
-            [juku.service.user :as user]
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
-            [juku.service.organisaatio :as o]
-            [juku.service.asiahallinta :as asha]
             [common.string :as xstr]
             [clojure.string :as str]
-            [clj-time.core :as time]
             [schema.coerce :as scoerce]
-            [clojure.java.io :as io]
-            [juku.service.pdf :as pdf]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
             [common.collection :as c]
-            [clojure.set :as set])
-  (:import (org.joda.time LocalDate)))
+            [clojure.set :as set]))
 
 ; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "avustuskohde.sql")
