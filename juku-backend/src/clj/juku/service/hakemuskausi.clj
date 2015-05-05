@@ -155,8 +155,7 @@
     (c/if-let3! [hakuohje (find-hakuohje-sisalto vuosi) {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}]
 
       (update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero
-        (asha/avaa-hakemuskausi {:asianNimi (str "Hakemuskausi " vuosi)}
-                                (set/rename-keys hakuohje {:sisalto :content :contenttype :mime-type}))})))
+        (asha/avaa-hakemuskausi {:asianNimi (str "Hakemuskausi " vuosi)} hakuohje)})))
     nil)
 
 (defn sulje-hakemuskausi! [^Integer vuosi]

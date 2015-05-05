@@ -7,6 +7,7 @@
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
             [juku.service.avustuskohde :as ak]
+            [juku.service.liitteet :as l]
             [common.string :as xstr]
             [clojure.string :as str]
             [clj-time.core :as time]
@@ -124,13 +125,14 @@
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)
           hakemus-asiakirja (hakemus-pdf hakemusid)
-          organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+          liitteet (l/find-liitteet+sisalto hakemusid)]
 
       (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"})
       (update-hakemus-set-diaarinumero!
         {:hakemusid hakemusid
          :diaarinumero (asha/hakemus-vireille {:kausi (:vuosi hakemus) :hakija (:nimi organisaatio)}
-                                              hakemus-asiakirja [])}))))
+                                              hakemus-asiakirja liitteet)}))))
 
 (defn tarkasta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))

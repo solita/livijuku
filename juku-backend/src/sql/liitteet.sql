@@ -6,6 +6,10 @@ from liite where hakemusid = :hakemusid and poistoaika is null
 -- name: select-liite-sisalto
 select nimi, contenttype, sisalto from liite where hakemusid = :hakemusid and liitenumero = :liitenumero
 
+-- name: select-liitteet+sisalto
+select hakemusid, liitenumero, nimi, contenttype, sisalto
+from liite where hakemusid = :hakemusid and poistoaika is null
+
 -- name: insert-liite!
 insert into liite (hakemusid, liitenumero, nimi, contenttype, sisalto)
 values (:hakemusid,

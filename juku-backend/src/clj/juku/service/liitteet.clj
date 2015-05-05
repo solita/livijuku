@@ -15,9 +15,15 @@
 (sql/defqueries "liitteet.sql" {:constraint-errors constraint-errors})
 
 (def coerce-liite (scoerce/coercer s/Liite coerce/db-coercion-matcher))
+(def coerce-liite+ (scoerce/coercer s/Liite+ coerce/db-coercion-matcher))
+
+(defn ^InputStream inputstream [^Blob blob] (.getBinaryStream blob))
 
 (defn find-liitteet [hakemusid]
   (map coerce-liite (select-liitteet {:hakemusid hakemusid})))
+
+(defn find-liitteet+sisalto [hakemusid]
+  (map (comp coerce-liite+ #(update-in % [:sisalto] inputstream)) (select-liitteet {:hakemusid hakemusid})))
 
 (defn add-liite! [liite ^InputStream sisalto]
   (insert-liite! (assoc liite :sisalto sisalto))
@@ -33,4 +39,4 @@
 
 (defn find-liite-sisalto [hakemusid liitenumero]
   (if-let [liite (first (select-liite-sisalto {:hakemusid hakemusid :liitenumero liitenumero}))]
-    (update-in liite [:sisalto] #(.getBinaryStream %))))
+    (update-in liite [:sisalto] inputstream)))

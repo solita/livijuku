@@ -1,7 +1,8 @@
 (ns juku.service.asiahallinta-mock
   (:require [juku.user :as user]
             [clj-time.core :as time]
-            [clj-time.format :as tf]))
+            [clj-time.format :as tf]
+            [juku.settings :refer [settings]]))
 
 (def ^:dynamic *asha*)
 
@@ -23,3 +24,5 @@
          (time/before? (tf/parse (tf/formatters :date-time) (get headers "SOA-Aikaleima")) (time/now)))))
 
 (defmacro with-asha [& body] `(binding [*asha* {}] ~@body))
+
+(defmacro with-asha-off [& body] `(with-redefs [settings (assoc settings :asiahallinta "off")] ~@body))

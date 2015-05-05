@@ -6,6 +6,7 @@
             [schema.core :as s]
             [cheshire.core :as json]
             [common.string :as str]
+            [clojure.set :as set]
             [clojure.tools.logging :as log]
             [juku.settings :refer [settings]])
   (:import (java.util UUID)))
@@ -67,16 +68,19 @@
     (do
       (log/info "Asiahallinta ei ole päällä - toimenpide: " operation ))))
 
+(defn rename-content-keys [content] (set/rename-keys content {:sisalto :content :contenttype :mime-type :nimi :name}))
+
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
-                     Hakemuskausi (merge hakemuskausi omistaja) [(assoc hakuohje :name "hakuohje-asiakirja")]))))
+                     Hakemuskausi (merge hakemuskausi omistaja) [(assoc (rename-content-keys hakuohje) :name "hakuohje-asiakirja")]))))
 
 (defn hakemus-vireille [hakemus hakemusasiakirja liitteet]
   (str/trim (:body (post-with-liitteet
                      "hakemus" "Vireilla"
                      "hakemus" Hakemus (merge hakemus omistaja)
-                     (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"} liitteet)))))
+                     (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"}
+                           (map rename-content-keys liitteet))))))
 
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" diaarinumero "/sulje") "SuljeKausi"))

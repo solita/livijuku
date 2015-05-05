@@ -6,7 +6,6 @@
             [common.string :as str]
             [common.map :as m]
             [juku.service.test :as test]
-            [juku.settings :as s]
             [juku.service.asiahallinta-mock :as asha]
             [clj-time.core :as time]
             [clj-http.fake :as fake])
@@ -61,7 +60,7 @@
 (facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen - asiahallinta kytketty pois päältä--"
 
 (test/with-user "juku_kasittelija" ["juku_kasittelija"]
-  (with-redefs [s/settings (assoc s/settings :asiahallinta "off")]
+  (asha/with-asha-off
     (fact "Avaa hakemuskausi"
       (let [vuosi (:vuosi (test/next-hakemuskausi!))]
           (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
@@ -100,7 +99,7 @@
         id1 (h/add-hakemus! hakemus1)]
 
       (h/add-hakemus! hakemus2)
-      (h/laheta-hakemus! id1)
+      (asha/with-asha-off (h/laheta-hakemus! id1))
 
       (c/find-first (c/eq :vuosi vuosi) (hk/find-hakemuskaudet+summary)) =>
         {:vuosi      vuosi
