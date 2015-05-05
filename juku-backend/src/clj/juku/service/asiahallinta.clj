@@ -1,6 +1,7 @@
 (ns juku.service.asiahallinta
   (:require [clj-http.client :as client]
             [juku.user :as current-user]
+            [juku.headers :as h]
             [clj-time.core :as time]
             [ring.swagger.schema :as swagger]
             [schema.core :as s]
@@ -46,7 +47,7 @@
                    :mime-type "application/json"
                    :encoding "utf-8"}
 
-        parts (cons json-part liitteet)
+        parts (cons json-part (map #(update-in % [:name] h/encode-value) liitteet))
         request (assoc (default-request operation) :multipart parts)
         url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
