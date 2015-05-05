@@ -1,4 +1,4 @@
-(ns juku.service.hakemus_test
+(ns juku.service.hakemus-test
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
             [common.collection :as c]
