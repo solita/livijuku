@@ -88,14 +88,7 @@
 (defn save-hakemus-kasittelija! [hakemusid kasittelija]
   (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
 
-(defn tarkasta-hakemus! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
-
-(defn taydennyspyynto! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"}))
-
-(defn laheta-taydennys! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"}))
+;; *** Hakemusasiakirjan (pdf-dokumentti) tuotattaminen ***
 
 (def organisaatiolaji->plural-genetive
   {"KS1" "suurten kaupunkiseutujen",
@@ -125,6 +118,8 @@
                                   :omarahoitus total-omarahoitus})
        :footer "Footer"})))
 
+;; *** Hakemustilan käsittely ***
+
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)
@@ -136,3 +131,12 @@
         {:hakemusid hakemusid
          :diaarinumero (asha/hakemus-vireille {:kausi (:vuosi hakemus) :hakija (:nimi organisaatio)}
                                               hakemus-asiakirja [])}))))
+
+(defn tarkasta-hakemus! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
+
+(defn taydennyspyynto! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"}))
+
+(defn laheta-taydennys! [hakemusid]
+  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"}))
