@@ -21,31 +21,11 @@
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/get-hakemus-by-id hakemusid)))
-      (GET* "/hakemus/avustuskohteet/:hakemusid" []
-            :return [Avustuskohde]
-            :path-params [hakemusid :- Long]
-            :summary "Hae hakemuksen avustuskohteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
-            (ok (service/find-avustuskohteet-by-hakemusid hakemusid)))
       (POST* "/hakemus" []
              :return   s/Num
              :body     [hakemus NewHakemus]
              :summary  "Lisää yksittäinen hakemus."
              (ok (service/add-hakemus! hakemus)))
-      (POST* "/avustuskohde" []
-             :return   nil
-             :body     [avustuskohde Avustuskohde]
-             :summary  "Lisää uuden avustuskohteen olemassaolevaan hakemukseen."
-             (ok (service/add-avustuskohde! avustuskohde)))
-      (PUT* "/avustuskohde" []
-             :return   nil
-             :body     [avustuskohde Avustuskohde]
-             :summary  "Päivittää avustuskohteen tiedot tai lisää uuden avustuskohteen."
-             (ok (service/save-avustuskohde! avustuskohde)))
-      (PUT* "/avustuskohteet" []
-            :return   nil
-            :body     [avustuskohteet [Avustuskohde]]
-            :summary  "Päivittää tai lisää annetut avustuskohteet."
-            (ok (service/save-avustuskohteet! avustuskohteet)))
       (PUT* "/hakemus/suunniteltuavustus" []
             :return   s/Num
             :body-params [hakemusid :- Long, suunniteltuavustus :- s/Num]
@@ -81,15 +61,9 @@
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
-
       (GET* "/hakemus/:hakemusid/pdf" []
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."
             (content-type (ok (service/hakemus-pdf hakemusid))
-                          "application/pdf"))
-
-      (GET* "/avustuskohdeluokittelu" []
-             :return [Avustuskohdeluokka]
-             :summary "Hae avustuskohteiden luokittelu: kaikki luokat ja lajit"
-            (ok (service/avustuskohde-luokittelu))))
+                          "application/pdf")))
 

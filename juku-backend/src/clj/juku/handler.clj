@@ -5,6 +5,7 @@
             [compojure.api.sweet :refer :all]
 
             [juku.rest-api.hakemus :refer [hakemus-routes]]
+            [juku.rest-api.avustuskohde :refer [avustuskohde-routes]]
             [juku.rest-api.hakemuskausi :refer [hakemuskausi-routes]]
             [juku.rest-api.paatos :refer [paatos-routes]]
             [juku.rest-api.liitteet :refer [liitteet-routes]]
@@ -40,6 +41,9 @@
         (swaggered "hakemus"
                    :description "Hakemus API"
                    hakemus-routes)
+        (swaggered "avustuskohde"
+                   :description "Avustuskohde API"
+                   avustuskohde-routes)
         (swaggered "paatos"
                    :description "Päätös API"
                    paatos-routes)

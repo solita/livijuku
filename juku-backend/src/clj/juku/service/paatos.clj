@@ -5,6 +5,7 @@
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.service.hakemus :as h]
+            [juku.service.avustuskohde :as ak]
             [juku.service.pdf :as pdf]
             [juku.service.organisaatio :as o]
             [schema.coerce :as scoerce]
@@ -50,7 +51,7 @@
         paatospvm-txt (.toString ^LocalDate (or (:voimaantuloaika paatos) (time/today)) "d.M.y")
         hakemus (h/get-hakemus-by-id hakemusid)
         organisaatio (o/find-organisaatio (:organisaatioid hakemus))
-        avustuskohteet (h/find-avustuskohteet-by-hakemusid hakemusid)
+        avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
 
         total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
         total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
@@ -64,7 +65,7 @@
                           :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
                           :paatosspvm paatospvm-txt
                           :vuosi (:vuosi hakemus)
-                          :avustuskohteet (h/avustuskohteet-section avustuskohteet)
+                          :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
                           :haettuavustus total-haettavaavustus
                           :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
                           :omarahoitus total-omarahoitus
