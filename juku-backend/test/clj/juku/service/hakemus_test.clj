@@ -123,7 +123,7 @@
 
 
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
-  (test/with-user "juku_kasittelija" ["juku_hakija"]
+  (test/with-user "juku_hakija" ["juku_hakija"]
     (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")}
       (fact "Hakemuksen lähettäminen"
         (asha/with-asha
