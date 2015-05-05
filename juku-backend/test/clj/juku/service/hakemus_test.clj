@@ -10,8 +10,6 @@
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
-(defn diaarinumero [id vuosi] (str "LIVI/" id "/07.00.01/" vuosi))
-
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
 (def hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0")))
@@ -122,6 +120,7 @@
           (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
             => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M)))))
 
+;; ************ Hakemuksen tilan hallinta ***********
 
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
   (test/with-user "juku_hakija" ["juku_hakija"]

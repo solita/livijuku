@@ -23,7 +23,7 @@
   (map coerce-liite (select-liitteet {:hakemusid hakemusid})))
 
 (defn find-liitteet+sisalto [hakemusid]
-  (map (comp coerce-liite+ #(update-in % [:sisalto] inputstream)) (select-liitteet {:hakemusid hakemusid})))
+  (map (comp coerce-liite+ #(update-in % [:sisalto] inputstream)) (select-liitteet+sisalto {:hakemusid hakemusid})))
 
 (defn add-liite! [liite ^InputStream sisalto]
   (insert-liite! (assoc liite :sisalto sisalto))
