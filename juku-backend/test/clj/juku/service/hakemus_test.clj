@@ -192,7 +192,11 @@
             (h/laheta-hakemus! id)
             (h/taydennyspyynto! id)
 
-            (asha/headers :taydennyspyynto) => asha/valid-headers?))))))
+            (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T0"
+
+            (asha/headers :taydennyspyynto) => asha/valid-headers?
+            (:uri (asha/request :taydennyspyynto))) => "/api/hakemus/testing/taydennyspyynto"
+            (slurp (:body (asha/request :taydennyspyynto))) => #"\{\"maaraaika\":\"(.+)\",\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"\}")))))
 
 (defn from-today [days]
   (time/plus (time/today) (time/days days)))
