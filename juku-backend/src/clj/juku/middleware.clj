@@ -25,6 +25,7 @@
                        :sukunimi (strx/trim (h/parse-header headers :oam-user-last-name))} str/blank?)
                        :organisaatioid orgnisaatio-id))
 
+; TODO retry for kayttaja_pk constrain violation
 (defn save-user [uid orgnisaatio-id headers]
   (let [user-data (headers->user-data orgnisaatio-id headers)]
     (if-let [user (user/find-user uid)]
