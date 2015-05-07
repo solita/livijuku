@@ -165,7 +165,7 @@
       (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "S" :expectedtunnus "K"})
           {:http-response r/method-not-allowed :message (str "Hakemuskausi ei ole avattu vuodelle: " vuosi) :vuosi vuosi})
 
-      (asha/sulje-hakemuskausi (:diaarinumero hakemuskausi)))
+      (if (:diaarinumero hakemuskausi) (asha/sulje-hakemuskausi (:diaarinumero hakemuskausi))))
 
     (ss/throw+ {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi})))
 

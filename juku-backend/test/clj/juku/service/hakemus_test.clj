@@ -20,19 +20,24 @@
 (defn assoc-hakemus-defaults [hakemus id]
   (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
 
+(defn assoc-hakemus-defaults+ [hakemus id selite]
+  (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija", :kasittelija nil :selite selite))
+
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
   (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))
 
 ;; ************ Hakemuksen käsittely ja haut ***********
 
-(facts "-- Hakemus testit --"
+(facts "Hakemuksen käsittely ja haut"
+
+(test/with-user "juku_kasittelija" ["juku_kasittelija"]
 
   (fact "Uuden hakemuksen luonti"
     (let [organisaatioid 1M
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
           id (h/add-hakemus! hakemus)]
 
-      (dissoc (h/get-hakemus-by-id id) :muokkausaika :selite) => (assoc-hakemus-defaults hakemus id)))
+      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id nil)))
 
   (fact "Uuden hakemuksen luonti - organisaatio ei ole olemassa"
     (let [organisaatioid 23453453453453
@@ -55,7 +60,7 @@
           selite "selite"]
 
       (h/save-hakemus-selite! id selite)
-      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
+      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
 
   (fact "Hakemuksen selitteen päivittäminen - yli 4000 merkkiä ja sisältää ei ascii merkkejä"
     (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
@@ -63,7 +68,7 @@
           selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
 
       (h/save-hakemus-selite! id selite)
-      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc (assoc-hakemus-defaults hakemus id) :selite selite)))
+      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
 
   (fact "Organisaation hakemusten haku"
     (let [organisaatioid 1M
@@ -121,14 +126,15 @@
 
           ;; hakemus (:id = id) löytyy hakutuloksista
           (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
-            => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M)))))
+            => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))))
 
 ;; ************ Hakemuksen tilan hallinta ***********
 
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
 
   (test/with-user "juku_hakija" ["juku_hakija"]
-    (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")}
+    (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
+                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")}
 
       (fact "Hakemuksen lähettäminen"
         (asha/with-asha
@@ -152,27 +158,38 @@
 
       (fact "Hakemuksen lähettäminen - liitteet"
         (asha/with-asha
-         (let [organisaatioid 1M
+          (let [organisaatioid 1M
                hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
                id (h/add-hakemus! hakemus)
                liite1 {:hakemusid id :nimi "t-1" :contenttype "text/plain"}
                liite2 {:hakemusid id :nimi "t-åäö" :contenttype "text/plain"}]
 
-           (l/add-liite! liite1 (test/inputstream-from "test-1"))
-           (l/add-liite! liite2 (test/inputstream-from "test-2"))
+             (l/add-liite! liite1 (test/inputstream-from "test-1"))
+             (l/add-liite! liite2 (test/inputstream-from "test-2"))
 
-           (h/laheta-hakemus! id)
-           (asha/headers :vireille) => asha/valid-headers?
+             (h/laheta-hakemus! id)
+             (asha/headers :vireille) => asha/valid-headers?
 
-           (let [request (asha/request :vireille)
-                 multipart (m/map-values first (group-by :name (:multipart request)))]
+             (let [request (asha/request :vireille)
+                   multipart (m/map-values first (group-by :name (:multipart request)))]
 
-             (get-in multipart ["hakemus" :content]) =>
-                (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"hakija\":\"Helsingin seudun liikenne\",\"kausi\":" vuosi "}")
+               (get-in multipart ["hakemus" :content]) =>
+                  (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":" vuosi ",\"hakija\":\"Helsingin seudun liikenne\"}")
 
-             (get-in multipart ["hakemus-asiakirja" :mime-type]) => "application/pdf"
-             (slurp (get-in multipart ["t-1" :content])) => "test-1"
-             (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
+               (get-in multipart ["hakemus-asiakirja" :mime-type]) => "application/pdf"
+               (slurp (get-in multipart ["t-1" :content])) => "test-1"
+               (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
 
-           (:diaarinumero (h/get-hakemus-by-id id)) => "testing"))))))
+             (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
+
+      (fact "Täydennyspyynnön lähettäminen"
+        (asha/with-asha
+          (let [organisaatioid 1M
+                hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+                id (h/add-hakemus! hakemus)]
+
+            (h/laheta-hakemus! id)
+            (h/taydennyspyynto! id)
+
+            (asha/headers :taydennyspyynto) => asha/valid-headers?))))))
 

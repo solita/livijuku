@@ -6,7 +6,7 @@ from hakemus_view where organisaatioid = :organisaatioid
 
 -- name: select-hakemus
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus
 from hakemus_view where id = :hakemusid
 
 -- name: select-all-hakemukset
@@ -53,3 +53,9 @@ select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji
 
 -- name: update-hakemus-set-diaarinumero!
 update hakemus set diaarinumero = :diaarinumero where id = :hakemusid
+
+-- name: insert-taydennyspyynto!
+insert into taydennyspyynto (hakemusid, numero, maarapvm)
+values (:hakemusid,
+        (select nvl(max(p.numero), 0) + 1 from taydennyspyynto p where p.hakemusid = :hakemusid),
+        :maarapvm)

@@ -20,7 +20,9 @@
      (assoc Hakemus :haettu-avustus s/Num
                     :myonnettava-avustus s/Num))
 
-(s/defschema Hakemus+ (assoc Hakemus :selite (s/maybe s/Str)))
+(s/defschema Hakemus+ (assoc Hakemus :selite (s/maybe s/Str)
+                                     :kasittelija (s/maybe s/Str)
+                                     :luontitunnus s/Str))
 
 (s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika))
 

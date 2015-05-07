@@ -3,14 +3,16 @@
             [juku.user :as current-user]
             [juku.headers :as h]
             [clj-time.core :as time]
-            [ring.swagger.schema :as swagger]
             [schema.core :as s]
             [cheshire.core :as json]
+            [ring.swagger.core]
             [common.string :as str]
             [clojure.set :as set]
+            [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
             [juku.settings :refer [settings]])
-  (:import (java.util UUID)))
+  (:import (java.util UUID)
+           (org.joda.time LocalDate)))
 
 (defn default-request [operation]
    {:basic-auth [(get-in settings [:asiahallinta :user])
@@ -36,26 +38,52 @@
                       :omistavaOrganisaatio  s/Str
                       :omistavaHenkilo       s/Str})
 
+(s/defschema Taydennyspyynto {:maaraaika   LocalDate
+                              :kasittelija s/Str
+                              :hakija      s/Str})
+
 (def omistaja {:omistavaOrganisaatio "Liikennevirasto"
                :omistavaHenkilo (get-in settings [:asiahallinta :omistavahenkilo])})
+
+(defn- log-time* [title f]
+  (let [start (System/nanoTime)
+        result (f)]
+    (log/info title "elapsed time:" (/ (- (System/nanoTime) start) 1000000.0) "msec")
+    result))
+
+(defmacro log-time [title & body] `(log-time* ~title (fn [] ~@body)))
+
+(defn to-json [schema object] (json/generate-string object))
 
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
   (if (not= (:asiahallinta settings) "off")
     (let [json-part {:name json-part-name
-                   :content (json/generate-string (swagger/coerce! json-schema json-object))
-                   :mime-type "application/json"
-                   :encoding "utf-8"}
+                     :content (to-json json-schema json-object)
+                     :mime-type "application/json"
+                     :encoding "utf-8"}
 
         parts (cons json-part (map #(update-in % [:name] h/encode-value) liitteet))
         request (assoc (default-request operation) :multipart parts)
         url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
-    (log/info "post" url request)
-    (client/post url request))
+      (log/info "post multipart" url request)
+      (log-time (str "post " path) (client/post url request)))
 
-    (do
-      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object))))
+    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)))
+
+(defn- post [path operation json-schema json-object]
+
+  (if (not= (:asiahallinta settings) "off")
+    (let [request (assoc (default-request operation)
+                    :content-type :json
+                    :body (to-json json-schema json-object))
+          url (str (get-in settings [:asiahallinta :url]) "/" path)]
+
+      (log/info "post" url request)
+      (log-time (str "post " path) (client/post url request)))
+
+    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti:" json-object)))
 
 (defn- put [path operation]
 
@@ -63,11 +91,10 @@
     (let [request (default-request operation)
           url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
-      (log/info "post" url request)
-      (client/put url request))
+      (log/info "put" url request)
+      (log-time (str "put " path) (client/put url request)))
 
-    (do
-      (log/info "Asiahallinta ei ole päällä - toimenpide: " operation ))))
+    (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )))
 
 (defn rename-content-keys [content] (set/rename-keys content {:sisalto :content :contenttype :mime-type :nimi :name}))
 
@@ -83,7 +110,12 @@
                      (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"}
                            (map rename-content-keys liitteet))))))
 
+(defn taydennyspyynto [diaarinumero taydennyspyynto]
+  (post (str "hakemus/" (codec/url-encode diaarinumero) "/taydennyspyynto")
+         "Taydennyspyynto"
+         Taydennyspyynto taydennyspyynto))
+
 (defn sulje-hakemuskausi [diaarinumero]
-  (put (str "hakemuskausi/" diaarinumero "/sulje") "SuljeKausi"))
+  (put (str "hakemuskausi/" (codec/url-encode diaarinumero) "/sulje") "SuljeKausi"))
 
 

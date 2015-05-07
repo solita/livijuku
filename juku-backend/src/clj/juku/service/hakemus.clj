@@ -137,8 +137,26 @@
 (defn tarkasta-hakemus! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
 
+(defn maarapvm [loppupvm]
+  (time/latest [loppupvm (time/plus (time/today) (time/days 14))]))
+
+(defn add-taydennyspyynto! [hakemusid maarapaiva]
+  (insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm (coerce/localdate->sql-date maarapaiva)}))
+
 (defn taydennyspyynto! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"}))
+  (with-transaction
+    (let [hakemus (get-hakemus-by-id hakemusid)
+          maarapvm (maarapvm (get-in hakemus [:hakuaika :loppupvm]))
+          kasittelija user/*current-user*
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
+
+      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"})
+      (add-taydennyspyynto! hakemusid maarapvm)
+      (if-let [diaarinumero (:diaarinumero hakemus)]
+        (asha/taydennyspyynto diaarinumero
+                              {:maaraaika   maarapvm
+                               :kasittelija (user/user-fullname kasittelija)
+                               :hakija      (:nimi organisaatio)})))))
 
 (defn laheta-taydennys! [hakemusid]
   (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"}))
