@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [common.collection :as c]
             [common.map :as m]
+            [clj-time.core :as time]
             [juku.service.hakemus :as h]
             [juku.service.liitteet :as l]
             [juku.service.avustuskohde :as ak]
@@ -193,3 +194,17 @@
 
             (asha/headers :taydennyspyynto) => asha/valid-headers?))))))
 
+(defn from-today [days]
+  (time/plus (time/today) (time/days days)))
+
+(defn before-today [days]
+  (time/plus (time/today) (time/days days)))
+
+(facts "Määräpäivän laskenta"
+       (fact (h/maarapvm (time/today)) => (from-today 14))
+       (fact (h/maarapvm (before-today 1)) => (from-today 14))
+       (fact (h/maarapvm (from-today 1)) => (from-today 14))
+       (fact (h/maarapvm (from-today 13)) => (from-today 14))
+       (fact (h/maarapvm (from-today 14)) => (from-today 14))
+       (fact (h/maarapvm (from-today 15)) => (from-today 15))
+       (fact (h/maarapvm (from-today 16)) => (from-today 16)))
