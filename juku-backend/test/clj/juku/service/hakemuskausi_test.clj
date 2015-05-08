@@ -42,7 +42,7 @@
           (hk/avaa-hakemuskausi! vuosi)
 
           (assert-avustuskohteet vuosi)
-          (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => "testing"
+          (:diaarinumero (h/find-hakemuskausi {:vuosi vuosi})) => "testing"
           (asha/headers :avaus) => asha/valid-headers?
           (:content (first (:multipart (asha/request :avaus)))) =>
             (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"asianNimi\":\"Hakemuskausi " vuosi "\"}"))))
@@ -67,7 +67,7 @@
           (hk/avaa-hakemuskausi! vuosi)
 
           (assert-avustuskohteet vuosi)
-          (:diaarinumero (hk/find-hakemuskausi {:vuosi vuosi})) => nil)
+          (:diaarinumero (h/find-hakemuskausi {:vuosi vuosi})) => nil)
 
     (fact "Sulje hakemuskausi"
       (let [vuosi (:vuosi (test/next-hakemuskausi!))]

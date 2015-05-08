@@ -2,9 +2,6 @@
 -- name: select-all-hakemuskaudet
 select vuosi, tilatunnus, hakuohje_contenttype from hakemuskausi
 
--- name: select-hakemuskausi
-select vuosi, diaarinumero from hakemuskausi where vuosi = :vuosi
-
 -- name: select-maararaha
 select maararaha, ylijaama
 from maararaha where vuosi = :vuosi and organisaatiolajitunnus = :organisaatiolajitunnus

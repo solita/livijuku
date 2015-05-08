@@ -55,9 +55,6 @@
 (defn find-maararaha [vuosi organisaatiolajitunnus]
   (first (map coerce-maararaha (select-maararaha {:vuosi vuosi :organisaatiolajitunnus organisaatiolajitunnus}))))
 
-(defn find-hakemuskausi [vuosi]
-  (first (select-hakemuskausi vuosi)))
-
 (defn- update-maararaha! [maararaha]
   (dml/update-where! db "maararaha"
                      (dissoc maararaha :vuosi :organisaatiolajitunnus)
@@ -139,7 +136,7 @@
   (with-transaction
 
     (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
-       (if (empty? (select-hakemuskausi {:vuosi vuosi}))
+       (if (empty? (hakemus/select-hakemuskausi {:vuosi vuosi}))
          {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
          {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
 
@@ -159,7 +156,7 @@
     nil)
 
 (defn sulje-hakemuskausi! [^Integer vuosi]
-  (if-let [hakemuskausi (find-hakemuskausi {:vuosi vuosi})]
+  (if-let [hakemuskausi (hakemus/find-hakemuskausi {:vuosi vuosi})]
     (with-transaction
 
       (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "S" :expectedtunnus "K"})

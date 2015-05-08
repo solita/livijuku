@@ -1,4 +1,7 @@
 
+-- name: select-hakemuskausi
+select vuosi, diaarinumero from hakemuskausi where vuosi = :vuosi
+
 -- name: select-organisaation-hakemukset
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
        organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm

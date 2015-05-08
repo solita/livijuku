@@ -121,6 +121,8 @@
 
 ;; *** Hakemustilan käsittely ***
 
+(defn find-hakemuskausi [vuosi] (first (select-hakemuskausi vuosi)))
+
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)
