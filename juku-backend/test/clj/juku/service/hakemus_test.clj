@@ -5,6 +5,7 @@
             [common.map :as m]
             [clj-time.core :as time]
             [juku.service.hakemus :as h]
+            [juku.service.hakemuskausi :as hk]
             [juku.service.liitteet :as l]
             [juku.service.avustuskohde :as ak]
             [juku.service.asiahallinta-mock :as asha]
@@ -17,6 +18,7 @@
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
 (def hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0")))
+(hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
 
 (defn assoc-hakemus-defaults [hakemus id]
   (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
@@ -176,7 +178,8 @@
                    multipart (m/map-values first (group-by :name (:multipart request)))]
 
                (get-in multipart ["hakemus" :content]) =>
-                  (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":" vuosi ",\"hakija\":\"Helsingin seudun liikenne\"}")
+                  (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":\"dnro:" vuosi
+                       "\",\"hakija\":\"Helsingin seudun liikenne\"}")
 
                (get-in multipart ["hakemus-asiakirja" :mime-type]) => "application/pdf"
                (slurp (get-in multipart ["t-1" :content])) => "test-1"

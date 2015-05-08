@@ -126,6 +126,7 @@
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)
+          hakemuskausi (find-hakemuskausi hakemus)
           hakemus-asiakirja (hakemus-pdf hakemusid)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           liitteet (l/find-liitteet+sisalto hakemusid)]
@@ -133,7 +134,7 @@
       (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"})
       (update-hakemus-set-diaarinumero!
         {:hakemusid hakemusid
-         :diaarinumero (asha/hakemus-vireille {:kausi (:vuosi hakemus) :hakija (:nimi organisaatio)}
+         :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi) :hakija (:nimi organisaatio)}
                                               hakemus-asiakirja liitteet)}))))
 
 (defn tarkasta-hakemus! [hakemusid]
