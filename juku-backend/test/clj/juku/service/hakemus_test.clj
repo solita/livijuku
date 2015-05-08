@@ -181,7 +181,7 @@
                   (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":\"dnro:" vuosi
                        "\",\"hakija\":\"Helsingin seudun liikenne\"}")
 
-               (get-in multipart ["hakemus-asiakirja" :mime-type]) => "application/pdf"
+               (get-in multipart ["hakemus.pdf" :mime-type]) => "application/pdf"
                (slurp (get-in multipart ["t-1" :content])) => "test-1"
                (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
 
