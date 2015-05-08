@@ -174,6 +174,6 @@
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero
-                        {:kasitelija (user/user-fullname kasittelija)
+                        {:kasittelija (user/user-fullname kasittelija)
                          :lahettaja (:nimi organisaatio)}
                         hakemus-asiakirja liitteet)))))

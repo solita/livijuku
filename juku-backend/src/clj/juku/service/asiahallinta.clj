@@ -33,7 +33,7 @@
                            :omistavaOrganisaatio  s/Str
                            :omistavaHenkilo       s/Str})
 
-(s/defschema Hakemus {:kausi                 s/Int
+(s/defschema Hakemus {:kausi                 s/Str
                       :hakija                s/Str
                       :omistavaOrganisaatio  s/Str
                       :omistavaHenkilo       s/Str})
@@ -56,7 +56,10 @@
 
 (defmacro log-time [title & body] `(log-time* ~title (fn [] ~@body)))
 
-(defn to-json [schema object] (json/generate-string object))
+(defn to-json [schema object]
+  (do
+    (s/validate schema object)
+    (json/generate-string object)))
 
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
@@ -104,7 +107,8 @@
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
-                     Hakemuskausi (merge hakemuskausi omistaja) [(assoc (rename-content-keys hakuohje) :name "hakuohje-asiakirja")]))))
+                     Hakemuskausi (merge hakemuskausi omistaja)
+                     [(assoc (rename-content-keys hakuohje) :name "hakuohje-asiakirja")]))))
 
 (defn hakemus-vireille [hakemus hakemusasiakirja liitteet]
   (str/trim (:body (post-with-liitteet
