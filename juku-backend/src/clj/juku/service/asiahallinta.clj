@@ -108,13 +108,16 @@
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
                      Hakemuskausi (merge hakemuskausi omistaja)
-                     [(assoc (rename-content-keys hakuohje) :name "hakuohje-asiakirja")]))))
+                     [(assoc (rename-content-keys hakuohje) :part-name "hakuohje-asiakirja"
+                                                            :name "hakuohje.pdf")]))))
 
 (defn hakemus-vireille [hakemus hakemusasiakirja liitteet]
   (str/trim (:body (post-with-liitteet
-                     "hakemus" "Vireilla"
-                     "hakemus" Hakemus (merge hakemus omistaja)
-                     (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"}
+                     "hakemus" "Vireilla" "hakemus" Hakemus (merge hakemus omistaja)
+                     (cons {:part-name "hakemus-asiakirja"
+                            :name "hakemus.pdf"
+                            :content hakemusasiakirja
+                            :mime-type "application/pdf"}
                            (map rename-content-keys liitteet))))))
 
 (defn taydennyspyynto [diaarinumero taydennyspyynto]
