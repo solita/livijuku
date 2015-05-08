@@ -42,6 +42,9 @@
                               :kasittelija s/Str
                               :hakija      s/Str})
 
+(s/defschema Taydennys {:kasittelija s/Str
+                        :lahettaja      s/Str})
+
 (def omistaja {:omistavaOrganisaatio "Liikennevirasto"
                :omistavaHenkilo (get-in settings [:asiahallinta :omistavahenkilo])})
 
@@ -114,6 +117,12 @@
   (post (str "hakemus/" (codec/url-encode diaarinumero) "/taydennyspyynto")
          "Taydennyspyynto"
          Taydennyspyynto taydennyspyynto))
+
+(defn taydennys [diaarinumero taydennys hakemusasiakirja liitteet]
+  (post-with-liitteet (str "hakemus/" (codec/url-encode diaarinumero) "/taydennys")
+       "Taydennys" "taydennys" Taydennys taydennys
+       (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"}
+             (map rename-content-keys liitteet))))
 
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" (codec/url-encode diaarinumero) "/sulje") "SuljeKausi"))

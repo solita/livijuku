@@ -151,6 +151,7 @@
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
       (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"})
+
       (add-taydennyspyynto! hakemusid maarapvm)
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennyspyynto diaarinumero
@@ -159,4 +160,17 @@
                                :hakija      (:nimi organisaatio)})))))
 
 (defn laheta-taydennys! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"}))
+  (with-transaction
+    (let [hakemus (get-hakemus-by-id hakemusid)
+          hakemus-asiakirja (hakemus-pdf hakemusid)
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+          kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
+          liitteet (l/find-liitteet+sisalto hakemusid)]
+
+      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"})
+
+      (if-let [diaarinumero (:diaarinumero hakemus)]
+        (asha/taydennys diaarinumero
+                        {:kasitelija (user/user-fullname kasittelija)
+                         :lahettaja (:nimi organisaatio)}
+                        hakemus-asiakirja liitteet)))))

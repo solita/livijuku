@@ -135,7 +135,8 @@
 
   (test/with-user "juku_hakija" ["juku_hakija"]
     (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
-                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")}
+                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")
+                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")}
 
       (fact "Hakemuksen lähettäminen"
         (asha/with-asha
@@ -196,7 +197,26 @@
 
             (asha/headers :taydennyspyynto) => asha/valid-headers?
             (:uri (asha/request :taydennyspyynto))) => "/api/hakemus/testing/taydennyspyynto"
-            (slurp (:body (asha/request :taydennyspyynto))) => #"\{\"maaraaika\":\"(.+)\",\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"\}")))))
+            (slurp (:body (asha/request :taydennyspyynto))) =>
+                #"\{\"maaraaika\":\"(.+)\",\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"\}"))
+
+      (fact "Täydennyksen lähettäminen"
+        (asha/with-asha
+         (let [organisaatioid 1M
+               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+               id (h/add-hakemus! hakemus)]
+
+           (h/laheta-hakemus! id)
+           (h/taydennyspyynto! id)
+           (h/laheta-taydennys! id)
+
+           (:hakemustilatunnus (h/get-hakemus-by-id id)) => "TV"
+
+           (asha/headers :taydennys) => asha/valid-headers?
+           (:uri (asha/request :taydennys))) => "/api/hakemus/testing/taydennys"
+           #_(asha/request :taydennys) )))))
+
+;; Määräpäivän laskennan testit
 
 (defn from-today [days]
   (time/plus (time/today) (time/days days)))
