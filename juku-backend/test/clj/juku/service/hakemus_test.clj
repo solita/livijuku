@@ -182,6 +182,7 @@
                        "\",\"hakija\":\"Helsingin seudun liikenne\"}")
 
                (get-in multipart ["hakemus.pdf" :mime-type]) => "application/pdf"
+               (get-in multipart ["hakemus.pdf" :part-name]) => "hakemus-asiakirja"
                (slurp (get-in multipart ["t-1" :content])) => "test-1"
                (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
 
