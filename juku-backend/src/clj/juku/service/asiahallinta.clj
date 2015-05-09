@@ -131,6 +131,9 @@
        (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"}
              (map rename-content-keys liitteet))))
 
+(defn tarkastettu [diaarinumero]
+  (put (str "hakemus/" (codec/url-encode diaarinumero) "/tarkastettu") "Tarkastettu"))
+
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" (codec/url-encode diaarinumero) "/sulje") "SuljeKausi"))
 

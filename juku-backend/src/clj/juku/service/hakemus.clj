@@ -138,7 +138,11 @@
                                               hakemus-asiakirja liitteet)}))))
 
 (defn tarkasta-hakemus! [hakemusid]
-  (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"}))
+  (with-transaction
+    (let [hakemus (get-hakemus-by-id hakemusid)]
+      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
+      (if-let [diaarinumero (:diaarinumero hakemus)]
+        (asha/tarkastettu diaarinumero)))))
 
 (defn maarapvm [loppupvm]
   (time/latest [loppupvm (time/plus (time/today) (time/days 14))]))

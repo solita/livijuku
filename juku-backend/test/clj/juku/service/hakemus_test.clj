@@ -138,7 +138,8 @@
   (test/with-user "juku_hakija" ["juku_hakija"]
     (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
                             #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")
-                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")}
+                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")
+                            #"http://(.+)/hakemus/(.+)/tarkastettu" (asha/asha-handler :tarkastettu "")}
 
       (fact "Hakemuksen lähettäminen"
         (asha/with-asha
@@ -218,7 +219,21 @@
 
            (asha/headers :taydennys) => asha/valid-headers?
            (:uri (asha/request :taydennys))) => "/api/hakemus/testing/taydennys"
-           #_(asha/request :taydennys) )))))
+           #_(asha/request :taydennys) ))
+
+      (fact "Tarkastaminen"
+        (asha/with-asha
+         (let [organisaatioid 1M
+               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
+               id (h/add-hakemus! hakemus)]
+
+           (h/laheta-hakemus! id)
+           (h/tarkasta-hakemus! id)
+
+           (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T"
+
+           (asha/headers :tarkastettu) => asha/valid-headers?
+           (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu")))))
 
 ;; Määräpäivän laskennan testit
 
