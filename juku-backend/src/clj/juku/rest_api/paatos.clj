@@ -16,7 +16,7 @@
     (GET* "/hakemus/:hakemusid/paatos/:paatosnumero/pdf" []
           :path-params [hakemusid :- Long, paatosnumero :- Long]
           :summary "Hae hakemuksen (hakemusid) päätöksen (päätösnumero) päätösasiakirja."
-          (content-type (ok (service/paatos-pdf hakemusid paatosnumero))
+          (content-type (ok (service/paatos-pdf hakemusid))
                         "application/pdf"))
 
     (PUT* "/hakemus/:hakemusid/paatos" []

@@ -45,6 +45,8 @@
 (s/defschema Taydennys {:kasittelija s/Str
                         :lahettaja      s/Str})
 
+(s/defschema Paatos {:paattaja s/Str})
+
 (def omistaja {:omistavaOrganisaatio "Liikennevirasto"
                :omistavaHenkilo (get-in settings [:asiahallinta :omistavahenkilo])})
 
@@ -111,13 +113,16 @@
                      [(assoc (rename-content-keys hakuohje) :part-name "hakuohje-asiakirja"
                                                             :name "hakuohje.pdf")]))))
 
+(defn hakemus-asiakirja-multipart [asiakirja]
+  {:part-name "hakemus-asiakirja"
+   :name "hakemus.pdf"
+   :content asiakirja
+   :mime-type "application/pdf"})
+
 (defn hakemus-vireille [hakemus hakemusasiakirja liitteet]
   (str/trim (:body (post-with-liitteet
                      "hakemus" "Vireilla" "hakemus" Hakemus (merge hakemus omistaja)
-                     (cons {:part-name "hakemus-asiakirja"
-                            :name "hakemus.pdf"
-                            :content hakemusasiakirja
-                            :mime-type "application/pdf"}
+                     (cons (hakemus-asiakirja-multipart hakemusasiakirja)
                            (map rename-content-keys liitteet))))))
 
 (defn taydennyspyynto [diaarinumero taydennyspyynto]
@@ -128,11 +133,19 @@
 (defn taydennys [diaarinumero taydennys hakemusasiakirja liitteet]
   (post-with-liitteet (str "hakemus/" (codec/url-encode diaarinumero) "/taydennys")
        "Taydennys" "taydennys" Taydennys taydennys
-       (cons {:name "hakemus-asiakirja" :content hakemusasiakirja :mime-type "application/pdf"}
+       (cons (hakemus-asiakirja-multipart hakemusasiakirja)
              (map rename-content-keys liitteet))))
 
 (defn tarkastettu [diaarinumero]
   (put (str "hakemus/" (codec/url-encode diaarinumero) "/tarkastettu") "Tarkastettu"))
+
+(defn paatos [diaarinumero paatos paatosasiakirja]
+  (post-with-liitteet (str "hakemus/" (codec/url-encode diaarinumero) "/paatos")
+      "Paatos" "paatos" Paatos paatos
+      [{:part-name "paatos-asiakirja"
+        :name "paatos.pdf"
+        :content paatosasiakirja
+        :mime-type "application/pdf"}]))
 
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" (codec/url-encode diaarinumero) "/sulje") "SuljeKausi"))

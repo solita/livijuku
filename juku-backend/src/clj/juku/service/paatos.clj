@@ -8,12 +8,14 @@
             [juku.service.avustuskohde :as ak]
             [juku.service.pdf :as pdf]
             [juku.service.organisaatio :as o]
+            [juku.service.asiahallinta :as asha]
             [schema.coerce :as scoerce]
             [juku.schema.paatos :as s]
             [common.collection :as col]
             [common.core :as c]
             [clojure.java.io :as io]
-            [clj-time.core :as time])
+            [clj-time.core :as time]
+            [juku.service.user :as user])
   (:import (org.joda.time LocalDate)))
 
 (sql/defqueries "paatos.sql")
@@ -28,26 +30,17 @@
 
 (defn new-paatos! [paatos] (insert-paatos! paatos))
 
-(defn- assert-update [updateamount hakemusid]
+(defn- assert-update! [updateamount hakemusid]
   (assert (< updateamount 2) (str "Tietokannan tiedot ovat virheelliset. Hakemuksella " hakemusid " on kaksi avointa päätöstä.")))
 
 (defn save-paatos! [paatos]
   (let [updated (update-paatos! paatos)]
-    (assert-update updated (:hakemusid paatos))
+    (assert-update! updated (:hakemusid paatos))
     (if (== updated 0) (new-paatos! paatos))
     nil))
 
-(defn hyvaksy-paatos! [hakemusid]
-  (with-transaction
-     (let [updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})]
-        (assert-update updated hakemusid)
-        (cond
-           (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "P"})
-           (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))))
-  nil)
-
-(defn paatos-pdf [hakemusid, paatosnumero]
-  (let [paatos (find-paatos hakemusid paatosnumero)
+(defn paatos-pdf [hakemusid]
+  (let [paatos (find-current-paatos hakemusid)
         paatospvm-txt (.toString ^LocalDate (or (:voimaantuloaika paatos) (time/today)) "d.M.y")
         hakemus (h/get-hakemus-by-id hakemusid)
         organisaatio (o/find-organisaatio (:organisaatioid hakemus))
@@ -58,24 +51,37 @@
 
         template (slurp (io/reader (io/resource "pdf-sisalto/templates/paatos.txt")))]
 
-      (pdf/muodosta-pdf
-          {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
-           :teksti (xstr/interpolate template
-                         {:organisaatio-nimi (:nimi organisaatio)
-                          :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
-                          :paatosspvm paatospvm-txt
-                          :vuosi (:vuosi hakemus)
-                          :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-                          :haettuavustus total-haettavaavustus
-                          :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
-                          :omarahoitus total-omarahoitus
-                          :myonnettyavustus (:myonnettyavustus paatos)})
-           :footer "Footer"})))
+    (pdf/muodosta-pdf
+      {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
+       :teksti (xstr/interpolate template
+                                 {:organisaatio-nimi (:nimi organisaatio)
+                                  :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+                                  :paatosspvm paatospvm-txt
+                                  :vuosi (:vuosi hakemus)
+                                  :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
+                                  :haettuavustus total-haettavaavustus
+                                  :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
+                                  :omarahoitus total-omarahoitus
+                                  :myonnettyavustus (:myonnettyavustus paatos)})
+       :footer "Footer"})))
+
+(defn hyvaksy-paatos! [hakemusid]
+  (with-transaction
+    (let [hakemus (h/get-hakemus-by-id hakemusid)
+          updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})]
+      (assert-update! updated hakemusid)
+      (cond
+        (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "P"})
+        (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))
+      (if-let [diaarinumero (:diaarinumero hakemus)]
+        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)}
+                     (paatos-pdf hakemusid)))))
+  nil)
 
 (defn peruuta-paatos! [hakemusid]
   (with-transaction
     (let [updated (update-paatos-hylatty! {:hakemusid hakemusid})]
-      (assert-update updated hakemusid)
+      (assert-update! updated hakemusid)
       (cond
         (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
         (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
