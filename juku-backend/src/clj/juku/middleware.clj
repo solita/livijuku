@@ -7,6 +7,7 @@
             [common.collection :as coll]
             [clojure.string :as str]
             [common.string :as strx]
+            [juku.service.common :as sc]
             [slingshot.slingshot :as ss]
             [clojure.walk :as w]
             [ring.util.http-response :as r]
@@ -25,7 +26,6 @@
                        :sukunimi (strx/trim (h/parse-header headers :oam-user-last-name))} str/blank?)
                        :organisaatioid orgnisaatio-id))
 
-; TODO LIVIJUKU-269 - retry for kayttaja_pk constrain violation
 (defn save-user [uid orgnisaatio-id headers]
   (let [user-data (headers->user-data orgnisaatio-id headers)]
     (if-let [user (user/find-user uid)]
@@ -58,7 +58,7 @@
               " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta tai sitä ei löydetä yksikäsitteisesti.")]
 
       (current-user/with-user-id uid
-        (user/with-user (assoc (save-user uid orgnisaatio-id headers) :privileges privileges) (handler request))))))
+        (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id headers) :privileges privileges) (handler request))))))
 
 (defn- assoc-throw-context [map throw-context]
   (let [message (:message throw-context)
