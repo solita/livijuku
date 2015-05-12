@@ -147,14 +147,16 @@
       (update-hakemus-set-diaarinumero!
         {:hakemusid hakemusid
          :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi) :hakija (:nimi organisaatio)}
-                                              hakemus-asiakirja liitteet)}))))
+                                              hakemus-asiakirja liitteet)})))
+  nil)
 
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)]
       (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
       (if-let [diaarinumero (:diaarinumero hakemus)]
-        (asha/tarkastettu diaarinumero)))))
+        (asha/tarkastettu diaarinumero))))
+  nil)
 
 (defn maarapvm [loppupvm]
   (time/latest [loppupvm (time/plus (time/today) (time/days 14))]))
@@ -176,7 +178,8 @@
         (asha/taydennyspyynto diaarinumero
                               {:maaraaika   maarapvm
                                :kasittelija (user/user-fullname kasittelija)
-                               :hakija      (:nimi organisaatio)})))))
+                               :hakija      (:nimi organisaatio)}))))
+  nil)
 
 (defn laheta-taydennys! [hakemusid]
   (with-transaction
@@ -192,4 +195,5 @@
         (asha/taydennys diaarinumero
                         {:kasittelija (user/user-fullname kasittelija)
                          :lahettaja (:nimi organisaatio)}
-                        hakemus-asiakirja liitteet)))))
+                        hakemus-asiakirja liitteet))))
+  nil)

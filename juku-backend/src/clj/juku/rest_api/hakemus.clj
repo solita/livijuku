@@ -42,22 +42,22 @@
             :summary  "Päivittää hakemuksen selitteen."
             (ok (service/save-hakemus-selite! hakemusid selite)))
       (POST* "/laheta-hakemus" []
-             :return  s/Num
+             :return  nil
              :body-params     [hakemusid :- Long]
              :summary  "Hakija merkitsee hakemuksen lähetetyksi. Hakemus on tämän jälkeen vireillä."
              (ok (service/laheta-hakemus! hakemusid)))
       (POST* "/taydennyspyynto" []
-             :return  s/Num
+             :return  nil
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä lähettää hakijalle täydennyspyynnön. Hakemus on tämän jälkeen tilassa täydennettävää."
              (ok (service/taydennyspyynto! hakemusid)))
       (POST* "/laheta-taydennys" []
-             :return  s/Num
+             :return  nil
              :body-params     [hakemusid :- Long]
              :summary  "Hakija lähettää täydennyksen hakemukseen. Hakemus on tämän jälkeen tilassa täydennetty."
              (ok (service/laheta-taydennys! hakemusid)))
       (POST* "/tarkasta-hakemus" []
-             :return  s/Num
+             :return  nil
              :body-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
