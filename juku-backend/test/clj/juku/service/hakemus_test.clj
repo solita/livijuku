@@ -21,7 +21,7 @@
 (hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
 
 (defn assoc-hakemus-defaults [hakemus id]
-  (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
+  (assoc hakemus :id id, :hakemustilatunnus "0", :diaarinumero nil, :hakuaika hakuaika))
 
 (defn assoc-hakemus-defaults+ [hakemus id selite]
   (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija", :kasittelija nil :selite selite))
