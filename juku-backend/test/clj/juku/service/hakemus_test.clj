@@ -131,6 +131,26 @@
           (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
             => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))))
 
+(fact "Keskeneräisen hakemuksen tila ennen hakuajan alkua on 0 (ei käynnissä)"
+  (let [vuosi (:vuosi (test/next-hakemuskausi!))
+        hakuaika {:alkupvm (test/from-today 1)
+                  :loppupvm (test/from-today 2)}
+        hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")]
+        id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
+
+    (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
+    (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0"))
+
+(fact "Keskeneräisen hakemuksen tila hakuajan alkamisen jälkeen on K (keskeneräinen)"
+      (let [vuosi (:vuosi (test/next-hakemuskausi!))
+            hakuaika {:alkupvm (test/before-today 1)
+                      :loppupvm (test/from-today 1)}
+            hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")]
+            id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
+
+        (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
+        (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0"))
+
 ;; ************ Hakemuksen tilan hallinta ***********
 
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
@@ -237,17 +257,11 @@
 
 ;; Määräpäivän laskennan testit
 
-(defn from-today [days]
-  (time/plus (time/today) (time/days days)))
-
-(defn before-today [days]
-  (time/plus (time/today) (time/days days)))
-
 (facts "Määräpäivän laskenta"
-       (fact (h/maarapvm (time/today)) => (from-today 14))
-       (fact (h/maarapvm (before-today 1)) => (from-today 14))
-       (fact (h/maarapvm (from-today 1)) => (from-today 14))
-       (fact (h/maarapvm (from-today 13)) => (from-today 14))
-       (fact (h/maarapvm (from-today 14)) => (from-today 14))
-       (fact (h/maarapvm (from-today 15)) => (from-today 15))
-       (fact (h/maarapvm (from-today 16)) => (from-today 16)))
+       (fact (h/maarapvm (time/today)) => (test/from-today 14))
+       (fact (h/maarapvm (test/before-today 1)) => (test/from-today 14))
+       (fact (h/maarapvm (test/from-today 1)) => (test/from-today 14))
+       (fact (h/maarapvm (test/from-today 13)) => (test/from-today 14))
+       (fact (h/maarapvm (test/from-today 14)) => (test/from-today 14))
+       (fact (h/maarapvm (test/from-today 15)) => (test/from-today 15))
+       (fact (h/maarapvm (test/from-today 16)) => (test/from-today 16)))

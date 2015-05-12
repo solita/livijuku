@@ -14,6 +14,8 @@
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
 
+(defn find-hakemuskausi+ [vuosi] (c/find-first (c/eq :vuosi vuosi) (hk/find-hakemuskaudet+summary)))
+
 (defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
 
 (defn assert-avustuskohteet [vuosi]
@@ -91,6 +93,17 @@
     (hk/save-maararaha! maararaha)
     (hk/find-maararaha vuosi "ELY") => (dissoc maararaha :vuosi :organisaatiolajitunnus)))
 
+(fact "Tallenna hakuajat"
+  (let [vuosi (:vuosi (test/next-hakemuskausi!))
+        hakuaika {:alkupvm (time/today)
+                  :loppupvm (time/plus (time/today) (time/days 1))}
+        hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")
+                  (assoc hakuaika :hakemustyyppitunnus "MH1")
+                  (assoc hakuaika :hakemustyyppitunnus "MH2")]]
+
+    (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
+    (:hakemukset  (find-hakemuskausi+ vuosi)) => (partial every? (c/eq :hakuaika hakuaika))))
+
 (fact "Hakemuskausiyhteenvetohaku"
   (let [hakemuskausi (test/next-hakemuskausi!)
         vuosi (:vuosi hakemuskausi)
@@ -101,7 +114,7 @@
       (h/add-hakemus! hakemus2)
       (asha/with-asha-off (h/laheta-hakemus! id1))
 
-      (c/find-first (c/eq :vuosi vuosi) (hk/find-hakemuskaudet+summary)) =>
+      (find-hakemuskausi+ vuosi) =>
         {:vuosi      vuosi
          :tilatunnus "A"
          :hakuohje_contenttype nil

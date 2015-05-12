@@ -35,6 +35,9 @@ create table hakemustila (
   description varchar2(2000 char)
 );
 
+insert into hakemustila (tunnus, nimi, description) values ('0', 'Ei käynnissä',
+   'Hakemus on keskeneräinen ja hakuaika ei ole alkanut. Huom! tätä tilaa ei tallenneta tietokantaan. Tämä on puhtaasti laskennallinen tila.');
+
 insert into hakemustila (tunnus, nimi) values ('K', 'Keskeneräinen');
 insert into hakemustila (tunnus, nimi) values ('V', 'Vireillä');
 insert into hakemustila (tunnus, nimi) values ('T', 'Tarkastettu');

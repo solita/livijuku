@@ -35,3 +35,9 @@
   (time/before? time (time/now)))
 
 (defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
+
+(defn from-today [days]
+  (time/plus (time/today) (time/days days)))
+
+(defn before-today [days]
+  (time/plus (time/today) (time/days days)))
