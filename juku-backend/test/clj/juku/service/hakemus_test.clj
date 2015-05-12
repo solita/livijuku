@@ -248,7 +248,9 @@
     (asha/with-asha
       (let [id (h/add-hakemus! hsl-hakemus)]
 
+        (:kasittelija (h/get-hakemus-by-id! id)) => nil
         (h/laheta-hakemus! id)
+
         (:kasittelija (h/get-hakemus-by-id! id)) => nil
         (:kasittelija (h/get-hakemus-by-id! id)) => "juku_kasittelija"
 
