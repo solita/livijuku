@@ -96,8 +96,9 @@
              (nil? (:kasittelija hakemus))
              (c/not-nil? diaarinumero)
              (#{"V" "TV"} (:hakemustilatunnus hakemus)))
-      (asha/kasittelyssa diaarinumero)
-      (save-hakemus-kasittelija! hakemusid user/*current-user*))
+      (do
+        (asha/kasittelyssa diaarinumero)
+        (save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))))
     hakemus))
 
 ;; *** Hakemusasiakirjan (pdf-dokumentti) tuotattaminen ***

@@ -7,7 +7,8 @@
             [juku.schema.user :as s]
             [clojure.string :as str]
             [ring.util.http-response :as r]
-            [common.map :as m]))
+            [common.map :as m]
+            [common.core :as c]))
 
 (sql/defqueries "user.sql")
 
@@ -49,7 +50,7 @@
   (dml/update-where! db "kayttaja" user {:tunnus tunnus}))
 
 (defn has-privilege [privilege user]
-  (some #{privilege} (:privileges user)))
+  (c/not-nil? (some #{privilege} (:privileges user))))
 
 (defn has-privilege* [privilege]
   (has-privilege privilege *current-user*))

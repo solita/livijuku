@@ -255,7 +255,7 @@
         (:hakemustilatunnus (h/get-hakemus-by-id id)) => "V"
 
         (asha/headers :kasittely) => asha/valid-headers?
-        (:uri (asha/request :kasittely))) => "/api/hakemus/testing/kasittely")))
+        (:uri (asha/request :kasittely)) => "/api/hakemus/testing/kasittely"))))
 
 ;; Määräpäivän laskennan testit
 
