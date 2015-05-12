@@ -32,11 +32,6 @@
 (facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen --"
 
 (test/with-user "juku_kasittelija" ["juku_kasittelija"]
-  (fake/with-fake-routes {
-      #"http://(.+)/hakemuskausi" (asha/asha-handler :avaus "testing\n")
-      #"http://(.+)/hakemuskausi/(.+)/sulje" (asha/asha-handler :sulkeminen "")}
-
-
     (fact "Avaa hakemuskausi"
       (asha/with-asha
         (let [vuosi (:vuosi (test/next-hakemuskausi!))]
@@ -57,7 +52,7 @@
           (hk/sulje-hakemuskausi! vuosi)
 
           (asha/headers :sulkeminen) => asha/valid-headers?
-          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje")))))))
+          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje"))))))
 
 (facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen - asiahallinta kytketty pois päältä--"
 

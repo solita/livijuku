@@ -24,7 +24,10 @@
          (time/before? (tf/parse (tf/formatters :date-time) (get headers "SOA-Aikaleima")) (time/now)))))
 
 (defmacro with-asha [& body]
-  `(fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
+  `(fake/with-fake-routes {#"http://(.+)/hakemuskausi" (asha/asha-handler :avaus "testing\n")
+                           #"http://(.+)/hakemuskausi/(.+)/sulje" (asha/asha-handler :sulkeminen "")
+
+                           #"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")
                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")
                            #"http://(.+)/hakemus/(.+)/tarkastettu" (asha/asha-handler :tarkastettu "")
