@@ -15,7 +15,13 @@
 
     (GET* "/hakemus/:hakemusid/paatos/:paatosnumero/pdf" []
           :path-params [hakemusid :- Long, paatosnumero :- Long]
-          :summary "Hae hakemuksen (hakemusid) päätöksen (päätösnumero) päätösasiakirja."
+          :summary "Hae hakemuksen (hakemusid) päätöksen (päätösnumero) päätösasiakirja. Deprecated - do not use this."
+          (content-type (ok (service/paatos-pdf hakemusid))
+                        "application/pdf"))
+
+    (GET* "/hakemus/:hakemusid/paatos/pdf" []
+          :path-params [hakemusid :- Long]
+          :summary "Hae hakemuksen (hakemusid) nykyisen ratkaisun päätösasiakirja."
           (content-type (ok (service/paatos-pdf hakemusid))
                         "application/pdf"))
 
