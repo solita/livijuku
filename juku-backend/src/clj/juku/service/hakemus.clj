@@ -16,8 +16,8 @@
             [juku.service.pdf :as pdf]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
-            [common.collection :as c]
-            [clojure.set :as set])
+            [common.collection :as coll]
+            [common.core :as c])
   (:import (org.joda.time LocalDate)))
 
 ; *** Hakemukseen liittyvät kyselyt ***
@@ -61,7 +61,7 @@
 
 (defn get-hakemus-by-id [hakemusid]
   (-> (select-hakemus {:hakemusid hakemusid})
-      (c/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
+      (coll/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
       coerce/row->object
       coerce-hakemus+))
 
@@ -88,6 +88,17 @@
 
 (defn save-hakemus-kasittelija! [hakemusid kasittelija]
   (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
+
+(defn get-hakemus-by-id! [hakemusid]
+  (let [hakemus (get-hakemus-by-id hakemusid)
+        diaarinumero (:diaarinumero hakemus)]
+    (if (and (user/has-privilege* "kasittely-hakemus")
+             (nil? (:kasittelija hakemus))
+             (c/not-nil? diaarinumero)
+             (#{"V" "TV"} (:hakemustilatunnus hakemus)))
+      (asha/kasittelyssa diaarinumero)
+      (save-hakemus-kasittelija! hakemusid user/*current-user*))
+    hakemus))
 
 ;; *** Hakemusasiakirjan (pdf-dokumentti) tuotattaminen ***
 

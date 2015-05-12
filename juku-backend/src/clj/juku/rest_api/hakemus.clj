@@ -20,7 +20,7 @@
             :return Hakemus+
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
-            (ok (service/get-hakemus-by-id hakemusid)))
+            (ok (service/get-hakemus-by-id! hakemusid)))
       (POST* "/hakemus" []
              :return   s/Num
              :body     [hakemus NewHakemus]

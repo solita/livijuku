@@ -139,6 +139,9 @@
 (defn tarkastettu [diaarinumero]
   (put (str "hakemus/" (codec/url-encode diaarinumero) "/tarkastettu") "Tarkastettu"))
 
+(defn kasittelyssa [diaarinumero]
+  (put (str "hakemus/" (codec/url-encode diaarinumero) "/kasittely") "Kasittelyssa"))
+
 (defn paatos [diaarinumero paatos paatosasiakirja]
   (post-with-liitteet (str "hakemus/" (codec/url-encode diaarinumero) "/paatos")
       "Paatos" "paatos" Paatos paatos

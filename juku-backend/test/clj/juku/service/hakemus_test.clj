@@ -131,129 +131,131 @@
           (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
             => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))))
 
-(fact "Keskeneräisen hakemuksen tila ennen hakuajan alkua on 0 (ei käynnissä)"
-  (let [vuosi (:vuosi (test/next-hakemuskausi!))
-        hakuaika {:alkupvm (test/from-today 1)
-                  :loppupvm (test/from-today 2)}
-        hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")]
-        id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
+(facts "Ei käynnissä tilan käsittely"
 
-    (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
-    (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0"))
+  (fact "Keskeneräisen hakemuksen tila ennen hakuajan alkua on 0 (ei käynnissä)"
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))
+          hakuaika {:alkupvm (test/from-today 1)
+                    :loppupvm (test/from-today 2)}
+          hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")]
+          id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
 
-(fact "Keskeneräisen hakemuksen tila hakuajan alkamisen jälkeen on K (keskeneräinen)"
-      (let [vuosi (:vuosi (test/next-hakemuskausi!))
-            hakuaika {:alkupvm (test/before-today 1)
-                      :loppupvm (test/from-today 1)}
-            hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")]
-            id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
+      (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
+      (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0"))
 
-        (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
-        (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0"))
+  (fact "Keskeneräisen hakemuksen tila hakuajan alkamisen jälkeen on K (keskeneräinen)"
+        (let [vuosi (:vuosi (test/next-hakemuskausi!))
+              hakuaika {:alkupvm (test/before-today 1)
+                        :loppupvm (test/from-today 1)}
+              hakuajat [(assoc hakuaika :hakemustyyppitunnus "AH0")]
+              id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
+
+          (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
+          (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0")))
 
 ;; ************ Hakemuksen tilan hallinta ***********
 
+(def hsl-hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
+
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
-
   (test/with-user "juku_hakija" ["juku_hakija"]
-    (fake/with-fake-routes {#"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
-                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")
-                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")
-                            #"http://(.+)/hakemus/(.+)/tarkastettu" (asha/asha-handler :tarkastettu "")}
+    (fact "Hakemuksen lähettäminen"
+      (asha/with-asha
+        (let [id (h/add-hakemus! hsl-hakemus)]
 
-      (fact "Hakemuksen lähettäminen"
-        (asha/with-asha
-          (let [organisaatioid 1M
-                hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-                id (h/add-hakemus! hakemus)]
+          (h/laheta-hakemus! id)
 
-            (h/laheta-hakemus! id)
+          (asha/headers :vireille) => asha/valid-headers?
+          (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
 
-            (asha/headers :vireille) => asha/valid-headers?
-            (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
+    (fact "Hakemuksen lähettäminen - liitteet"
+      (asha/with-asha
+        (let [id (h/add-hakemus! hsl-hakemus)
+             liite1 {:hakemusid id :nimi "t-1" :contenttype "text/plain"}
+             liite2 {:hakemusid id :nimi "t-åäö" :contenttype "text/plain"}]
 
-      (fact "Hakemuksen lähettäminen - asiahallinta on pois päältä"
-        (asha/with-asha-off
-          (let [organisaatioid 1M
-               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-               id (h/add-hakemus! hakemus)]
+           (l/add-liite! liite1 (test/inputstream-from "test-1"))
+           (l/add-liite! liite2 (test/inputstream-from "test-2"))
 
            (h/laheta-hakemus! id)
-           (:diaarinumero (h/get-hakemus-by-id id)) => nil)))
+           (asha/headers :vireille) => asha/valid-headers?
 
-      (fact "Hakemuksen lähettäminen - liitteet"
-        (asha/with-asha
-          (let [organisaatioid 1M
-               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-               id (h/add-hakemus! hakemus)
-               liite1 {:hakemusid id :nimi "t-1" :contenttype "text/plain"}
-               liite2 {:hakemusid id :nimi "t-åäö" :contenttype "text/plain"}]
+           (let [request (asha/request :vireille)
+                 multipart (m/map-values first (group-by :name (:multipart request)))]
 
-             (l/add-liite! liite1 (test/inputstream-from "test-1"))
-             (l/add-liite! liite2 (test/inputstream-from "test-2"))
+             (get-in multipart ["hakemus" :content]) =>
+                (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":\"dnro:" vuosi
+                     "\",\"hakija\":\"Helsingin seudun liikenne\"}")
 
-             (h/laheta-hakemus! id)
-             (asha/headers :vireille) => asha/valid-headers?
+             (get-in multipart ["hakemus.pdf" :mime-type]) => "application/pdf"
+             (get-in multipart ["hakemus.pdf" :part-name]) => "hakemus-asiakirja"
+             (slurp (get-in multipart ["t-1" :content])) => "test-1"
+             (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
 
-             (let [request (asha/request :vireille)
-                   multipart (m/map-values first (group-by :name (:multipart request)))]
+           (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
 
-               (get-in multipart ["hakemus" :content]) =>
-                  (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":\"dnro:" vuosi
-                       "\",\"hakija\":\"Helsingin seudun liikenne\"}")
+    (fact "Täydennyspyynnön lähettäminen"
+      (asha/with-asha
+        (let [id (h/add-hakemus! hsl-hakemus)]
 
-               (get-in multipart ["hakemus.pdf" :mime-type]) => "application/pdf"
-               (get-in multipart ["hakemus.pdf" :part-name]) => "hakemus-asiakirja"
-               (slurp (get-in multipart ["t-1" :content])) => "test-1"
-               (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
+          (h/laheta-hakemus! id)
+          (h/taydennyspyynto! id)
 
-             (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
+          (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T0"
 
-      (fact "Täydennyspyynnön lähettäminen"
-        (asha/with-asha
-          (let [organisaatioid 1M
-                hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-                id (h/add-hakemus! hakemus)]
+          (asha/headers :taydennyspyynto) => asha/valid-headers?
+          (:uri (asha/request :taydennyspyynto))) => "/api/hakemus/testing/taydennyspyynto"
+          (slurp (:body (asha/request :taydennyspyynto))) =>
+              #"\{\"maaraaika\":\"(.+)\",\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"\}"))
 
-            (h/laheta-hakemus! id)
-            (h/taydennyspyynto! id)
+    (fact "Täydennyksen lähettäminen"
+      (asha/with-asha
+       (let [id (h/add-hakemus! hsl-hakemus)]
 
-            (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T0"
+         (h/laheta-hakemus! id)
+         (h/taydennyspyynto! id)
+         (h/laheta-taydennys! id)
 
-            (asha/headers :taydennyspyynto) => asha/valid-headers?
-            (:uri (asha/request :taydennyspyynto))) => "/api/hakemus/testing/taydennyspyynto"
-            (slurp (:body (asha/request :taydennyspyynto))) =>
-                #"\{\"maaraaika\":\"(.+)\",\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"\}"))
+         (:hakemustilatunnus (h/get-hakemus-by-id id)) => "TV"
 
-      (fact "Täydennyksen lähettäminen"
-        (asha/with-asha
-         (let [organisaatioid 1M
-               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-               id (h/add-hakemus! hakemus)]
+         (asha/headers :taydennys) => asha/valid-headers?
+         (:uri (asha/request :taydennys))) => "/api/hakemus/testing/taydennys"
+         #_(asha/request :taydennys) ))
 
-           (h/laheta-hakemus! id)
-           (h/taydennyspyynto! id)
-           (h/laheta-taydennys! id)
+    (fact "Tarkastaminen"
+      (asha/with-asha
+       (let [id (h/add-hakemus! hsl-hakemus)]
 
-           (:hakemustilatunnus (h/get-hakemus-by-id id)) => "TV"
+         (h/laheta-hakemus! id)
+         (h/tarkasta-hakemus! id)
 
-           (asha/headers :taydennys) => asha/valid-headers?
-           (:uri (asha/request :taydennys))) => "/api/hakemus/testing/taydennys"
-           #_(asha/request :taydennys) ))
+         (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T"
 
-      (fact "Tarkastaminen"
-        (asha/with-asha
-         (let [organisaatioid 1M
-               hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-               id (h/add-hakemus! hakemus)]
+         (asha/headers :tarkastettu) => asha/valid-headers?
+         (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu"))))
 
-           (h/laheta-hakemus! id)
-           (h/tarkasta-hakemus! id)
 
-           (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T"
+(facts "Hakemuksen tilan hallinta - asiahallinta pois päältä"
+  (fact "Hakemuksen lähettäminen - asiahallinta on pois päältä"
+     (asha/with-asha-off
+       (let [id (h/add-hakemus! hsl-hakemus)]
 
-           (asha/headers :tarkastettu) => asha/valid-headers?
-           (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu")))))
+         (h/laheta-hakemus! id)
+         (:diaarinumero (h/get-hakemus-by-id id)) => nil))))
+
+(fact "Hakemuksen käsittelijän automaattinen asettaminen"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (asha/with-asha
+      (let [id (h/add-hakemus! hsl-hakemus)]
+
+        (h/laheta-hakemus! id)
+        (:kasittelija (h/get-hakemus-by-id! id)) => nil
+        (:kasittelija (h/get-hakemus-by-id! id)) => "juku_kasittelija"
+
+        (:hakemustilatunnus (h/get-hakemus-by-id id)) => "V"
+
+        (asha/headers :kasittely) => asha/valid-headers?
+        (:uri (asha/request :kasittely))) => "/api/hakemus/testing/kasittely")))
 
 ;; Määräpäivän laskennan testit
 

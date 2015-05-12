@@ -47,3 +47,9 @@
 
 (defn update-user! [tunnus user]
   (dml/update-where! db "kayttaja" user {:tunnus tunnus}))
+
+(defn has-privilege [privilege user]
+  (some #{privilege} (:privileges user)))
+
+(defn has-privilege* [privilege]
+  (has-privilege privilege *current-user*))
