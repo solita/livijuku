@@ -31,7 +31,8 @@
                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")
                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")
                            #"http://(.+)/hakemus/(.+)/tarkastettu" (asha/asha-handler :tarkastettu "")
-                           #"http://(.+)/hakemus/(.+)/kasittely" (asha/asha-handler :kasittely "")}
+                           #"http://(.+)/hakemus/(.+)/kasittely" (asha/asha-handler :kasittely "")
+                           #"http://(.+)/hakemus/(.+)/paatos" (asha/asha-handler :paatos "")}
       (binding [*asha* {}] ~@body)))
 
 (defmacro with-asha-off [& body] `(with-redefs [settings (assoc settings :asiahallinta "off")] ~@body))

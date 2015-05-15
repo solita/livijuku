@@ -135,6 +135,19 @@
 
 (defn find-hakemuskausi [vuosi] (first (select-hakemuskausi vuosi)))
 
+(defn change-hakemustila! [hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation]
+  (dml/assert-update
+    (update-hakemustila! {:hakemusid hakemusid
+                          :hakemustilatunnus new-hakemustilatunnus
+                          :expectedhakemustilatunnus expected-hakemustilatunnus})
+
+    (let [hakemus (get-hakemus-by-id hakemusid)]
+      {:http-response r/method-not-allowed
+       :message (str "Hakemuksen (" hakemusid ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
+                     ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
+       :hakemusid hakemusid
+       :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})))
+
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)
@@ -144,7 +157,8 @@
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"})
+      (change-hakemustila! hakemusid "V" "K" "vireillelaitto")
+
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
         (update-hakemus-set-diaarinumero!
           {:vuosi (:vuosi hakemus)
@@ -165,7 +179,7 @@
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)]
-      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
+      (change-hakemustila! hakemusid "T" "V" "tarkastaminen")
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
   nil)
@@ -183,7 +197,7 @@
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
-      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T0"})
+      (change-hakemustila! hakemusid "T0" "V" "täydennyspyyntö")
 
       (add-taydennyspyynto! hakemusid maarapvm)
       (if-let [diaarinumero (:diaarinumero hakemus)]
@@ -201,7 +215,7 @@
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "TV"})
+      (change-hakemustila! hakemusid "TV" "T0" "täydentäminen")
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero

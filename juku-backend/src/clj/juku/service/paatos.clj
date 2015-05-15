@@ -71,7 +71,7 @@
           updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})]
       (assert-update! updated hakemusid)
       (cond
-        (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "P"})
+        (== updated 1) (h/change-hakemustila! hakemusid "P" "T" "päättäminen")
         (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)}
@@ -83,6 +83,6 @@
     (let [updated (update-paatos-hylatty! {:hakemusid hakemusid})]
       (assert-update! updated hakemusid)
       (cond
-        (== updated 1) (h/update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "T"})
+        (== updated 1) (h/change-hakemustila! hakemusid "T" "P" "päätöksen peruuttaminen")
         (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
   nil)

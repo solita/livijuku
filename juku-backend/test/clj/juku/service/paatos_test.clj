@@ -2,6 +2,7 @@
   (:require [midje.sweet :refer :all]
             [clj-time.core :as t]
             [juku.service.hakemus :as h]
+            [juku.service.hakemuskausi :as hk]
             [juku.service.paatos :as p]
             [common.core :as c]
             [juku.service.user :as u]
@@ -25,8 +26,7 @@
 
 (fact "Päätöksen hyväksyminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
-    (fake/with-fake-routes {#"http://(.+)/hakemus/(.+)/paatos" (asha/asha-handler :paatos "")}
-
+    (asha/with-asha
       (let [hakemuskausi (test/next-hakemuskausi!)
             vuosi (:vuosi hakemuskausi)
             organisaatioid 1
@@ -35,8 +35,11 @@
             id (h/add-hakemus! hakemus)
             paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
-
         (p/save-paatos! paatos)
+        (hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
+
+        (h/laheta-hakemus! id)
+        (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id)
 
         (:hakemustilatunnus (h/get-hakemus-by-id id)) => "P"
@@ -59,6 +62,9 @@
 
 
         (p/save-paatos! paatos)
+
+        (h/laheta-hakemus! id)
+        (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id)
         (p/peruuta-paatos! id)
 
