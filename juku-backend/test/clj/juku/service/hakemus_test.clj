@@ -234,6 +234,22 @@
          (asha/headers :tarkastettu) => asha/valid-headers?
          (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu"))))
 
+(defn assert-state-transition [expected-hakemustilatunnus operation operationname]
+  (fact (str "Hakemuksen " operationname " tehdään väärässä tilassa K")
+      (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+          (asha/with-asha-off
+            (let [id (h/add-hakemus! hsl-hakemus)]
+
+              (operation id) =>
+              (throws (str "Hakemuksen (" id
+                           ") " operationname " ei ole sallittu tilassa: K. Hakemuksen " operationname
+                           " on sallittu vain tilassa: "
+                           expected-hakemustilatunnus)))))))
+
+(facts "Virheelliset tilasiirtymät"
+       (assert-state-transition "V" h/tarkasta-hakemus! "tarkastaminen")
+       (assert-state-transition "V" h/taydennyspyynto! "täydennyspyyntö")
+       (assert-state-transition "T0" h/laheta-taydennys! "täydentäminen"))
 
 (facts "Hakemuksen tilan hallinta - asiahallinta pois päältä"
   (fact "Hakemuksen lähettäminen - asiahallinta on pois päältä"
