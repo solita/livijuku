@@ -136,6 +136,12 @@
        (cons (hakemus-asiakirja-multipart hakemusasiakirja)
              (map rename-content-keys liitteet))))
 
+(defn maksatushakemus [diaarinumero maksatushakemus hakemusasiakirja liitteet]
+  (post-with-liitteet (str "hakemus/" (codec/url-encode diaarinumero) "/maksatushakemus")
+        "Vireille" "maksatushakemus" Taydennys maksatushakemus
+        (cons (hakemus-asiakirja-multipart hakemusasiakirja)
+              (map rename-content-keys liitteet))))
+
 (defn tarkastettu [diaarinumero]
   (put (str "hakemus/" (codec/url-encode diaarinumero) "/tarkastettu") "Tarkastettu"))
 

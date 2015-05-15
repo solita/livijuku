@@ -141,13 +141,25 @@
           hakemuskausi (find-hakemuskausi hakemus)
           hakemus-asiakirja (hakemus-pdf hakemusid)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
       (update-hakemustila! {:hakemusid hakemusid :hakemustilatunnus "V"})
-      (update-hakemus-set-diaarinumero!
-        {:hakemusid hakemusid
-         :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi) :hakija (:nimi organisaatio)}
-                                              hakemus-asiakirja liitteet)})))
+      (if (= (:hakemustyyppitunnus hakemus) "AH0")
+        (update-hakemus-set-diaarinumero!
+          {:vuosi (:vuosi hakemus)
+           :organisaatioid (:organisaatioid hakemus)
+           :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi) :hakija (:nimi organisaatio)}
+                                                hakemus-asiakirja liitteet)})
+
+        (if-let [diaarinumero (:diaarinumero hakemus)]
+          (let [kasittelija (user/find-user (or (:kasittelija hakemus)
+                                                (first (select-avustushakemus-kasittelija hakemus))
+                                                (:luontitunnus hakemus)))]
+            (asha/maksatushakemus diaarinumero
+                                  {:kasittelija (user/user-fullname kasittelija)
+                                   :lahettaja (:nimi organisaatio)}
+                                  hakemus-asiakirja liitteet))))))
   nil)
 
 (defn tarkasta-hakemus! [hakemusid]

@@ -43,6 +43,9 @@ from avustuskohde
 where avustuskohde.hakemusid = :hakemusid
 order by akluokka.jarjetys, aklaji.jarjetys
 
+-- name: select-avustushakemus-kasittelija
+select kasittelija from hakemus where vuosi = :vuosi and organisaatioid = :organisaatioid and hakemustyyppitunnus = 'AH0'
+
 -- name: update-avustuskohde!
 update avustuskohde set
   haettavaavustus = :haettavaavustus,
@@ -62,7 +65,7 @@ select tunnus, nimi, jarjetys from avustuskohdeluokka
 select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji
 
 -- name: update-hakemus-set-diaarinumero!
-update hakemus set diaarinumero = :diaarinumero where id = :hakemusid
+update hakemus set diaarinumero = :diaarinumero where vuosi = :vuosi and organisaatioid = :organisaatioid
 
 -- name: insert-taydennyspyynto!
 insert into taydennyspyynto (hakemusid, numero, maarapvm)
