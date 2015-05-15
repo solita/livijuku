@@ -53,7 +53,7 @@
     (map assoc-avustuskohdelajit luokat)))
 
 (defn avustuskohteet-section [avustuskohteet]
-  (let [avustuskohde-template "\t{avustuskohdenimi},\t{haettavaavustus} euroa"
+  (let [avustuskohde-template "\t{avustuskohdenimi}\t\t{haettavaavustus} e"
         avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
         avustuskohteet (filter (c/predicate > :haettavaavustus 0) avustuskohteet)
         avustuskohteet+nimi (c/join avustuskohteet

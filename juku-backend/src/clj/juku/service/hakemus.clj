@@ -129,7 +129,7 @@
                                   :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
                                   :haettuavustus total-haettavaavustus
                                   :omarahoitus total-omarahoitus})
-       :footer "Footer"})))
+       :footer "Liikennevirasto"})))
 
 ;; *** Hakemustilan käsittely ***
 

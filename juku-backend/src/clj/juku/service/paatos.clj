@@ -63,7 +63,7 @@
                                   :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
                                   :omarahoitus total-omarahoitus
                                   :myonnettyavustus (:myonnettyavustus paatos)})
-       :footer "Footer"})))
+       :footer "Liikennevirasto"})))
 
 (defn hyvaksy-paatos! [hakemusid]
   (with-transaction
