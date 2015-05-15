@@ -22,6 +22,7 @@
 
 (s/defschema Hakemus+ (assoc Hakemus :selite (s/maybe s/Str)
                                      :kasittelija (s/maybe s/Str)
+                                     :hakija (s/maybe s/Str)
                                      :luontitunnus s/Str))
 
 (s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika))

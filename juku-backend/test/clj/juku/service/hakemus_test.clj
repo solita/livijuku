@@ -24,7 +24,7 @@
   (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
 
 (defn assoc-hakemus-defaults+ [hakemus id selite]
-  (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija", :kasittelija nil :selite selite))
+  (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija", :kasittelija nil :selite selite, :hakija nil))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
   (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))

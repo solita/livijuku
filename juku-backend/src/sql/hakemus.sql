@@ -8,8 +8,15 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkaus
 from hakemus_view where organisaatioid = :organisaatioid
 
 -- name: select-hakemus
+with hakija as (
+  select muokkaustunnus from (
+    select rownum, avustuskohde.muokkaustunnus from avustuskohde 
+    where avustuskohde.hakemusid = :hakemusid order by avustuskohde.muokkausaika desc)
+  where rownum = 1
+)
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
+       (select * from hakija) hakija
 from hakemus_view where id = :hakemusid
 
 -- name: select-all-hakemukset
