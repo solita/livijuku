@@ -1,9 +1,11 @@
 (ns juku.service.hakemus-test
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
-            [common.collection :as c]
+            [common.collection :as coll]
             [common.map :as m]
             [clj-time.core :as time]
+            [clj-time.format :as timef]
+            [juku.db.coerce :as dbc]
             [juku.service.hakemus :as h]
             [juku.service.hakemuskausi :as hk]
             [juku.service.liitteet :as l]
@@ -80,10 +82,10 @@
           organisaation-hakemukset  (h/find-organisaation-hakemukset organisaatioid)]
 
       ;; kaikki hakemukset ovat ko. organisaatiosta
-      organisaation-hakemukset => (partial every? (c/eq :organisaatioid organisaatioid))
+      organisaation-hakemukset => (partial every? (coll/eq :organisaatioid organisaatioid))
 
       ;; hakemus (:id = id) löytyy hakutuloksista
-      (dissoc (c/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
+      (dissoc (coll/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
         => (assoc-hakemus-defaults hakemus id)))
 
   (fact "Hakemussuunnitelmien haku"
@@ -92,13 +94,13 @@
           hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
 
       ;; kaikki hakemukset ovat samalta vuodelta
-      hakemussuunnitelmat => (partial every? (c/eq :vuosi vuosi))
+      hakemussuunnitelmat => (partial every? (coll/eq :vuosi vuosi))
 
       ;; kaikki hakemukset ovat samaa tyyppiä
-      hakemussuunnitelmat => (partial every? (c/eq :hakemustyyppitunnus "AH0"))
+      hakemussuunnitelmat => (partial every? (coll/eq :hakemustyyppitunnus "AH0"))
 
       ;; hakemus (:id = id) löytyy hakutuloksista
-      (dissoc (c/find-first (find-by-id id) hakemussuunnitelmat) :muokkausaika)
+      (dissoc (coll/find-first (find-by-id id) hakemussuunnitelmat) :muokkausaika)
         => (expected-hakemussuunnitelma id hakemus 0M 0M)))
 
   (fact "Hakemussuunnitelmien haku - lisätty avustuskohde ja myönnetty avustus"
@@ -118,17 +120,17 @@
       (let [hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
 
           ;; kaikki hakemukset ovat samalta vuodelta
-          hakemussuunnitelmat => (partial every? (c/eq :vuosi vuosi))
+          hakemussuunnitelmat => (partial every? (coll/eq :vuosi vuosi))
 
           ;; kaikki hakemukset ovat samaa tyyppiä
-          hakemussuunnitelmat => (partial every? (c/eq :hakemustyyppitunnus "AH0"))
+          hakemussuunnitelmat => (partial every? (coll/eq :hakemustyyppitunnus "AH0"))
 
           ;; hakemus (:id = id) löytyy hakutuloksista
-          (dissoc (c/find-first (find-by-id id1) hakemussuunnitelmat) :muokkausaika)
+          (dissoc (coll/find-first (find-by-id id1) hakemussuunnitelmat) :muokkausaika)
             => (expected-hakemussuunnitelma id1 (hakemus 1M) 2M 1M)
 
           ;; hakemus (:id = id) löytyy hakutuloksista
-          (dissoc (c/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
+          (dissoc (coll/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
             => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))))
 
 (facts "Ei käynnissä tilan käsittely"
@@ -181,14 +183,19 @@
            (asha/headers :vireille) => asha/valid-headers?
 
            (let [request (asha/request :vireille)
-                 multipart (m/map-values first (group-by :name (:multipart request)))]
+                 multipart (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request)))
+                 hakemus-asiakirja (get multipart "hakemus-asiakirja")]
 
              (get-in multipart ["hakemus" :content]) =>
-                (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"kausi\":\"dnro:" vuosi
-                     "\",\"hakija\":\"Helsingin seudun liikenne\"}")
+                (str "{\"omistavaHenkilo\":\"test\","
+                      "\"omistavaOrganisaatio\":\"Liikennevirasto\","
+                      "\"kausi\":\"dnro:" vuosi "\","
+                      "\"hakija\":\"Helsingin seudun liikenne\"}")
 
-             (get-in multipart ["hakemus.pdf" :mime-type]) => "application/pdf"
-             (get-in multipart ["hakemus.pdf" :part-name]) => "hakemus-asiakirja"
+             (:mime-type hakemus-asiakirja) => "application/pdf"
+             (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
+             (:name hakemus-asiakirja) => "hakemus.pdf"
+
              (slurp (get-in multipart ["t-1" :content])) => "test-1"
              (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
 
@@ -204,9 +211,14 @@
           (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T0"
 
           (asha/headers :taydennyspyynto) => asha/valid-headers?
-          (:uri (asha/request :taydennyspyynto))) => "/api/hakemus/testing/taydennyspyynto"
-          (slurp (:body (asha/request :taydennyspyynto))) =>
-              #"\{\"maaraaika\":\"(.+)\",\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"\}"))
+          (:uri (asha/request :taydennyspyynto)) => "/api/hakemus/testing/taydennyspyynto"
+
+          (let [maarapvm (dbc/date->datetime (:maarapvm (first (test/select-maarapvm {:hakemusid id :nro 1}))))
+                maarapvm-json (timef/unparse (:date-time timef/formatters) maarapvm)]
+
+            (slurp (:body (asha/request :taydennyspyynto))) =>
+              (str "{\"maaraaika\":\"" maarapvm-json "\","
+                    "\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"}")))))
 
     (fact "Täydennyksen lähettäminen"
       (asha/with-asha

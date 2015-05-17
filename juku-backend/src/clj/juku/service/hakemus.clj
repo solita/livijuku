@@ -11,6 +11,7 @@
             [common.string :as xstr]
             [clojure.string :as str]
             [clj-time.core :as time]
+            [clj-time.coerce :as timec]
             [schema.coerce :as scoerce]
             [clojure.java.io :as io]
             [juku.service.pdf :as pdf]
@@ -202,7 +203,7 @@
       (add-taydennyspyynto! hakemusid maarapvm)
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennyspyynto diaarinumero
-                              {:maaraaika   maarapvm
+                              {:maaraaika   (time/from-time-zone (timec/to-date-time maarapvm) (time/default-time-zone))
                                :kasittelija (user/user-fullname kasittelija)
                                :hakija      (:nimi organisaatio)}))))
   nil)

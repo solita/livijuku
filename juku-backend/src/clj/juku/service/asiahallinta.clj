@@ -12,7 +12,7 @@
             [clojure.tools.logging :as log]
             [juku.settings :refer [settings]])
   (:import (java.util UUID)
-           (org.joda.time LocalDate)))
+           (org.joda.time DateTime)))
 
 (defn default-request [operation]
    {:basic-auth [(get-in settings [:asiahallinta :user])
@@ -38,7 +38,7 @@
                       :omistavaOrganisaatio  s/Str
                       :omistavaHenkilo       s/Str})
 
-(s/defschema Taydennyspyynto {:maaraaika   LocalDate
+(s/defschema Taydennyspyynto {:maaraaika   DateTime
                               :kasittelija s/Str
                               :hakija      s/Str})
 

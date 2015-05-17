@@ -26,6 +26,9 @@
 (defn predicate [operator getter value]
   (fn [obj] (operator (getter obj) value)))
 
+(defn or* [& fs]
+  (fn [obj] (find-first (fn [x] (if x x)) (map (fn [f] (f obj)) fs))))
+
 (defn starts-with [getter txt]
   (fn [obj] (.startsWith ^String (getter obj) txt)))
 
