@@ -13,7 +13,7 @@
 (defn request [operation] (operation *asha*))
 
 (defn valid-headers? [headers]
-  (let [eq (fn[header expected-value] (= (get headers header) expected-value))
+  (let [eq (fn [header expected-value] (= (get headers header) expected-value))
         not-nil (fn [header] (not (nil? (get headers header))))]
 
     (and (eq "SOA-KayttajanID" user/*current-user-id*)
@@ -32,7 +32,10 @@
                            #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")
                            #"http://(.+)/hakemus/(.+)/tarkastettu" (asha/asha-handler :tarkastettu "")
                            #"http://(.+)/hakemus/(.+)/kasittely" (asha/asha-handler :kasittely "")
-                           #"http://(.+)/hakemus/(.+)/paatos" (asha/asha-handler :paatos "")}
+                           #"http://(.+)/hakemus/(.+)/paatos" (asha/asha-handler :paatos "")
+
+                           #"http://(.+)/hakemus/(.+)/maksatushakemus" (asha/asha-handler :maksatushakemus "")}
+
       (binding [*asha* {}] ~@body)))
 
 (defmacro with-asha-off [& body] `(with-redefs [settings (assoc settings :asiahallinta "off")] ~@body))

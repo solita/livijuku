@@ -169,7 +169,7 @@
 
         (if-let [diaarinumero (:diaarinumero hakemus)]
           (let [kasittelija (user/find-user (or (:kasittelija hakemus)
-                                                (first (select-avustushakemus-kasittelija hakemus))
+                                                (:kasittelija (first (select-avustushakemus-kasittelija hakemus)))
                                                 (:luontitunnus hakemus)))]
             (asha/maksatushakemus diaarinumero
                                   {:kasittelija (user/user-fullname kasittelija)

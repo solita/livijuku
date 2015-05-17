@@ -44,7 +44,7 @@ where avustuskohde.hakemusid = :hakemusid
 order by akluokka.jarjetys, aklaji.jarjetys
 
 -- name: select-avustushakemus-kasittelija
-select kasittelija from hakemus where vuosi = :vuosi and organisaatioid = :organisaatioid and hakemustyyppitunnus = 'AH0'
+select kasittelija from hakemus where vuosi = :vuosi and organisaatioid = :organisaatioid and hakemustyyppitunnus = 'AH0' and kasittelija is not null
 
 -- name: update-avustuskohde!
 update avustuskohde set

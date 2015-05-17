@@ -160,6 +160,7 @@
 (def hsl-hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
 
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
+
   (test/with-user "juku_hakija" ["juku_hakija"]
     (fact "Hakemuksen lähettäminen"
       (asha/with-asha
@@ -231,8 +232,19 @@
          (:hakemustilatunnus (h/get-hakemus-by-id id)) => "TV"
 
          (asha/headers :taydennys) => asha/valid-headers?
-         (:uri (asha/request :taydennys))) => "/api/hakemus/testing/taydennys"
-         #_(asha/request :taydennys) ))
+
+         (let [request (asha/request :taydennys)
+               multipart (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request)))
+               hakemus-asiakirja (get multipart "hakemus-asiakirja")]
+
+           (:uri request) => "/api/hakemus/testing/taydennys"
+
+           (get-in multipart ["taydennys" :content]) =>
+             (str "{\"kasittelija\":\"Harri Helsinki\",\"lahettaja\":\"Helsingin seudun liikenne\"}")
+
+           (:mime-type hakemus-asiakirja) => "application/pdf"
+           (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
+           (:name hakemus-asiakirja) => "hakemus.pdf"))))
 
     (fact "Tarkastaminen"
       (asha/with-asha
@@ -244,7 +256,33 @@
          (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T"
 
          (asha/headers :tarkastettu) => asha/valid-headers?
-         (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu"))))
+         (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu"))
+
+  (fact "Maksatushakemuksen lähettäminen"
+    (asha/with-asha
+      (let [id1 (h/add-hakemus! hsl-hakemus)
+            id2 (h/add-hakemus! (assoc hsl-hakemus :hakemustyyppitunnus "MH1"))]
+
+        (h/laheta-hakemus! id1)
+        (test/with-user "juku_kasittelija" ["juku_kasittelija"] (do (h/get-hakemus-by-id! id1)))
+        (h/laheta-hakemus! id2)
+
+        (:hakemustilatunnus (h/get-hakemus-by-id id1)) => "V"
+        (:hakemustilatunnus (h/get-hakemus-by-id id2)) => "V"
+
+        (let [request (asha/request :maksatushakemus)
+              multipart (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request)))
+              hakemus-asiakirja (get multipart "hakemus-asiakirja")]
+
+          (:headers request) => asha/valid-headers?
+          (:uri request) => "/api/hakemus/testing/maksatushakemus"
+
+          (get-in multipart ["maksatushakemus" :content]) =>
+            (str "{\"kasittelija\":\"Katri Käsittelijä\",\"lahettaja\":\"Helsingin seudun liikenne\"}")
+
+          (:mime-type hakemus-asiakirja) => "application/pdf"
+          (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
+          (:name hakemus-asiakirja) => "hakemus.pdf"))))))
 
 (defn assert-state-transition [expected-hakemustilatunnus operation operationname]
   (fact (str "Hakemuksen " operationname " tehdään väärässä tilassa K")
@@ -253,8 +291,8 @@
             (let [id (h/add-hakemus! hsl-hakemus)]
 
               (operation id) =>
-              (throws (str "Hakemuksen (" id
-                           ") " operationname " ei ole sallittu tilassa: K. Hakemuksen " operationname
+              (throws (str "Hakemuksen (" id ") "
+                           operationname " ei ole sallittu tilassa: K. Hakemuksen " operationname
                            " on sallittu vain tilassa: "
                            expected-hakemustilatunnus)))))))
 
