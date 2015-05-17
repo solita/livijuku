@@ -158,7 +158,7 @@
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila! hakemusid "V" "K" "vireillelaitto")
+      (change-hakemustila! hakemusid "V" ["K"] "vireillelaitto")
 
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
         (update-hakemus-set-diaarinumero!
@@ -180,7 +180,7 @@
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)]
-      (change-hakemustila! hakemusid "T" "V" "tarkastaminen")
+      (change-hakemustila! hakemusid "T" ["V" "TV"] "tarkastaminen")
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
   nil)
@@ -198,7 +198,7 @@
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
-      (change-hakemustila! hakemusid "T0" "V" "täydennyspyyntö")
+      (change-hakemustila! hakemusid "T0" ["V"] "täydennyspyyntö")
 
       (add-taydennyspyynto! hakemusid maarapvm)
       (if-let [diaarinumero (:diaarinumero hakemus)]
@@ -216,7 +216,7 @@
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila! hakemusid "TV" "T0" "täydentäminen")
+      (change-hakemustila! hakemusid "TV" ["T0"] "täydentäminen")
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero

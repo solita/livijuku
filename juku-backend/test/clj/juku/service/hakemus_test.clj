@@ -297,9 +297,9 @@
                            expected-hakemustilatunnus)))))))
 
 (facts "Virheelliset tilasiirtymät"
-       (assert-state-transition "V" h/tarkasta-hakemus! "tarkastaminen")
-       (assert-state-transition "V" h/taydennyspyynto! "täydennyspyyntö")
-       (assert-state-transition "T0" h/laheta-taydennys! "täydentäminen"))
+       (assert-state-transition ["V" "TV"] h/tarkasta-hakemus! "tarkastaminen")
+       (assert-state-transition ["V"] h/taydennyspyynto! "täydennyspyyntö")
+       (assert-state-transition ["T0"] h/laheta-taydennys! "täydentäminen"))
 
 (facts "Hakemuksen tilan hallinta - asiahallinta pois päältä"
   (fact "Hakemuksen lähettäminen - asiahallinta on pois päältä"
