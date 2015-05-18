@@ -72,3 +72,8 @@ insert into taydennyspyynto (hakemusid, numero, maarapvm)
 values (:hakemusid,
         (select nvl(max(p.numero), 0) + 1 from taydennyspyynto p where p.hakemusid = :hakemusid),
         :maarapvm)
+
+-- name: insert-hakemustila-event!
+insert into hakemustila_log (hakemusid, hakemustilatunnus, jarjestysnumero)
+values (:hakemusid, :hakemustilatunnus,
+       (select nvl(max(p.jarjestysnumero), 0) + 1 from hakemustila_log p where p.hakemusid = :hakemusid))

@@ -147,7 +147,11 @@
        :message (str "Hakemuksen (" hakemusid ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
                      ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
        :hakemusid hakemusid
-       :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})))
+       :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus}))
+
+  ;; hakemustilan muutoshistoria
+  (insert-hakemustila-event! {:hakemusid hakemusid
+                              :hakemustilatunnus new-hakemustilatunnus}))
 
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
