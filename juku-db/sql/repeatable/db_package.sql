@@ -46,21 +46,32 @@ create or replace package body db as
     procedure grants_user is
       application_user constant varchar2(30 char) := user || '_app';
     begin
+        /*mutable entities*/
         for cur in (
             select 'grant insert, update, delete on ' || table_name || ' to ' || application_user comm from (
             select table_name 
               from entitytypeentity 
-             where entitytypename = 'mutable'
+            where entitytypename = 'mutable'
             minus 
             select table_name 
               from entitytypeentity 
-             where 
+            where
                 entitytypename in ('class','state','immutable','localizable')
                 or table_name in ('kieli') -- ei kälin kautta päivitettävää tai tuhottavaa
-             
         ))
         loop
             model.putline_or_execute(cur.comm);
+        end loop;
+
+        /*immutable entities*/
+        for cur in (
+          select 'grant insert, delete on ' || table_name || ' to ' || application_user comm from (
+            select table_name
+            from entitytypeentity
+            where entitytypename = 'immutable'
+          ))
+        loop
+          model.putline_or_execute(cur.comm);
         end loop;
     end grants_user;
     

@@ -69,12 +69,12 @@ end;
 /
 
 create table hakemustila_log (
-  hakemustilatunnus references hakemustila (tunnus),
   hakemusid references hakemus (id),
+  hakemustilatunnus references hakemustila (tunnus),
   jarjestysnumero number,
   sisaltopdf blob,
 
-  constraint hakemustila_log_pk primary key (hakemustilatunnus, hakemusid, jarjestysnumero)
+  constraint hakemustila_log_pk primary key (hakemusid, hakemustilatunnus, jarjestysnumero)
 );
 
 begin
