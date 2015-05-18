@@ -63,6 +63,7 @@
 (defn get-hakemus-by-id [hakemusid]
   (-> (select-hakemus {:hakemusid hakemusid})
       (coll/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
+      (update-in [:hakija] (fn [uid] (if uid (user/user-fullname (user/find-user uid)))))
       coerce/row->object
       coerce-hakemus+))
 
@@ -80,7 +81,6 @@
 (defn- update-hakemus-by-id [hakemus hakemusid]
   (dml/update-where-id db "hakemus" hakemus hakemusid))
 
-;; TODO probably does not work for over 4000 byte strings
 (defn save-hakemus-selite! [hakemusid selite]
   (update-hakemus-by-id {:selite selite} hakemusid))
 
