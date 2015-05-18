@@ -12,10 +12,7 @@ create table liite (
   constraint liite_pk primary key (hakemusid, liitenumero)
 );
 
-declare
-  e entity%rowtype := model.new_entity('liite');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('liite'));
 end;
 /

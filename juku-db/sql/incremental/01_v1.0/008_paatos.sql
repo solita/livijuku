@@ -15,10 +15,7 @@ create table paatos (
 -- Uniikki-indeksi, joka varmistaa että hakemuksella on vain yksi avoin päätös
 create unique index paatos_hakemus_u on paatos (case when voimaantuloaika is null then hakemusid else null end);
 
-declare
-  e entity%rowtype := model.new_entity('paatos', 'Päätös', 'PA');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('paatos', 'Päätös', 'PA'));
 end;
 /

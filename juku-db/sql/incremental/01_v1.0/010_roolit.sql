@@ -19,25 +19,10 @@ create table kayttajaroolioikeus (
   constraint kayttajaroolioikeus_pk primary key (kayttajaroolitunnus, kayttooikeustunnus)
 );
 
-declare
-  e entity%rowtype := model.new_entity('kayttajarooli', 'Käyttäjärooli', 'KAROOLI');
 begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
-end;
-/
-declare
-  e entity%rowtype := model.new_entity('kayttooikeus', 'Käyttöoikeus', 'OIKEUS');
-begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
-end;
-/
-declare
-  e entity%rowtype := model.new_entity('kayttajaroolioikeus', 'Käyttäjäroolioikeus', 'KAROOLIOIKEUS');
-begin
-  model.define_mutable(e);
-  model.rename_fk_constraints(e);
+  model.define_mutable(model.new_entity('kayttajarooli', 'Käyttäjärooli', 'KAROOLI'));
+  model.define_mutable(model.new_entity('kayttooikeus', 'Käyttöoikeus', 'OIKEUS'));
+  model.define_immutable(model.new_entity('kayttajaroolioikeus', 'Käyttäjäroolioikeus', 'KAROOLIOIKEUS'));
 end;
 /
 
