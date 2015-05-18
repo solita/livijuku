@@ -36,6 +36,12 @@ create or replace package model authid current_user as
    * Määrittää ko. käsitteen päivitettäväksi. Tauluun lisätään luonti- ja muokkauskirjanpitotiedot.
    */
   procedure define_mutable(e entity%rowtype);
+  
+  /**
+   * Määrittää ko. käsitteen muuttumattomaksi (update statements are not allowed for application user). 
+   * Tauluun lisätään luontikirjanpitotiedot.
+   */
+  procedure define_immutable(e entity%rowtype);
 
   /**
    * Luo uuden luokittelun. Tämä palvelu luo sekä taulut ja niihin liittyvän metatiedon malliin.
@@ -343,6 +349,28 @@ create or replace package body model as
           ' BEFORE INSERT OR UPDATE ON ' || e.table_name || ' FOR EACH ROW' || chr(10) ||
           'BEGIN' || chr(10) ||
           ' p_paivitaLeimat(:old.luontitunnus, :old.luontiaika, :new.luontitunnus, :new.luontiaika, :new.muokkaustunnus, :new.muokkausaika);' || CHR(10) ||
+          'END;');
+
+  end;
+  
+  procedure define_immutable(e entity%rowtype) as
+    shortname constant varchar2(20 char) := select_name(20, e);
+  begin
+      insert into entitytypeentity (table_name, entitytypename) values (e.table_name, 'immutable');
+      putline_or_execute(
+      'alter table ' || e.table_name || ' add ('||
+          'luontitunnus varchar2(30 char) constraint ' || shortname
+              || '_LTNNUS_NN not null constraint ' || shortname || '_A_FK REFERENCES KAYTTAJA, ' ||
+          'luontiaika date constraint ' || shortname || '_LAIKA_NN not null)');
+
+      comment_column(e.table_name, 'luontitunnus', 'Käyttäjä, joka on lisännyt (insert) tämän rivin tietokantaan.');
+      comment_column(e.table_name, 'luontiaika', 'Ajanhetki, jolloin tämä rivi on lisätty (insert) tietokantaan.');
+
+      putline_or_execute(
+          'CREATE OR REPLACE TRIGGER ' || shortname || 'BRI' || chr(10) ||
+          ' BEFORE INSERT ON ' || e.table_name || ' FOR EACH ROW' || chr(10) ||
+          'BEGIN' || chr(10) ||
+          ' p_luoLeimat(:new.luontitunnus, :new.luontiaika);' || CHR(10) ||
           'END;');
 
   end;

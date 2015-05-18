@@ -35,6 +35,11 @@ create table hakemustila (
   description varchar2(2000 char)
 );
 
+begin
+  model.define_mutable(model.new_entity('hakemustila', 'Hakemustila', 'HATILA'));
+end;
+/
+
 insert into hakemustila (tunnus, nimi, description) values ('0', 'Ei käynnissä',
    'Hakemus on keskeneräinen ja hakuaika ei ole alkanut. Huom! tätä tilaa ei tallenneta tietokantaan. Tämä on puhtaasti laskennallinen tila.');
 
@@ -63,4 +68,17 @@ begin
 end;
 /
 
+create table hakemustila_log (
+  hakemustilatunnus references hakemustila (tunnus),
+  hakemusid references hakemus (id),
+  jarjestysnumero number,
+  sisaltopdf blob,
+
+  constraint hakemustila_log_pk primary key (hakemustilatunnus, hakemusid, jarjestysnumero)
+);
+
+begin
+  model.define_immutable(model.new_entity('hakemustila_log', 'Hakemustilan loki', 'HATILALOG'));
+end;
+/
 

@@ -41,6 +41,22 @@ end;
 end p_paivitaleimat;
 /
 
+-- Proseduuri luontitunnusten ja aikaleimojen asettamiseen
+create or replace procedure p_luoleimat (
+  io_newluontitunnus in out varchar2,
+  io_newluontiaika in out date)
+is
+  begin
+    declare
+      m_client_id varchar2(64);
+    begin
+      m_client_id := sys_context('userenv', 'CLIENT_IDENTIFIER');
+      io_newluontitunnus := nvl(m_client_id, user);
+      io_newluontiaika := sysdate;
+    end;
+  end;
+/
+
 create table kieli ( 
    tunnus varchar2 (2 char) not null constraint kieli_pk primary key, 
    nimi varchar2 (200 char) not null
