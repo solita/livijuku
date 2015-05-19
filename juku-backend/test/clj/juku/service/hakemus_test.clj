@@ -307,7 +307,7 @@
 
 (facts "Virheelliset tilasiirtymät"
        (assert-state-transition ["V" "TV"] h/tarkasta-hakemus! "tarkastaminen")
-       (assert-state-transition ["V"] h/taydennyspyynto! "täydennyspyyntö")
+       (assert-state-transition ["V" "TV"] h/taydennyspyynto! "täydennyspyyntö")
        (assert-state-transition ["T0"] h/laheta-taydennys! "täydentäminen"))
 
 (facts "Hakemuksen tilan hallinta - asiahallinta pois päältä"
