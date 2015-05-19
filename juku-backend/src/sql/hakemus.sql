@@ -8,16 +8,35 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkaus
 from hakemus_view where organisaatioid = :organisaatioid
 
 -- name: select-hakemus
-with hakija as (
-  select muokkaustunnus from (
-    select rownum, avustuskohde.muokkaustunnus from avustuskohde 
-    where avustuskohde.hakemusid = :hakemusid order by avustuskohde.muokkausaika desc)
+with 
+kayttajanimi as (
+  select tunnus, nvl(nimi, etunimi || ' ' || sukunimi) nimi from kayttaja
+), 
+muokkaus as (
+  select (select nimi from kayttajanimi where tunnus = muokkaustunnus) muokkaaja
+  from (
+    select avustuskohde.muokkaustunnus, avustuskohde.muokkausaika from avustuskohde
+    where avustuskohde.hakemusid = :hakemusid and avustuskohde.muokkausaika <> avustuskohde.luontiaika
+    union all
+    select liite.muokkaustunnus, liite.muokkausaika from liite
+    where liite.hakemusid = :hakemusid
+    order by muokkausaika desc) m 
+  where rownum = 1
+), 
+lahetys as (
+  select (select nimi from kayttajanimi where tunnus = luontitunnus) lahettaja, 
+         luontiaika lahetysaika 
+  from (
+    select luontitunnus, luontiaika
+    from hakemustila_log l where l.hakemusid = :hakemusid and l.hakemustilatunnus in ('V', 'TV')
+    order by luontiaika desc)
   where rownum = 1
 )
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
        organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
-       (select * from hakija) hakija
-from hakemus_view where id = :hakemusid
+       muokkaus.*, lahetys.*
+from hakemus_view left join muokkaus on (1=1) left join lahetys on (1=1)
+where id = :hakemusid
 
 -- name: select-all-hakemukset
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,

@@ -14,7 +14,7 @@
 (def vuosi (:vuosi hakemuskausi))
 
 (facts "-- Avustuskohteiden testit --"
-
+(test/with-user "juku_hakija" ["juku_hakija"]
   (fact "Avustuskohteen lisääminen"
     (let [organisaatioid 1
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
@@ -23,6 +23,7 @@
           avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
       (ak/add-avustuskohde! avustuskohde)
+
       (ak/find-avustuskohteet-by-hakemusid id) => [avustuskohde]))
 
   (fact "Avustuskohteen lisääminen - avustuskohde on jo olemassa"
@@ -58,9 +59,14 @@
            ak1 {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}
            ak2 (assoc ak1 :avustuskohdelajitunnus "2")]
 
+       (:muokkaaja (h/get-hakemus-by-id id)) => nil
        (ak/save-avustuskohteet![ak1 ak2])
-       (ak/find-avustuskohteet-by-hakemusid id) => [ak1 ak2]
 
+       (:muokkaaja (h/get-hakemus-by-id id)) => nil
+       (ak/find-avustuskohteet-by-hakemusid id) => [ak1 ak2]
+       (Thread/sleep 1000)
        (ak/save-avustuskohteet![ak1 (assoc ak2 :haettavaavustus 2M)])
-       (ak/find-avustuskohteet-by-hakemusid id) => [ak1 (assoc ak2 :haettavaavustus 2M)])))
+       (:muokkaaja (h/get-hakemus-by-id id)) => "Harri Helsinki"
+
+       (ak/find-avustuskohteet-by-hakemusid id) => [ak1 (assoc ak2 :haettavaavustus 2M)]))))
 

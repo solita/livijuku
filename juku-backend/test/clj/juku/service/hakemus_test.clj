@@ -13,7 +13,8 @@
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.test :as test]
             [juku.headers :as headers]
-            [clj-http.fake :as fake]))
+            [clj-http.fake :as fake]
+            [common.core :as c]))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
@@ -26,7 +27,9 @@
   (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
 
 (defn assoc-hakemus-defaults+ [hakemus id selite]
-  (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija", :kasittelija nil :selite selite, :hakija nil))
+  (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija",
+                                             :kasittelija nil :selite selite, :hakija "tätä ei tueta",
+                                             :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
   (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))
@@ -169,7 +172,11 @@
           (h/laheta-hakemus! id)
 
           (asha/headers :vireille) => asha/valid-headers?
-          (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
+
+          (let [hakemus (h/get-hakemus-by-id id)]
+            (:diaarinumero hakemus) => "testing"
+            (:lahettaja hakemus) => "Harri Helsinki"
+            (:lahetysaika hakemus) => c/not-nil?))))
 
     (fact "Hakemuksen lähettäminen - liitteet"
       (asha/with-asha
@@ -177,8 +184,10 @@
              liite1 {:hakemusid id :nimi "t-1" :contenttype "text/plain"}
              liite2 {:hakemusid id :nimi "t-åäö" :contenttype "text/plain"}]
 
+           (:muokkaaja (h/get-hakemus-by-id id)) => nil
            (l/add-liite! liite1 (test/inputstream-from "test-1"))
            (l/add-liite! liite2 (test/inputstream-from "test-2"))
+           (:muokkaaja (h/get-hakemus-by-id id)) => "Harri Helsinki"
 
            (h/laheta-hakemus! id)
            (asha/headers :vireille) => asha/valid-headers?

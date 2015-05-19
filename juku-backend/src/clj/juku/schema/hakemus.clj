@@ -17,22 +17,23 @@
                       :muokkausaika DateTime})
 
 (s/defschema HakemusSuunnitelma
-     (assoc Hakemus :haettu-avustus s/Num
-                    :myonnettava-avustus s/Num))
+  (assoc Hakemus :haettu-avustus s/Num
+                 :myonnettava-avustus s/Num))
 
-(s/defschema Hakemus+ (assoc Hakemus :selite (s/maybe s/Str)
-                                     :kasittelija (s/maybe s/Str)
-                                     :hakija (s/maybe s/Str)
-                                     :luontitunnus s/Str))
+(s/defschema Hakemus+
+  (assoc Hakemus :selite (s/maybe s/Str)
+                 :kasittelija (s/maybe s/Str)
+                 :luontitunnus s/Str
+                 :hakija (s/maybe s/Str)        ; deprecated - älä käytä
+                 :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)
+                 :lahettaja (s/maybe s/Str)        ; hakemuksen viimeisimmän lähetyksen tehnyt hakija (fullname)
+                 :lahetysaika (s/maybe DateTime))) ; hakemuksen viimeisin lähetysaika
+
 
 (s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika))
 
-(s/defschema Hakemukset [Hakemus])
-
 (s/defschema Hakemuskausi {:vuosi      s/Int
                            :hakemukset [Hakemus]})
-
-(s/defschema Hakemuskaudet [Hakemuskausi])
 
 (s/defschema Avustuskohde {:hakemusid     s/Num
                            :avustuskohdeluokkatunnus s/Str
