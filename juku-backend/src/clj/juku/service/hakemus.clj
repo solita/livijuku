@@ -203,7 +203,7 @@
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
-      (change-hakemustila! hakemusid "T0" ["V"] "täydennyspyyntö")
+      (change-hakemustila! hakemusid "T0" ["V" "TV"] "täydennyspyyntö")
 
       (add-taydennyspyynto! hakemusid maarapvm)
       (if-let [diaarinumero (:diaarinumero hakemus)]
