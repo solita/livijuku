@@ -68,17 +68,17 @@ begin
 end;
 /
 
-create table hakemustila_log (
+create table hakemustilatapahtuma (
   hakemusid references hakemus (id),
   hakemustilatunnus references hakemustila (tunnus),
   jarjestysnumero number,
-  sisaltopdf blob,
+  asiakirjapdf blob,
 
-  constraint hakemustila_log_pk primary key (hakemusid, hakemustilatunnus, jarjestysnumero)
+  constraint hakemustilatapahtuma_pk primary key (hakemusid, hakemustilatunnus, jarjestysnumero)
 );
 
 begin
-  model.define_immutable(model.new_entity('hakemustila_log', 'Hakemustilan loki', 'HATILALOG'));
+  model.define_immutable(model.new_entity('hakemustilatapahtuma', 'Hakemustilatapahtuma', 'HATILAEVENT'));
 end;
 /
 

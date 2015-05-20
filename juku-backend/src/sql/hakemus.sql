@@ -28,7 +28,7 @@ lahetys as (
          luontiaika lahetysaika 
   from (
     select luontitunnus, luontiaika
-    from hakemustila_log l where l.hakemusid = :hakemusid and l.hakemustilatunnus in ('V', 'TV')
+    from hakemustilatapahtuma l where l.hakemusid = :hakemusid and l.hakemustilatunnus in ('V', 'TV')
     order by luontiaika desc)
   where rownum = 1
 )
@@ -93,6 +93,6 @@ values (:hakemusid,
         :maarapvm)
 
 -- name: insert-hakemustila-event!
-insert into hakemustila_log (hakemusid, hakemustilatunnus, jarjestysnumero)
+insert into hakemustilatapahtuma (hakemusid, hakemustilatunnus, jarjestysnumero)
 values (:hakemusid, :hakemustilatunnus,
-       (select nvl(max(p.jarjestysnumero), 0) + 1 from hakemustila_log p where p.hakemusid = :hakemusid))
+       (select nvl(max(p.jarjestysnumero), 0) + 1 from hakemustilatapahtuma p where p.hakemusid = :hakemusid))
