@@ -63,8 +63,6 @@
 (defn get-hakemus-by-id [hakemusid]
   (-> (select-hakemus {:hakemusid hakemusid})
       (coll/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
-      ;(update-in [:hakija] (fn [uid] (if uid (user/user-fullname (user/find-user uid)))))
-      (assoc :hakija "tätä ei tueta")
       coerce/row->object
       coerce-hakemus+))
 

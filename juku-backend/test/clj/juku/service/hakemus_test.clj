@@ -28,7 +28,7 @@
 
 (defn assoc-hakemus-defaults+ [hakemus id selite]
   (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija",
-                                             :kasittelija nil :selite selite, :hakija "tätä ei tueta",
+                                             :kasittelija nil :selite selite,
                                              :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]

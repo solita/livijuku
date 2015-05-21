@@ -24,7 +24,6 @@
   (assoc Hakemus :selite (s/maybe s/Str)
                  :kasittelija (s/maybe s/Str)
                  :luontitunnus s/Str
-                 :hakija (s/maybe s/Str)        ; deprecated - älä käytä
                  :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)
                  :lahettaja (s/maybe s/Str)        ; hakemuksen viimeisimmän lähetyksen tehnyt hakija (fullname)
                  :lahetysaika (s/maybe DateTime))) ; hakemuksen viimeisin lähetysaika
