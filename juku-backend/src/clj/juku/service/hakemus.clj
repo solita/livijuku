@@ -61,7 +61,7 @@
   (hakemukset-group-by-hakemuskausi (find-all-hakemukset)))
 
 (defn get-hakemus-by-id [hakemusid]
-  (-> (select-hakemus {:hakemusid hakemusid})
+  (-> (select-hakemus+ {:hakemusid hakemusid})
       (coll/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
       coerce/row->object
       coerce-hakemus+))

@@ -7,7 +7,7 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkaus
        organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus_view where organisaatioid = :organisaatioid
 
--- name: select-hakemus
+-- name: select-hakemus+
 with 
 kayttajanimi as (
   select tunnus, nvl(nimi, etunimi || ' ' || sukunimi) nimi from kayttaja
