@@ -96,3 +96,8 @@ values (:hakemusid,
 insert into hakemustilatapahtuma (hakemusid, hakemustilatunnus, jarjestysnumero)
 values (:hakemusid, :hakemustilatunnus,
        (select nvl(max(p.jarjestysnumero), 0) + 1 from hakemustilatapahtuma p where p.hakemusid = :hakemusid))
+
+-- name: insert-hakemustila-event+asiakirja!
+insert into hakemustilatapahtuma (hakemusid, hakemustilatunnus, asiakirjapdf, jarjestysnumero)
+values (:hakemusid, :hakemustilatunnus, :asiakirja,
+       (select nvl(max(p.jarjestysnumero), 0) + 1 from hakemustilatapahtuma p where p.hakemusid = :hakemusid))

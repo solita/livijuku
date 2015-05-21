@@ -148,11 +148,23 @@
        :message (str "Hakemuksen (" hakemusid ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
                      ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
        :hakemusid hakemusid
-       :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus}))
+       :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})))
 
-  ;; hakemustilan muutoshistoria
-  (insert-hakemustila-event! {:hakemusid hakemusid
-                              :hakemustilatunnus new-hakemustilatunnus}))
+(defn change-hakemustila+log!
+  ([hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation]
+    (change-hakemustila! hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation)
+
+    ;; hakemustilan muutoshistoria
+    (insert-hakemustila-event! {:hakemusid hakemusid
+                                :hakemustilatunnus new-hakemustilatunnus}))
+
+  ([hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
+    (change-hakemustila! hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation)
+
+    ;; hakemustilan muutoshistoria
+    (insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
+                                          :hakemustilatunnus new-hakemustilatunnus
+                                          :asiakirja asiakirja})))
 
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
@@ -179,13 +191,17 @@
             (asha/maksatushakemus diaarinumero
                                   {:kasittelija (user/user-fullname kasittelija)
                                    :lahettaja (:nimi organisaatio)}
-                                  hakemus-asiakirja liitteet))))))
+                                  hakemus-asiakirja liitteet))))
+
+      (insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
+                                            :hakemustilatunnus "V"
+                                            :asiakirja (hakemus-pdf hakemusid)})))
   nil)
 
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus-by-id hakemusid)]
-      (change-hakemustila! hakemusid "T" ["V" "TV"] "tarkastaminen")
+      (change-hakemustila+log! hakemusid "T" ["V" "TV"] "tarkastaminen")
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
   nil)
@@ -203,7 +219,7 @@
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
-      (change-hakemustila! hakemusid "T0" ["V" "TV"] "täydennyspyyntö")
+      (change-hakemustila+log! hakemusid "T0" ["V" "TV"] "täydennyspyyntö")
 
       (add-taydennyspyynto! hakemusid maarapvm)
       (if-let [diaarinumero (:diaarinumero hakemus)]
@@ -221,7 +237,7 @@
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila! hakemusid "TV" ["T0"] "täydentäminen")
+      (change-hakemustila+log! hakemusid "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero

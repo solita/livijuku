@@ -68,14 +68,14 @@
 (defn hyvaksy-paatos! [hakemusid]
   (with-transaction
     (let [hakemus (h/get-hakemus-by-id hakemusid)
-          updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})]
+          updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
+          paatos-asiakirja (paatos-pdf hakemusid)]
       (assert-update! updated hakemusid)
       (cond
-        (== updated 1) (h/change-hakemustila! hakemusid "P" "T" "päättäminen")
+        (== updated 1) (h/change-hakemustila+log! hakemusid "P" "T" "päättäminen" paatos-asiakirja)
         (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))
       (if-let [diaarinumero (:diaarinumero hakemus)]
-        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)}
-                     (paatos-pdf hakemusid)))))
+        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} paatos-asiakirja))))
   nil)
 
 (defn peruuta-paatos! [hakemusid]
@@ -83,6 +83,6 @@
     (let [updated (update-paatos-hylatty! {:hakemusid hakemusid})]
       (assert-update! updated hakemusid)
       (cond
-        (== updated 1) (h/change-hakemustila! hakemusid "T" "P" "päätöksen peruuttaminen")
+        (== updated 1) (h/change-hakemustila+log! hakemusid "T" "P" "päätöksen peruuttaminen")
         (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
   nil)
