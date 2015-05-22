@@ -28,6 +28,10 @@
                            [com.zaxxer/HikariCP-java6 "2.2.5"]
 
                            ;; *** logging libraries ***
+                           [log4j/log4j "1.2.16" :exclusions [javax.mail/mail
+                                                              javax.jms/jms
+                                                              com.sun.jdmk/jmxtools
+                                                              com.sun.jmx/jmxri]]
                            [org.clojure/tools.logging "0.3.1"]
                            [ch.qos.logback/logback-classic "1.1.2"]
 
