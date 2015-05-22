@@ -42,7 +42,7 @@
         (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id)
 
-        (:hakemustilatunnus (h/get-hakemus-by-id id)) => "P"
+        (:hakemustilatunnus (h/get-hakemus+ id)) => "P"
 
         (let [hyvaksytty-paatos (p/find-current-paatos id)]
           (:paattaja hyvaksytty-paatos) => "juku_kasittelija"
@@ -69,4 +69,4 @@
         (p/peruuta-paatos! id)
 
         (p/find-current-paatos id) => nil
-        (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T"))))
+        (:hakemustilatunnus (h/get-hakemus+ id)) => "T"))))

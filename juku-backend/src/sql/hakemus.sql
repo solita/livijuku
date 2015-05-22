@@ -38,6 +38,11 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkaus
 from hakemus_view left join muokkaus on (1=1) left join lahetys on (1=1)
 where id = :hakemusid
 
+-- name: select-hakemus
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
+  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
+from hakemus_view where id = :hakemusid
+
 -- name: select-all-hakemukset
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
        organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm

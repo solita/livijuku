@@ -45,7 +45,7 @@
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
           id (h/add-hakemus! hakemus)]
 
-      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id nil)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id nil)))
 
   (fact "Uuden hakemuksen luonti - organisaatio ei ole olemassa"
     (let [organisaatioid 23453453453453
@@ -68,7 +68,7 @@
           selite "selite"]
 
       (h/save-hakemus-selite! id selite)
-      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
 
   (fact "Hakemuksen selitteen päivittäminen - yli 4000 merkkiä ja sisältää ei ascii merkkejä"
     (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
@@ -76,7 +76,7 @@
           selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
 
       (h/save-hakemus-selite! id selite)
-      (dissoc (h/get-hakemus-by-id id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
 
   (fact "Organisaation hakemusten haku"
     (let [organisaatioid 1M
@@ -146,7 +146,7 @@
           id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
 
       (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
-      (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0"))
+      (:hakemustilatunnus (h/get-hakemus+ id)) => "0"))
 
   (fact "Keskeneräisen hakemuksen tila hakuajan alkamisen jälkeen on K (keskeneräinen)"
         (let [vuosi (:vuosi (test/next-hakemuskausi!))
@@ -156,7 +156,7 @@
               id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})]
 
           (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
-          (:hakemustilatunnus (h/get-hakemus-by-id id)) => "0")))
+          (:hakemustilatunnus (h/get-hakemus+ id)) => "0")))
 
 ;; ************ Hakemuksen tilan hallinta ***********
 
@@ -173,7 +173,7 @@
 
           (asha/headers :vireille) => asha/valid-headers?
 
-          (let [hakemus (h/get-hakemus-by-id id)]
+          (let [hakemus (h/get-hakemus+ id)]
             (:diaarinumero hakemus) => "testing"
             (:lahettaja hakemus) => "Harri Helsinki"
             (:lahetysaika hakemus) => c/not-nil?))))
@@ -184,10 +184,10 @@
              liite1 {:hakemusid id :nimi "t-1" :contenttype "text/plain"}
              liite2 {:hakemusid id :nimi "t-åäö" :contenttype "text/plain"}]
 
-           (:muokkaaja (h/get-hakemus-by-id id)) => nil
+           (:muokkaaja (h/get-hakemus+ id)) => nil
            (l/add-liite! liite1 (test/inputstream-from "test-1"))
            (l/add-liite! liite2 (test/inputstream-from "test-2"))
-           (:muokkaaja (h/get-hakemus-by-id id)) => "Harri Helsinki"
+           (:muokkaaja (h/get-hakemus+ id)) => "Harri Helsinki"
 
            (h/laheta-hakemus! id)
            (asha/headers :vireille) => asha/valid-headers?
@@ -209,7 +209,7 @@
              (slurp (get-in multipart ["t-1" :content])) => "test-1"
              (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
 
-           (:diaarinumero (h/get-hakemus-by-id id)) => "testing")))
+           (:diaarinumero (h/get-hakemus+ id)) => "testing")))
 
     (fact "Täydennyspyynnön lähettäminen"
       (asha/with-asha
@@ -218,7 +218,7 @@
           (h/laheta-hakemus! id)
           (h/taydennyspyynto! id)
 
-          (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T0"
+          (:hakemustilatunnus (h/get-hakemus+ id)) => "T0"
 
           (asha/headers :taydennyspyynto) => asha/valid-headers?
           (:uri (asha/request :taydennyspyynto)) => "/api/hakemus/testing/taydennyspyynto"
@@ -238,7 +238,7 @@
          (h/taydennyspyynto! id)
          (h/laheta-taydennys! id)
 
-         (:hakemustilatunnus (h/get-hakemus-by-id id)) => "TV"
+         (:hakemustilatunnus (h/get-hakemus+ id)) => "TV"
 
          (asha/headers :taydennys) => asha/valid-headers?
 
@@ -262,7 +262,7 @@
          (h/laheta-hakemus! id)
          (h/tarkasta-hakemus! id)
 
-         (:hakemustilatunnus (h/get-hakemus-by-id id)) => "T"
+         (:hakemustilatunnus (h/get-hakemus+ id)) => "T"
 
          (asha/headers :tarkastettu) => asha/valid-headers?
          (:uri (asha/request :tarkastettu))) => "/api/hakemus/testing/tarkastettu"))
@@ -276,8 +276,8 @@
         (test/with-user "juku_kasittelija" ["juku_kasittelija"] (do (h/get-hakemus-by-id! id1)))
         (h/laheta-hakemus! id2)
 
-        (:hakemustilatunnus (h/get-hakemus-by-id id1)) => "V"
-        (:hakemustilatunnus (h/get-hakemus-by-id id2)) => "V"
+        (:hakemustilatunnus (h/get-hakemus+ id1)) => "V"
+        (:hakemustilatunnus (h/get-hakemus+ id2)) => "V"
 
         (let [request (asha/request :maksatushakemus)
               multipart (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request)))
@@ -316,7 +316,7 @@
        (let [id (h/add-hakemus! hsl-hakemus)]
 
          (h/laheta-hakemus! id)
-         (:diaarinumero (h/get-hakemus-by-id id)) => nil))))
+         (:diaarinumero (h/get-hakemus+ id)) => nil))))
 
 (fact "Hakemuksen käsittelijän automaattinen asettaminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
@@ -329,7 +329,7 @@
         (:kasittelija (h/get-hakemus-by-id! id)) => nil
         (:kasittelija (h/get-hakemus-by-id! id)) => "juku_kasittelija"
 
-        (:hakemustilatunnus (h/get-hakemus-by-id id)) => "V"
+        (:hakemustilatunnus (h/get-hakemus+ id)) => "V"
 
         (asha/headers :kasittely) => asha/valid-headers?
         (:uri (asha/request :kasittely)) => "/api/hakemus/testing/kasittely"))))

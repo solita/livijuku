@@ -42,7 +42,7 @@
 (defn paatos-pdf [hakemusid]
   (let [paatos (find-current-paatos hakemusid)
         paatospvm-txt (.toString ^LocalDate (or (:voimaantuloaika paatos) (time/today)) "d.M.y")
-        hakemus (h/get-hakemus-by-id hakemusid)
+        hakemus (h/get-hakemus+ hakemusid)
         organisaatio (o/find-organisaatio (:organisaatioid hakemus))
         avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
 
@@ -67,7 +67,7 @@
 
 (defn hyvaksy-paatos! [hakemusid]
   (with-transaction
-    (let [hakemus (h/get-hakemus-by-id hakemusid)
+    (let [hakemus (h/get-hakemus+ hakemusid)
           updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
           paatos-asiakirja (paatos-pdf hakemusid)]
       (assert-update! updated hakemusid)

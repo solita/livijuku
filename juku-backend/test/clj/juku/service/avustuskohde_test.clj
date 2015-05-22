@@ -59,14 +59,14 @@
            ak1 {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}
            ak2 (assoc ak1 :avustuskohdelajitunnus "2")]
 
-       (:muokkaaja (h/get-hakemus-by-id id)) => nil
+       (:muokkaaja (h/get-hakemus+ id)) => nil
        (ak/save-avustuskohteet![ak1 ak2])
 
-       (:muokkaaja (h/get-hakemus-by-id id)) => nil
+       (:muokkaaja (h/get-hakemus+ id)) => nil
        (ak/find-avustuskohteet-by-hakemusid id) => [ak1 ak2]
        (Thread/sleep 1000)
        (ak/save-avustuskohteet![ak1 (assoc ak2 :haettavaavustus 2M)])
-       (:muokkaaja (h/get-hakemus-by-id id)) => "Harri Helsinki"
+       (:muokkaaja (h/get-hakemus+ id)) => "Harri Helsinki"
 
        (ak/find-avustuskohteet-by-hakemusid id) => [ak1 (assoc ak2 :haettavaavustus 2M)]))))
 

@@ -60,11 +60,15 @@
 (defn find-hakemukset-vuosittain []
   (hakemukset-group-by-hakemuskausi (find-all-hakemukset)))
 
-(defn get-hakemus-by-id [hakemusid]
-  (-> (select-hakemus+ {:hakemusid hakemusid})
+(defn- get-any-hakemus [hakemusid select coerce]
+  (-> (select {:hakemusid hakemusid})
       (coll/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
       coerce/row->object
-      coerce-hakemus+))
+      coerce))
+
+(defn get-hakemus+ [hakemusid] (get-any-hakemus hakemusid select-hakemus+ coerce-hakemus+))
+
+(defn get-hakemus [hakemusid] (get-any-hakemus hakemusid select-hakemus coerce-hakemus))
 
 (defn find-hakemussuunnitelmat [vuosi hakemustyyppitunnus]
   (map (comp coerce-hakemus-suunnitelma coerce/row->object)
@@ -90,7 +94,7 @@
   (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
 
 (defn get-hakemus-by-id! [hakemusid]
-  (let [hakemus (get-hakemus-by-id hakemusid)
+  (let [hakemus (get-hakemus+ hakemusid)
         diaarinumero (:diaarinumero hakemus)]
     (if (and (user/has-privilege* "kasittely-hakemus")
              (nil? (:kasittelija hakemus))
@@ -110,7 +114,7 @@
 
 (defn hakemus-pdf [hakemusid]
   (let [vireillepvm-txt (.toString ^LocalDate (time/today) "d.M.y")
-        hakemus (get-hakemus-by-id hakemusid)
+        hakemus (get-hakemus+ hakemusid)
         organisaatio (o/find-organisaatio (:organisaatioid hakemus))
         avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
 
@@ -141,7 +145,7 @@
                           :hakemustilatunnus new-hakemustilatunnus
                           :expectedhakemustilatunnus expected-hakemustilatunnus})
 
-    (let [hakemus (get-hakemus-by-id hakemusid)]
+    (let [hakemus (get-hakemus+ hakemusid)]
       {:http-response r/method-not-allowed
        :message (str "Hakemuksen (" hakemusid ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
                      ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
@@ -166,7 +170,7 @@
 
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus-by-id hakemusid)
+    (let [hakemus (get-hakemus+ hakemusid)
           hakemuskausi (find-hakemuskausi hakemus)
           hakemus-asiakirja (hakemus-pdf hakemusid)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
@@ -198,7 +202,7 @@
 
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus-by-id hakemusid)]
+    (let [hakemus (get-hakemus+ hakemusid)]
       (change-hakemustila+log! hakemusid "T" ["V" "TV"] "tarkastaminen")
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
@@ -212,7 +216,7 @@
 
 (defn taydennyspyynto! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus-by-id hakemusid)
+    (let [hakemus (get-hakemus+ hakemusid)
           maarapvm (maarapvm (get-in hakemus [:hakuaika :loppupvm]))
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
@@ -229,7 +233,7 @@
 
 (defn laheta-taydennys! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus-by-id hakemusid)
+    (let [hakemus (get-hakemus+ hakemusid)
           hakemus-asiakirja (hakemus-pdf hakemusid)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
