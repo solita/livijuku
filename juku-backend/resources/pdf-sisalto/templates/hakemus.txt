@@ -12,5 +12,5 @@
 
 	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
 
-	Lähettäjä	{lahettaja}
+	Lähettäjä: {lahettaja}
 
