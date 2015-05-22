@@ -7,6 +7,7 @@
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
             [juku.service.avustuskohde :as ak]
+            [slingshot.slingshot :as ss]
             [juku.service.liitteet :as l]
             [common.string :as xstr]
             [clojure.string :as str]
@@ -112,28 +113,41 @@
    "KS2" "keskisuurten kaupunkiseutujen",
    "ELY" "ELY-keskusten"})
 
-(defn hakemus-pdf [hakemusid]
-  (let [vireillepvm-txt (.toString ^LocalDate (time/today) "d.M.y")
-        hakemus (get-hakemus+ hakemusid)
-        organisaatio (o/find-organisaatio (:organisaatioid hakemus))
-        avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
+(defn hakemus-pdf
+  ([hakemus] (hakemus-pdf hakemus nil))
+  ([hakemus esikatselu-message]
+    (let [pvm (.toString ^LocalDate (time/today) "d.M.y")
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+          avustuskohteet (ak/find-avustuskohteet-by-hakemusid (:id hakemus))
 
-        total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
-        total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
+          total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
+          total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
-        template (slurp (io/reader (io/resource "pdf-sisalto/templates/hakemus.txt")))]
+          template (slurp (io/reader (io/resource "pdf-sisalto/templates/hakemus.txt")))]
 
-    (pdf/muodosta-pdf
-      {:otsikko {:teksti "Valtionavustushakemus" :paivays vireillepvm-txt :diaarinumero (:diaarinumero hakemus)}
-       :teksti (xstr/interpolate template
-                                 {:organisaatio-nimi (:nimi organisaatio)
-                                  :organisaatiolaji-pl-gen (organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
-                                  :vireillepvm vireillepvm-txt
-                                  :vuosi (:vuosi hakemus)
-                                  :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-                                  :haettuavustus total-haettavaavustus
-                                  :omarahoitus total-omarahoitus})
-       :footer "Liikennevirasto"})))
+      (pdf/muodosta-pdf
+        {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}
+         :teksti (xstr/interpolate template
+                                   {:organisaatio-nimi (:nimi organisaatio)
+                                    :organisaatiolaji-pl-gen (organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+                                    :vireillepvm pvm
+                                    :vuosi (:vuosi hakemus)
+                                    :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
+                                    :haettuavustus total-haettavaavustus
+                                    :omarahoitus total-omarahoitus
+                                    :lahettaja (if esikatselu-message "<Lähettäjän nimi>" (user/user-fullname user/*current-user*))})
+
+         :footer (c/maybe-nil #(str "Liikennevirasto - esikatselu - " %) "Liikennevirasto" esikatselu-message)}))))
+
+(defn find-hakemus-pdf [hakemusid]
+  (let [hakemus (get-hakemus hakemusid)]
+    (case (:hakemustilatunnus hakemus)
+      "0" (hakemus-pdf hakemus (str "hakuaika ei ole alkanut"))
+      "K" (hakemus-pdf hakemus (str "hakemus on keskeneräinen"))
+      "T0" (hakemus-pdf hakemus (str "hakemus on täydennettävänä"))
+      (if-let [asiakirja (:asiakirja (first (select-latest-hakemusasiakirja {:hakemusid hakemusid})))]
+        (coerce/inputstream asiakirja)
+        (ss/throw+ (str "Hakemuksen " hakemusid " asiakirjaa ei löydy hakemustilahistoriasta."))))))
 
 ;; *** Hakemustilan käsittely ***
 
@@ -145,7 +159,7 @@
                           :hakemustilatunnus new-hakemustilatunnus
                           :expectedhakemustilatunnus expected-hakemustilatunnus})
 
-    (let [hakemus (get-hakemus+ hakemusid)]
+    (let [hakemus (get-hakemus hakemusid)]
       {:http-response r/method-not-allowed
        :message (str "Hakemuksen (" hakemusid ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
                      ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
@@ -170,9 +184,9 @@
 
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus+ hakemusid)
+    (let [hakemus (get-hakemus hakemusid)
           hakemuskausi (find-hakemuskausi hakemus)
-          hakemus-asiakirja (hakemus-pdf hakemusid)
+          hakemus-asiakirja (hakemus-pdf hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
@@ -197,12 +211,12 @@
 
       (insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
                                             :hakemustilatunnus "V"
-                                            :asiakirja (hakemus-pdf hakemusid)})))
+                                            :asiakirja (hakemus-pdf (get-hakemus hakemusid))})))
   nil)
 
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus+ hakemusid)]
+    (let [hakemus (get-hakemus hakemusid)]
       (change-hakemustila+log! hakemusid "T" ["V" "TV"] "tarkastaminen")
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
@@ -216,7 +230,7 @@
 
 (defn taydennyspyynto! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus+ hakemusid)
+    (let [hakemus (get-hakemus hakemusid)
           maarapvm (maarapvm (get-in hakemus [:hakuaika :loppupvm]))
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
@@ -234,7 +248,7 @@
 (defn laheta-taydennys! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus+ hakemusid)
-          hakemus-asiakirja (hakemus-pdf hakemusid)
+          hakemus-asiakirja (hakemus-pdf hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]

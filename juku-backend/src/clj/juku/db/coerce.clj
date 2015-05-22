@@ -10,7 +10,9 @@
             )
   (:import (org.joda.time LocalDate)
            (org.joda.time DateTime)
-           (java.util Date)))
+           (java.util Date)
+           (java.io InputStream)
+           (java.sql Blob)))
 
 (defn date->localdate [^Date v] (LocalDate. (.getTime v)))
 
@@ -56,3 +58,5 @@
 
 (defn object->row [obj]
   (m/tree->flat obj "_"))
+
+(defn ^InputStream inputstream [^Blob blob] (.getBinaryStream blob))

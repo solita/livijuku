@@ -106,3 +106,11 @@ values (:hakemusid, :hakemustilatunnus,
 insert into hakemustilatapahtuma (hakemusid, hakemustilatunnus, asiakirjapdf, jarjestysnumero)
 values (:hakemusid, :hakemustilatunnus, :asiakirja,
        (select nvl(max(p.jarjestysnumero), 0) + 1 from hakemustilatapahtuma p where p.hakemusid = :hakemusid))
+
+-- name: select-latest-hakemusasiakirja
+select * from
+  (select rownum ord, asiakirjapdf asiakirja
+    from hakemustilatapahtuma
+    where hakemusid = :hakemusid and hakemustilatunnus in ('V', 'TV')
+    order by luontiaika desc)
+where ord = 1

@@ -5,8 +5,7 @@
             [schema.coerce :as scoerce]
             [ring.util.http-response :as r]
             [juku.schema.liitteet :as s])
-  (:import (java.io InputStream)
-           (java.sql Blob)))
+  (:import (java.io InputStream)))
 
 (def constraint-errors
   {:liite_pk {:http-response r/conflict :message "Kaksi eri käyttäjää on lisännyt liitteen samanaikaisesti."}
@@ -17,13 +16,11 @@
 (def coerce-liite (scoerce/coercer s/Liite coerce/db-coercion-matcher))
 (def coerce-liite+ (scoerce/coercer s/Liite+ coerce/db-coercion-matcher))
 
-(defn ^InputStream inputstream [^Blob blob] (.getBinaryStream blob))
-
 (defn find-liitteet [hakemusid]
   (map coerce-liite (select-liitteet {:hakemusid hakemusid})))
 
 (defn find-liitteet+sisalto [hakemusid]
-  (map (comp coerce-liite+ #(update-in % [:sisalto] inputstream)) (select-liitteet+sisalto {:hakemusid hakemusid})))
+  (map (comp coerce-liite+ #(update-in % [:sisalto] coerce/inputstream)) (select-liitteet+sisalto {:hakemusid hakemusid})))
 
 (defn add-liite! [liite ^InputStream sisalto]
   (insert-liite! (assoc liite :sisalto sisalto))
@@ -39,4 +36,4 @@
 
 (defn find-liite-sisalto [hakemusid liitenumero]
   (if-let [liite (first (select-liite-sisalto {:hakemusid hakemusid :liitenumero liitenumero}))]
-    (update-in liite [:sisalto] inputstream)))
+    (update-in liite [:sisalto] coerce/inputstream)))

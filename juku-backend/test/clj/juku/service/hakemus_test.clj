@@ -344,3 +344,13 @@
        (fact (h/maarapvm (test/from-today 14)) => (test/from-today 14))
        (fact (h/maarapvm (test/from-today 15)) => (test/from-today 15))
        (fact (h/maarapvm (test/from-today 16)) => (test/from-today 16)))
+
+(fact "Hakemusasiakirjan haku onnistuu hakemustilahistoriasta"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (asha/with-asha-off
+      (let [id (h/add-hakemus! hsl-hakemus)
+            asiakirja (h/find-hakemus-pdf id)]
+
+        asiakirja => c/not-nil?
+        (h/laheta-hakemus! id)
+        (h/find-hakemus-pdf id) => c/not-nil?))))

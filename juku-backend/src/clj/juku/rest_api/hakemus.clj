@@ -64,6 +64,6 @@
       (GET* "/hakemus/:hakemusid/pdf" []
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."
-            (content-type (ok (service/hakemus-pdf hakemusid))
+            (content-type (ok (service/find-hakemus-pdf hakemusid))
                           "application/pdf")))
 
