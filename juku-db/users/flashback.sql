@@ -1,4 +1,4 @@
-
+-- Suorita juku_dba tunnuksella
 begin
   dbms_epg.authorize_dad (
     dad_name => 'juku_admin_service',
