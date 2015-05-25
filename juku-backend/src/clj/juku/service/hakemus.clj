@@ -113,6 +113,9 @@
    "KS2" "keskisuurten kaupunkiseutujen",
    "ELY" "ELY-keskusten"})
 
+(defn hakemus-template [hakemus]
+  (str "hakemus-" (:hakemustyyppitunnus hakemus) "-2016.txt"))
+
 (defn hakemus-pdf
   ([hakemus] (hakemus-pdf hakemus nil))
   ([hakemus esikatselu-message]
@@ -123,7 +126,7 @@
           total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
           total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
-          template (slurp (io/reader (io/resource "pdf-sisalto/templates/hakemus.txt")))]
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (hakemus-template hakemus)))))]
 
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}

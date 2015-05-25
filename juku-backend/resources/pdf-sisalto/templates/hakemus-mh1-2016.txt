@@ -1,0 +1,14 @@
+*JOUKKOLIIKENTEEN VALTIONAVUN MAKSATUSHAKEMUS AJALTA 1.1.- 31.6.{vuosi}
+
+*Hakemus {vireillepvm}
+
+	*Hakija: {organisaatio-nimi}
+
+	Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustuksen maksatusta {haettuavustus} euroa ajalta 1.1.- 31.6.{vuosi}. Haettu avustus jakautuu seuraavasti:
+
+{avustuskohteet}
+
+	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
+
+	Lähettäjä: {lahettaja}
+
