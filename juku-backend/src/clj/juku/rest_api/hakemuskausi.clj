@@ -59,5 +59,11 @@
       ;; this end point is for legacy UAs which does not support put requests
       (POST "/hakemuskausi/:vuosi/hakuohje"
            [vuosi :as {{{tempfile :tempfile filename :filename content-type :content-type} :hakuohje} :params}]
-           (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile)))))
+           (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile))))
+
+      (POST* "/hakemuskausi/:vuosi/sulje" []
+             :return   nil
+             :path-params     [vuosi :- s/Int]
+             :summary  "Sulje olemassaoleva hakemuskausi."
+             (ok (service/sulje-hakemuskausi! vuosi))))
 
