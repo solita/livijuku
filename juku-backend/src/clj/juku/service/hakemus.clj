@@ -135,7 +135,8 @@
                                     :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
                                     :haettuavustus total-haettavaavustus
                                     :omarahoitus total-omarahoitus
-                                    :lahettaja (if esikatselu-message "<Lähettäjän nimi>" (user/user-fullname user/*current-user*))})
+                                    :lahettaja (if esikatselu-message "<hakijan nimi, joka on lähettänyt hakemuksen>"
+                                                                      (user/user-fullname user/*current-user*))})
 
          :footer (c/maybe-nil #(str "Liikennevirasto - esikatselu - " %) "Liikennevirasto" esikatselu-message)}))))
 
