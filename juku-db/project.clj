@@ -1,4 +1,4 @@
-(defproject juku-db "0.1.0-SNAPSHOT"
+(defproject juku-db "1.0.0"
   :min-lein-version "2.5.1"
 	:dependencies [[oracle/ojdbc6 "11.2.0.3.0"]
                  [org.dbmaintain/dbmaintain "2.4"]
