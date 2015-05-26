@@ -1,13 +1,13 @@
 
 -- name: select-current-paatos
 select
-  hakemusid, paatosnumero, paattaja, myonnettyavustus,
+  hakemusid, paatosnumero, paattaja, paattajanimi, myonnettyavustus,
   voimaantuloaika, poistoaika, selite
 from paatos where hakemusid = :hakemusid and poistoaika is null
 
 -- name: select-paatos
 select
-  hakemusid, paatosnumero, paattaja, myonnettyavustus,
+  hakemusid, paatosnumero, paattaja, paattajanimi, myonnettyavustus,
   voimaantuloaika, poistoaika, selite
 from paatos where hakemusid = :hakemusid and paatosnumero = :paatosnumero
 

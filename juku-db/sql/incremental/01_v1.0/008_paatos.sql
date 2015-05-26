@@ -3,6 +3,7 @@ create table paatos (
   hakemusid not null references hakemus (id),
   paatosnumero number(3) not null,
   paattaja references kayttaja (tunnus),
+  paattajanimi varchar2(200 char),
   myonnettyavustus number(9,2),
   voimaantuloaika date,
   poistoaika date,

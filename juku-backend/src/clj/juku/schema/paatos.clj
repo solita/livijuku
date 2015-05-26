@@ -8,8 +8,9 @@
                      :voimaantuloaika   (s/maybe DateTime)
                      :poistoaika        (s/maybe DateTime)
                      :paattaja          (s/maybe s/Str)
+                     :paattajanimi      (s/maybe s/Str)
                      :selite            (s/maybe s/Str)})
 
 (s/defschema EditPaatos {:hakemusid         s/Num
-                          :myonnettyavustus  s/Num
-                          :selite            s/Str})
+                         :myonnettyavustus  s/Num
+                         :selite            s/Str})

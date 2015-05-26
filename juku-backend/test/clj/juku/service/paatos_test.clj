@@ -22,7 +22,8 @@
 
 
           (p/save-paatos! paatos)
-          (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :poistoaika nil, :voimaantuloaika nil))))
+          (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :paattajanimi nil,
+                                                      :poistoaika nil, :voimaantuloaika nil))))
 
 (fact "Päätöksen hyväksyminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
