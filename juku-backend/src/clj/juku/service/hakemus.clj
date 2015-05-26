@@ -114,7 +114,7 @@
    "ELY" "ELY-keskusten"})
 
 (defn hakemus-template [hakemus]
-  (str "hakemus-" (:hakemustyyppitunnus hakemus) "-2016.txt"))
+  (str "hakemus-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
 
 (defn ^String format-date [^LocalDate date]
   (.toString ^LocalDate date "d.M.y"))

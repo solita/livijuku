@@ -16,6 +16,7 @@
             [common.core :as c]
             [clojure.java.io :as io]
             [clj-time.core :as time]
+            [clj-time.coerce :as timec]
             [juku.service.user :as user])
   (:import (org.joda.time LocalDate)))
 
@@ -42,7 +43,7 @@
 
 (defn paatos-pdf [hakemusid]
   (let [paatos (find-current-paatos hakemusid)
-        paatospvm-txt (.toString ^LocalDate (or (:voimaantuloaika paatos) (time/today)) "d.M.y")
+        paatospvm-txt (h/format-date (or (timec/to-local-date (:voimaantuloaika paatos)) (time/today)))
         hakemus (h/get-hakemus+ hakemusid)
         organisaatio (o/find-organisaatio (:organisaatioid hakemus))
         avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
