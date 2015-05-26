@@ -29,6 +29,10 @@ group by vuosi, hakemustyyppitunnus, hakemustilatunnus
 select vuosi, hakemustyyppitunnus, alkupvm hakuaika_alkupvm, loppupvm hakuaika_loppupvm
 from hakuaika
 
+-- name: select-hakuajat-by-vuosi
+select hakemustyyppitunnus, alkupvm, loppupvm
+from hakuaika where vuosi = :vuosi
+
 -- name: insert-hakemuskausi-if-not-exists!
 insert into hakemuskausi (vuosi)
 select :vuosi from dual 

@@ -116,10 +116,13 @@
 (defn hakemus-template [hakemus]
   (str "hakemus-" (:hakemustyyppitunnus hakemus) "-2016.txt"))
 
+(defn ^String format-date [^LocalDate date]
+  (.toString ^LocalDate date "d.M.y"))
+
 (defn hakemus-pdf
   ([hakemus] (hakemus-pdf hakemus nil))
   ([hakemus esikatselu-message]
-    (let [pvm (.toString ^LocalDate (time/today) "d.M.y")
+    (let [pvm (format-date (time/today))
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           avustuskohteet (ak/find-avustuskohteet-by-hakemusid (:id hakemus))
 

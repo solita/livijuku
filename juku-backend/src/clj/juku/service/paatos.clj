@@ -5,6 +5,7 @@
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.service.hakemus :as h]
+            [juku.service.hakemuskausi :as hk]
             [juku.service.avustuskohde :as ak]
             [juku.service.pdf :as pdf]
             [juku.service.organisaatio :as o]
@@ -45,7 +46,7 @@
         hakemus (h/get-hakemus+ hakemusid)
         organisaatio (o/find-organisaatio (:organisaatioid hakemus))
         avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
-
+        hakuajat (hk/find-hakuajat (:vuosi hakemus))
         total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
         total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
@@ -62,7 +63,9 @@
                                   :haettuavustus total-haettavaavustus
                                   :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
                                   :omarahoitus total-omarahoitus
-                                  :myonnettyavustus (:myonnettyavustus paatos)})
+                                  :myonnettyavustus (:myonnettyavustus paatos)
+                                  :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
+                                  :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))})
        :footer "Liikennevirasto"})))
 
 (defn hyvaksy-paatos! [hakemusid]

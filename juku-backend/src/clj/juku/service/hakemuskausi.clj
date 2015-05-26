@@ -7,7 +7,7 @@
             [juku.schema.hakemuskausi :as s]
 
             [juku.db.database :refer [db with-transaction]]
-            [clojure.set :as set]
+            [clojure.string :as str]
             [juku.db.sql :as dml]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
@@ -15,6 +15,7 @@
             [juku.settings :refer [settings]]
             [common.collection :as col]
             [common.core :as c]
+            [common.map :as m]
             [ring.util.http-response :as r]
             [clj-time.core :as time]
             [slingshot.slingshot :as ss])
@@ -27,6 +28,8 @@
 (def coerce-maararaha (scoerce/coercer s/Maararaha coerce/db-coercion-matcher))
 
 (def coerce-hakemuskausi-summary (scoerce/coercer s/Hakemuskausi+Summary coerce/db-coercion-matcher))
+
+(def coerce-hakuaika (scoerce/coercer s/Hakuaika+ coerce/db-coercion-matcher))
 
 (def constraint-errors
   {:hakemuskausi_pk {:http-response r/bad-request :message "Hakemuskausi on jo avattu vuodelle: {vuosi}"}})
@@ -132,6 +135,11 @@
     (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
     nil))
 
+(defn find-hakuajat [vuosi]
+  (m/map-values (comp coerce-hakuaika first)
+                (group-by (comp keyword str/lower-case :hakemustyyppitunnus)
+                          (select-hakuajat-by-vuosi {:vuosi vuosi}))))
+
 (defn avaa-hakemuskausi! [^Integer vuosi]
   (with-transaction
 
@@ -165,5 +173,4 @@
       (if (:diaarinumero hakemuskausi) (asha/sulje-hakemuskausi (:diaarinumero hakemuskausi))))
 
     (ss/throw+ {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi})))
-
 
