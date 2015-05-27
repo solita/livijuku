@@ -44,5 +44,5 @@
                      :nimi     s/Str
                      :jarjetys s/Num})
 
-(s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str)]))
+(s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str :alv s/Num)]))
 

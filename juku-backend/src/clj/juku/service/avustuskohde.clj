@@ -47,7 +47,7 @@
 
 (defn avustuskohde-luokittelu []
   (let [luokat (select-avustuskohdeluokat)
-        lajit (select-avustuskohdelajit)
+        lajit (map #(assoc % :alv 24) (select-avustuskohdelajit))
         lajit-group-by-luokka (group-by :avustuskohdeluokkatunnus lajit)
         assoc-avustuskohdelajit (fn [luokka] (assoc luokka :avustuskohdelajit (get lajit-group-by-luokka (:tunnus luokka))))]
     (map assoc-avustuskohdelajit luokat)))
