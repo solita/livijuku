@@ -13,4 +13,5 @@
 
 (s/defschema EditPaatos {:hakemusid         s/Num
                          :myonnettyavustus  s/Num
+                         (s/optional-key :paattajanimi) (s/maybe s/Str)
                          :selite            s/Str})
