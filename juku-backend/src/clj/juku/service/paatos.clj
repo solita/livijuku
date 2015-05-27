@@ -42,12 +42,17 @@
     (if (== updated 0) (new-paatos! paatos))
     nil))
 
+(defn paatos-template [hakemus]
+  (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
+
 (defn paatos-pdf
   ([hakemusid] (paatos-pdf hakemusid false))
 
   ([hakemusid preview]
     (let [paatos (find-current-paatos hakemusid)
-          paatospvm-txt (h/format-date (time/today))
+          paatospvm-txt (if preview "<päätöspäivämäärä>" (h/format-date (time/today)))
+          lahetyspvm-txt (some-> (select-lahetys-pvm {:hakemusid hakemusid})
+                                 first :lahetyspvm coerce/date->localdate h/format-date)
           hakemus (h/get-hakemus+ hakemusid)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
@@ -55,7 +60,7 @@
           total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
           total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
-          template (slurp (io/reader (io/resource "pdf-sisalto/templates/paatos.txt")))]
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus)))))]
 
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
@@ -63,10 +68,11 @@
                                    {:organisaatio-nimi (:nimi organisaatio)
                                     :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
                                     :paatosspvm paatospvm-txt
+                                    :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
                                     :vuosi (:vuosi hakemus)
                                     :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
                                     :haettuavustus total-haettavaavustus
-                                    :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
+                                    :selite (c/maybe-nil #(str "\n\n\t" %) "" (:selite paatos))
                                     :omarahoitus total-omarahoitus
                                     :myonnettyavustus (:myonnettyavustus paatos)
                                     :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))

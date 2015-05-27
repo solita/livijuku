@@ -1,25 +1,23 @@
-{organisaatio-nimi}
 
+*Hakemus {lahetyspvm}
 
-*Hakemus {paatosspvm}
-
-*VALTIONAVUSTUSPÄÄTÖS
+*Valtionavustuspäätös maksamisesta ajalta 1.1.-30.6.{vuosi}
 
 *Hakemus
 
-	Hakija: {organisaatio-nimi}
+	*Hakija: {organisaatio-nimi}
 
-	Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
+	Hakija on {lahetyspvm} toimittanut Liikennevirastolle {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustuksen maksatushakemuksen ja seurantatiedot 1.1. - 30.6.{vuosi} väliseltä ajalta ja hakenut valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 
 {avustuskohteet}
 
-	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
+	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
 
 *Päätös
 
-	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustuksena enintään {myonnettyavustus} euroa (sis. alv) {organisaatiolaji-gen-pl} joukkoliikenteen osoitetusta talousarvion momentin 31.30.63.11 määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.
+	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa (sis. alv) euroa.{selite}
 
-	{selite}Avustusta ei myönnetä haetun suuruisena määrärahan suuruuden vuoksi. Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
+	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin 31.30.63.11 määrärahasta.
 
 *Valtionavustuksen määrä ja saamisen edellytykset
 

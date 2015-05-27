@@ -36,3 +36,8 @@ select * from
    where hakemusid = :hakemusid and hakemustilatunnus in ('P')
    order by luontiaika desc)
 where ord = 1
+
+-- name: select-lahetys-pvm
+select max(luontiaika) lahetyspvm
+from hakemustilatapahtuma
+where hakemusid = :hakemusid and hakemustilatunnus in ('V', 'TV')
