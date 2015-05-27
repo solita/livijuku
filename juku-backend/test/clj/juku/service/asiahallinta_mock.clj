@@ -2,6 +2,8 @@
   (:require [juku.user :as user]
             [clj-time.core :as time]
             [clj-time.format :as tf]
+            [juku.service.asiahallinta]
+            [clj-http.fake :as fake]
             [juku.settings :refer [settings]]))
 
 (def ^:dynamic *asha*)
@@ -24,17 +26,17 @@
          (time/before? (tf/parse (tf/formatters :date-time) (get headers "SOA-Aikaleima")) (time/now)))))
 
 (defmacro with-asha [& body]
-  `(fake/with-fake-routes {#"http://(.+)/hakemuskausi" (asha/asha-handler :avaus "testing\n")
-                           #"http://(.+)/hakemuskausi/(.+)/sulje" (asha/asha-handler :sulkeminen "")
+  `(fake/with-fake-routes {#"http://(.+)/hakemuskausi" (asha-handler :avaus "testing\n")
+                           #"http://(.+)/hakemuskausi/(.+)/sulje" (asha-handler :sulkeminen "")
 
-                           #"http://(.+)/hakemus" (asha/asha-handler :vireille "testing\n")
-                           #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha/asha-handler :taydennyspyynto "")
-                           #"http://(.+)/hakemus/(.+)/taydennys" (asha/asha-handler :taydennys "")
-                           #"http://(.+)/hakemus/(.+)/tarkastettu" (asha/asha-handler :tarkastettu "")
-                           #"http://(.+)/hakemus/(.+)/kasittely" (asha/asha-handler :kasittely "")
-                           #"http://(.+)/hakemus/(.+)/paatos" (asha/asha-handler :paatos "")
+                           #"http://(.+)/hakemus" (asha-handler :vireille "testing\n")
+                           #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha-handler :taydennyspyynto "")
+                           #"http://(.+)/hakemus/(.+)/taydennys" (asha-handler :taydennys "")
+                           #"http://(.+)/hakemus/(.+)/tarkastettu" (asha-handler :tarkastettu "")
+                           #"http://(.+)/hakemus/(.+)/kasittely" (asha-handler :kasittely "")
+                           #"http://(.+)/hakemus/(.+)/paatos" (asha-handler :paatos "")
 
-                           #"http://(.+)/hakemus/(.+)/maksatushakemus" (asha/asha-handler :maksatushakemus "")}
+                           #"http://(.+)/hakemus/(.+)/maksatushakemus" (asha-handler :maksatushakemus "")}
 
       (binding [*asha* {}] ~@body)))
 

@@ -13,6 +13,7 @@
             [schema.coerce :as scoerce]
             [juku.schema.paatos :as s]
             [common.collection :as col]
+            [slingshot.slingshot :as ss]
             [common.core :as c]
             [clojure.java.io :as io]
             [clj-time.core :as time]
@@ -41,33 +42,45 @@
     (if (== updated 0) (new-paatos! paatos))
     nil))
 
-(defn paatos-pdf [hakemusid]
-  (let [paatos (find-current-paatos hakemusid)
-        paatospvm-txt (h/format-date (or (timec/to-local-date (:voimaantuloaika paatos)) (time/today)))
-        hakemus (h/get-hakemus+ hakemusid)
-        organisaatio (o/find-organisaatio (:organisaatioid hakemus))
-        avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
-        hakuajat (hk/find-hakuajat (:vuosi hakemus))
-        total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
-        total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
+(defn paatos-pdf
+  ([hakemusid] (paatos-pdf hakemusid false))
 
-        template (slurp (io/reader (io/resource "pdf-sisalto/templates/paatos.txt")))]
+  ([hakemusid preview]
+    (let [paatos (find-current-paatos hakemusid)
+          paatospvm-txt (h/format-date (time/today))
+          hakemus (h/get-hakemus+ hakemusid)
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+          avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
+          hakuajat (hk/find-hakuajat (:vuosi hakemus))
+          total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
+          total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
 
-    (pdf/muodosta-pdf
-      {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
-       :teksti (xstr/interpolate template
-                                 {:organisaatio-nimi (:nimi organisaatio)
-                                  :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
-                                  :paatosspvm paatospvm-txt
-                                  :vuosi (:vuosi hakemus)
-                                  :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-                                  :haettuavustus total-haettavaavustus
-                                  :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
-                                  :omarahoitus total-omarahoitus
-                                  :myonnettyavustus (:myonnettyavustus paatos)
-                                  :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
-                                  :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))})
-       :footer "Liikennevirasto"})))
+          template (slurp (io/reader (io/resource "pdf-sisalto/templates/paatos.txt")))]
+
+      (pdf/muodosta-pdf
+        {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
+         :teksti (xstr/interpolate template
+                                   {:organisaatio-nimi (:nimi organisaatio)
+                                    :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+                                    :paatosspvm paatospvm-txt
+                                    :vuosi (:vuosi hakemus)
+                                    :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
+                                    :haettuavustus total-haettavaavustus
+                                    :selite (c/maybe-nil #(str % "\n\n\t") "" (:selite paatos))
+                                    :omarahoitus total-omarahoitus
+                                    :myonnettyavustus (:myonnettyavustus paatos)
+                                    :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
+                                    :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))})
+         :footer (str "Liikennevirasto" (if preview " - esikatselu"))}))))
+
+(defn find-paatos-pdf [hakemusid]
+  (let [paatos (find-current-paatos hakemusid)]
+    (if (:voimaantuloaika paatos)
+      (if-let [asiakirja (:asiakirja (first (select-latest-paatosasiakirja {:hakemusid hakemusid})))]
+        (coerce/inputstream asiakirja)
+        (ss/throw+ (str "Hakemuksen " hakemusid " päätösasiakirjaa ei löydy hakemustilahistoriasta.")))
+
+      (paatos-pdf hakemusid true))))
 
 (defn hyvaksy-paatos! [hakemusid]
   (with-transaction

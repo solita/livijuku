@@ -28,3 +28,11 @@ where hakemusid = :hakemusid and poistoaika is null and voimaantuloaika is null
 -- name: update-paatos-hylatty!
 update paatos set poistoaika = sysdate
 where hakemusid = :hakemusid and poistoaika is null and voimaantuloaika is not null
+
+-- name: select-latest-paatosasiakirja
+select * from
+  (select rownum ord, asiakirjapdf asiakirja
+   from hakemustilatapahtuma
+   where hakemusid = :hakemusid and hakemustilatunnus in ('P')
+   order by luontiaika desc)
+where ord = 1

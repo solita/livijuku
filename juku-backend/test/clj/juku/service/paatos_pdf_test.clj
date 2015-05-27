@@ -26,23 +26,43 @@
 
 (def hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
 
+(defn assert-hsl-avustushakemuspaatos-teksti []
+  (fact "HSL avustushakemuspäätöksen sisällön tarkastaminen"
+    (let [teksti (:teksti pdf/*mock-pdf*)]
+      teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
+      teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta 0 euroa."))
+      teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä 0 euroa."))
+
+      teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
+      teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.7. - 31.12." vuosi " päivämäärään 31.1." (+ vuosi 1) " mennessä.")))))
+
+
 (fact "Päätöksen esikatselu"
   (test/with-user "juku_hakija" ["juku_hakija"]
     (asha/with-asha-off
       (pdf/with-mock-pdf
         (let [id (h/add-hakemus! hakemus)
-              asiakirja (p/paatos-pdf id)]
+              asiakirja (p/find-paatos-pdf id)]
 
           asiakirja => c/not-nil?
 
+          (assert-hsl-avustushakemuspaatos-teksti)
           (pdf/assert-otsikko "Valtionavustuspäätös" nil)
 
-          (let [teksti (:teksti pdf/*mock-pdf*)]
-            teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
-            teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta 0 euroa."))
-            teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä 0 euroa."))
+          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
 
-            teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
-            teksti => (partial strx/substring? (str " seurantatiedot ajalta 1.7. - 31.12." vuosi " päivämäärään 31.1." (+ vuosi 1) " mennessä.")))
+(fact "Voimassaolevan päätöksen hakeminen"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (asha/with-asha
+      (pdf/with-mock-pdf
+        (let [id (h/add-hakemus! hakemus)
+              paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
+          (p/save-paatos! paatos)
+          (h/laheta-hakemus! id)
+          (h/tarkasta-hakemus! id)
+          (p/hyvaksy-paatos! id)
 
-          (:footer pdf/*mock-pdf*) => (partial strx/substring? "Liikennevirasto"))))))
+          (p/find-paatos-pdf id) => c/not-nil?
+          (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
+          (assert-hsl-avustushakemuspaatos-teksti)
+          (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
