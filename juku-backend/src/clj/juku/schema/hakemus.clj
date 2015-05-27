@@ -40,9 +40,11 @@
                            :haettavaavustus s/Num,
                            :omarahoitus s/Num})
 
+(s/defschema Avustuskohde+alv (assoc Avustuskohde :alv s/Num))
+
 (s/defschema Luokka {:tunnus   s/Str
                      :nimi     s/Str
                      :jarjetys s/Num})
 
-(s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str :alv s/Num)]))
+(s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str)]))
 

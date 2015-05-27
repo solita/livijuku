@@ -16,7 +16,7 @@
 
 ; *** Hakemus skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 
-(def coerce-avustuskohde (scoerce/coercer Avustuskohde coerce/db-coercion-matcher))
+(def coerce-avustuskohde (scoerce/coercer Avustuskohde+alv coerce/db-coercion-matcher))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def constraint-errors
@@ -27,7 +27,7 @@
 ; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
-  (map coerce-avustuskohde (select-avustuskohteet {:hakemusid hakemusid})))
+  (map coerce-avustuskohde (map #(assoc % :alv 24) (select-avustuskohteet {:hakemusid hakemusid}))))
 
 (defn add-avustuskohde! [avustuskohde]
   (:id (dml/insert db "avustuskohde"
@@ -47,7 +47,7 @@
 
 (defn avustuskohde-luokittelu []
   (let [luokat (select-avustuskohdeluokat)
-        lajit (map #(assoc % :alv 24) (select-avustuskohdelajit))
+        lajit (select-avustuskohdelajit)
         lajit-group-by-luokka (group-by :avustuskohdeluokkatunnus lajit)
         assoc-avustuskohdelajit (fn [luokka] (assoc luokka :avustuskohdelajit (get lajit-group-by-luokka (:tunnus luokka))))]
     (map assoc-avustuskohdelajit luokat)))

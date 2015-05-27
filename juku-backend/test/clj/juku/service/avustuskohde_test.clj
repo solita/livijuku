@@ -13,6 +13,8 @@
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
 
+(defn assoc-alv [ak] (assoc ak :alv 24))
+
 (facts "-- Avustuskohteiden testit --"
 (test/with-user "juku_hakija" ["juku_hakija"]
   (fact "Avustuskohteen lisääminen"
@@ -24,7 +26,7 @@
 
       (ak/add-avustuskohde! avustuskohde)
 
-      (ak/find-avustuskohteet-by-hakemusid id) => [avustuskohde]))
+      (ak/find-avustuskohteet-by-hakemusid id) => [(assoc-alv avustuskohde)]))
 
   (fact "Avustuskohteen lisääminen - avustuskohde on jo olemassa"
     (let [organisaatioid 1
@@ -49,7 +51,7 @@
           avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
         (ak/save-avustuskohteet![avustuskohde])
-        (ak/find-avustuskohteet-by-hakemusid id) => [avustuskohde]))
+        (ak/find-avustuskohteet-by-hakemusid id) => [(assoc-alv avustuskohde)]))
 
   (fact "Avustuskohteiden päivittäminen"
      (let [organisaatioid 1
@@ -63,10 +65,10 @@
        (ak/save-avustuskohteet![ak1 ak2])
 
        (:muokkaaja (h/get-hakemus+ id)) => nil
-       (ak/find-avustuskohteet-by-hakemusid id) => [ak1 ak2]
+       (ak/find-avustuskohteet-by-hakemusid id) => (map assoc-alv [ak1 ak2])
        (Thread/sleep 1000)
        (ak/save-avustuskohteet![ak1 (assoc ak2 :haettavaavustus 2M)])
        (:muokkaaja (h/get-hakemus+ id)) => "Harri Helsinki"
 
-       (ak/find-avustuskohteet-by-hakemusid id) => [ak1 (assoc ak2 :haettavaavustus 2M)]))))
+       (ak/find-avustuskohteet-by-hakemusid id) => (map assoc-alv [ak1 (assoc ak2 :haettavaavustus 2M)])))))
 
