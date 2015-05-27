@@ -60,7 +60,6 @@
 
 (def app (-> juku-api
   jm/wrap-user
-  jm/ex-info-support
   (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))))
 
 ;; set oracle metrics to all service namespaces excluding yesql generated functions
