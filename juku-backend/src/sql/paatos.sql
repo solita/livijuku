@@ -31,13 +31,18 @@ where hakemusid = :hakemusid and poistoaika is null and voimaantuloaika is not n
 
 -- name: select-latest-paatosasiakirja
 select * from
-  (select rownum ord, asiakirjapdf asiakirja
+  (select asiakirjapdf asiakirja
    from hakemustilatapahtuma
    where hakemusid = :hakemusid and hakemustilatunnus in ('P')
    order by luontiaika desc)
-where ord = 1
+where rownum = 1
 
 -- name: select-lahetys-pvm
 select max(luontiaika) lahetyspvm
 from hakemustilatapahtuma
 where hakemusid = :hakemusid and hakemustilatunnus in ('V', 'TV')
+
+-- name: select-latest-paattajanimi
+select paattajanimi from (
+  select paattajanimi from paatos where paattajanimi is not null order by muokkausaika desc
+) where rownum = 1

@@ -62,5 +62,5 @@
 	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on tämän päätöksen liitteenä.
 
 
-	Päättäjä	Etunimi Sukunimi
-	Esittelijä	Etunimi Sukunimi
+	Päättäjä	{paattaja}
+	Esittelijä	{esittelija}

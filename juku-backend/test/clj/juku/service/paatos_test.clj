@@ -10,14 +10,15 @@
             [juku.service.test :as test]
             [clj-http.fake :as fake]))
 
+(def hakemuskausi (test/next-hakemuskausi!))
+(def vuosi (:vuosi hakemuskausi))
+(hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
+
+(def hsl-ah0-hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
+
 (fact "Päätöksen tallentaminen ja hakeminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
-      (let [hakemuskausi (test/next-hakemuskausi!)
-            vuosi (:vuosi hakemuskausi)
-            organisaatioid 1
-            hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-
-            id (h/add-hakemus! hakemus)
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
             paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
 
@@ -28,12 +29,7 @@
 (fact "Päätöksen hyväksyminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
     (asha/with-asha
-      (let [hakemuskausi (test/next-hakemuskausi!)
-            vuosi (:vuosi hakemuskausi)
-            organisaatioid 1
-            hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-
-            id (h/add-hakemus! hakemus)
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
             paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
         (p/save-paatos! paatos)
@@ -53,14 +49,8 @@
 (fact "Päätöksen peruuttaminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
     (asha/with-asha-off
-      (let [hakemuskausi (test/next-hakemuskausi!)
-            vuosi (:vuosi hakemuskausi)
-            organisaatioid 1
-            hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-
-            id (h/add-hakemus! hakemus)
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
             paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
-
 
         (p/save-paatos! paatos)
 
@@ -69,5 +59,26 @@
         (p/hyvaksy-paatos! id)
         (p/peruuta-paatos! id)
 
-        (p/find-current-paatos id) => nil
+        (:paatosnumero (p/find-current-paatos id)) => -1
+
         (:hakemustilatunnus (h/get-hakemus+ id)) => "T"))))
+
+(fact "Päätöksen hakeminen oletustiedoilla"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
+            id2 (h/add-hakemus! hsl-ah0-hakemus)
+            paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar" :paattajanimi "FooBar"}]
+
+        (let [p (p/find-current-paatos id)]
+          (:paatosnumero p) => -1
+          (:hakemusid p) => id
+          (:myonnettyavustus p) => 0
+          (:selite p) => nil)
+
+        (p/save-paatos! paatos)
+        (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :paattajanimi "FooBar",
+                                                    :poistoaika nil, :voimaantuloaika nil)
+        (let [p (p/find-current-paatos id2)]
+          (:paatosnumero p) => -1
+          (:hakemusid p) => id2
+          (:paattajanimi p) => "FooBar"))))

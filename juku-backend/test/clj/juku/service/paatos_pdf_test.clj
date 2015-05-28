@@ -108,3 +108,25 @@
           (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
           (assert-hsl-avustushakemuspaatos-teksti)
           (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
+
+(fact "Päätöksen esittelijä ja päättäjä"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (asha/with-asha
+      (pdf/with-mock-pdf
+        (let [id (h/add-hakemus! hsl-ah0-hakemus)
+              paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar" :paattajanimi "Pentti Päättäjä"}]
+
+          (p/save-paatos! paatos)
+          (h/laheta-hakemus! id)
+          (h/tarkasta-hakemus! id)
+          (p/hyvaksy-paatos! id)
+
+          (p/find-paatos-pdf id) => c/not-nil?
+          (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
+          (assert-hsl-avustushakemuspaatos-teksti)
+
+          (let [teksti (:teksti pdf/*mock-pdf*)]
+            teksti => (partial strx/substring? "Päättäjä\tPentti Päättäjä")
+            teksti => (partial strx/substring? "Esittelijä\tKatri Käsittelijä"))
+
+          (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))

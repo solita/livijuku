@@ -13,7 +13,7 @@
 
 *Päätös
 
-	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa (sis. alv) euroa.{selite}
+	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa (sis. alv).{selite}
 
 	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin 31.30.63.11 määrärahasta.
 
@@ -62,5 +62,5 @@
 	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on tämän päätöksen liitteenä.
 
 
-	Päättäjä	Etunimi Sukunimi
-	Esittelijä	Etunimi Sukunimi
+	Päättäjä	{paattaja}
+	Esittelijä	{esittelija}

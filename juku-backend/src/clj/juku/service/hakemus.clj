@@ -225,6 +225,7 @@
   (with-transaction
     (let [hakemus (get-hakemus hakemusid)]
       (change-hakemustila+log! hakemusid "T" ["V" "TV"] "tarkastaminen")
+      (save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
   nil)

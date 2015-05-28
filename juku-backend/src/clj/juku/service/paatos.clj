@@ -26,7 +26,15 @@
 (def coerce-paatos (scoerce/coercer s/Paatos coerce/db-coercion-matcher))
 
 (defn find-current-paatos [hakemusid]
-  (first (map coerce-paatos (select-current-paatos {:hakemusid hakemusid}))))
+  (let [paatos (first (map coerce-paatos (select-current-paatos {:hakemusid hakemusid})))]
+    (or paatos {:hakemusid         hakemusid
+                :paatosnumero      -1
+                :myonnettyavustus  0
+                :voimaantuloaika   nil
+                :poistoaika        nil
+                :paattaja          nil
+                :paattajanimi      (:paattajanimi (first (select-latest-paattajanimi)))
+                :selite            nil})))
 
 (defn find-paatos [hakemusid paatosnumero]
   (first (map coerce-paatos (select-paatos {:hakemusid hakemusid :paatosnumero paatosnumero}))))
@@ -78,7 +86,10 @@
                                     :omarahoitus total-omarahoitus
                                     :myonnettyavustus (:myonnettyavustus paatos)
                                     :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
-                                    :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))})
+                                    :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
+                                    :paattaja (:paattajanimi paatos)
+                                    :esittelija (user/user-fullname (user/find-user (:kasittelija hakemus)))})
+
          :footer (str "Liikennevirasto" (if preview " - esikatselu"))}))))
 
 (defn find-paatos-pdf [hakemusid]
@@ -92,7 +103,7 @@
 
 (defn hyvaksy-paatos! [hakemusid]
   (with-transaction
-    (let [hakemus (h/get-hakemus+ hakemusid)
+    (let [hakemus (h/get-hakemus hakemusid)
           updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
           paatos-asiakirja (paatos-pdf hakemusid)]
       (assert-update! updated hakemusid)
