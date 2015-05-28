@@ -1,11 +1,9 @@
 
-*Hakemus {lahetyspvm}
-
 *VALTIONAVUSTUSPÄÄTÖS
 
-*Hakemus
+*Hakemus {lahetyspvm}
 
-	*Hakija: {organisaatio-nimi}
+	Hakija: {organisaatio-nimi}
 
 	Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 

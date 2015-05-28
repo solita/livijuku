@@ -1,11 +1,9 @@
 
-*Hakemus {lahetyspvm}
-
 *Valtionavustuspäätös maksamisesta ajalta 1.7.–31.12.{vuosi}
 
-*Hakemus
+*Hakemus {lahetyspvm}
 
-	*Hakija: {organisaatio-nimi}
+	Hakija: {organisaatio-nimi}
 
 	Hakija on {lahetyspvm} toimittanut Liikennevirastolle {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustuksen maksatushakemuksen ja seurantatiedot 1.7.–31.12.{vuosi} väliseltä ajalta ja hakenut valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 
