@@ -12,14 +12,14 @@ select
 from paatos where hakemusid = :hakemusid and paatosnumero = :paatosnumero
 
 -- name: update-paatos!
-update paatos set selite = :selite, myonnettyavustus = :myonnettyavustus
+update paatos set selite = :selite, myonnettyavustus = :myonnettyavustus, paattajanimi = :paattajanimi
 where hakemusid = :hakemusid and poistoaika is null and voimaantuloaika is null
 
 -- name: insert-paatos!
-insert into paatos (hakemusid, paatosnumero, myonnettyavustus, selite)
+insert into paatos (hakemusid, paatosnumero, myonnettyavustus, selite, paattajanimi)
 values (:hakemusid,
         (select nvl(max(p.paatosnumero), 0) + 1 from paatos p where p.hakemusid = :hakemusid),
-        :myonnettyavustus, :selite)
+        :myonnettyavustus, :selite, :paattajanimi)
 
 -- name: update-paatos-hyvaksytty!
 update paatos set voimaantuloaika = sysdate, paattaja = sys_context('userenv', 'CLIENT_IDENTIFIER')

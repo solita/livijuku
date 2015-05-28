@@ -34,12 +34,14 @@
 (defn new-paatos! [paatos] (insert-paatos! paatos))
 
 (defn- assert-update! [updateamount hakemusid]
-  (assert (< updateamount 2) (str "Tietokannan tiedot ovat virheelliset. Hakemuksella " hakemusid " on kaksi avointa päätöstä.")))
+  (if (> updateamount 1) (ss/throw+ (str "Tietokannan tiedot ovat virheelliset. Hakemuksella " hakemusid " on kaksi avointa päätöstä."))))
+
+(defn assoc-paattajanimi [paatos] (update-in paatos [:paattajanimi] (fn [x] (if x x))))
 
 (defn save-paatos! [paatos]
-  (let [updated (update-paatos! paatos)]
+  (let [updated (update-paatos! (assoc-paattajanimi paatos))]
     (assert-update! updated (:hakemusid paatos))
-    (if (== updated 0) (new-paatos! paatos))
+    (if (== updated 0) (new-paatos! (assoc-paattajanimi paatos)))
     nil))
 
 (defn paatos-template [hakemus]
