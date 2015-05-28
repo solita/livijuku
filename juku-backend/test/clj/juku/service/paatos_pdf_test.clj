@@ -41,7 +41,9 @@
   (fact "HSL maksatushakemuspäätöksen sisällön tarkastaminen"
     (let [teksti (:teksti pdf/*mock-pdf*)]
       teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
-      ;teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta 0 euroa."))
+      teksti => (partial strx/substring? (str "Hakija on <lähetyspäivämäärä> toimittanut Liikennevirastolle "
+                                              "suurten kaupunkiseutujen joukkoliikenteen valtionavustuksen maksatushakemuksen ja seurantatiedot 1.1. - 30.6." vuosi
+                                              " väliseltä ajalta ja hakenut valtionavustusta maksuun yhteensä 0 euroa. "))
       teksti => (partial strx/substring? (str "Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä 0 euroa."))
 
       teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
@@ -58,7 +60,7 @@
           asiakirja => c/not-nil?
 
           (assert-hsl-avustushakemuspaatos-teksti)
-          (pdf/assert-otsikko "Valtionavustuspäätös" nil)
+          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
           (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
 
@@ -72,7 +74,7 @@
           asiakirja => c/not-nil?
 
           (assert-hsl-maksatushakemuspaatos-teksti)
-          (pdf/assert-otsikko "Valtionavustuspäätös" nil)
+          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
           (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
 

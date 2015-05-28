@@ -18,8 +18,10 @@
 
 (def today (timef/unparse-local-date (timef/formatter "d.M.yyyy") (time/today)))
 
-(defn assert-otsikko [teksti diaarinumero]
-  (fact "Otsikko on oikein"
-        (:otsikko *mock-pdf*) => {:teksti teksti
-                                  :paivays today
-                                  :diaarinumero diaarinumero}))
+(defn assert-otsikko
+  ([teksti diaarinumero] (assert-otsikko teksti today diaarinumero))
+  ([teksti pvm diaarinumero]
+    (fact "Otsikko on oikein"
+          (:otsikko *mock-pdf*) => {:teksti teksti
+                                    :paivays pvm
+                                    :diaarinumero diaarinumero})))
