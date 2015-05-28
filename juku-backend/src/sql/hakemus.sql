@@ -69,6 +69,7 @@ order by akluokka.jarjetys, aklaji.jarjetys
 
 -- name: select-avustushakemus-kasittelija
 select kasittelija from hakemus where vuosi = :vuosi and organisaatioid = :organisaatioid and hakemustyyppitunnus = 'AH0' and kasittelija is not null
+order by muokkausaika desc, id desc
 
 -- name: update-avustuskohde!
 update avustuskohde set
@@ -109,8 +110,8 @@ values (:hakemusid, :hakemustilatunnus, :asiakirja,
 
 -- name: select-latest-hakemusasiakirja
 select * from
-  (select rownum ord, asiakirjapdf asiakirja
+  (select asiakirjapdf asiakirja
     from hakemustilatapahtuma
     where hakemusid = :hakemusid and hakemustilatunnus in ('V', 'TV')
     order by luontiaika desc)
-where ord = 1
+where rownum = 1

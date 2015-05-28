@@ -38,9 +38,10 @@
                            :avustuskohdeluokkatunnus s/Str
                            :avustuskohdelajitunnus s/Str
                            :haettavaavustus s/Num,
+                           (s/optional-key :alv) s/Num
                            :omarahoitus s/Num})
 
-(s/defschema Avustuskohde+alv (assoc Avustuskohde :alv s/Num))
+(s/defschema Avustuskohde+alv Avustuskohde #_(assoc Avustuskohde :alv s/Num))
 
 (s/defschema Luokka {:tunnus   s/Str
                      :nimi     s/Str
