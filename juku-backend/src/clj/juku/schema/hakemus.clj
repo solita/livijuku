@@ -29,7 +29,7 @@
                  :lahetysaika (s/maybe DateTime))) ; hakemuksen viimeisin lähetysaika
 
 
-(s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika))
+(s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika :hakuaika))
 
 (s/defschema Hakemuskausi {:vuosi      s/Int
                            :hakemukset [Hakemus]})
