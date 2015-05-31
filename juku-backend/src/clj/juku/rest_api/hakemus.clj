@@ -3,7 +3,6 @@
             [juku.service.hakemus :as service]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :refer :all]
-            [ring.swagger.schema :refer [describe]]
             [schema.core :as s]))
 
 (defroutes* hakemus-routes

@@ -27,39 +27,26 @@
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
-(defapi juku-api
+(defapi juku-api {:exceptions {:exception-handler jm/exception-handler}}
         (swagger-ui "/api/ui")
-        (swagger-docs
-          :title "Liikennevirasto - Juku API"
-          :apiVersion "0.0.1"
-          :license "Euroopan unionin yleinen lisenssi v.1.1"
-          :licenseUrl "http://ec.europa.eu/idabc/servlets/Doc7ace.pdf?id=31982"
-          :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut")
-        (swaggered "hakemuskausi"
-                   :description "Hakemuskausi API"
-                   hakemuskausi-routes)
-        (swaggered "hakemus"
-                   :description "Hakemus API"
-                   hakemus-routes)
-        (swaggered "avustuskohde"
-                   :description "Avustuskohde API"
-                   avustuskohde-routes)
-        (swaggered "paatos"
-                   :description "Päätös API"
-                   paatos-routes)
-        (swaggered "liitteet"
-                   :description "Liite API"
-                   liitteet-routes)
-        (swaggered "organisaatio"
-                   :description "Organisaatio API"
-                   organisaatio-routes)
-        (swaggered "user"
-                   :description "Käyttäjä API"
-                   user-routes)
-        notfound)
+        (swagger-docs :info {
+            :title "Liikennevirasto - Juku API"
+            :apiVersion "0.0.1"
+            :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut"
+            :license {
+              :name "Euroopan unionin yleinen lisenssi v.1.1"
+              :url "http://ec.europa.eu/idabc/servlets/Doc7ace.pdf?id=31982"}})
+      (middlewares [jm/wrap-user]
+        (context* "" [] :tags ["Hakemuskausi API"] hakemuskausi-routes)
+        (context* "" [] :tags ["Hakemus API"] hakemus-routes)
+        (context* "" [] :tags ["Avustuskohde API"] avustuskohde-routes)
+        (context* "" [] :tags ["Päätös API"] paatos-routes)
+        (context* "" [] :tags ["Liite API"] liitteet-routes)
+        (context* "" [] :tags ["Organisaatio API"] organisaatio-routes)
+        (context* "" [] :tags ["Käyttäjä API"] user-routes)
+        notfound))
 
 (def app (-> juku-api
-  jm/wrap-user
   (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))))
 
 ;; set oracle metrics to all service namespaces excluding yesql generated functions

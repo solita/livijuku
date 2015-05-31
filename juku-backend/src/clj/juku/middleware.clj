@@ -89,6 +89,30 @@
         (log/error t (.getMessage t))
         (throw t)))))
 
-(alter-var-root #'cm/ex-info-support (constantly ex-info-support))
+#_(alter-var-root #'cm/ex-info-support (constantly ex-info-support))
+
+(defn ^String message [^Throwable t] (.getMessage t))
+
+(defn ^Throwable cause [^Throwable t] (.getCause t))
+
+(defn throwable->http-error [^Throwable t]
+  (if t
+    (let [error (or (ss/get-thrown-object t) (ex-data t))]
+      (if (map? error)
+        (assoc error
+          :message (message t)
+          :cause (throwable->http-error (cause t)))
+        {:message (message t)
+         :cause (throwable->http-error (cause t))}))))
+
+(defn exception-handler [exception]
+  (log/error exception)
+
+  (let [error (throwable->http-error exception)
+        http-response (or (:http-response error) r/internal-server-error)]
+    (http-response (dissoc error :http-response))))
+
+
+
 
 

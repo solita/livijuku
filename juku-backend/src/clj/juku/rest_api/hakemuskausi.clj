@@ -4,7 +4,6 @@
             [juku.service.hakemuskausi :as service]
             [juku.schema.hakemuskausi :refer :all]
             [ring.util.http-response :refer :all]
-            [ring.swagger.schema :refer [describe]]
             [schema.core :as s]
             [clojure.java.io :as io]))
 

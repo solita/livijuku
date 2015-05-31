@@ -5,7 +5,6 @@
             [juku.rest-api.response :as response]
             [juku.schema.liitteet :refer :all]
             [ring.util.http-response :refer :all]
-            [ring.swagger.schema :refer [describe]]
             [schema.core :as s]
             [clojure.java.io :as io]))
 

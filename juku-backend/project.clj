@@ -19,8 +19,8 @@
                            [ring "1.3.1"]
                            [ring/ring-defaults "0.1.2"]
 
-                           [metosin/compojure-api "0.17.0"]
-                           [metosin/ring-swagger-ui "2.0.24"]
+                           [metosin/compojure-api "0.21.0"]
+                           [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***
                            [org.clojars.zentrope/ojdbc "11.2.0.3.0"]
@@ -51,7 +51,8 @@
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
                                                 [midje "1.6.3"]
                                                 [midje-junit-formatter "0.1.0-SNAPSHOT"]
-                                                [clj-http-fake "1.0.1"]]
+                                                [clj-http-fake "1.0.1"]
+                                                [metosin/scjsv "0.2.0"]]
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.
                                                 [lein-pdo "0.1.1"]

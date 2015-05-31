@@ -3,7 +3,6 @@
             [juku.service.user :as service]
             [juku.schema.user :refer :all]
             [ring.util.http-response :refer :all]
-            [ring.swagger.schema :refer [describe]]
             [schema.core :as s]))
 
 (defroutes* user-routes

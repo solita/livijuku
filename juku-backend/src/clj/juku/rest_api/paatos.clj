@@ -3,7 +3,6 @@
             [juku.service.paatos :as service]
             [juku.schema.paatos :refer :all]
             [ring.util.http-response :refer :all]
-            [ring.swagger.schema :refer [describe]]
             [schema.core :as s]))
 
 (defroutes* paatos-routes
