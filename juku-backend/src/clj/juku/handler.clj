@@ -12,14 +12,6 @@
             [juku.rest-api.organisaatio :refer [organisaatio-routes]]
             [juku.rest-api.user :refer [user-routes]]
 
-            [schema.core :as s]
-            [juku.schema.organisaatio :refer :all]
-            [juku.schema.hakemus :refer :all]
-            [juku.schema.user :refer :all]
-            [juku.schema.paatos :refer :all]
-            [juku.schema.liitteet :refer :all]
-            [juku.schema.hakemuskausi :refer :all]
-
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]
             [common.collection :as f]
