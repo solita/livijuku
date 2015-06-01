@@ -60,37 +60,6 @@
       (current-user/with-user-id uid
         (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id headers) :privileges privileges) (handler request))))))
 
-(defn- assoc-throw-context [map throw-context]
-  (let [message (:message throw-context)
-        cause (:cause throw-context)
-        cause-message (c/maybe-nil #(.getMessage %) "" cause)]
-    (assoc map :message message :cause cause-message)))
-
-
-(defn- json-type-or-str [v] (if (or (keyword? v) (map? v) (vector? v) (number? v) (string? v) (instance? Boolean v)) v (str v)))
-
-(defn- error->json [map] (w/postwalk json-type-or-str map))
-
-;; more suitable exception info support
-(defn ex-info-support
-  [handler]
-  (fn [request]
-    (ss/try+
-      (handler request)
-      (catch :http-response {:keys [http-response] :as e}
-        (let [error-body (error->json (dissoc e :http-response))]
-          (log/info (:throwable &throw-context))
-          (http-response (assoc-throw-context error-body &throw-context))))
-      (catch map? e
-        (let [error-body (error->json e)]
-          (log/error (:throwable  &throw-context))
-          (r/internal-server-error (assoc-throw-context error-body &throw-context))))
-      (catch Throwable t
-        (log/error t (.getMessage t))
-        (throw t)))))
-
-#_(alter-var-root #'cm/ex-info-support (constantly ex-info-support))
-
 (defn ^String message [^Throwable t] (.getMessage t))
 
 (defn ^Throwable cause [^Throwable t] (.getCause t))
