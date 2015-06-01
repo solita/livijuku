@@ -26,8 +26,8 @@
               "SOA-Toiminto" operation}
 
     :debug true
-    :socket-timeout 60000    ;; in milliseconds
-    :conn-timeout 60000})    ;; in milliseconds
+    :socket-timeout 120000    ;; in milliseconds
+    :conn-timeout 120000})    ;; in milliseconds
 
 (s/defschema Hakemuskausi {:asianNimi             s/Str
                            :omistavaOrganisaatio  s/Str
