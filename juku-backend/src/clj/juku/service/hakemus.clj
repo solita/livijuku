@@ -66,7 +66,9 @@
 
 (defn- get-any-hakemus [hakemusid select coerce]
   (-> (select {:hakemusid hakemusid})
-      (coll/single-result-required! ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
+      (coll/single-result-required! {:type ::hakemus-not-found
+                                     :hakemusid hakemusid
+                                     :message (str "Hakemusta " hakemusid " ei ole olemassa.")})
       coerce/row->object
       coerce))
 

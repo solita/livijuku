@@ -2,21 +2,31 @@
   (:require [clojure.set :as set]
             [slingshot.slingshot :as ss]))
 
-(defn not-found!
-  ([type parameters msg] (ss/throw+ (assoc parameters :type type) msg))
-  ([parameters msg] (ss/throw+ (assoc parameters :type ::not-found) msg)))
+(defn not-found! [error] (ss/throw+ (merge error {:type ::not-found}) (:message error)))
 
-(defn assert-not-empty! [coll type parameters message]
-  (if (empty? coll) (not-found! type parameters message)))
+(defn assert-not-empty! [coll error]
+  (if (empty? coll) (not-found! error)))
 
-(defn single-result! [coll]
-  (if (> (count coll) 1) (ss/throw+ {:type ::ambiguous-result :size (count coll)} "The collection contains more than one item."))
-  (first coll))
+(defn single-result!
+  "Returns a single result item from the given collection.
+   If the collection is empty or nil, returns nil.
+	 Throws the given error object if more than 1 item is found."
+  ([coll] (single-result! coll {}))
+  ([coll error] (if (> (count coll) 1)
+                  (ss/throw+ (merge error {:type ::ambiguous-result :size (count coll)})
+                             (or (:message error) "The collection contains more than one item.")))
+  (first coll)))
 
-(defn single-result-required! [coll type parameters message]
-  (if-let [result (single-result! coll)]
+(defn single-result-required!
+  "Returns a single result item from the given collection.
+   If the collection is empty or nil, throws a required error object.
+	 Throws an ambiguous error object if more than 1 item is found."
+
+  ([coll required-error] (single-result-required! coll required-error {}))
+  ([coll required-error ambiguous-error]
+  (if-let [result (single-result! coll ambiguous-error)]
     result
-    (not-found! type parameters message)))
+    (not-found! required-error))))
 
 (defn nil-if-empty [col] (if (empty? col) nil col))
 
@@ -35,13 +45,13 @@
 (defn eq [getter value]
   (predicate = getter value))
 
-(defn join [target join-fn source eq-join-keys]
-
+(defn join
   "Join function joins a subset of objects from the source collection to an object in the target collection.
   The source subset (joinset) for a target object is identified using the join-keys.
   Joined source objects and the target object have same join-key values.
   The result of this join is determined using the join-fn function."
 
+  [target join-fn source eq-join-keys]
   (let [index (set/index source eq-join-keys)]
     (map (fn [parent]
            (let [foreign-key (select-keys parent eq-join-keys)

@@ -18,4 +18,5 @@
 (defn find-organisaatio-of [user] (find-organisaatio (:organisaatioid user)))
 
 (defn find-unique-organisaatio-ext-tunnus-like [tunnus]
-  (c/single-result! (select-organisaatio-like-exttunnus {:tunnus tunnus})))
+  (c/single-result! (select-organisaatio-like-exttunnus {:tunnus tunnus})
+                    {:message (str "Tunnisteella " tunnus " löytyy useita organisaatioita.")}))
