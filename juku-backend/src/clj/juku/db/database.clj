@@ -19,21 +19,6 @@
                        (.setUsername (:user settings))
                        (.setPassword (:password settings))
                        (.setAutoCommit false))))
-  #_
-  (doto (com.jolbox.bonecp.BoneCPDataSource.)
-               (.setJdbcUrl (:url settings))
-               (.setUsername (:user settings))
-               (.setPassword (:password settings))
-               (.setMinConnectionsPerPartition 5)
-               (.setMaxConnectionsPerPartition 10)
-               (.setPartitionCount 3)
-               (.setStatisticsEnabled true)
-               ;; test connections every 25 mins (default is 240):
-               (.setIdleConnectionTestPeriodInMinutes 25)
-               ;; allow connections to be idle for 3 hours (default is 60 minutes):
-               (.setIdleMaxAgeInMinutes (* 3 60))
-               ;; consult the BoneCP documentation for your database:
-               (.setConnectionTestStatement "select /* ping */ 1 from dual"))
 
 (defonce ^:dynamic db {:datasource (data-source db-settings)})
 
