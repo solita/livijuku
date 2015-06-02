@@ -37,6 +37,9 @@
    :hakemus_kasittelija_fk {:http-response r/not-found :message "Hakemuksen käsittelijää {kasittelija} ei ole olemassa."}
    :hakemus_hakemuskausi_fk {:http-response r/not-found :message "Hakemuskautta {vuosi} ei ole olemassa."}})
 
+; *** Hakemukseen liittyvät poikkeustyypit ***
+(derive ::hakemus-not-found ::coll/not-found)
+
 ; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
 
 (defn find-organisaation-hakemukset [organisaatioid]
@@ -63,7 +66,7 @@
 
 (defn- get-any-hakemus [hakemusid select coerce]
   (-> (select {:hakemusid hakemusid})
-      (coll/single-result-required ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
+      (coll/single-result-required! ::hakemus-not-found {:hakemusid hakemusid} (str "Hakemusta " hakemusid " ei ole olemassa."))
       coerce/row->object
       coerce))
 
@@ -83,7 +86,8 @@
                            constraint-errors hakemus)))
 
 (defn- update-hakemus-by-id [hakemus hakemusid]
-  (dml/update-where-id db "hakemus" hakemus hakemusid))
+  (dml/assert-update (dml/update-where-id db "hakemus" hakemus hakemusid)
+                     {:type ::hakemus-not-found :message (str "Hakemusta " hakemusid " ei ole olemassa.")}))
 
 (defn save-hakemus-selite! [hakemusid selite]
   (update-hakemus-by-id {:selite selite} hakemusid))

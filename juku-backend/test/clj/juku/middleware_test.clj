@@ -5,7 +5,7 @@
             [common.collection :as coll]
             [juku.service.organisaatio :as org]))
 
-(def tampere (coll/single-result-required (filter (coll/eq :nimi "Tampere") (org/organisaatiot)) :test {} "Testikaupunkia Tampere ei löytynyt"))
+(def tampere (coll/single-result-required! (filter (coll/eq :nimi "Tampere") (org/organisaatiot)) :test {} "Testikaupunkia Tampere ei löytynyt"))
 
 (facts "Find matching organization"
 

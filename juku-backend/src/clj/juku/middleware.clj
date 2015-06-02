@@ -55,7 +55,7 @@
         (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")
        orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :oam-user-department))
         (error r/forbidden "Käyttäjän " uid " organisaatiota: " organisaatio-name
-              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta tai sitä ei löydetä yksikäsitteisesti.")]
+              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")]
 
       (current-user/with-user-id uid
         (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id headers) :privileges privileges) (handler request))))))
@@ -78,7 +78,9 @@
   (log/error exception)
 
   (let [error (throwable->http-error exception)
-        http-response (or (:http-response error) r/internal-server-error)]
+        http-response (or (:http-response error)
+                          (if (isa? (:type error) ::coll/not-found) r/not-found)
+                          r/internal-server-error)]
     (http-response (dissoc error :http-response))))
 
 

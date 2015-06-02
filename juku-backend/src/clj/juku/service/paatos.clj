@@ -4,6 +4,7 @@
             [common.string :as xstr]
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
+            [juku.db.sql :as dml]
             [juku.service.hakemus :as h]
             [juku.service.hakemuskausi :as hk]
             [juku.service.avustuskohde :as ak]
@@ -21,9 +22,14 @@
             [juku.service.user :as user])
   (:import (org.joda.time LocalDate)))
 
+; *** Päätökseen liittyvät kyselyt ***
 (sql/defqueries "paatos.sql")
 
+; *** Päätösskeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 (def coerce-paatos (scoerce/coercer s/Paatos coerce/db-coercion-matcher))
+
+; *** Päätökseen liittyvät poikkeustyypit ***
+(derive ::paatos-not-found ::col/not-found)
 
 (defn find-current-paatos [hakemusid]
   (let [paatos (first (map coerce-paatos (select-current-paatos {:hakemusid hakemusid})))]
@@ -41,14 +47,14 @@
 
 (defn new-paatos! [paatos] (insert-paatos! paatos))
 
-(defn- assert-update! [updateamount hakemusid]
+(defn- assert-unique-update! [updateamount hakemusid]
   (if (> updateamount 1) (ss/throw+ (str "Tietokannan tiedot ovat virheelliset. Hakemuksella " hakemusid " on kaksi avointa päätöstä."))))
 
 (defn assoc-paattajanimi [paatos] (update-in paatos [:paattajanimi] (fn [x] (if x x))))
 
 (defn save-paatos! [paatos]
   (let [updated (update-paatos! (assoc-paattajanimi paatos))]
-    (assert-update! updated (:hakemusid paatos))
+    (assert-unique-update! updated (:hakemusid paatos))
     (if (== updated 0) (new-paatos! (assoc-paattajanimi paatos)))
     nil))
 
@@ -106,10 +112,11 @@
     (let [hakemus (h/get-hakemus hakemusid)
           updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
           paatos-asiakirja (paatos-pdf hakemusid)]
-      (assert-update! updated hakemusid)
-      (cond
-        (== updated 1) (h/change-hakemustila+log! hakemusid "P" "T" "päättäminen" paatos-asiakirja)
-        (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")))
+      (assert-unique-update! updated hakemusid)
+      (dml/assert-update updated {:type ::paatos-not-found
+                                  :hakemusid hakemusid
+                                  :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
+      (h/change-hakemustila+log! hakemusid "P" "T" "päättäminen" paatos-asiakirja)
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} paatos-asiakirja))))
   nil)
@@ -117,8 +124,9 @@
 (defn peruuta-paatos! [hakemusid]
   (with-transaction
     (let [updated (update-paatos-hylatty! {:hakemusid hakemusid})]
-      (assert-update! updated hakemusid)
-      (cond
-        (== updated 1) (h/change-hakemustila+log! hakemusid "T" "P" "päätöksen peruuttaminen")
-        (== updated 0) (col/not-found! ::paatos-not-found {:hakemusid hakemusid} (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")))))
+      (assert-unique-update! updated hakemusid)
+      (dml/assert-update updated {:type ::paatos-not-found
+                                  :hakemusid hakemusid
+                                  :message (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")})
+      (h/change-hakemustila+log! hakemusid "T" "P" "päätöksen peruuttaminen")))
   nil)

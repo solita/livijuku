@@ -1,22 +1,22 @@
 (ns common.collection
   (:require [clojure.set :as set]
-            [common.core :as c]
-            [slingshot.slingshot :as ss]
-            [ring.util.http-response :as http]))
+            [slingshot.slingshot :as ss]))
 
-(defmacro not-found!
-  [type parameters msg] `(ss/throw+ (merge {:type ~type :http-response http/not-found} ~parameters) ~msg))
+(defn not-found!
+  ([type parameters msg] (ss/throw+ (assoc parameters :type type) msg))
+  ([parameters msg] (ss/throw+ (assoc parameters :type ::not-found) msg)))
 
 (defn assert-not-empty! [coll type parameters message]
   (if (empty? coll) (not-found! type parameters message)))
 
-(defn single-result-required [coll type parameters message]
-  (assert (<= (count coll) 1) "The collection contains more than one item.")
-  (assert-not-empty! coll type parameters message)
+(defn single-result! [coll]
+  (if (> (count coll) 1) (ss/throw+ {:type ::ambiguous-result :size (count coll)} "The collection contains more than one item."))
   (first coll))
 
-(defn single-result [coll]
-  (if (> (count coll) 1) nil (first coll)))
+(defn single-result-required! [coll type parameters message]
+  (if-let [result (single-result! coll)]
+    result
+    (not-found! type parameters message)))
 
 (defn nil-if-empty [col] (if (empty? col) nil col))
 

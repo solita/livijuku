@@ -33,7 +33,6 @@
             paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
         (p/save-paatos! paatos)
-        (hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
 
         (h/laheta-hakemus! id)
         (h/tarkasta-hakemus! id)
@@ -45,6 +44,26 @@
           (:paattaja hyvaksytty-paatos) => "juku_kasittelija"
           (:voimaantuloaika hyvaksytty-paatos) => c/not-nil?
           (:poistoaika hyvaksytty-paatos) => nil)))))
+
+(fact "Päätöksen hyväksyminen - avointa päätösta ei ole"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (asha/with-asha
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+
+        (h/laheta-hakemus! id)
+        (h/tarkasta-hakemus! id)
+        (p/hyvaksy-paatos! id) => (throws (str "Hakemuksella " id " ei ole avointa päätöstä"))))))
+
+(fact "Päätöksen hyväksyminen - väärä tila"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (asha/with-asha
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
+            paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
+
+        (h/laheta-hakemus! id)
+        (p/save-paatos! paatos)
+        (p/hyvaksy-paatos! id) => (throws (str "Hakemuksen (" id
+                                               ") päättäminen ei ole sallittu tilassa: V. Hakemuksen päättäminen on sallittu vain tilassa: T"))))))
 
 (fact "Päätöksen peruuttaminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
