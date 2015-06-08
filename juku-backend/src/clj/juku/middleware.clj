@@ -75,13 +75,13 @@
          :cause (throwable->http-error (cause t))}))))
 
 (defn exception-handler [exception]
-  (log/error exception)
-
   (let [error (throwable->http-error exception)
         http-response (or (:http-response error)
                           (if (isa? (:type error) ::coll/not-found) r/not-found)
-                          r/internal-server-error)]
-    (http-response (dissoc error :http-response))))
+                          r/internal-server-error)
+        response (http-response (dissoc error :http-response))]
+    (log/error exception (:status response))
+    response))
 
 
 
