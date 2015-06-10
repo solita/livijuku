@@ -17,6 +17,8 @@
 
 (defn start-server [handler port]
   (stop-server)
+  (log/info (str "Environment: " (System/getenv)))
+  (log/info (str "System properties: " (System/getProperties)))
   (log/info (str "Starting web server on port " port))
   (reset! server (http-kit/run-server handler {:port port :max-body 209715200})))
 
