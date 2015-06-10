@@ -1,4 +1,4 @@
-(defproject juku-backend "0.1.0-SNAPSHOT"
+(defproject juku-backend "1.1.0-SNAPSHOT"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "http://example.com/FIXME"
             :min-lein-version "2.4.3"
