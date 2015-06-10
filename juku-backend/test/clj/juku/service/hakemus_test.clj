@@ -2,6 +2,7 @@
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
             [common.collection :as coll]
+            [clojure.tools.logging :as log]
             [common.map :as m]
             [clj-time.core :as time]
             [clj-time.format :as timef]
@@ -13,7 +14,6 @@
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.test :as test]
             [juku.headers :as headers]
-            [clj-http.fake :as fake]
             [common.core :as c]))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
@@ -33,6 +33,8 @@
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
   (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))
+
+(log/info (str "user.timezone: " (get (System/getProperties) "user.timezone")))
 
 ;; ************ Hakemuksen käsittely ja haut ***********
 
