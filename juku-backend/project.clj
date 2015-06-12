@@ -15,7 +15,7 @@
                            [environ "1.0.0"] ;; Library for managing environment variables in Clojure.
 
                            ;; *** web application ***
-                           [http-kit "2.1.10"] ;; http server
+                           [http-kit "2.1.18"] ;; http server
                            [ring "1.3.1"]
                            [ring/ring-defaults "0.1.2"]
 
