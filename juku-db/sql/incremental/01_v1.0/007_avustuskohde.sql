@@ -53,8 +53,8 @@ create table avustuskohde (
   hakemusid not null references hakemus (id),
   avustuskohdeluokkatunnus varchar2(3 char) not null,
   avustuskohdelajitunnus varchar2(3 char) not null,
-  haettavaavustus number(9,2) default 0 not null,
-  omarahoitus number(9,2) default 0 not null,
+  haettavaavustus number(11,2) default 0 not null,
+  omarahoitus number(11,2) default 0 not null,
   
   constraint avustuskohde_pk primary key (hakemusid, avustuskohdeluokkatunnus, avustuskohdelajitunnus),
   constraint avustuskohde_aklaji_fk 

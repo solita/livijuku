@@ -57,7 +57,7 @@ create table hakemus (
   organisaatioid not null references organisaatio (id),
   hakemustyyppitunnus not null references hakemustyyppi (tunnus),
   hakemustilatunnus varchar2(2 char) default 'K' not null references hakemustila (tunnus),
-  suunniteltuavustus number(9,2),
+  suunniteltuavustus number(12,2),
   kasittelija constraint hakemus_kasittelija_fk references kayttaja (tunnus),
   diaarinumero varchar2(30 char),
   selite clob
