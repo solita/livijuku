@@ -63,3 +63,7 @@
 
     (str/join "\n" (map (partial xstr/interpolate avustuskohde-template) avustuskohteet+nimi))))
 
+(defn total-haettavaavustus [avustuskohteet] (reduce + 0 (map :haettavaavustus avustuskohteet)))
+
+(defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
+

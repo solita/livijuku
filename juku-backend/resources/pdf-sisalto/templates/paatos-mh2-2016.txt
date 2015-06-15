@@ -5,7 +5,7 @@
 
 	Hakija: {organisaatio-nimi}
 
-	Hakija on {lahetyspvm} toimittanut Liikennevirastolle joukkoliikenteen valtionavustuksen maksatushakemuksen ja seurantatiedot 1.7. - 31.12.{vuosi} väliseltä ajalta ja hakenut valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
+	Hakija on toimittanut Liikennevirastolle {lahetyspvm} joukkoliikenteen maksatushakemuksen ajalta 1.7. - 31.12.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 
 {avustuskohteet}
 
@@ -13,43 +13,17 @@
 
 *Päätös
 
-	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa (sis. alv).{selite}
+	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa (sis. alv).
 
-	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin 31.30.63.11 määrärahasta.
+*Päätöksen perustelut
 
-*Valtionavustuksen määrä ja saamisen edellytykset
+	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} arvonlisäveroineen yhteensä enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
 
-	Valtionavustuksen määrä on päätöskohdan mukainen, mutta kuitenkin siten, että avustus on enintään 50 % hyväksyttävistä kokonaiskustannuksista. Hyväksyttävät kustannukset on yksilöity joukkoliikenteen valtionavustusasetuksen 5 §:ssä. Hintavelvoitteiden korvaamisen osalta kunnan ja valtion subventio yhteensä ei saa ylittää asiakastulojen määrää. Avustukseen sisältyy arvonlisävero.
+	Liikennevirasto on {mh1-paatospvm} tehdyllä päätöksellä maksanut {mh1-myonnettyavustus} euroa hakijalle. Hakija hakee 1.7. - 31.12.{vuosi} muodostuneita kustannuksia maksuun yhteensä {haettuavustus}, joka on {osuusavustuksesta} % vuodelle {vuosi} myönnetystä valtionavustuksesta. Hakija on toimittanut vaaditut tiedot avustuksen käytöstä.{selite}
 
-	Joukkoliikenteen valtionavustusasetuksen 5 §:n mukaan valtionavustuksen myöntämisen edellytyksenä on, että avustusta hakeva kaupunki on tehnyt joukkoliikenteen kehittämisestä Liikenneviraston ja toimivaltaisen elinkeino-, liikenne- ja ympäristökeskuksen kanssa aiesopimuksen. Liikennevirasto, Kaakkois-Suomen elinkeino-, liikenne ja ympäristökeskus ja hakija ovat laatineet yhteistyössä joukkoliikenteen aiesopimuksen, joten valtionavustushakemus täyttää valtionavustusasetuksen mukaisen edellytyksen.
+	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin {momentti} määrärahasta.
 
-*Avustuksen käyttö ja hyväksyttävät kustannukset
-
-	PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen. Avustuksen tavoitteena on turvata joukkoliikenteen palvelutasoa. Hintavelvoitteiden korvaamiseen myönnettyä avustusta saa käyttää seutu- ja kaupunkilippujen kustannuksiin. Valtionavustuksen edellytyksenä on, että hakija osallistuu hinnanalennuksen rahoittamiseen ainakin yhtä suurella osuudella kuin Liikennevirasto. Avustuksen tavoitteena on lisätä joukkoliikenteen käyttöä. Joukkoliikenteen kehittämisohjelman toteuttamisen rahoittamiseen myönnettävän valtionavustuksen tavoitteena on tukea valtakunnallisia ja hakijan joukkoliikenteen kehittämistoimia aiesopimuksessa sovitulla tavalla.
-
-	Mikäli hakija saa valtionavustusta keskisuurten kaupunkiseutujen joukkoliikennetuen lisäksi muun lainsäädännön perusteella hakemuksessa esitettyihin tarkoituksiin, tulee sen ilmoittaa näistä ja osoittaa, ettei yhteenlaskettu valtionavustuksen määrä ylitä 50 % hyväksyttävistä kustannuksista. Valtionavustusta saa käyttää tämän päätöksen perusteella vuoden {vuosi} aikana syntyneiden kustannusten kattamiseen.
-
-*Maksatus
-
-	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun hakija on toimittanut seurantatiedot ajalta 1.1. - 31.6.{vuosi} päivämäärään {mh1-hakuaika-loppupvm} mennessä. Toinen erä maksetaan, kun hakija on toimittanut seurantatiedot ajalta 1.7. - 31.12.{vuosi} päivämäärään {mh2-hakuaika-loppupvm} mennessä. Ohjeet ja lomakkeet, joita tulee seurantatietojen ilmoittamiseksi käyttää, ovat saatavilla Liikenneviraston internetsivuilta:
-
-	http://bit.ly/1Fdjl6N
-
-	Lisäksi Liikennevirastolla on oikeus pyytää tuen saajalta myös muita selvityksiä valtionavustuksen käytöstä.
-
-*Muut ehdot
-
-	Valtionavustusta saa käyttää ainoastaan tässä päätöksessä määrättyyn tarkoitukseen. Avustuksen saajan tulee ilmoittaa kirjallisesti viipymättä Liikennevirastolle avustuksen käyttötarkoituksen muutoksesta ja muista avustuksen käyttöön vaikuttavista seikoista.
-
-	Liikennevirastolla on oikeus suorittaa valtionavustuksen saajan talouteen ja toimintaan kohdistuvia tarkastuksia siten kuin valtionavustuslain 16 ja 17 §:ssä säädetään. Liikennevirasto voi määrätä valtionavustuksen maksamisen keskeytettäväksi, jos on perusteltua aihetta epäillä, että avustusta on käytetty muuhun kuin myönnettyyn tarkoitukseen tai saaja on laiminlyönyt ilmoitusvelvollisuutensa taikka ne perusteet, joilla avustusta on myönnetty, ovat olennaisesti muuttuneet samoin kuin silloin kun Euroopan yhteisön lainsäädännössä edellytetään maksamisen keskeyttämistä.
-
-	Valtionavustuksen saajan tulee viipymättä palauttaa virheellisesti, liikaa tai ilmeisen perusteettomasti saamansa valtionavustus tai sen osa.
-
-	Liikennevirasto määrää valtionavustuksen maksamisen lopetettavaksi ja jo maksetun avustuksen takaisin perittäväksi, jos valtionavustuslain 21 §:ssä säädetyt edellytykset täyttyvät. Liikennevirasto voi määrätä valtionavustuksen maksamisen lopetettavaksi ja jo maksetun avustuksen takaisin perittäväksi, jos valtionavustuslain 22 §:ssä säädetyt edellytykset täyttyvät. Palautettavan tai takaisin perittävän valtionavustuksen korosta on säädetty valtionavustuslain 24 ja 25 §:ssä.
-
-*Seuranta ja vaadittavat selvitykset
-
-	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää hakijan ja Liikenneviraston yhteisen seurantapalaverin vuoden {vuosi} syyskuussa.  Palaverissa laaditaan yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
+	Avustus maksetaan hakijan ilmoittamalle tilille: [hakijan tilinumero].
 
 *Sovellettava lainsäädäntö
 

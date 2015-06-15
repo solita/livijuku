@@ -61,6 +61,29 @@
 (defn paatos-template [hakemus]
   (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
 
+(def maararahamomentti
+  {"KS1"	"31.30.63.09"
+   "KS2"	"31.30.63.11"})
+
+(defn mh-template-values [hakemus mh-haettuavustus organisaatio]
+  (let [{:keys [voimaantuloaika, myonnettyavustus]}
+          (first (select-hakemus-paatos (assoc hakemus :hakemustyyppitunnus "AH0")))]
+    {:ah0-paatospvm (or (some-> voimaantuloaika coerce/date->localdate h/format-date)
+                        "<avustuksen myöntämispvm>")
+     :ah0-myonnettyavustus (or myonnettyavustus
+                               "<myönnetty avustus>")
+     :osuusavustuksesta (or ((c/nil-safe *) ((c/nil-safe /) mh-haettuavustus myonnettyavustus) 100)
+                            "<osuus avustuksesta>")
+     :momentti (maararahamomentti (:lajitunnus organisaatio))}))
+
+(defn mh2-templatevalues [hakemus]
+  (let [{:keys [voimaantuloaika, myonnettyavustus]}
+        (first (select-hakemus-paatos (assoc hakemus :hakemustyyppitunnus "MH1")))]
+    {:mh1-paatospvm (or (some-> voimaantuloaika coerce/date->localdate h/format-date)
+                        "<maksatuspäätös pvm>")
+     :mh1-myonnettyavustus (or myonnettyavustus
+                               "<maksettu avustus>")}))
+
 (defn paatos-pdf
   ([hakemusid] (paatos-pdf hakemusid false))
 
@@ -73,28 +96,36 @@
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
-          total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
-          total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
+          haettuavustus (ak/total-haettavaavustus avustuskohteet)
 
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus)))))]
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus)))))
+          common-template-values
+            {:organisaatio-nimi (:nimi organisaatio)
+             :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+             :paatosspvm paatospvm-txt
+             :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
+             :vuosi (:vuosi hakemus)
+             :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
+             :haettuavustus haettuavustus
+             :omarahoitus (ak/total-omarahoitus avustuskohteet)
+
+             :selite (c/maybe-nil #(str "\n\n\t" %) "" (:selite paatos))
+             :myonnettyavustus (:myonnettyavustus paatos)
+             :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
+             :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
+             :paattaja (:paattajanimi paatos)
+             :esittelija (user/user-fullname (user/find-user (:kasittelija hakemus)))}
+
+          template-values
+            (case (:hakemustyyppitunnus hakemus)
+              "AH0" common-template-values
+              "MH1" (merge common-template-values (mh-template-values hakemus haettuavustus organisaatio))
+              "MH2" (merge common-template-values (mh-template-values hakemus haettuavustus organisaatio)
+                                                  (mh2-templatevalues hakemus)))]
 
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
-         :teksti (xstr/interpolate template
-                                   {:organisaatio-nimi (:nimi organisaatio)
-                                    :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
-                                    :paatosspvm paatospvm-txt
-                                    :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
-                                    :vuosi (:vuosi hakemus)
-                                    :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-                                    :haettuavustus total-haettavaavustus
-                                    :selite (c/maybe-nil #(str "\n\n\t" %) "" (:selite paatos))
-                                    :omarahoitus total-omarahoitus
-                                    :myonnettyavustus (:myonnettyavustus paatos)
-                                    :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
-                                    :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
-                                    :paattaja (:paattajanimi paatos)
-                                    :esittelija (user/user-fullname (user/find-user (:kasittelija hakemus)))})
+         :teksti (xstr/interpolate template template-values)
 
          :footer (str "Liikennevirasto" (if preview " - esikatselu"))}))))
 

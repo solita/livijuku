@@ -46,3 +46,12 @@ where hakemusid = :hakemusid and hakemustilatunnus in ('V', 'TV')
 select paattajanimi from (
   select paattajanimi from paatos where paattajanimi is not null order by muokkausaika desc
 ) where rownum = 1
+
+-- name: select-hakemus-paatos
+select hakemus.id hakemusid, p.voimaantuloaika, p.myonnettyavustus
+from hakemus left join paatos p
+    on p.hakemusid = hakemus.id
+where hakemus.vuosi = :vuosi and
+      hakemus.organisaatioid = :organisaatioid and
+      p.poistoaika is null and
+      hakemus.hakemustyyppitunnus = :hakemustyyppitunnus

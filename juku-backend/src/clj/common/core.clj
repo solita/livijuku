@@ -7,12 +7,13 @@
 (defn maybe-nil [f default maybe-nil]
   (if (= maybe-nil nil) default (f maybe-nil)))
 
-(defn nil-safe [f]
-  (fn [x] (if x (f x))))
-
 (defn third [collection] (first (next (next collection))))
 
 (def not-nil? (comp not nil?))
+
+(defn nil-safe [f]
+  (fn ([x] (if x (f x)))
+      ([x & next] (if (and x (every? not-nil? next)) (apply f x next)))))
 
 (defmacro if-let* [bindings expr else]
   (if (seq bindings)

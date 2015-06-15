@@ -1,4 +1,4 @@
-(ns juku.service.hakemus-pdf-test
+(ns juku.service.paatos-pdf-test
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
             [common.collection :as coll]
@@ -38,17 +38,29 @@
       teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
       teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.7. - 31.12." vuosi " päivämäärään 31.1." (+ vuosi 1) " mennessä.")))))
 
-(defn assert-hsl-maksatushakemuspaatos-teksti [kausi]
+(defn assert-hsl-maksatushakemuspaatos-teksti [kausi summa]
   (fact "HSL maksatushakemuspäätöksen sisällön tarkastaminen"
     (let [teksti (:teksti pdf/*mock-pdf*)]
       teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
-      teksti => (partial strx/substring? (str "Hakija on <lähetyspäivämäärä> toimittanut Liikennevirastolle "
-                                              "suurten kaupunkiseutujen joukkoliikenteen valtionavustuksen maksatushakemuksen ja seurantatiedot " kausi vuosi
-                                              " väliseltä ajalta ja hakenut valtionavustusta maksuun yhteensä 0 euroa. "))
-      teksti => (partial strx/substring? (str "Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä 0 euroa."))
 
-      teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
-      teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.7. - 31.12." vuosi " päivämäärään 31.1." (+ vuosi 1) " mennessä.")))))
+      teksti => (partial strx/substring? (str "Hakija on toimittanut Liikennevirastolle <lähetyspäivämäärä> "
+                                              "joukkoliikenteen maksatushakemuksen ajalta " kausi vuosi
+                                              " JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä " summa " euroa. "))
+
+      teksti => (partial strx/substring? (str "Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä " summa " euroa.")))))
+
+(defn assert-hsl-maksatushakemuspaatos1-teksti [ah0-paatospvm ah0-myonnettyavustus osuus-avustuksesta haettuavustus]
+  (fact "HSL 1. maksatushakemuspäätöksen sisällön tarkastaminen"
+    (let [teksti (:teksti pdf/*mock-pdf*)]
+      teksti => (partial strx/substring? (str "Liikennevirasto on myöntänyt hakijalle " ah0-paatospvm
+                                              " tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle " vuosi
+                                              " arvonlisäveroineen yhteensä enintään " ah0-myonnettyavustus " euroa. "))
+
+      teksti => (partial strx/substring? (str "Hakija hakee ajalta 1.1. - 30.6." vuosi " muodostuneita kustannuksia maksuun "
+                                              "yhteensä " haettuavustus " euroa, joka on " osuus-avustuksesta " % vuodelle " vuosi " myönnetystä "
+                                              "valtionavustuksesta. "))
+
+      teksti => (partial strx/substring? (str "Avustus maksetaan valtion vuoden " vuosi " talousarvion momentin 31.30.63.09 määrärahasta")))))
 
 
 (fact "Avustushakemuksen päätöksen esikatselu"
@@ -74,7 +86,9 @@
 
           asiakirja => c/not-nil?
 
-          (assert-hsl-maksatushakemuspaatos-teksti "1.1. - 30.6.")
+          (assert-hsl-maksatushakemuspaatos-teksti "1.1. - 30.6." 0)
+          (assert-hsl-maksatushakemuspaatos1-teksti "<avustuksen myöntämispvm>" "<myönnetty avustus>" "<osuus avustuksesta>" 0)
+
           (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
           (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
@@ -88,7 +102,7 @@
 
           asiakirja => c/not-nil?
 
-          (assert-hsl-maksatushakemuspaatos-teksti "1.7. - 31.12.")
+          (assert-hsl-maksatushakemuspaatos-teksti "1.7. - 31.12." 0)
           (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
           (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
@@ -108,6 +122,28 @@
           (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
           (assert-hsl-avustushakemuspaatos-teksti)
           (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
+
+(fact "Maksatushakemuksen päätöksen esikatselu avustushakemuksen päätös on tehty"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (asha/with-asha-off
+      (pdf/with-mock-pdf
+        (let [id (h/add-hakemus! hsl-mh1-hakemus)]
+
+          (ak/add-avustuskohde! {:hakemusid id
+                                 :avustuskohdeluokkatunnus "PSA"
+                                 :avustuskohdelajitunnus "1"
+                                 :haettavaavustus 1,
+                                 :omarahoitus 1})
+
+          (p/find-paatos-pdf id)
+
+          (assert-hsl-maksatushakemuspaatos-teksti "1.1. - 30.6." 1)
+          (assert-hsl-maksatushakemuspaatos1-teksti pdf/today 1 100 1)
+
+          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+
+          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
+
 
 (fact "Päätöksen esittelijä ja päättäjä"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
