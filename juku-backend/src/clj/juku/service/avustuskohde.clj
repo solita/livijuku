@@ -26,8 +26,12 @@
 
 ; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
 
+(defn alv [avustuskohde]
+  (if (= (:avustuskohdeluokkatunnus avustuskohde) "K") 24 10))
+
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
-  (map coerce-avustuskohde (map #(assoc % :alv 24) (select-avustuskohteet {:hakemusid hakemusid}))))
+  (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv ak)))
+                                (select-avustuskohteet {:hakemusid hakemusid}))))
 
 (defn add-avustuskohde! [avustuskohde]
   (:id (dml/insert db "avustuskohde"
