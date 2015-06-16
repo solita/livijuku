@@ -54,6 +54,8 @@
                                                 [lein-pdo "0.1.1"]
                                                 [lein-midje "3.1.3"]]
 
+                                 :jvm-opts ["-Duser.timezone=EET"]
+
                                  ; What to do in the case of version issues - tehdään näin (ignore) koska muuten tulee valitusta leiniltä
                                  ; (ja koska viisaammatkin ihmiset on näin uskaltaneet tehdä)
                                  :pedantic?    false
