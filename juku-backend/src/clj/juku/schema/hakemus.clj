@@ -49,3 +49,5 @@
 
 (s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str)]))
 
+(s/defschema Taydennyspyynto {:hakemusid s/Num
+                              (s/optional-key :selite) (s/maybe s/Str)})

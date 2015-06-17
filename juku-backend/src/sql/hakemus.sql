@@ -93,10 +93,11 @@ select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji
 update hakemus set diaarinumero = :diaarinumero where vuosi = :vuosi and organisaatioid = :organisaatioid
 
 -- name: insert-taydennyspyynto!
-insert into taydennyspyynto (hakemusid, numero, maarapvm)
+insert into taydennyspyynto (hakemusid, numero, maarapvm, selite)
 values (:hakemusid,
         (select nvl(max(p.numero), 0) + 1 from taydennyspyynto p where p.hakemusid = :hakemusid),
-        :maarapvm)
+        :maarapvm,
+        :selite)
 
 -- name: insert-hakemustila-event!
 insert into hakemustilatapahtuma (hakemusid, hakemustilatunnus, jarjestysnumero)

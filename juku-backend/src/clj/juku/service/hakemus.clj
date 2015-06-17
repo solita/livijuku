@@ -239,10 +239,12 @@
 (defn maarapvm [loppupvm]
   (time/latest [loppupvm (time/plus (time/today) (time/days 14))]))
 
-(defn add-taydennyspyynto! [hakemusid maarapaiva]
-  (insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm (coerce/localdate->sql-date maarapaiva)}))
+(defn add-taydennyspyynto! [hakemusid maarapaiva selite]
+  (insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm (coerce/localdate->sql-date maarapaiva) :selite selite}))
 
-(defn taydennyspyynto! [hakemusid]
+(defn taydennyspyynto!
+  ([hakemusid] (taydennyspyynto! hakemusid nil))
+  ([hakemusid selite]
   (with-transaction
     (let [hakemus (get-hakemus hakemusid)
           maarapvm (maarapvm (get-in hakemus [:hakuaika :loppupvm]))
@@ -251,13 +253,13 @@
 
       (change-hakemustila+log! hakemusid "T0" ["V" "TV"] "täydennyspyyntö")
 
-      (add-taydennyspyynto! hakemusid maarapvm)
+      (add-taydennyspyynto! hakemusid maarapvm selite)
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennyspyynto diaarinumero
                               {:maaraaika   (time/from-time-zone (timec/to-date-time maarapvm) (time/default-time-zone))
                                :kasittelija (user/user-fullname kasittelija)
                                :hakija      (:nimi organisaatio)}))))
-  nil)
+  nil))
 
 (defn laheta-taydennys! [hakemusid]
   (with-transaction

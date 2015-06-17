@@ -15,5 +15,5 @@ group by lajitunnus
 -- name: select-count-akohdelaji
 select count(*) amount from avustuskohdelaji
 
--- name: select-maarapvm
-select maarapvm from taydennyspyynto where hakemusid = :hakemusid and numero = :nro
+-- name: select-taydennyspyynto
+select maarapvm, selite from taydennyspyynto where hakemusid = :hakemusid and numero = :nro

@@ -47,9 +47,9 @@
              (ok (service/laheta-hakemus! hakemusid)))
       (POST* "/taydennyspyynto" []
              :return  nil
-             :body-params     [hakemusid :- Long]
+             :body [taydennyspyynto Taydennyspyynto]
              :summary  "Käsittelijä lähettää hakijalle täydennyspyynnön. Hakemus on tämän jälkeen tilassa täydennettävää."
-             (ok (service/taydennyspyynto! hakemusid)))
+             (ok (service/taydennyspyynto! (:hakemusid taydennyspyynto) (:selite taydennyspyynto))))
       (POST* "/laheta-taydennys" []
              :return  nil
              :body-params     [hakemusid :- Long]

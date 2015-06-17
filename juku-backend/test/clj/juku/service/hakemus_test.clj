@@ -218,16 +218,18 @@
         (let [id (h/add-hakemus! hsl-hakemus)]
 
           (h/laheta-hakemus! id)
-          (h/taydennyspyynto! id)
+          (h/taydennyspyynto! id "selite")
 
           (:hakemustilatunnus (h/get-hakemus+ id)) => "T0"
 
           (asha/headers :taydennyspyynto) => asha/valid-headers?
           (:uri (asha/request :taydennyspyynto)) => "/api/hakemus/testing/taydennyspyynto"
 
-          (let [maarapvm (dbc/date->datetime (:maarapvm (first (test/select-maarapvm {:hakemusid id :nro 1}))))
+          (let [taydennyspyynto (first (test/select-taydennyspyynto {:hakemusid id :nro 1}))
+                maarapvm (dbc/date->datetime (:maarapvm taydennyspyynto))
                 maarapvm-json (timef/unparse (:date-time timef/formatters) maarapvm)]
 
+            (dbc/clob->string (:selite taydennyspyynto)) =>  "selite"
             (slurp (:body (asha/request :taydennyspyynto))) =>
               (str "{\"maaraaika\":\"" maarapvm-json "\","
                     "\"kasittelija\":\"Harri Helsinki\",\"hakija\":\"Helsingin seudun liikenne\"}")))))
