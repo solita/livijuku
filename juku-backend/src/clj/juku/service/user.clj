@@ -37,7 +37,7 @@
   (first(map (comp coerce-user process-names) (select-user {:tunnus tunnus}))))
 
 (defn find-privileges [roolit]
-  (map :tunnus (select-oikeudet-where-roolit-in {:roolit roolit})))
+  (map (comp keyword :tunnus) (select-oikeudet-where-roolit-in {:roolit roolit})))
 
 (defn find-users-by-organization [organisaatioid]
   (map (comp coerce-user (fn [user] (m/dissoc-if-nil user :nimi :etunimi :sukunimi)))

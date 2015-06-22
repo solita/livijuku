@@ -103,7 +103,7 @@
 (defn get-hakemus-by-id! [hakemusid]
   (let [hakemus (get-hakemus+ hakemusid)
         diaarinumero (:diaarinumero hakemus)]
-    (if (and (user/has-privilege* "kasittely-hakemus")
+    (if (and (user/has-privilege* :kasittely-hakemus)
              (nil? (:kasittelija hakemus))
              (c/not-nil? diaarinumero)
              (#{"V" "TV"} (:hakemustilatunnus hakemus)))

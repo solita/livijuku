@@ -5,5 +5,5 @@
 
 (fact "Käytäjän oikeudet"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
-    (user/has-privilege* "asdf") => false
-    (user/has-privilege* "kasittely-hakemus") => true))
+    (user/has-privilege* :asdf) => false
+    (user/has-privilege* :kasittely-hakemus) => true))

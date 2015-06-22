@@ -8,4 +8,4 @@
                  :organisaatioid s/Num
                  :jarjestelma s/Bool})
 
-(s/defschema User+Privileges (assoc User :privileges [s/Str]))
+(s/defschema User+Privileges (assoc User :privileges [s/Keyword]))
