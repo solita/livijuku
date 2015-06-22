@@ -10,12 +10,14 @@
 
 (defroutes* liitteet-routes
     (GET* "/hakemus/:hakemusid/liitteet" []
+          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
           :return [Liite]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen liitteet."
           (ok (service/find-liitteet hakemusid)))
 
     (GET* "/hakemus/:hakemusid/liite/:liitenumero" []
+          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö."
           (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
@@ -23,6 +25,7 @@
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
     (GET* "/hakemus/:hakemusid/liite/:liitenumero/*" []
+          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö - liitenumeron jälkeen annetaan haluttu tiedostonimi selaimelle, joka ei tue rfc6266 ja rfc5987."
           (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
@@ -30,17 +33,19 @@
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
     (POST "/hakemus/:hakemusid/liite"
-            [hakemusid :as {{{tempfile :tempfile filename :filename contenttype :content-type} :liite} :params}]
-            (ok (service/add-liite! {:hakemusid hakemusid :nimi filename :contenttype contenttype} (io/input-stream tempfile))))
+          [hakemusid :as {{{tempfile :tempfile filename :filename contenttype :content-type} :liite} :params}]
+          (ok (service/add-liite! {:hakemusid hakemusid :nimi filename :contenttype contenttype} (io/input-stream tempfile))))
 
     (PUT* "/hakemus/:hakemusid/liite/:liitenumero" []
-             :return nil
-             :path-params [hakemusid :- Long, liitenumero :- Long]
-             :body-params     [nimi :- s/Str]
-             :summary "Päivitä liitteen nimi"
-             (ok (service/update-liite-nimi! hakemusid liitenumero nimi)))
+          :auth [:modify-oma-hakemus]
+          :return nil
+          :path-params [hakemusid :- Long, liitenumero :- Long]
+          :body-params     [nimi :- s/Str]
+          :summary "Päivitä liitteen nimi"
+          (ok (service/update-liite-nimi! hakemusid liitenumero nimi)))
 
     (DELETE* "/hakemus/:hakemusid/liite/:liitenumero" []
+         :auth [:modify-oma-hakemus]
          :return nil
          :path-params [hakemusid :- Long, liitenumero :- Long]
          :summary "Poista hakemuksen liite"

@@ -9,28 +9,33 @@
 
 (defroutes* hakemuskausi-routes
       (GET* "/hakemuskaudet" []
+            :auth [:view-kaikki-hakemukset]
             :return [Hakemuskausi+Hakemukset]
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
             (ok (service/find-hakemuskaudet+hakemukset)))
 
       (GET* "/hakemuskaudet/yhteenveto" []
+            :auth [:modify-hakemuskausi]
             :return [Hakemuskausi+Summary]
             :summary "Hae kaikki hakemuskaudet ja yhteenvedon jokaisen hakemuskauden tiloista ja hakuajoista."
             (ok (service/find-hakemuskaudet+summary)))
 
       (POST* "/hakemuskausi" []
+             :auth [:modify-hakemuskausi]
              :return   nil
              :body-params     [vuosi :- s/Int]
              :summary  "Avaa uusi hakemuskausi."
              (ok (service/avaa-hakemuskausi! vuosi)))
 
       (GET* "/maararaha/:vuosi/:organisaatiolajitunnus" []
+            :auth [:modify-hakemuskausi]
             :return (s/maybe Maararaha)
             :path-params [vuosi :- s/Int, organisaatiolajitunnus :- s/Str]
             :summary "Hae määräraha tietylle vuodella ja organisaatiolajille."
             (ok (service/find-maararaha vuosi organisaatiolajitunnus)))
 
       (GET* "/hakemuskausi/:vuosi/hakuohje" []
+            :auth [:modify-hakemuskausi]
             :path-params [vuosi :- s/Int]
             :summary "Lataa hakuohjeen sisältö."
             (if-let [hakuohje (service/find-hakuohje-sisalto vuosi)]
@@ -38,6 +43,7 @@
               (not-found (str "Hakemuskaudella " vuosi " ei ole ohjetta."))))
 
       (PUT* "/hakemuskausi/:vuosi/hakuajat" []
+            :auth [:modify-hakemuskausi]
             :return   nil
             :path-params [vuosi :- s/Int]
             :body     [hakuajat [Hakuaika+]]
@@ -45,6 +51,7 @@
             (ok (service/save-hakemuskauden-hakuajat! vuosi hakuajat)))
 
       (PUT* "/maararaha/:vuosi/:organisaatiolajitunnus" []
+            :auth [:modify-hakemuskausi]
             :return   nil
             :path-params [vuosi :- s/Int, organisaatiolajitunnus :- s/Str]
             :body     [maararaha Maararaha]
@@ -61,6 +68,7 @@
            (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile))))
 
       (POST* "/hakemuskausi/:vuosi/sulje" []
+             :auth [:modify-hakemuskausi]
              :return   nil
              :path-params     [vuosi :- s/Int]
              :summary  "Sulje olemassaoleva hakemuskausi."

@@ -5,7 +5,7 @@
 
 ;-- Authorisaatio --
 (defmethod meta/restructure-param :auth [_ auth {:keys [body] :as acc}]
-  (assoc acc :body `((if (every? user/has-privilege* ~auth)
+  (assoc acc :body `((if (some user/has-privilege* ~auth)
                        (do ~@body)
                        (http/forbidden (str "Käyttäjällä " (:tunnus user/*current-user*)
-                                       " ei ole vaadittuja käyttöoikeuksia: " ~auth))))))
+                                       " ei ole mitään seuraavista vaadituista käyttöoikeuksista: " ~auth))))))
