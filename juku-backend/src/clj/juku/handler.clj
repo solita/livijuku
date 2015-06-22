@@ -4,6 +4,7 @@
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
 
+            [juku.rest-api.authorization]
             [juku.rest-api.hakemus :refer [hakemus-routes]]
             [juku.rest-api.avustuskohde :refer [avustuskohde-routes]]
             [juku.rest-api.hakemuskausi :refer [hakemuskausi-routes]]

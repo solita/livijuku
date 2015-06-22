@@ -7,6 +7,7 @@
 
 (defroutes* hakemus-routes
       (GET* "/hakemussuunnitelmat/:vuosi/:hakemustyyppitunnus" []
+            :auth ["kasittely-hakemus"]
             :return [HakemusSuunnitelma]
             :path-params [vuosi :- s/Int, hakemustyyppitunnus :- s/Str]
             :summary "Hae hakemussuunnitelmat tietylle vuodella ja hakemustyypille."
