@@ -8,4 +8,4 @@
   (assoc acc :body `((if (some user/has-privilege* ~auth)
                        (do ~@body)
                        (http/forbidden (str "Käyttäjällä " (:tunnus user/*current-user*)
-                                       " ei ole mitään seuraavista vaadituista käyttöoikeuksista: " ~auth))))))
+                                       " ei ole vaadittua käyttöoikeutta. Käyttäjällä pitää olla vähintään yksi seuraavista käyttöoikeuksista: " ~auth))))))
