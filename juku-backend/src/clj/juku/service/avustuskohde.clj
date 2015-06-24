@@ -3,12 +3,14 @@
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
+            [juku.service.common :as service]
+            [juku.service.user :as user]
             [common.string :as xstr]
             [clojure.string :as str]
             [schema.coerce :as scoerce]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
-            [common.collection :as c]
+            [common.collection :as coll]
             [clojure.set :as set]))
 
 ; *** Hakemukseen liittyvät kyselyt ***
@@ -46,6 +48,7 @@
     (add-avustuskohde! avustuskohde)))
 
 (defn save-avustuskohteet! [avustuskohteet]
+  (service/assert-user-is-hakemus-owner! user/*current-user* (set (map :hakemusid avustuskohteet)))
   (with-transaction
     (doseq [avustuskohde avustuskohteet]
       (save-avustuskohde! avustuskohde))))
@@ -60,8 +63,8 @@
 (defn avustuskohteet-section [avustuskohteet]
   (let [avustuskohde-template "\t{avustuskohdenimi}\t\t{haettavaavustus} e"
         avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
-        avustuskohteet (filter (c/predicate > :haettavaavustus 0) avustuskohteet)
-        avustuskohteet+nimi (c/join avustuskohteet
+        avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
+        avustuskohteet+nimi (coll/join avustuskohteet
                                     (fn [akohde, aklajiseq] (assoc akohde :avustuskohdenimi (:nimi (first aklajiseq))))
                                     avustuskohdelajit [:avustuskohdeluokkatunnus :avustuskohdelajitunnus])]
 

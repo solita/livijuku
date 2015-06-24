@@ -12,18 +12,6 @@
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen avustuskohteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/find-avustuskohteet-by-hakemusid hakemusid)))
-      (POST* "/avustuskohde" []
-             :auth [:modify-oma-hakemus]
-             :return   nil
-             :body     [avustuskohde Avustuskohde]
-             :summary  "Lisää uuden avustuskohteen olemassaolevaan hakemukseen."
-             (ok (service/add-avustuskohde! avustuskohde)))
-      (PUT* "/avustuskohde" []
-             :auth [:modify-oma-hakemus]
-             :return   nil
-             :body     [avustuskohde Avustuskohde]
-             :summary  "Päivittää avustuskohteen tiedot tai lisää uuden avustuskohteen."
-             (ok (service/save-avustuskohde! avustuskohde)))
       (PUT* "/avustuskohteet" []
             :auth [:modify-oma-hakemus]
             :return   nil

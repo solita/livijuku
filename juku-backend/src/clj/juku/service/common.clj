@@ -1,5 +1,10 @@
 (ns juku.service.common
-  (:require [slingshot.slingshot :as ss]))
+  (:require [slingshot.slingshot :as ss]
+            [juku.db.yesql-patch :as sql]
+            [ring.util.http-response :as r]))
+
+; *** Yleiset kyselyt ***
+(sql/defqueries "common.sql")
 
 (defn retry [tries f & args]
   (let [res (try {:value (apply f args)}
@@ -10,3 +15,11 @@
     (if (:exception res)
       (recur (dec tries) f args)
       (:value res))))
+
+(defn assert-user-is-hakemus-owner! [user hakemusids]
+  (let [user-organisaatio (:organisaatioid user)
+        organisaatiot (set (map :organisaatioid (select-hakemus-organisaatiot {:hakemusids hakemusids})))]
+    (if (or (> (count organisaatiot) 1)
+            (not= (first organisaatiot) user-organisaatio))
+      (ss/throw+ {:http-response r/forbidden :message (str "Käyttäjä " (:tunnus user)
+                                                          " ei omista hakemuksia: " hakemusids)}))))
