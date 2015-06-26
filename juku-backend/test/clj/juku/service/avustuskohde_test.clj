@@ -94,3 +94,10 @@
 
         (ak/add-avustuskohde! avustuskohde) => (throws #"Failed to execute: insert into avustuskohde.*" )))))
 
+
+(fact "Avustuskohteen lisääminen - ei oma hakemus"
+  (test/with-user "juku_kasittelija" ["juku_hakija"]
+    (let [id (h/add-hakemus! hsl-ah0-hakemus)
+          avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
+
+      (ak/save-avustuskohteet! [avustuskohde]) => (throws (str "Käyttäjä juku_kasittelija ei omista hakemuksia: " id)))))

@@ -21,5 +21,7 @@
         organisaatiot (set (map :organisaatioid (select-hakemus-organisaatiot {:hakemusids hakemusids})))]
     (if (or (> (count organisaatiot) 1)
             (not= (first organisaatiot) user-organisaatio))
-      (ss/throw+ {:http-response r/forbidden :message (str "Käyttäjä " (:tunnus user)
-                                                          " ei omista hakemuksia: " hakemusids)}))))
+      (let [msg (str "Käyttäjä " (:tunnus user)
+                     " ei omista hakemuksia: "
+                     (reduce (fn [acc id] (str acc ", " id)) hakemusids))]
+        (ss/throw+ {:http-response r/forbidden :message msg} msg)))))
