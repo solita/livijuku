@@ -16,7 +16,7 @@
         liite {:hakemusid id :nimi "test" :contenttype "text/plain"}]
 
     (l/add-liite! liite (test/inputstream-from "test"))
-    (first (l/find-liitteet id)) => (assoc liite :liitenumero 1)))
+    (first (l/find-liitteet id)) => (assoc liite :liitenumero 1 :bytesize 4M)))
 
 
 (fact "Uuden liitteen tallentaminen - hakemusta ei ole olemassa"

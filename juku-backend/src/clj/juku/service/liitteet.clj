@@ -13,7 +13,7 @@
 
 (sql/defqueries "liitteet.sql" {:constraint-errors constraint-errors})
 
-(def coerce-liite (scoerce/coercer s/Liite coerce/db-coercion-matcher))
+(def coerce-liite (scoerce/coercer s/Liite+Size coerce/db-coercion-matcher))
 (def coerce-liite+ (scoerce/coercer s/Liite+ coerce/db-coercion-matcher))
 
 (defn find-liitteet [hakemusid]

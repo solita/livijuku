@@ -11,3 +11,5 @@
 (s/defschema New-Liite (dissoc Liite :liitenumero))
 
 (s/defschema Liite+ (assoc Liite :sisalto InputStream))
+
+(s/defschema Liite+Size (assoc Liite :bytesize s/Num))
