@@ -23,3 +23,7 @@ where hakemusid = :hakemusid and liitenumero = :liitenumero
 -- name: update-liite-set-nimi!
 update liite set nimi = :nimi
 where hakemusid = :hakemusid and liitenumero = :liitenumero
+
+-- name: select-sum-liitekoko
+select nvl(sum(dbms_lob.getlength(sisalto)), 0) bytesize
+from liite where hakemusid = :hakemusid and poistoaika is null

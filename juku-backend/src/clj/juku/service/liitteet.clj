@@ -4,7 +4,9 @@
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [ring.util.http-response :as r]
-            [juku.schema.liitteet :as s])
+            [slingshot.slingshot :as ss]
+            [juku.schema.liitteet :as s]
+            [juku.settings :refer [settings]])
   (:import (java.io InputStream)))
 
 (def constraint-errors
@@ -22,8 +24,16 @@
 (defn find-liitteet+sisalto [hakemusid]
   (map (comp coerce-liite+ #(update-in % [:sisalto] coerce/inputstream)) (select-liitteet+sisalto {:hakemusid hakemusid})))
 
+(defn assert-liite-maxsize! [hakemusid maxsize]
+  (let [totalsize (:bytesize (first (select-sum-liitekoko {:hakemusid hakemusid})))]
+    (if (> totalsize maxsize) (ss/throw+ {:http-response r/request-entity-too-large
+                                           :message (str "Hakemuksen " hakemusid
+                                                         " liitteiden yhteenlaskettu koko ylittää maksimirajan "
+                                                         maxsize)}))))
+
 (defn add-liite! [liite ^InputStream sisalto]
   (insert-liite! (assoc liite :sisalto sisalto))
+  (assert-liite-maxsize! (:hakmeusid liite) (:liite-max-size settings))
   nil)
 
 (defn delete-liite [hakemusid liitenumero]

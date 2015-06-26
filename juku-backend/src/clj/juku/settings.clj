@@ -17,11 +17,13 @@
 (s/defschema Asiahallinta (assoc Service :omistavahenkilo s/Str))
 
 (s/defschema Settings {:server Server
+                       :liite-max-size s/Num
                        :db Db
                        :asiahallinta (s/either Asiahallinta (s/eq "off"))})
 
 (def default-settings {
            :server {:port 8082}
+           :liite-max-size 52428800
            :db {
               :url "jdbc:oracle:thin:@localhost:1521:orcl"
               :user "juku_app"
