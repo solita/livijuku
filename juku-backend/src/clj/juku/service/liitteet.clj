@@ -1,6 +1,6 @@
 (ns juku.service.liitteet
   (:require [juku.db.yesql-patch :as sql]
-            [juku.db.database :refer [db]]
+            [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [ring.util.http-response :as r]
@@ -32,8 +32,9 @@
                                                          maxsize)}))))
 
 (defn add-liite! [liite ^InputStream sisalto]
-  (insert-liite! (assoc liite :sisalto sisalto))
-  (assert-liite-maxsize! (:hakmeusid liite) (:liite-max-size settings))
+  (with-transaction
+    (insert-liite! (assoc liite :sisalto sisalto))
+    (assert-liite-maxsize! (:hakemusid liite) (:liite-max-size settings)))
   nil)
 
 (defn delete-liite [hakemusid liitenumero]
