@@ -64,3 +64,7 @@
       stmt)))
 
 (alter-var-root #'clojure.java.jdbc/prepare-statement (constantly prepare-statement))
+
+(defn throw-non-rte [^Throwable ex] (throw ex))
+
+(alter-var-root #'clojure.java.jdbc/throw-non-rte (constantly throw-non-rte))
