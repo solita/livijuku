@@ -11,7 +11,7 @@
 (defroutes* liitteet-routes
     (GET* "/hakemus/:hakemusid/liitteet" []
           :auth [:view-kaikki-hakemukset :view-oma-hakemus]
-          :return [Liite]
+          :return [Liite+Size]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen liitteet."
           (ok (service/find-liitteet hakemusid)))
