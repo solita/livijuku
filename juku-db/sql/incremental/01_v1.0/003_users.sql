@@ -63,12 +63,13 @@ create table kieli (
 );
 
 create table kayttaja ( 
-   tunnus varchar2 (30 char)  not null constraint kayttaja_pk primary key, 
-   etunimi varchar2 (200 char), 
-   sukunimi varchar2 (200 char), 
-   nimi varchar2 (200 char),
-   organisaatioid number,
-   jarjestelma number (1) default 0 not null check ( jarjestelma in (0, 1))
+  tunnus varchar2 (30 char)  not null constraint kayttaja_pk primary key,
+  etunimi varchar2 (200 char),
+  sukunimi varchar2 (200 char),
+  nimi varchar2 (200 char),
+  sahkoposti varchar2 (200 char),
+  organisaatioid number,
+  jarjestelma number (1) default 0 not null check ( jarjestelma in (0, 1))
 );
 
 begin
