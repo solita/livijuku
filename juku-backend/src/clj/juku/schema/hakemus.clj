@@ -20,8 +20,13 @@
   (assoc Hakemus :haettu-avustus s/Num
                  :myonnettava-avustus s/Num))
 
+(s/defschema Taydennyspyynto {:numero s/Int
+                              :maarapvm LocalDate
+                              :selite (s/maybe s/Str)})
+
 (s/defschema Hakemus+
   (assoc Hakemus :selite (s/maybe s/Str)
+                 (s/optional-key :taydennyspyynto) Taydennyspyynto
                  :kasittelija (s/maybe s/Str)
                  :luontitunnus s/Str
                  :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)
@@ -49,5 +54,5 @@
 
 (s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str)]))
 
-(s/defschema Taydennyspyynto {:hakemusid s/Num
-                              (s/optional-key :selite) (s/maybe s/Str)})
+(s/defschema NewTaydennyspyynto {:hakemusid s/Num
+                                (s/optional-key :selite) (s/maybe s/Str)})

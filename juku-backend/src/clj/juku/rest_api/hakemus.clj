@@ -56,7 +56,7 @@
       (POST* "/taydennyspyynto" []
              :auth [:kasittely-hakemus]
              :return  nil
-             :body [taydennyspyynto Taydennyspyynto]
+             :body [taydennyspyynto NewTaydennyspyynto]
              :summary  "Käsittelijä lähettää hakijalle täydennyspyynnön. Hakemus on tämän jälkeen tilassa täydennettävää."
              (ok (service/taydennyspyynto! (:hakemusid taydennyspyynto) (:selite taydennyspyynto))))
       (POST* "/laheta-taydennys" []

@@ -116,3 +116,11 @@ select * from
     where hakemusid = :hakemusid and hakemustilatunnus in ('V', 'TV')
     order by luontiaika desc)
 where rownum = 1
+
+-- name: select-latest-taydennyspyynto
+select * from
+  (select numero, maarapvm, selite
+   from taydennyspyynto
+   where hakemusid = :hakemusid
+   order by numero desc)
+where rownum = 1

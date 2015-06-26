@@ -220,7 +220,11 @@
           (h/laheta-hakemus! id)
           (h/taydennyspyynto! id "selite")
 
-          (:hakemustilatunnus (h/get-hakemus+ id)) => "T0"
+          (let [hakemus (h/get-hakemus+ id)
+                taydennyspyynto (:taydennyspyynto hakemus)]
+            (:hakemustilatunnus hakemus) => "T0"
+            (:selite taydennyspyynto) => "selite"
+            (:maarapvm taydennyspyynto) => (test/from-today 14))
 
           (asha/headers :taydennyspyynto) => asha/valid-headers?
           (:uri (asha/request :taydennyspyynto)) => "/api/hakemus/testing/taydennyspyynto"

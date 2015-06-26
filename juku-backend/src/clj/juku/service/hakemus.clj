@@ -72,7 +72,11 @@
       coerce/row->object
       coerce))
 
-(defn get-hakemus+ [hakemusid] (get-any-hakemus hakemusid select-hakemus+ coerce-hakemus+))
+(defn get-hakemus+ [hakemusid]
+  (let [hakemus (get-any-hakemus hakemusid select-hakemus+ coerce-hakemus+)]
+    (if (= (:hakemustilatunnus hakemus) "T0")
+      (coerce-hakemus+ (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid hakemusid}))))
+      hakemus)))
 
 (defn get-hakemus [hakemusid] (get-any-hakemus hakemusid select-hakemus coerce-hakemus))
 
