@@ -14,7 +14,7 @@
   {:from (get-in settings [:email :from])})
 
 (def server
-  {:host (get-in settings [:email :server])
+  {:host (str/trim (get-in settings [:email :server]))
    :port (get-in settings [:email :port])})
 
 (defn post [to subject body]
