@@ -30,7 +30,7 @@
         (let [status (mail/send-message server message)]
           (if (not= (:code status) 0)
             (log/error (str "Sähköpostin lähettäminen epäonnistui - virhe: " status))
-            (log/info (str "Sähköpostin lähettäminen onnistui - vastaanottajat: " to ", subject: " subject))))
+            (log/info (str "Sähköpostin lähettäminen onnistui - vastaanottajat: " (str/join ", " to) ", subject: " subject))))
         (catch Exception e (log/error e "Sähköpostin lähettäminen epäonnistui"))))))
 
 (def footer "Tämä on automaattinen viesti. Ole hyvä, älä vastaa tähän viestiin, sillä tähän osoitteeseen lähetettyjä viestejä ei käsitellä.")
@@ -72,7 +72,7 @@
 
 (defn send-hakemustapahtuma-message [hakemus hakemustilatunnus]
   (c/if-let*
-    [to (filter (comp not str/blank?) (map :sahkoposti (select-organisaatio-emails (select-keys hakemus [:organisaatioid]))))
+    [to (set (filter (comp not str/blank?) (map :sahkoposti (select-organisaatio-emails (select-keys hakemus [:organisaatioid])))))
      hakemustyyppi (to-keyword (:hakemustyyppitunnus hakemus))
      hakemustila (to-keyword hakemustilatunnus)
      template-key [hakemustyyppi hakemustila]
