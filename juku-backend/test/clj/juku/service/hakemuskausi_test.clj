@@ -16,8 +16,6 @@
 
 (defn find-hakemuskausi+ [vuosi] (c/find-first (c/eq :vuosi vuosi) (hk/find-hakemuskaudet+summary)))
 
-(defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
-
 (defn assert-avustuskohteet [vuosi]
   (fact (str "Test avustuskohteet on luotu oikein avauksen jälkeen vuodelle: " vuosi)
     (let [stats (m/map-values first (group-by :lajitunnus (test/select-akohde-amounts-broup-by-organisaatiolaji {:vuosi vuosi})))
@@ -35,7 +33,7 @@
     (fact "Avaa hakemuskausi"
       (asha/with-asha
         (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-          (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+          (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
           (hk/avaa-hakemuskausi! vuosi)
 
           (assert-avustuskohteet vuosi)
@@ -47,7 +45,7 @@
     (fact "Sulje hakemuskausi"
       (asha/with-asha
         (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-          (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+          (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
           (hk/avaa-hakemuskausi! vuosi)
           (hk/sulje-hakemuskausi! vuosi)
 
@@ -60,7 +58,7 @@
   (asha/with-asha-off
     (fact "Avaa hakemuskausi"
       (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-          (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+          (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
           (hk/avaa-hakemuskausi! vuosi)
 
           (assert-avustuskohteet vuosi)
@@ -68,14 +66,14 @@
 
     (fact "Sulje hakemuskausi"
       (let [vuosi (:vuosi (test/next-hakemuskausi!))]
-        (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+        (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
         (hk/avaa-hakemuskausi! vuosi)
         (hk/sulje-hakemuskausi! vuosi)))))))
 
 (fact "Uuden hakuohjeen tallentaminen ja hakeminen"
   (let [hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
 
-    (hk/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+    (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
     (slurp (:sisalto (hk/find-hakuohje-sisalto vuosi))) => "test"))
 
 (fact "Hakuohjeen hakeminen - tyhjä hakuohje"

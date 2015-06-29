@@ -14,3 +14,5 @@
 
 (defn trim [^CharSequence txt] (if (c/not-nil? txt) (str/trim txt)))
 
+(defn start-with [^String txt ^String prefix] (.startsWith txt prefix))
+
