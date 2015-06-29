@@ -147,17 +147,18 @@
       (dml/assert-update updated {:type ::paatos-not-found
                                   :hakemusid hakemusid
                                   :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
-      (h/change-hakemustila+log! hakemusid "P" "T" "päättäminen" paatos-asiakirja)
+      (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" paatos-asiakirja)
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} paatos-asiakirja))))
   nil)
 
 (defn peruuta-paatos! [hakemusid]
   (with-transaction
-    (let [updated (update-paatos-hylatty! {:hakemusid hakemusid})]
+    (let [hakemus (h/get-hakemus hakemusid)
+          updated (update-paatos-hylatty! {:hakemusid hakemusid})]
       (assert-unique-update! updated hakemusid)
       (dml/assert-update updated {:type ::paatos-not-found
                                   :hakemusid hakemusid
                                   :message (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")})
-      (h/change-hakemustila+log! hakemusid "T" "P" "päätöksen peruuttaminen")))
+      (h/change-hakemustila+log! hakemus "T" "P" "päätöksen peruuttaminen")))
   nil)

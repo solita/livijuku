@@ -7,6 +7,7 @@
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
             [juku.service.avustuskohde :as ak]
+            [juku.service.email :as email]
             [slingshot.slingshot :as ss]
             [juku.service.liitteet :as l]
             [common.string :as xstr]
@@ -170,32 +171,32 @@
 
 (defn find-hakemuskausi [vuosi] (first (select-hakemuskausi vuosi)))
 
-(defn change-hakemustila! [hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation]
+(defn change-hakemustila! [hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
   (dml/assert-update
-    (update-hakemustila! {:hakemusid hakemusid
+    (update-hakemustila! {:hakemusid (:id hakemus)
                           :hakemustilatunnus new-hakemustilatunnus
                           :expectedhakemustilatunnus expected-hakemustilatunnus})
 
-    (let [hakemus (get-hakemus hakemusid)]
-      {:http-response r/method-not-allowed
-       :message (str "Hakemuksen (" hakemusid ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
-                     ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
-       :hakemusid hakemusid
-       :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})))
+    {:http-response r/method-not-allowed
+     :message (str "Hakemuksen (" (:id hakemus) ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
+                   ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
+     :hakemusid (:id hakemus)
+     :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})
+  (email/send-hakemustapahtuma-message hakemus new-hakemustilatunnus))
 
 (defn change-hakemustila+log!
-  ([hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation]
-    (change-hakemustila! hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation)
+  ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
+    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation)
 
     ;; hakemustilan muutoshistoria
-    (insert-hakemustila-event! {:hakemusid hakemusid
+    (insert-hakemustila-event! {:hakemusid (:id hakemus)
                                 :hakemustilatunnus new-hakemustilatunnus}))
 
-  ([hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
-    (change-hakemustila! hakemusid new-hakemustilatunnus expected-hakemustilatunnus operation)
+  ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
+    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation)
 
     ;; hakemustilan muutoshistoria
-    (insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
+    (insert-hakemustila-event+asiakirja! {:hakemusid (:id hakemus)
                                           :hakemustilatunnus new-hakemustilatunnus
                                           :asiakirja asiakirja})))
 
@@ -208,7 +209,7 @@
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila! hakemusid "V" ["K"] "vireillelaitto")
+      (change-hakemustila! hakemus "V" ["K"] "vireillelaitto")
 
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
         (update-hakemus-set-diaarinumero!
@@ -234,7 +235,7 @@
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (get-hakemus hakemusid)]
-      (change-hakemustila+log! hakemusid "T" ["V" "TV"] "tarkastaminen")
+      (change-hakemustila+log! hakemus "T" ["V" "TV"] "tarkastaminen")
       (save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
@@ -255,7 +256,7 @@
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
-      (change-hakemustila+log! hakemusid "T0" ["V" "TV"] "täydennyspyyntö")
+      (change-hakemustila+log! hakemus "T0" ["V" "TV"] "täydennyspyyntö")
 
       (add-taydennyspyynto! hakemusid maarapvm selite)
       (if-let [diaarinumero (:diaarinumero hakemus)]
@@ -273,7 +274,7 @@
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila+log! hakemusid "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
+      (change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero

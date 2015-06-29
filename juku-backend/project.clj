@@ -11,6 +11,7 @@
                            [org.apache.pdfbox/pdfbox "1.8.8"]
 
                            [clj-http "1.1.0"]
+                           [com.draines/postal "1.11.3"]
 
                            [environ "1.0.0"] ;; Library for managing environment variables in Clojure.
 

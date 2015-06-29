@@ -14,11 +14,16 @@
                       :user        s/Str
                       :password    s/Str})
 
+(s/defschema Email {:from         s/Str
+                    :server       s/Str
+                    :port         s/Int})
+
 (s/defschema Asiahallinta (assoc Service :omistavahenkilo s/Str))
 
 (s/defschema Settings {:server Server
                        :liite-max-size s/Num
                        :db Db
+                       :email (s/either Email (s/eq "off"))
                        :asiahallinta (s/either Asiahallinta (s/eq "off"))})
 
 (def default-settings {
@@ -28,12 +33,16 @@
               :url "jdbc:oracle:thin:@localhost:1521:orcl"
               :user "juku_app"
               :password "juku"}
+           :email {
+              :from "livijuku@solita.fi"
+              :server "localhost"
+              :port 2525}
            :asiahallinta {
-                :url "http://asha.livijuku.solita.fi/api"
-                :user "test"
-                :password "test"
-                ;; asioiden omistavan henkilön käyttäjätunnus
-                :omistavahenkilo "test"}})
+              :url "http://asha.livijuku.solita.fi/api"
+              :user "test"
+              :password "test"
+              ;; asioiden omistavan henkilön käyttäjätunnus
+              :omistavahenkilo "test"}})
 
 (def settings (read-settings (io/file (or (env :properties-file) "./juku.properties")) default-settings Settings))
 
