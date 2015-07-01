@@ -16,7 +16,8 @@
             [juku.service.test :as test]
             [juku.headers :as headers]
             [common.core :as c]
-            [common.string :as strx]))
+            [common.string :as strx])
+  (:import (java.io InputStream)))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
@@ -28,6 +29,13 @@
 (def hsl-mh1-hakemus {:vuosi vuosi :hakemustyyppitunnus "MH1" :organisaatioid 1M})
 (def hsl-mh2-hakemus {:vuosi vuosi :hakemustyyppitunnus "MH2" :organisaatioid 1M})
 
+(defn add-hakemus! [kausi tyyppi] (h/add-hakemus! {:vuosi (:vuosi kausi) :hakemustyyppitunnus tyyppi :organisaatioid 1M}))
+
+(defmacro test-ctx [& body]
+  `(test/with-user "juku_hakija" ["juku_hakija" "juku_kasittelija"]
+     (asha/with-asha
+       (pdf/with-mock-pdf ~@body))))
+
 (defn assert-hsl-avustushakemuspaatos-teksti []
   (fact "HSL avustushakemuspäätöksen sisällön tarkastaminen"
     (let [teksti (:teksti pdf/*mock-pdf*)]
@@ -38,7 +46,7 @@
       teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
       teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.7. - 31.12." vuosi " päivämäärään 31.1." (+ vuosi 1) " mennessä.")))))
 
-(defn assert-hsl-maksatushakemuspaatos-teksti [kausi summa]
+(defn assert-hsl-maksatushakemuspaatos-teksti [vuosi kausi summa]
   (fact "HSL maksatushakemuspäätöksen sisällön tarkastaminen"
     (let [teksti (:teksti pdf/*mock-pdf*)]
       teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
@@ -49,7 +57,7 @@
 
       teksti => (partial strx/substring? (str "Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä " summa " euroa.")))))
 
-(defn assert-hsl-maksatushakemuspaatos1-teksti [ah0-paatospvm ah0-myonnettyavustus osuus-avustuksesta haettuavustus]
+(defn assert-hsl-maksatushakemuspaatos1-teksti [vuosi ah0-paatospvm ah0-myonnettyavustus osuus-avustuksesta haettuavustus]
   (fact "HSL 1. maksatushakemuspäätöksen sisällön tarkastaminen"
     (let [teksti (:teksti pdf/*mock-pdf*)]
       teksti => (partial strx/substring? (str "Liikennevirasto on myöntänyt hakijalle " ah0-paatospvm
@@ -64,85 +72,72 @@
 
 
 (fact "Avustushakemuksen päätöksen esikatselu"
-  (test/with-user "juku_hakija" ["juku_hakija"]
-    (asha/with-asha-off
-      (pdf/with-mock-pdf
-        (let [id (h/add-hakemus! hsl-ah0-hakemus)
-              asiakirja (p/find-paatos-pdf id)]
+  (test-ctx
+    (let [id (h/add-hakemus! hsl-ah0-hakemus)]
 
-          asiakirja => c/not-nil?
+      (p/find-paatos-pdf id) => (partial instance? InputStream)
 
-          (assert-hsl-avustushakemuspaatos-teksti)
-          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (assert-hsl-avustushakemuspaatos-teksti)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
-          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
+      (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
 (fact "1. maksatushakemuksen päätöksen esikatselu"
-  (test/with-user "juku_hakija" ["juku_hakija"]
-    (asha/with-asha-off
-      (pdf/with-mock-pdf
-        (let [id (h/add-hakemus! hsl-mh1-hakemus)
-              asiakirja (p/find-paatos-pdf id)]
+  (test-ctx
+    (let [id (h/add-hakemus! hsl-mh1-hakemus)]
 
-          asiakirja => c/not-nil?
+      (p/find-paatos-pdf id) => (partial instance? InputStream)
 
-          (assert-hsl-maksatushakemuspaatos-teksti "1.1. - 30.6." 0)
-          (assert-hsl-maksatushakemuspaatos1-teksti "<avustuksen myöntämispvm>" "<myönnetty avustus>" "<osuus avustuksesta>" 0)
+      (assert-hsl-maksatushakemuspaatos-teksti vuosi "1.1. - 30.6." 0)
+      (assert-hsl-maksatushakemuspaatos1-teksti vuosi "<avustuksen myöntämispvm>" "<myönnetty avustus>" "<osuus avustuksesta>" 0)
 
-          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
-          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
+      (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
 (fact "2. maksatushakemuksen päätöksen esikatselu"
-  (test/with-user "juku_hakija" ["juku_hakija"]
-    (asha/with-asha-off
-      (pdf/with-mock-pdf
-        (let [id (h/add-hakemus! hsl-mh2-hakemus)
-              asiakirja (p/find-paatos-pdf id)]
+  (test-ctx
+    (let [id (h/add-hakemus! hsl-mh2-hakemus)]
 
-          asiakirja => c/not-nil?
+      (p/find-paatos-pdf id) => (partial instance? InputStream)
 
-          (assert-hsl-maksatushakemuspaatos-teksti "1.7. - 31.12." 0)
-          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (assert-hsl-maksatushakemuspaatos-teksti vuosi "1.7. - 31.12." 0)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
-          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
+      (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
 (fact "Voimassaolevan päätöksen hakeminen"
-  (test/with-user "juku_hakija" ["juku_hakija"]
-    (asha/with-asha
-      (pdf/with-mock-pdf
-        (let [id (h/add-hakemus! hsl-ah0-hakemus)
-              paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
-          (p/save-paatos! paatos)
-          (h/laheta-hakemus! id)
-          (h/tarkasta-hakemus! id)
-          (p/hyvaksy-paatos! id)
+  (test-ctx
+    (let [id (h/add-hakemus! hsl-ah0-hakemus)
+          paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
+      (p/save-paatos! paatos)
+      (h/laheta-hakemus! id)
+      (h/tarkasta-hakemus! id)
+      (p/hyvaksy-paatos! id)
 
-          (p/find-paatos-pdf id) => c/not-nil?
-          (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
-          (assert-hsl-avustushakemuspaatos-teksti)
-          (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
+      (p/find-paatos-pdf id) => (partial instance? InputStream)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
+      (assert-hsl-avustushakemuspaatos-teksti)
+      (:footer pdf/*mock-pdf*) => "Liikennevirasto")))
 
 (fact "Maksatushakemuksen päätöksen esikatselu avustushakemuksen päätös on tehty"
-  (test/with-user "juku_hakija" ["juku_hakija"]
-    (asha/with-asha-off
-      (pdf/with-mock-pdf
-        (let [id (h/add-hakemus! hsl-mh1-hakemus)]
+  (test-ctx
+    (let [id (h/add-hakemus! hsl-mh1-hakemus)]
 
-          (ak/add-avustuskohde! {:hakemusid id
-                                 :avustuskohdeluokkatunnus "PSA"
-                                 :avustuskohdelajitunnus "1"
-                                 :haettavaavustus 1,
-                                 :omarahoitus 1})
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "PSA"
+                             :avustuskohdelajitunnus "1"
+                             :haettavaavustus 1,
+                             :omarahoitus 1})
 
-          (p/find-paatos-pdf id)
+      (p/find-paatos-pdf id)
 
-          (assert-hsl-maksatushakemuspaatos-teksti "1.1. - 30.6." 1)
-          (assert-hsl-maksatushakemuspaatos1-teksti pdf/today 1 100 1)
+      (assert-hsl-maksatushakemuspaatos-teksti vuosi "1.1. - 30.6." 1)
+      (assert-hsl-maksatushakemuspaatos1-teksti vuosi pdf/today 1 100 1)
 
-          (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
 
-          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))))
+      (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
 
 (fact "Päätöksen esittelijä ja päättäjä"
@@ -157,7 +152,7 @@
           (h/tarkasta-hakemus! id)
           (p/hyvaksy-paatos! id)
 
-          (p/find-paatos-pdf id) => c/not-nil?
+          (p/find-paatos-pdf id) => (partial instance? InputStream)
           (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
           (assert-hsl-avustushakemuspaatos-teksti)
 
@@ -166,3 +161,38 @@
             teksti => (partial strx/substring? "Esittelijä\tKatri Käsittelijä"))
 
           (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
+
+(fact "Maksatushakemuksessa osuusavustuksesta on päättymätön murtoluku"
+  (test-ctx
+    (let [kausi (test/next-avattu-empty-hakemuskausi!)
+          ah0 (add-hakemus! kausi "AH0")
+          mh1 (add-hakemus! kausi "MH1")
+          paatos {:hakemusid ah0, :myonnettyavustus 33000M :selite "FooBar" :paattajanimi "Pentti Päättäjä"}
+          ak {:hakemusid     mh1
+              :avustuskohdeluokkatunnus "PSA"
+              :avustuskohdelajitunnus "1"
+              :haettavaavustus 16000
+              :omarahoitus 16000}]
+
+      (h/laheta-hakemus! ah0)
+      (h/tarkasta-hakemus! ah0)
+      (p/save-paatos! paatos)
+      (p/hyvaksy-paatos! ah0)
+
+      (ak/add-avustuskohde! ak)
+
+      (p/find-paatos-pdf mh1) => (partial instance? InputStream)
+      (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 16000)
+      (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 33000 48 16000)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+
+(fact "Prosenttilasku"
+      (p/percentage 1M 1M) => 100M
+      (p/percentage 0M 1M) => 0M
+      (p/percentage 1M 2M) => 50M
+      (p/percentage 1M 3M) => 33M
+      (p/percentage 2M 3M) => 67M
+      (p/percentage 5M 9M) => 56M
+      (p/percentage 1M 1000M) => 0M
+      (p/percentage 4M 1000M) => 0M
+      (p/percentage 5M 1000M) => 1M)

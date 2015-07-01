@@ -5,7 +5,8 @@
             [juku.service.hakemuskausi :as k]
             [juku.service.user :as user]
             [juku.user :as u]
-            [juku.db.database :refer [db]]
+            [juku.db.database :refer [db with-transaction]]
+            [juku.service.asiahallinta-mock :as asha]
             [yesql.core :as sql]
             [clj-time.core :as time])
   (:import (java.io ByteArrayInputStream)))
@@ -21,6 +22,24 @@
 
 (defn next-hakemuskausi! []
   (let [vuosi (find-next-notcreated-hakemuskausi)] (init-hakemuskausi! vuosi)))
+
+(defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))
+
+(defn avaa-hakemuskausi! [vuosi]
+  (asha/with-asha
+    (k/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+    (k/avaa-hakemuskausi! vuosi)))
+
+(defn next-avattu-empty-hakemuskausi! []
+  (let [hk (next-hakemuskausi!)
+        vuosi (:vuosi hk)]
+    (with-transaction
+
+      (k/update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
+      (k/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
+      (k/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi
+                                              :diaarinumero (str "test/" vuosi)}))
+    hk))
 
 (defn hakemus-summary [hakemuskausi hakemustyyppi]
   (first (filter (col/eq :hakemustyyppitunnus hakemustyyppi) (:hakemukset hakemuskausi))))
@@ -42,4 +61,3 @@
 (defn before-today [days]
   (time/plus (time/today) (time/days days)))
 
-(defn inputstream-from [txt] (ByteArrayInputStream. (.getBytes txt)))

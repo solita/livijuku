@@ -20,7 +20,8 @@
             [clj-time.core :as time]
             [clj-time.coerce :as timec]
             [juku.service.user :as user])
-  (:import (org.joda.time LocalDate)))
+  (:import (org.joda.time LocalDate)
+           (java.math RoundingMode)))
 
 ; *** Päätökseen liittyvät kyselyt ***
 (sql/defqueries "paatos.sql")
@@ -65,6 +66,9 @@
   {"KS1"	"31.30.63.09"
    "KS2"	"31.30.63.11"})
 
+(defn percentage [^BigDecimal x ^BigDecimal y]
+  (.setScale ^BigDecimal (* (.divide x y 2 RoundingMode/HALF_UP) 100) 0))
+
 (defn mh-template-values [hakemus mh-haettuavustus organisaatio]
   (let [{:keys [voimaantuloaika, myonnettyavustus]}
           (first (select-hakemus-paatos (assoc hakemus :hakemustyyppitunnus "AH0")))]
@@ -72,7 +76,7 @@
                         "<avustuksen myöntämispvm>")
      :ah0-myonnettyavustus (or myonnettyavustus
                                "<myönnetty avustus>")
-     :osuusavustuksesta (or ((c/nil-safe *) ((c/nil-safe /) mh-haettuavustus myonnettyavustus) 100)
+     :osuusavustuksesta (or ((c/nil-safe percentage) mh-haettuavustus myonnettyavustus)
                             "<osuus avustuksesta>")
      :momentti (maararahamomentti (:lajitunnus organisaatio))}))
 
