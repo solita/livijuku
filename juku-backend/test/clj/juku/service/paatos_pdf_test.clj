@@ -162,7 +162,7 @@
 
           (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
 
-(fact "Maksatushakemuksessa osuusavustuksesta on päättymätön murtoluku"
+(fact "Maksatushakemuksessa (mh1) osuusavustuksesta on päättymätön murtoluku"
   (test-ctx
     (let [kausi (test/next-avattu-empty-hakemuskausi!)
           ah0 (add-hakemus! kausi "AH0")
@@ -184,6 +184,30 @@
       (p/find-paatos-pdf mh1) => (partial instance? InputStream)
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 16000)
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 33000 48 16000)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+
+(fact "Maksatushakemuksessa (mh1) osuusavustuksesta on 50%"
+  (test-ctx
+    (let [kausi (test/next-avattu-empty-hakemuskausi!)
+          ah0 (add-hakemus! kausi "AH0")
+          mh1 (add-hakemus! kausi "MH1")
+          paatos {:hakemusid ah0, :myonnettyavustus 2 :selite "FooBar" :paattajanimi "Pentti Päättäjä"}
+          ak {:hakemusid     mh1
+              :avustuskohdeluokkatunnus "PSA"
+              :avustuskohdelajitunnus "1"
+              :haettavaavustus 1
+              :omarahoitus 1}]
+
+      (h/laheta-hakemus! ah0)
+      (h/tarkasta-hakemus! ah0)
+      (p/save-paatos! paatos)
+      (p/hyvaksy-paatos! ah0)
+
+      (ak/add-avustuskohde! ak)
+
+      (p/find-paatos-pdf mh1) => (partial instance? InputStream)
+      (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 1)
+      (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 2 50 1)
       (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
 
 (fact "Prosenttilasku"
