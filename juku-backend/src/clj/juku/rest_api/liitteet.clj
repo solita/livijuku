@@ -1,6 +1,7 @@
 (ns juku.rest-api.liitteet
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.legacy :refer :all]
+            [compojure.api.upload :as upload]
             [juku.service.liitteet :as service]
             [juku.rest-api.response :as response]
             [juku.schema.liitteet :refer :all]
@@ -32,9 +33,16 @@
             (content-type (ok (:sisalto liite)) (:contenttype liite))
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
-    (POST "/hakemus/:hakemusid/liite"
-          [hakemusid :as {{{tempfile :tempfile filename :filename contenttype :content-type} :liite} :params}]
-          (ok (service/add-liite! {:hakemusid hakemusid :nimi filename :contenttype contenttype} (io/input-stream tempfile))))
+    (POST* "/hakemus/:hakemusid/liite" []
+           :auth [:modify-oma-hakemus]
+           :path-params [hakemusid :- Long]
+           :multipart-params [liite :- upload/TempFileUpload
+                              data :- s/Any] ;; TODO remove this - front-end creates dummy data part
+           (ok (service/add-liite! {:hakemusid hakemusid
+                                    :nimi (:filename liite)
+                                    :contenttype (:content-type liite)}
+                                   (io/input-stream (:tempfile liite)))))
+
 
     (PUT* "/hakemus/:hakemusid/liite/:liitenumero" []
           :auth [:modify-oma-hakemus]

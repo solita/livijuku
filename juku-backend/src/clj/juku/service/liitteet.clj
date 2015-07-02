@@ -13,7 +13,8 @@
   {:liite_pk {:http-response r/conflict :message "Kaksi eri käyttäjää on lisännyt liitteen samanaikaisesti."}
    :liite_hakemus_fk {:http-response r/not-found :message "Liitteen hakemusta (id = {hakemusid}) ei ole olemassa."}})
 
-(sql/defqueries "liitteet.sql" {:constraint-errors constraint-errors})
+(sql/defqueries "liitteet.sql" {:constraint-errors constraint-errors
+                                :dissoc-error-params [:sisalto]})
 
 (def coerce-liite (scoerce/coercer s/Liite+Size coerce/db-coercion-matcher))
 (def coerce-liite+ (scoerce/coercer s/Liite+ coerce/db-coercion-matcher))
