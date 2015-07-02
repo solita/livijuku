@@ -66,6 +66,7 @@
   {"KS1"	"31.30.63.09"
    "KS2"	"31.30.63.11"})
 
+;; (with-precision 2 :rounding HALF_UP (bigdec (* (/ x y) 100)))
 (defn percentage [^BigDecimal x ^BigDecimal y]
   (.setScale ^BigDecimal (* (.divide x y 2 RoundingMode/HALF_UP) 100) 0))
 
