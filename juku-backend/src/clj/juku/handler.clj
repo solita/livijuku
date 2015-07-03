@@ -40,7 +40,8 @@
         notfound))
 
 (def app (-> juku-api
-  (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))))
+            (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))
+             jm/wrap-no-cache))
 
 ;; set oracle metrics to all service namespaces excluding yesql generated functions
 (doseq [service (filter (f/starts-with (comp name ns-name) "juku.service") (all-ns))]

@@ -84,7 +84,18 @@
     (log/error exception (:status response))
     response))
 
+(defn no-cache [response]
+  (r/header response "Cache-Control" "no-store"))
 
+(defn wrap-no-cache [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (if (or (r/get-header response "Cache-Control")
+              (r/get-header response "Expires")
+              (r/get-header response "Last-Modified")
+              (r/get-header response "Etag"))
+        response
+        (no-cache response)))))
 
 
 
