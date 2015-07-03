@@ -36,8 +36,7 @@
     (POST* "/hakemus/:hakemusid/liite" []
            :auth [:modify-oma-hakemus]
            :path-params [hakemusid :- Long]
-           :multipart-params [liite :- upload/TempFileUpload
-                              data :- s/Any] ;; TODO remove this - front-end creates dummy data part
+           :multipart-params [liite :- upload/TempFileUpload]
            (ok (service/add-liite! {:hakemusid hakemusid
                                     :nimi (:filename liite)
                                     :contenttype (:content-type liite)}
