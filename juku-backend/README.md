@@ -44,7 +44,7 @@ Käynnistäminen: **java -jar juku.jar**
 Asetukset: **juku.properties** tiedosto, joka   
 * on ohjelman käynnistyshakemistossa (oletussijainti) tai
 * sijainti määritetään järjestelmäparametrilla: properties-file
-** esimerkki: **java -jar -Dproperties-file=location juku.jar**
+  * esimerkki: **java -jar -Dproperties-file=/path/juku.properties juku.jar**
 
 Testaus
 -------
