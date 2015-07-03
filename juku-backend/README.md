@@ -41,7 +41,10 @@ Tuotantokäyttö edellyttää Java 1.8 JRE:n.
 
 Käynnistäminen: **java -jar juku.jar**
 
-Asetukset: **juku.properties** tiedosto, joka pitää olla ohjelman käynnistyshakemistossa.
+Asetukset: **juku.properties** tiedosto, joka   
+* on ohjelman käynnistyshakemistossa (oletussijainti) tai
+* sijainti määritetään järjestelmäparametrilla: properties-file
+** esimerkki: **java -jar -Dproperties-file=location juku.jar**
 
 Testaus
 -------
