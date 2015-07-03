@@ -34,6 +34,7 @@
 
 (defn add-liite! [liite ^InputStream sisalto]
   (with-transaction
+    (select-hakemus-for-update liite)
     (insert-liite! (assoc liite :sisalto sisalto))
     (assert-liite-maxsize! (:hakemusid liite) (:liite-max-size settings)))
   nil)
