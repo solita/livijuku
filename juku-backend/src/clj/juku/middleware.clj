@@ -70,7 +70,7 @@
     (let [error (or (ss/get-thrown-object t) (ex-data t))]
       (if (map? error)
         (assoc error
-          :message (message t)
+          :message (or (:message error) (message t))
           :cause (throwable->http-error (cause t)))
         {:message (message t)
          :cause (throwable->http-error (cause t))}))))
