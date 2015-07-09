@@ -13,6 +13,7 @@
                       :hakemustyyppitunnus s/Str
                       :hakemustilatunnus s/Str
                       :organisaatioid s/Num
+                      :kasittelijanimi s/Str
                       :hakuaika Hakuaika
                       :muokkausaika DateTime})
 
