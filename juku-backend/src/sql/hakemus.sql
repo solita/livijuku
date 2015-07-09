@@ -4,7 +4,7 @@ select vuosi, diaarinumero from hakemuskausi where vuosi = :vuosi
 
 -- name: select-organisaation-hakemukset
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
+       organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus_view where organisaatioid = :organisaatioid
 
 -- name: select-hakemus+
@@ -33,14 +33,14 @@ lahetys as (
   where rownum = 1
 )
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
+       organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
        muokkaus.*, lahetys.*
 from hakemus_view left join muokkaus on (1=1) left join lahetys on (1=1)
 where id = :hakemusid
 
 -- name: select-hakemus
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
+  organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus_view where id = :hakemusid
 
 -- name: select-all-hakemukset
