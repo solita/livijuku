@@ -50,7 +50,7 @@ from hakemus_view
 
 -- name: select-hakemussuunnitelmat
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm,
+  organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm,
   (select nvl(sum(avustuskohde.haettavaavustus), 0) from avustuskohde
   where hakemusid = hakemus.id) "haettu-avustus",
   nvl(suunniteltuavustus, 0) "myonnettava-avustus"
