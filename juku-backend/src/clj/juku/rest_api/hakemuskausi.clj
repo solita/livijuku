@@ -35,7 +35,7 @@
             (ok (service/find-maararaha vuosi organisaatiolajitunnus)))
 
       (GET* "/hakemuskausi/:vuosi/hakuohje" []
-            :auth [:modify-hakemuskausi]
+            :auth [:view-kaikki-hakemukset]
             :path-params [vuosi :- s/Int]
             :summary "Lataa hakuohjeen sisältö."
             (if-let [hakuohje (service/find-hakuohje-sisalto vuosi)]
