@@ -17,13 +17,13 @@
 (def ensimmainen-rivi (- ylamarginaali 12))
 (def vasen-marginaali 57.0)
 (def oikea-marginaali 50.0)
-(def sisennys 128.0)
+(def sisennys 60.0)
 (def footer-tila 70.0)
 
 (defn muodosta-header
   "Header on aina vakiomuotoinen ja esiintyy vain dokumentin ensimmäisellä sivulla"
   [otsikko]
-  [{:x (+ vasen-marginaali 262)
+  [{:x (+ vasen-marginaali 200)
     :y ensimmainen-rivi
     :teksti (:teksti otsikko)}
    {:x 0
@@ -33,7 +33,7 @@
     :y 0
     :teksti (:diaarinumero otsikko)}
    ;; lopuksi headerin marginaali
-   {:x (- 0 262 135)
+   {:x (- 0 200 135)
     :y (- (* 3 12))}])
 
 (defn laske-koordinaatti
@@ -153,7 +153,7 @@
   (reduce lisaa-elementti []
           (concat
             (muodosta-header (:otsikko osat))
-            (rivita-teksti (:teksti osat) fontti bold-fontti 12))))
+            (rivita-teksti (:teksti osat) fontti bold-fontti 10))))
 
 (defn muodosta-footer
   "Footer tulee jokaiselle sivulle. Oletuksena että suhteellinen lähtöpositio on oikea"
@@ -200,22 +200,23 @@
           (when (= 1 sivunumero) (lisaa-logo dokumentti pdfsivu))
           (doto pdstream
             (.beginText)
-            (kirjoita-rivit sivun-rivit 12 fontti bold-fontti)
+            (kirjoita-rivit sivun-rivit 10 fontti bold-fontti)
             (.setTextMatrix 1 0 0 1 vasen-marginaali footer-tila) ; siirrytään footerin alkuun
             (kirjoita-rivit footer 8 fontti bold-fontti)
-            (kirjoita-sivunumero sivunumero viimeinen-sivu 12 fontti)
+            (kirjoita-sivunumero sivunumero viimeinen-sivu 10 fontti)
             (.endText)
-            (alleviivaa-rivit sivun-rivit 12 fontti)
+            (alleviivaa-rivit sivun-rivit 10 fontti)
             (.drawLine vasen-marginaali footer-tila (- (.getWidth sivukoko) oikea-marginaali) footer-tila)))
         pdfsivu))))
 
 (defn muodosta-pdf
   [osat]
   (with-open [dokumentti (PDDocument.)
-              fonttitiedosto (io/input-stream (io/resource "pdf-sisalto/ebgaramond/EBGaramond-Regular.ttf"))]
+              fonttitiedosto (io/input-stream (io/resource "org/apache/pdfbox/resources/ttf/ArialMT.ttf"))
+              boldfonttitiedosto (io/input-stream (io/resource "org/apache/pdfbox/resources/ttf/Arial-BoldMT.ttf"))]
     (let [output (ByteArrayOutputStream.)
           fontti (PDTrueTypeFont/loadTTF dokumentti fonttitiedosto)
-          bold-fontti PDType1Font/TIMES_BOLD
+          bold-fontti (PDTrueTypeFont/loadTTF dokumentti boldfonttitiedosto)
           sivutettu-sisalto (muodosta-osat fontti bold-fontti osat)
           footer (muodosta-footer fontti bold-fontti osat)
           sivut (kirjoita-sisalto dokumentti fontti bold-fontti sivutettu-sisalto footer)]
