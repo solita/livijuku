@@ -15,7 +15,8 @@
             [juku.service.test :as test]
             [juku.headers :as headers]
             [common.core :as c]
-            [common.string :as strx]))
+            [common.string :as strx])
+  (:import (java.io InputStream)))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
@@ -33,7 +34,7 @@
         (let [id (h/add-hakemus! hsl-ah0-hakemus)
               asiakirja (h/find-hakemus-pdf id)]
 
-          asiakirja => c/not-nil?
+          asiakirja => (partial instance? InputStream)
 
           (pdf/assert-otsikko "Valtionavustushakemus" nil)
 
@@ -44,6 +45,46 @@
 
           (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))))
 
+(fact "Keskeneräinen avustushakemus - hakemuksella avustuskohde"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (asha/with-asha-off
+      (pdf/with-mock-pdf
+        (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+
+          (ak/add-avustuskohde! {:hakemusid id
+                                 :avustuskohdeluokkatunnus "PSA"
+                                 :avustuskohdelajitunnus "1"
+                                 :haettavaavustus 1,
+                                 :omarahoitus 1})
+
+          (ak/add-avustuskohde! {:hakemusid id
+                                 :avustuskohdeluokkatunnus "PSA"
+                                 :avustuskohdelajitunnus "2"
+                                 :haettavaavustus 1,
+                                 :omarahoitus 1})
+
+          (ak/add-avustuskohde! {:hakemusid id
+                                 :avustuskohdeluokkatunnus "HK"
+                                 :avustuskohdelajitunnus "SL"
+                                 :haettavaavustus 1,
+                                 :omarahoitus 1})
+
+          (h/find-hakemus-pdf id) => (partial instance? InputStream)
+
+          (pdf/assert-otsikko "Valtionavustushakemus" nil)
+
+          (let [teksti (:teksti pdf/*mock-pdf*)]
+            teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
+            teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta")
+            teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1 e")
+            teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1 e")
+            teksti => (partial strx/substring? "Hintavelvoitteiden korvaaminen")
+            teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1 e")
+            teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta 3 euroa."))
+            teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä 3 euroa.")))
+
+          (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))))
+
 (fact "Keskeneräinen 1. maksatushakemus"
   (test/with-user "juku_hakija" ["juku_hakija"]
     (asha/with-asha-off
@@ -51,7 +92,7 @@
         (let [id (h/add-hakemus! hsl-mh1-hakemus)
               asiakirja (h/find-hakemus-pdf id)]
 
-          asiakirja => c/not-nil?
+          asiakirja => (partial instance? InputStream)
 
           (pdf/assert-otsikko "Valtionavustushakemus" nil)
 

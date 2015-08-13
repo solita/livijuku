@@ -6,6 +6,7 @@
             [juku.service.common :as service]
             [juku.service.user :as user]
             [common.string :as xstr]
+            [common.map :as m]
             [clojure.string :as str]
             [schema.coerce :as scoerce]
             [juku.schema.hakemus :refer :all]
@@ -60,15 +61,24 @@
         assoc-avustuskohdelajit (fn [luokka] (assoc luokka :avustuskohdelajit (get lajit-group-by-luokka (:tunnus luokka))))]
     (map assoc-avustuskohdelajit luokat)))
 
-(defn avustuskohteet-section [avustuskohteet]
+(defn avustuskohderivit [avustuskohteet avustuskohdelajit]
   (let [avustuskohde-template "\t{avustuskohdenimi}\t\t\t\t\t{haettavaavustus} e"
-        avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
-        avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
         avustuskohteet+nimi (coll/join avustuskohteet
-                                    (fn [akohde, aklajiseq] (assoc akohde :avustuskohdenimi (:nimi (first aklajiseq))))
-                                    avustuskohdelajit [:avustuskohdeluokkatunnus :avustuskohdelajitunnus])]
+                                       (fn [akohde, aklajiseq] (assoc akohde :avustuskohdenimi (:nimi (first aklajiseq))))
+                                       avustuskohdelajit [:avustuskohdeluokkatunnus :avustuskohdelajitunnus])]
 
     (str/join "\n" (map (partial xstr/interpolate avustuskohde-template) avustuskohteet+nimi))))
+
+(defn avustuskohteet-section [avustuskohteet]
+  (let [avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
+        avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
+        avustuskohdeluokat (m/map-values first (group-by :tunnus (select-avustuskohdeluokat)))
+        avustuskohteet-luokittain (partition-by :avustuskohdeluokkatunnus avustuskohteet)
+        avustuskohdeluokka-otsikko (fn [kohde] (:nimi (get avustuskohdeluokat (:avustuskohdeluokkatunnus kohde))))
+        avustuskohdeluokka (fn [kohteet] (str "\t*" (avustuskohdeluokka-otsikko (first kohteet)) "\n"
+                                              (avustuskohderivit kohteet avustuskohdelajit)))]
+
+    (str/join "\n\n" (map avustuskohdeluokka avustuskohteet-luokittain))))
 
 (defn total-haettavaavustus [avustuskohteet] (reduce + 0 (map :haettavaavustus avustuskohteet)))
 
