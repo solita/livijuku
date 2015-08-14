@@ -43,6 +43,23 @@
                           :content message})
 
 (defn post
+  "Sähköpostin lähetyspalvelu, joka tukee kahta eri viestimuotoa:
+  a) pelkkä tekstisisältö
+  b) tekstisisältö + yksi liitedokumentti
+
+  - Liitteet -
+
+  Liitteiden lähetyksessä käytettävä content-transfer-encoding kannattaa jättää
+   java mail api:n päätettäväksi esim. puhdas binäärimuoto näyttäisi toimivan huonosti ks.
+   - http://www.w3.org/Protocols/rfc1341/5_Content-Transfer-Encoding.html
+   - http://superuser.com/questions/402193/why-is-base64-needed-aka-why-cant-i-just-email-a-binary-file
+   - https://en.wikipedia.org/wiki/Extended_SMTP
+   - https://en.wikipedia.org/wiki/8-bit_clean
+   - http://tools.ietf.org/html/rfc821
+   - https://en.wikipedia.org/wiki/MIME
+   - https://tools.ietf.org/html/rfc2231
+
+   Liitteen tiedostonimessä ei toimi ääkköset."
   ([to subject message] (send-multipart to subject (txt-part message)))
   ([to subject message asiakirja-nimi asiakirja]
     (send-multipart to subject
@@ -117,7 +134,12 @@
 
 (def byte-array-class (Class/forName "[B"))
 
-(defn ^javax.mail.internet.MimeBodyPart create-mimebodypart [{:keys [content type content-type]}]
+(defn ^javax.mail.internet.MimeBodyPart create-mimebodypart
+
+  "Binary content mimebodypart example see:
+   https://vangjee.wordpress.com/2010/11/02/how-to-create-an-in-memory-pdf-report-and-send-as-an-email-attachment-using-itext-and-java/"
+
+  [{:keys [content type content-type]}]
   (let [type (or content-type type)]
     (condp instance? content
            java.io.InputStream (doto (javax.mail.internet.MimeBodyPart.)
