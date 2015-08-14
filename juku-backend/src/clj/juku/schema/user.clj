@@ -5,7 +5,7 @@
                  (s/optional-key :etunimi) s/Str
                  (s/optional-key :sukunimi) s/Str
                  (s/optional-key :nimi) s/Str
-                 (s/optional-key :sahkoposti) s/Str
+                 :sahkoposti (s/maybe s/Str)
                  :organisaatioid s/Num
                  :jarjestelma s/Bool})
 

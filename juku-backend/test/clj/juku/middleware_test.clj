@@ -35,6 +35,7 @@
                 :organisaatioid (m/find-matching-organisaatio "liikennevirasto" nil)
                 :etunimi "Päkä"
                 :sukunimi "Pääkäyttäjä"
+                :sahkoposti nil
                 :privileges (user/find-privileges ["juku_paakayttaja"])
                 :jarjestelma false}
 

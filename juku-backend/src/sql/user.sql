@@ -1,9 +1,9 @@
 -- name: select-user
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti
 from kayttaja where tunnus = :tunnus
 
 -- name: select-users-where-organization
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti
 from kayttaja where organisaatioid = :organisaatioid
 
 -- name: select-oikeudet-where-roolit-in

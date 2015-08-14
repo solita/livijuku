@@ -35,7 +35,7 @@
         updated-user)
       (do
         (user/create-user! uid user-data)
-        (assoc user-data :tunnus uid :jarjestelma false)))))
+        (user/find-user uid)))))
 
 (defn- error [type & msg]
   (log/error msg)
