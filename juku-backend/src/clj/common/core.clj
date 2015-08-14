@@ -1,5 +1,7 @@
 (ns common.core
-  (:require [slingshot.slingshot :as ss]))
+  (:require [slingshot.slingshot :as ss]
+            [clojure.java.io :as io])
+  (:import (java.io ByteArrayOutputStream)))
 
 (defn is-divisible-by [num divisor]
   (= (mod num divisor) 0))
@@ -34,3 +36,10 @@
     `(if-let [~(first bindings) ~(second bindings)]
        (if-let3! ~(drop 3 bindings) ~expr) (ss/throw+ ~(third bindings)))
     expr))
+
+(defn slurp-bytes
+  "Slurp the bytes from a slurpable thing"
+  [input]
+  (with-open [^ByteArrayOutputStream out (ByteArrayOutputStream.)]
+    (io/copy (io/input-stream input) out)
+    (.toByteArray out)))

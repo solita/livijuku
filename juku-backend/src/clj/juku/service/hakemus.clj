@@ -171,7 +171,7 @@
 
 (defn find-hakemuskausi [vuosi] (first (select-hakemuskausi vuosi)))
 
-(defn change-hakemustila! [hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
+(defn change-hakemustila! [hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
   (dml/assert-update
     (update-hakemustila! {:hakemusid (:id hakemus)
                           :hakemustilatunnus new-hakemustilatunnus
@@ -182,23 +182,24 @@
                    ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
      :hakemusid (:id hakemus)
      :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})
-  (email/send-hakemustapahtuma-message hakemus new-hakemustilatunnus))
+  (email/send-hakemustapahtuma-message hakemus new-hakemustilatunnus asiakirja))
 
 (defn change-hakemustila+log!
   ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
-    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation)
+    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation nil)
 
     ;; hakemustilan muutoshistoria
     (insert-hakemustila-event! {:hakemusid (:id hakemus)
                                 :hakemustilatunnus new-hakemustilatunnus}))
 
   ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
-    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation)
+    (let [asiakirja-bytes (c/slurp-bytes asiakirja)]
+      (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja-bytes)
 
-    ;; hakemustilan muutoshistoria
-    (insert-hakemustila-event+asiakirja! {:hakemusid (:id hakemus)
-                                          :hakemustilatunnus new-hakemustilatunnus
-                                          :asiakirja asiakirja})))
+      ;; hakemustilan muutoshistoria
+      (insert-hakemustila-event+asiakirja! {:hakemusid (:id hakemus)
+                                            :hakemustilatunnus new-hakemustilatunnus
+                                            :asiakirja (io/input-stream asiakirja-bytes)}))))
 
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
@@ -209,7 +210,7 @@
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila! hakemus "V" ["K"] "vireillelaitto")
+      (change-hakemustila! hakemus "V" ["K"] "vireillelaitto" nil)
 
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
         (update-hakemus-set-diaarinumero!
