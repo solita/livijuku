@@ -39,9 +39,13 @@
 (defn find-privileges [roolit]
   (map (comp keyword :tunnus) (select-oikeudet-where-roolit-in {:roolit roolit})))
 
+(def dbuser->user (comp coerce-user (fn [user] (m/dissoc-if-nil user :nimi :etunimi :sukunimi))))
+
 (defn find-users-by-organization [organisaatioid]
-  (map (comp coerce-user (fn [user] (m/dissoc-if-nil user :nimi :etunimi :sukunimi)))
-       (select-users-where-organization {:organisaatioid organisaatioid})))
+  (map dbuser->user (select-users-where-organization {:organisaatioid organisaatioid})))
+
+(defn find-all-users []
+  (map dbuser->user (select-all-human-users)))
 
 (defn create-user! [uid user]
   (dml/insert db "kayttaja" (assoc user :tunnus uid) constraint-errors user))

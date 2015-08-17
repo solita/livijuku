@@ -19,4 +19,8 @@
           :return [User]
           :path-params [organisaatioid :- Long]
           :summary "Hae organisaation kaikki käyttäjät."
-          (ok (service/find-users-by-organization organisaatioid))))
+          (ok (service/find-users-by-organization organisaatioid)))
+    (GET* "/users" []
+          :return [User]
+          :summary "Hae kaikkien käyttäjien tiedot."
+          (ok (service/find-all-users))))
