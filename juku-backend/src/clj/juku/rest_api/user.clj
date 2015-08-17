@@ -22,5 +22,5 @@
           (ok (service/find-users-by-organization organisaatioid)))
     (GET* "/users" []
           :return [User]
-          :summary "Hae kaikkien käyttäjien tiedot."
+          :summary "Hae kaikkien käyttäjien tiedot. -"
           (ok (service/find-all-users))))
