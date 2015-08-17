@@ -150,8 +150,8 @@
                                     :vireillepvm pvm
                                     :vuosi (:vuosi hakemus)
                                     :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-                                    :haettuavustus total-haettavaavustus
-                                    :omarahoitus total-omarahoitus
+                                    :haettuavustus (pdf/format-number total-haettavaavustus)
+                                    :omarahoitus (pdf/format-number total-omarahoitus)
                                     :lahettaja (if esikatselu-message "<hakijan nimi, joka on lähettänyt hakemuksen>"
                                                                       (user/user-fullname user/*current-user*))})
 

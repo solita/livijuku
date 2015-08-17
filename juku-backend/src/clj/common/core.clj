@@ -13,6 +13,8 @@
 
 (def not-nil? (comp not nil?))
 
+(defn partial-first-arg [f & rest-args] (fn [first-arg] (apply f first-arg rest-args)))
+
 (defn nil-safe [f]
   (fn ([x] (if x (f x)))
       ([x & next] (if (and x (every? not-nil? next)) (apply f x next)))))

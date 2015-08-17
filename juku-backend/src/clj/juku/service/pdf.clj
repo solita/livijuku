@@ -7,7 +7,9 @@
            org.apache.pdfbox.util.LayerUtility
            java.awt.geom.AffineTransform
            (java.io ByteArrayOutputStream
-                    ByteArrayInputStream))
+                    ByteArrayInputStream)
+           (java.util Locale)
+           (java.text NumberFormat))
 
   (:require [clojure.java.io :as io]
             [common.map :as m]))
@@ -224,4 +226,8 @@
         (.addPage dokumentti sivu))
       (.save dokumentti output)
       (ByteArrayInputStream. (.toByteArray output)))))
+
+(def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
+
+(defn format-number [n] (if n (.format ^NumberFormat number-format-fi n)))
 

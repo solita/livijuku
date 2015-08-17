@@ -7,12 +7,14 @@
             [juku.service.user :as user]
             [common.string :as xstr]
             [common.map :as m]
+            [juku.service.pdf :as pdf]
             [clojure.string :as str]
             [schema.coerce :as scoerce]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
             [common.collection :as coll]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [common.core :as c]))
 
 ; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "avustuskohde.sql")
@@ -63,7 +65,7 @@
 
 (defn avustuskohderivit [avustuskohteet avustuskohdelajit]
   (let [avustuskohde-template "\t{avustuskohdenimi}\t\t\t\t\t{haettavaavustus} e"
-        avustuskohteet+nimi (coll/join avustuskohteet
+        avustuskohteet+nimi (coll/join (map (c/partial-first-arg update-in [:haettavaavustus] pdf/format-number) avustuskohteet)
                                        (fn [akohde, aklajiseq] (assoc akohde :avustuskohdenimi (:nimi (first aklajiseq))))
                                        avustuskohdelajit [:avustuskohdeluokkatunnus :avustuskohdelajitunnus])]
 

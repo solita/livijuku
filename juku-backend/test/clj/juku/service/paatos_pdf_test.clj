@@ -53,7 +53,7 @@
 
       teksti => (partial strx/substring? (str "Hakija on toimittanut Liikennevirastolle <lähetyspäivämäärä> "
                                               "joukkoliikenteen maksatushakemuksen ajalta " kausi vuosi
-                                              " JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä " summa " euroa. "))
+                                              " JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä " summa " euroa."))
 
       teksti => (partial strx/substring? (str "Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä " summa " euroa.")))))
 
@@ -182,8 +182,10 @@
       (ak/add-avustuskohde! ak)
 
       (p/find-paatos-pdf mh1) => (partial instance? InputStream)
-      (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 16000)
-      (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 33000 48 16000)
+
+      ;; Huom! luvuissa oleva välilyönti on nbsp (00A0) ei siis normaali välilyönti (0020)
+      (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." "16 000")
+      (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today "33 000" 48 "16 000")
       (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
 
 (fact "Maksatushakemuksessa (mh1) osuusavustuksesta on 50%"

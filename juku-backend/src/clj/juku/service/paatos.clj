@@ -75,7 +75,7 @@
           (first (select-hakemus-paatos (assoc hakemus :hakemustyyppitunnus "AH0")))]
     {:ah0-paatospvm (or (some-> voimaantuloaika coerce/date->localdate h/format-date)
                         "<avustuksen myöntämispvm>")
-     :ah0-myonnettyavustus (or myonnettyavustus
+     :ah0-myonnettyavustus (or (pdf/format-number myonnettyavustus)
                                "<myönnetty avustus>")
      :osuusavustuksesta (or ((c/nil-safe percentage) mh-haettuavustus myonnettyavustus)
                             "<osuus avustuksesta>")
@@ -86,7 +86,7 @@
         (first (select-hakemus-paatos (assoc hakemus :hakemustyyppitunnus "MH1")))]
     {:mh1-paatospvm (or (some-> voimaantuloaika coerce/date->localdate h/format-date)
                         "<maksatuspäätös pvm>")
-     :mh1-myonnettyavustus (or myonnettyavustus
+     :mh1-myonnettyavustus (or (pdf/format-number myonnettyavustus)
                                "<maksettu avustus>")}))
 
 (defn paatos-pdf
@@ -111,11 +111,11 @@
              :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
              :vuosi (:vuosi hakemus)
              :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-             :haettuavustus haettuavustus
-             :omarahoitus (ak/total-omarahoitus avustuskohteet)
+             :haettuavustus (pdf/format-number haettuavustus)
+             :omarahoitus (pdf/format-number (ak/total-omarahoitus avustuskohteet))
 
              :selite (c/maybe-nil #(str "\n\n\t" %) "" (:selite paatos))
-             :myonnettyavustus (:myonnettyavustus paatos)
+             :myonnettyavustus (pdf/format-number (:myonnettyavustus paatos))
              :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
              :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
              :paattaja (:paattajanimi paatos)
