@@ -36,6 +36,7 @@
                 :etunimi "Päkä"
                 :sukunimi "Pääkäyttäjä"
                 :sahkoposti nil
+                :sahkopostiviestit true
                 :privileges (user/find-privileges ["juku_paakayttaja"])
                 :jarjestelma false}
 

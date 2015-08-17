@@ -7,3 +7,11 @@
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
     (user/has-privilege* :asdf) => false
     (user/has-privilege* :kasittely-hakemus) => true))
+
+(fact "Käyttäjän tietojen päivitys"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [user-email-off {:sahkopostiviestit false}
+          user-email-on {:sahkopostiviestit false}]
+
+      (dissoc (user/save-user! user-email-off) :privileges) => (user/find-user (:tunnus user/*current-user*))
+      (user/save-user! user-email-on) => user/*current-user*)))

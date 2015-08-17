@@ -68,6 +68,7 @@ create table kayttaja (
   sukunimi varchar2 (200 char),
   nimi varchar2 (200 char),
   sahkoposti varchar2 (200 char),
+  sahkopostiviestit number (1) default 1 not null check ( sahkopostiviestit in (0, 1)),
   organisaatioid number,
   jarjestelma number (1) default 0 not null check ( jarjestelma in (0, 1))
 );

@@ -10,6 +10,11 @@
           :return User+Privileges
           :summary "Hae nykyisen käyttäjän tiedot."
           (ok service/*current-user*))
+    (PUT* "/user" []
+          :return User+Privileges
+          :body [user EditUser]
+          :summary "Päivitä nykyisen käyttäjän tiedot."
+          (ok (service/save-user! user)))
     (GET* "/organisaatio/:organisaatioid/users" []
           :return [User]
           :path-params [organisaatioid :- Long]

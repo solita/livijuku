@@ -34,7 +34,7 @@
   (m/dissoc-if-nil user :nimi :etunimi :sukunimi))
 
 (defn find-user [tunnus]
-  (first(map (comp coerce-user process-names) (select-user {:tunnus tunnus}))))
+  (first (map (comp coerce-user process-names) (select-user {:tunnus tunnus}))))
 
 (defn find-privileges [roolit]
   (map (comp keyword :tunnus) (select-oikeudet-where-roolit-in {:roolit roolit})))
@@ -48,6 +48,10 @@
 
 (defn update-user! [tunnus user]
   (dml/update-where! db "kayttaja" user {:tunnus tunnus}))
+
+(defn save-user! [user]
+  (do (update-user! (:tunnus *current-user*) user)
+      (merge *current-user* user)))
 
 (defn has-privilege [privilege user]
   (c/not-nil? (some #{privilege} (:privileges user))))
