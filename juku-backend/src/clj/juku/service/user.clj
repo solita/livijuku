@@ -65,3 +65,6 @@
 
 (defn has-privilege* [privilege]
   (has-privilege privilege *current-user*))
+
+(defn find-roolinimet [ssogroups]
+  (map :nimi (select-roolinimet {:ssogroup ssogroups})))

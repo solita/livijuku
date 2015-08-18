@@ -20,3 +20,6 @@ select distinct kayttooikeus.tunnus from kayttooikeus
   inner join kayttajaroolioikeus on kayttooikeus.tunnus = kayttajaroolioikeus.kayttooikeustunnus
   inner join kayttajarooli on kayttajarooli.tunnus = kayttajaroolioikeus.kayttajaroolitunnus
 where kayttajarooli.ssonimi in (:roolit)
+
+-- name: select-roolinimet
+select nimi from kayttajarooli where ssonimi in (:ssogroup)

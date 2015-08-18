@@ -50,16 +50,20 @@
         (error r/bad-request "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user.")
        group-txt (:oam-groups headers)
         (error r/bad-request "Käyttäjäryhmiä ei löydy pyynnön otsikkotiedosta: oam-groups.")
+       groups (str/split group-txt #",")
+        (error r/internal-server-error (str "Käyttäjäryhmien erottaminen epäonnistui - oam-groups: " group-txt))
        organisaatio-name (h/parse-header headers :oam-user-organization nil)
         (error r/bad-request "Käyttäjän organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
-       privileges (coll/nil-if-empty (user/find-privileges (str/split group-txt #",")))
+       privileges (coll/nil-if-empty (user/find-privileges groups))
         (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")
        orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :oam-user-department))
         (error r/forbidden "Käyttäjän " uid " organisaatiota: " organisaatio-name
               " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")]
 
       (current-user/with-user-id uid
-        (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id headers) :privileges privileges) (handler request))))))
+        (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id headers)
+                          :privileges privileges
+                          :roolit (user/find-roolinimet groups)) (handler request))))))
 
 (defn ^String message [^Throwable t] (.getMessage t))
 

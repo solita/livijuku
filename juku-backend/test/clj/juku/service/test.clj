@@ -47,7 +47,7 @@
 (defmacro with-user [uid roles & test]
   `(c/if-let* [privileges# (user/find-privileges ~roles)
                user# (user/find-user ~uid)]
-       (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test))
+       (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges# :roolit ~roles) ~@test))
        (ss/throw+ (str "Käyttäjällä " ~uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
 
 (defn before-now? [time]

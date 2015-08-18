@@ -12,4 +12,4 @@
 
 (s/defschema EditUser {:sahkopostiviestit s/Bool})
 
-(s/defschema User+Privileges (assoc User :privileges [s/Keyword]))
+(s/defschema User+Privileges (assoc User :privileges [s/Keyword] :roolit [s/Str]))
