@@ -10,6 +10,11 @@ from kayttaja where organisaatioid = :organisaatioid
 select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit
 from kayttaja where jarjestelma = 0
 
+-- name: select-all-livi-users
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit
+from kayttaja
+where kayttaja.organisaatioid = (select id from organisaatio where organisaatio.lajitunnus = 'LV')
+
 -- name: select-oikeudet-where-roolit-in
 select distinct kayttooikeus.tunnus from kayttooikeus 
   inner join kayttajaroolioikeus on kayttooikeus.tunnus = kayttajaroolioikeus.kayttooikeustunnus

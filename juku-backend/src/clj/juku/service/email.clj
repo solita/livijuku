@@ -7,7 +7,9 @@
             [clojure.string :as str]
             [juku.settings :refer [settings]]
             [common.string :as strx]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [juku.service.user :as user]
+            [juku.service.organisaatio :as o])
   (:import (javax.activation DataHandler)
            (javax.mail.util ByteArrayDataSource)))
 
@@ -113,12 +115,16 @@
 (defn- to-keyword [txt]
   (-> txt str/lower-case keyword))
 
-(defn send-hakemustapahtuma-message [hakemus hakemustilatunnus asiakirja]
+(defn template-key [hakemus hakemustilatunnus]
+  (c/if-let* [hakemustyyppi (to-keyword (:hakemustyyppitunnus hakemus))
+              hakemustila (to-keyword hakemustilatunnus)]
+             [hakemustyyppi hakemustila]
+             nil))
+
+(defn send-hakija-message [hakemus hakemustilatunnus asiakirja]
   (c/if-let*
     [to (set (filter (comp not str/blank?) (map :sahkoposti (select-organisaatio-emails (select-keys hakemus [:organisaatioid])))))
-     hakemustyyppi (to-keyword (:hakemustyyppitunnus hakemus))
-     hakemustila (to-keyword hakemustilatunnus)
-     template-key [hakemustyyppi hakemustila]
+     template-key (template-key hakemus hakemustilatunnus)
      subject-template (get-in subjects template-key)
      body-template (get-in messages template-key)
      subject (strx/interpolate subject-template hakemus)
@@ -131,6 +137,41 @@
       (post to subject message (strx/interpolate asiakirja-nimi-template hakemus) asiakirja)
       (post to subject message))
     nil))
+
+(def kasittelija-messages
+  {:ah0 {:v "Joukkoliikenteen valtionavustushakemus vuodelle {vuosi} on saapunut JUKU-järjestelmään."
+         :tv "Joukkoliikenteen valtionavustushakemuksen täydennys on saapunut JUKU-järjestelmään."}
+   :mh1 {:v "Joukkoliikenteen 1. maksatushakemus vuodelle {vuosi} on saapunut JUKU-järjestelmään."
+         :tv "Joukkoliikenteen 1. maksatushakemuksen täydennys on saapunut JUKU-järjestelmään."}
+   :mh2 {:v "Joukkoliikenteen 2. maksatushakemus vuodelle {vuosi} on saapunut JUKU-järjestelmään."
+         :tv "Joukkoliikenteen 2. maksatushakemuksen täydennys on saapunut JUKU-järjestelmään."}})
+
+(def kasittelija-subjects
+  {:ah0 {:v  "{organisaatio} - avustushakemus {vuosi} on saapunut"
+         :tv "{organisaatio} - avustushakemus {vuosi} täydennys"}
+   :mh1 {:v  "{organisaatio} - maksatushakemus {vuosi}/1 on saapunut"
+         :tv "{organisaatio} - maksatushakemus {vuosi}/1 täydennys"}
+   :mh2 {:v  "{organisaatio} - maksatushakemus {vuosi}/2 on saapunut"
+         :tv "{organisaatio} - maksatushakemus {vuosi}/2 täydennys"}})
+
+(defn send-kasittelija-message [hakemus hakemustilatunnus _]
+  (c/if-let*
+    [to (set (filter (comp not str/blank?) (map :sahkoposti (user/find-all-livi-users))))
+     template-key (template-key hakemus hakemustilatunnus)
+     subject-template (get-in kasittelija-subjects template-key)
+     body-template (get-in kasittelija-messages template-key)
+     organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+     hakemus+org (assoc hakemus :organisaatio (:nimi organisaatio))
+     subject (strx/interpolate subject-template hakemus+org)
+     message (str "Hakija: " (:nimi organisaatio) "\n\n"
+                  (strx/interpolate body-template hakemus+org))]
+    (post to subject message)
+    nil))
+
+(defn send-hakemustapahtuma-message [hakemus hakemustilatunnus asiakirja]
+  (send-hakija-message hakemus hakemustilatunnus asiakirja)
+  (send-kasittelija-message hakemus hakemustilatunnus asiakirja))
+
 
 (def byte-array-class (Class/forName "[B"))
 

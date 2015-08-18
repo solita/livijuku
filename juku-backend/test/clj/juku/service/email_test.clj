@@ -24,11 +24,13 @@
         (email/with-mock-email
           (let [~(symbol "id") (h/add-hakemus! (hakemus ~hakemustyyppi))] ~@body)))))
 
-(defn assert-message [subject body]
-  (fact "sähköpostiviestin tarkastaminen"
-    (:to email/*mock-email*) => #{"petri.sirkkala@solita.fi"}
-    (:subject email/*mock-email*) => subject
-    (:body email/*mock-email*) => (partial strx/substring? body)))
+(defn assert-message
+  ([subject body] (assert-message 0 subject body))
+  ([index subject body]
+    (fact "sähköpostiviestin tarkastaminen"
+      (:to (email/*mock-email* index)) => #{"petri.sirkkala@solita.fi"}
+      (:subject (email/*mock-email* index)) => subject
+      (:body (email/*mock-email* index)) => (partial strx/substring? body))))
 
 ;; *** Sähköpostiviestit avustushakemuksista ***
 
@@ -36,15 +38,17 @@
   (test-ctx "AH0"
     (h/laheta-hakemus! id)
     (assert-message (str "Avustushakemus " vuosi " on saapunut")
-                    (str "valtionavustushakemuksenne vuodelle " vuosi " on saapunut"))))
+                    (str "valtionavustushakemuksenne vuodelle " vuosi " on saapunut"))
+    (assert-message 1 (str "Helsingin seudun liikenne - avustushakemus " vuosi " on saapunut")
+                      (str "valtionavustushakemus vuodelle " vuosi " on saapunut"))))
 
 (fact "Täydennyspyynnön lähettäminen"
   (test-ctx "AH0"
     (h/laheta-hakemus! id)
     (h/taydennyspyynto! id "selite")
 
-    (assert-message (str "Avustushakemus " vuosi " täydennyspyyntö")
-                    (str "Joukkoliikenteen valtionavustushakemuksenne vuodelle " vuosi " on palautettu täydennettäväksi"))))
+    (assert-message 2 (str "Avustushakemus " vuosi " täydennyspyyntö")
+                      (str "Joukkoliikenteen valtionavustushakemuksenne vuodelle " vuosi " on palautettu täydennettäväksi"))))
 
 (fact "Täydennyksen lähettäminen"
   (test-ctx "AH0"
@@ -52,8 +56,8 @@
     (h/taydennyspyynto! id "selite")
     (h/laheta-taydennys! id)
 
-    (assert-message (str "Avustushakemus " vuosi " täydennys")
-                    (str "Joukkoliikenteen valtionavustushakemuksenne täydennys on saapunut"))))
+    (assert-message 3 (str "Avustushakemus " vuosi " täydennys")
+                      (str "Joukkoliikenteen valtionavustushakemuksenne täydennys on saapunut"))))
 
 (fact "Päätös"
   (test-ctx "AH0"
@@ -66,8 +70,8 @@
 
     (p/hyvaksy-paatos! id)
 
-    (assert-message (str "Avustuspäätös " vuosi)
-                    (str "Joukkoliikenteen valtionavustushakemukseenne vuodelle " vuosi " on tehty päätös"))))
+    (assert-message 2 (str "Avustuspäätös " vuosi)
+                      (str "Joukkoliikenteen valtionavustushakemukseenne vuodelle " vuosi " on tehty päätös"))))
 
 ;; *** Sähköpostiviestit maksatushakemuksista ***
 

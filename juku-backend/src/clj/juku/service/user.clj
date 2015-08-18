@@ -47,6 +47,9 @@
 (defn find-all-users []
   (map dbuser->user (select-all-human-users)))
 
+(defn find-all-livi-users []
+  (map dbuser->user (select-all-livi-users)))
+
 (defn create-user! [uid user]
   (dml/insert db "kayttaja" (assoc user :tunnus uid) constraint-errors user))
 
