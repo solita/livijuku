@@ -47,7 +47,7 @@
           hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
           id (h/add-hakemus! hakemus)]
 
-      (dissoc (h/get-hakemus+ id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id nil)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hakemus id nil)))
 
   (fact "Uuden hakemuksen luonti - organisaatio ei ole olemassa"
     (let [organisaatioid 23453453453453
@@ -70,7 +70,7 @@
           selite "selite"]
 
       (h/save-hakemus-selite! id selite)
-      (dissoc (h/get-hakemus+ id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hakemus id selite)))
 
   (fact "Hakemuksen selitteen päivittäminen - yli 4000 merkkiä ja sisältää ei ascii merkkejä"
     (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
@@ -78,7 +78,7 @@
           selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
 
       (h/save-hakemus-selite! id selite)
-      (dissoc (h/get-hakemus+ id) :muokkausaika) => (assoc-hakemus-defaults+ hakemus id selite)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hakemus id selite)))
 
   (fact "Organisaation hakemusten haku"
     (let [organisaatioid 1M

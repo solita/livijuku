@@ -124,3 +124,8 @@ select * from
    where hakemusid = :hakemusid
    order by numero desc)
 where rownum = 1
+
+-- name: select-other-hakemukset
+select id, hakemustyyppitunnus from hakemus
+where (vuosi, organisaatioid) = (select vuosi, organisaatioid from hakemus where id = :hakemusid) and
+      id <> :hakemusid

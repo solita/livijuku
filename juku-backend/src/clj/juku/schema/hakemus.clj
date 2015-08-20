@@ -25,9 +25,13 @@
                               :maarapvm LocalDate
                               :selite (s/maybe s/Str)})
 
+(s/defschema Hakemusviite {:id     s/Num
+                           :hakemustyyppitunnus s/Str})
+
 (s/defschema Hakemus+
   (assoc Hakemus :selite (s/maybe s/Str)
                  (s/optional-key :taydennyspyynto) Taydennyspyynto
+                 :other-hakemukset [Hakemusviite]
                  :kasittelija (s/maybe s/Str)
                  :luontitunnus s/Str
                  :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)

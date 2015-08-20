@@ -65,21 +65,23 @@
 (defn find-hakemukset-vuosittain []
   (hakemukset-group-by-hakemuskausi (find-all-hakemukset)))
 
-(defn- get-any-hakemus [hakemusid select coerce]
+(defn- get-any-hakemus [hakemusid select]
   (-> (select {:hakemusid hakemusid})
       (coll/single-result-required! {:type ::hakemus-not-found
                                      :hakemusid hakemusid
                                      :message (str "Hakemusta " hakemusid " ei ole olemassa.")})
-      coerce/row->object
-      coerce))
+      coerce/row->object))
 
 (defn get-hakemus+ [hakemusid]
-  (let [hakemus (get-any-hakemus hakemusid select-hakemus+ coerce-hakemus+)]
-    (if (= (:hakemustilatunnus hakemus) "T0")
-      (coerce-hakemus+ (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid hakemusid}))))
-      hakemus)))
+  (let [hakemus (get-any-hakemus hakemusid select-hakemus+)]
+    (coerce-hakemus+
+      (assoc
+        (if (= (:hakemustilatunnus hakemus) "T0")
+          (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid hakemusid})))
+          hakemus)
+        :other-hakemukset (select-other-hakemukset {:hakemusid hakemusid})))))
 
-(defn get-hakemus [hakemusid] (get-any-hakemus hakemusid select-hakemus coerce-hakemus))
+(defn get-hakemus [hakemusid] (coerce-hakemus (get-any-hakemus hakemusid select-hakemus)))
 
 (defn find-hakemussuunnitelmat [vuosi hakemustyyppitunnus]
   (map (comp coerce-hakemus-suunnitelma coerce/row->object)
