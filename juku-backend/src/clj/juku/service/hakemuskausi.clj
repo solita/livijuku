@@ -49,7 +49,7 @@
   (let [init-hakemuskausi (fn [vuosi] (assoc (oletushakemuskausi vuosi) :hakemukset []))
         hakemuskaudet (find-all-hakemuskaudet+seuraava-kausi init-hakemuskausi)
         hakemukset (hakemus/find-all-hakemukset)]
-    (col/assoc-left-join hakemuskaudet :hakemukset hakemukset :vuosi)))
+    (col/assoc-join hakemuskaudet :hakemukset hakemukset [:vuosi])))
 
 (defn find-hakuohje-sisalto [vuosi]
   (if-let [ohje (first (select-hakuohje-sisalto {:vuosi vuosi}))]
@@ -89,21 +89,24 @@
    :hakuaika {
               :alkupvm (:alkupvm hakuaika)
               :loppupvm (:loppupvm hakuaika)}
-   :hakemustilat #{}})
+   :hakemustilat []})
 
 (defn- oletus-hakemuskausi [vuosi]
   (assoc (oletushakemuskausi vuosi) :hakemukset
-       #{(hakuaika->hakemus-summary(oletus-avustus-hakuaika vuosi))
-         (hakuaika->hakemus-summary(oletus-maksatus-hakuaika1 vuosi))
-         (hakuaika->hakemus-summary(oletus-maksatus-hakuaika2 vuosi))}))
+       [(hakuaika->hakemus-summary(oletus-avustus-hakuaika vuosi))
+        (hakuaika->hakemus-summary(oletus-maksatus-hakuaika1 vuosi))
+        (hakuaika->hakemus-summary(oletus-maksatus-hakuaika2 vuosi))]))
 
 (defn find-hakemuskaudet+summary []
   (let [hakemuskaudet (find-all-hakemuskaudet+seuraava-kausi oletus-hakemuskausi)
         hakemustyypit (map (comp coerce/row->object coerce-vuosiluku->int) (select-all-hakuajat))
         hakemustilat (map coerce-vuosiluku->int (count-hakemustilat-for-vuosi-hakemustyyppi))
-        hakemustyypit+hakemustilat (col/assoc-left-join* hakemustyypit :hakemustilat hakemustilat #{} [:vuosi :hakemustyyppitunnus])]
+        hakemustyypit+hakemustilat (col/assoc-join hakemustyypit :hakemustilat hakemustilat [:vuosi :hakemustyyppitunnus]
+                                                   col/dissoc-join-keys)]
 
-    (map coerce-hakemuskausi-summary (col/assoc-left-join* hakemuskaudet :hakemukset hakemustyypit+hakemustilat [:vuosi]))))
+    (map coerce-hakemuskausi-summary (col/assoc-join-if-not-nil
+                                       hakemuskaudet :hakemukset hakemustyypit+hakemustilat [:vuosi]
+                                       col/dissoc-join-keys))))
 
 (defn- insert-hakuaika! [hakuaika]
   (dml/insert db "hakuaika" (coerce/localdate->sql-date hakuaika) constraint-errors hakuaika))

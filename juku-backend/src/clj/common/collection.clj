@@ -1,6 +1,7 @@
 (ns common.collection
-  (:require [clojure.set :as set]
-            [slingshot.slingshot :as ss]))
+  (:require [common.core :as c]
+            [slingshot.slingshot :as ss])
+  (:import (clojure.lang IPersistentCollection)))
 
 (defn not-found! [error] (ss/throw+ (merge error {:type ::not-found}) (:message error)))
 
@@ -46,31 +47,49 @@
   (predicate = getter value))
 
 (defn join
-  "Join function joins a subset of objects from the source collection to an object in the target collection.
-  The source subset (joinset) for a target object is identified using the join-keys.
-  Joined source objects and the target object have same join-key values.
-  The result of this join is determined using the join-fn function."
+  "Each object (parent) in the target collection are joined with a subset (children) of the source collection.
+  The children for the parent object are identified using join-keys.
+  The child objects and the target object have the same join-key values e.g.
+  (select-keys parent eq-join-keys) = (select-keys child eq-join-keys).
+  The result of this join is determined using the join-children function."
 
-  [target join-fn source eq-join-keys]
-  (let [index (set/index source eq-join-keys)]
+  [^IPersistentCollection target join-children ^IPersistentCollection source ^IPersistentCollection eq-join-keys]
+  {:pre [(coll? target)
+         (coll? source)
+         (coll? eq-join-keys)]}
+
+  (let [index (group-by (c/partial-first-arg select-keys eq-join-keys) source)]
     (map (fn [parent]
            (let [foreign-key (select-keys parent eq-join-keys)
                  matching-objects (get index foreign-key)]
-             (join-fn parent matching-objects)))
+             (join-children parent matching-objects)))
          target)))
 
-(defn assoc-left-join [target-rel new-key join-rel & eq-join-keys]
-  (join target-rel (fn [parent value] (assoc parent new-key (or value #{}))) join-rel eq-join-keys))
+(defn dissoc-join-keys
+  "This defines an assoc-join transformation option which removes the join-keys from children."
+  [collection keys] (map (fn [v] (apply dissoc v keys)) collection))
 
-(defn- dissoc-keys [collection keys] (set (map (fn [v] (apply dissoc v keys)) collection)))
+(defn no-transformation
+  "The default asoc-join transformation option. The children are associated to the parent as is."
+  [children _] (if children children []))
 
-(defn assoc-left-join*
-  ([target-rel new-key join-rel default-value eq-join-keys]
-    (join target-rel
-          (fn [parent child-set] (assoc parent new-key (dissoc-keys (or child-set default-value) eq-join-keys)))
-          join-rel eq-join-keys))
+(defn assoc-join
+  "Assoc-join is a join function (see join) where children are associated (assoc) to parents.
+  Children can be tranformed before association using transform-children function: (children, join-keys) -> transformed children.
+  The default transformation is (fn [children _] (if children children [])).
+  The dissoc-join-keys transformation removes the join keys from the children."
 
-  ([target-rel new-key join-rel eq-join-keys]
-    (join target-rel
-          (fn [parent child-set] (if child-set (assoc parent new-key (dissoc-keys child-set eq-join-keys)) parent))
-          join-rel eq-join-keys)))
+  ([target new-key source eq-join-keys] (assoc-join target new-key source eq-join-keys no-transformation))
+  ([target new-key source eq-join-keys transform-children]
+    (join target
+          (fn [parent child-set] (assoc parent new-key (transform-children child-set eq-join-keys)))
+          source eq-join-keys)))
+
+(defn assoc-join-if-not-nil
+
+  ([target new-key source eq-join-keys] (assoc-join-if-not-nil target new-key source eq-join-keys no-transformation))
+  ([target new-key source eq-join-keys transform-children]
+    (join target
+         (fn [parent child-set] (if child-set (assoc parent new-key (transform-children child-set eq-join-keys))
+                                              parent))
+         source eq-join-keys)))

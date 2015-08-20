@@ -114,6 +114,25 @@
     (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
     (:hakemukset  (find-hakemuskausi+ vuosi)) => (partial every? (c/eq :hakuaika hakuaika))))
 
+(fact "Hakemuskausiyhteenvetohaku - seuraava kausi"
+      (let [hakemuskausi (find-hakemuskausi+ (+ (time/year (time/now)) 1))
+            vuosi (:vuosi hakemuskausi)]
+
+        hakemuskausi =>
+        {:vuosi      vuosi
+         :tilatunnus "0"
+         :hakuohje_contenttype nil
+         :hakemukset [{:hakemustyyppitunnus "AH0"
+                       :hakemustilat []
+                       :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
+                                  :loppupvm (time/local-date (- vuosi 1) 12 15)}}
+
+                      {:hakuaika {:alkupvm (time/local-date vuosi 7 1)
+                                  :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat [], :hakemustyyppitunnus "MH1"}
+
+                      {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
+                                  :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}]}))
+
 (fact "Hakemuskausiyhteenvetohaku"
   (let [hakemuskausi (test/next-hakemuskausi!)
         vuosi (:vuosi hakemuskausi)
@@ -124,18 +143,18 @@
       (h/add-hakemus! hakemus2)
       (asha/with-asha-off (h/laheta-hakemus! id1))
 
-      (find-hakemuskausi+ vuosi) =>
+      (update-in (find-hakemuskausi+ vuosi) [:hakemukset 0 :hakemustilat] set) =>
         {:vuosi      vuosi
          :tilatunnus "A"
          :hakuohje_contenttype nil
-         :hakemukset #{{:hakemustyyppitunnus "AH0"
+         :hakemukset [{:hakemustyyppitunnus "AH0"
                        :hakemustilat #{{:hakemustilatunnus "K" :count 1M}, {:hakemustilatunnus "V" :count 1M}}
                        :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
                                   :loppupvm (time/local-date (- vuosi 1) 12 15)}}
 
                        {:hakuaika {:alkupvm (time/local-date vuosi 7 1)
-                                   :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat #{}, :hakemustyyppitunnus "MH1"}
+                                   :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat [], :hakemustyyppitunnus "MH1"}
 
                        {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
-                                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat #{}, :hakemustyyppitunnus "MH2"}}}))
+                                   :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}]}))
 
