@@ -58,11 +58,6 @@
 (defn update-user! [tunnus user]
   (dml/update-where! db "kayttaja" user {:tunnus tunnus}))
 
-(defn save-user! [user]
-  (let [uid (:tunnus *current-user*)]
-    (update-user! uid user)
-    (assoc (merge *current-user* user) :roolit (find-user-rolenames uid))))
-
 (defn has-privilege [privilege user]
   (c/not-nil? (some #{privilege} (:privileges user))))
 
@@ -90,6 +85,11 @@
 
 (defn update-kirjautumisaika [uid]
   (update-kirjautumisaika {:tunnus uid}))
+
+(defn save-user! [user]
+  (let [uid (:tunnus *current-user*)]
+    (update-user! uid user)
+    (assoc (merge *current-user* user) :roolit (find-user-rolenames uid))))
 
 (defn current-user+updatekirjautumisaika! []
   (let [uid (:tunnus *current-user*)]
