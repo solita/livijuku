@@ -1,14 +1,18 @@
 (ns juku.db.database
   (:require [clojure.java.jdbc :as jdbc]
             [juku.db.jdbc_monkey_patch]
+            [clj-time.coerce :as time-coerce]
             [slingshot.slingshot :as ss]
             [clojure.tools.logging :as log]
-            [juku.settings :refer [settings]])
+            [juku.settings :refer [settings]]
+            [juku.db.coerce :as coerce])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]
            (java.io InputStream)
            (java.sql PreparedStatement Array)
            (clojure.lang IPersistentCollection)
-           (oracle.jdbc OracleConnection)))
+           (oracle.jdbc OracleConnection)
+           (org.joda.time LocalDate)
+           (org.joda.time DateTime)))
 
 
 (def db-settings (:db settings))
@@ -42,7 +46,10 @@
       (.setArray s i (.createARRAY (.unwrap (.getConnection s) OracleConnection)
                                    db-type
                                    (to-array v)))
-      (ss/throw+ "Collection type sql parameter value object must contain db-type definition in the metadata."))))
+      (ss/throw+ "Collection type sql parameter value object must contain db-type definition in the metadata.")))
+  DateTime
+  (set-parameter [^DateTime v ^PreparedStatement s  i]
+    (.setDate s i (time-coerce/to-sql-date v))))
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array

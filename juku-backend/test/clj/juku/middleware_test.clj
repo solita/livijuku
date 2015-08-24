@@ -38,8 +38,7 @@
                 :sukunimi "Pääkäyttäjä"
                 :sahkoposti nil
                 :sahkopostiviestit true
-                :privileges (user/find-privileges ["juku_paakayttaja"])
-                :roolit ["Pääkäyttäjä"]
+                :privileges (user/find-privileges ["PK"])
                 :jarjestelma false}
 
           request {:headers {"oam-remote-user"        uid
@@ -48,6 +47,6 @@
                              "oam-user-first-name"    "=?UTF-8?B?UMOka8Ok?="
                              "oam-user-last-name"     "=?UTF-8?B?UMOkw6Rrw6R5dHTDpGrDpA?="}}]
       ((m/wrap-user
-         (fn [request] user/*current-user* => user))
+         (fn [request] (dissoc user/*current-user* :kirjautumisaika) => user))
         request)
-      (user/find-user uid) => (dissoc user :privileges))))
+      (dissoc (user/find-user uid) :kirjautumisaika) => (dissoc user :privileges))))

@@ -5,6 +5,7 @@
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [juku.schema.user :as s]
+            [clj-time.core :as time]
             [clojure.string :as str]
             [ring.util.http-response :as r]
             [common.map :as m]
@@ -28,18 +29,19 @@
 (defmacro with-user [user & body]
   `(with-user* ~user (fn [] ~@body)))
 
-(def coerce-user (scoerce/coercer s/User coerce/db-coercion-matcher))
+(def coerce-user (coerce/coercer s/User))
+(def coerce-user+roles (coerce/coercer s/User+Roles))
 
 (defn process-names [user]
   (m/dissoc-if-nil user :nimi :etunimi :sukunimi))
 
-(defn find-user [tunnus]
-  (first (map (comp coerce-user process-names) (select-user {:tunnus tunnus}))))
-
 (defn find-privileges [roolit]
   (map (comp keyword :tunnus) (select-oikeudet-where-roolit-in {:roolit roolit})))
 
-(def dbuser->user (comp coerce-user (fn [user] (m/dissoc-if-nil user :nimi :etunimi :sukunimi))))
+(defn find-user [tunnus]
+  (first (map (comp coerce-user process-names) (select-user {:tunnus tunnus}))))
+
+(def dbuser->user (comp coerce-user+roles process-names))
 
 (defn find-users-by-organization [organisaatioid]
   (map dbuser->user (select-users-where-organization {:organisaatioid organisaatioid})))
@@ -57,8 +59,9 @@
   (dml/update-where! db "kayttaja" user {:tunnus tunnus}))
 
 (defn save-user! [user]
-  (do (update-user! (:tunnus *current-user*) user)
-      (merge *current-user* user)))
+  (let [uid (:tunnus *current-user*)]
+    (update-user! uid user)
+    (assoc (merge *current-user* user) :roolit (find-user-rolenames uid))))
 
 (defn has-privilege [privilege user]
   (c/not-nil? (some #{privilege} (:privileges user))))
@@ -66,12 +69,17 @@
 (defn has-privilege* [privilege]
   (has-privilege privilege *current-user*))
 
-(defn find-roolitunnukset [ssogroups]
+(defn find-roleids [ssogroups]
   (map :tunnus (select-roolitunnukset {:ssogroup ssogroups})))
 
-(defn update-roles! [uid ssogroups]
-  (let [old-roles (map :kayttajaroolitunnus (select-roles {:tunnus uid}))
-        roles (find-roolitunnukset ssogroups)
+(defn find-user-rolenames [uid]
+  (map :nimi (select-rolenames {:tunnus uid})))
+
+(defn find-user-roles [uid]
+  (map :kayttajaroolitunnus (select-roles {:tunnus uid})))
+
+(defn update-roles! [uid roles]
+  (let [old-roles (find-user-roles uid)
         sql-params {:tunnus uid :roles roles}]
     (if (not= (set roles) (set old-roles))
       (with-transaction
@@ -79,3 +87,11 @@
         (insert-new-roles! sql-params)
         true)
       false)))
+
+(defn update-kirjautumisaika [uid]
+  (update-kirjautumisaika {:tunnus uid}))
+
+(defn current-user+updatekirjautumisaika! []
+  (let [uid (:tunnus *current-user*)]
+    (assoc (save-user! {:tunnus uid :kirjautumisaika (time/now)})
+          :roolit (find-user-rolenames uid))))

@@ -44,11 +44,13 @@
 (defn hakemus-summary [hakemuskausi hakemustyyppi]
   (first (filter (col/eq :hakemustyyppitunnus hakemustyyppi) (:hakemukset hakemuskausi))))
 
-(defmacro with-user [uid roles & test]
-  `(c/if-let* [privileges# (user/find-privileges ~roles)
+(defmacro with-user [uid rolenames & test]
+  `(c/if-let* [roles# (user/find-roleids ~rolenames)
+               privileges# (user/find-privileges roles#)
                user# (user/find-user ~uid)]
-       (let [user+roles# (if (user/update-roles! ~uid ~roles) (user/find-user ~uid) user#)]
-          (u/with-user-id ~uid (user/with-user (assoc user+roles# :privileges privileges#) ~@test)))
+       (do
+          (user/update-roles! ~uid roles#)
+          (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test)))
        (ss/throw+ (str "Käyttäjällä " ~uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
 
 (defn before-now? [time]

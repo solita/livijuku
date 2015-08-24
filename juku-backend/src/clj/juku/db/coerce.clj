@@ -6,8 +6,7 @@
             [clojure.string :as str]
             [common.map :refer [remove-keys]]
             [schema.core :as sc]
-            [schema.coerce :as scoerce]
-            )
+            [schema.coerce :as scoerce])
   (:import (org.joda.time LocalDate)
            (org.joda.time DateTime)
            (java.util Date)
@@ -41,6 +40,8 @@
      sc/Int      'number->int
      sc/Bool     'number->boolean
      sc/Str      'clob->string}))
+
+(defn coercer [schema] (scoerce/coercer schema db-coercion-matcher))
 
 (defn- convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))

@@ -1,26 +1,23 @@
 -- name: select-user
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit,
-  (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
-   from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
-   where kayttajatunnus = :tunnus) roolit
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika
 from kayttaja where tunnus = :tunnus
 
 -- name: select-users-where-organization
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit,
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika,
   (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
    from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
    where kayttajatunnus = kayttaja.tunnus) roolit
 from kayttaja where organisaatioid = :organisaatioid
 
 -- name: select-all-human-users
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit,
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika,
   (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
    from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
    where kayttajatunnus = kayttaja.tunnus) roolit
 from kayttaja where jarjestelma = 0
 
 -- name: select-all-livi-users
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit,
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika,
   (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
    from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
    where kayttajatunnus = kayttaja.tunnus) roolit
@@ -30,14 +27,18 @@ where kayttaja.organisaatioid = (select id from organisaatio where organisaatio.
 -- name: select-oikeudet-where-roolit-in
 select distinct kayttooikeus.tunnus from kayttooikeus 
   inner join kayttajaroolioikeus on kayttooikeus.tunnus = kayttajaroolioikeus.kayttooikeustunnus
-  inner join kayttajarooli on kayttajarooli.tunnus = kayttajaroolioikeus.kayttajaroolitunnus
-where kayttajarooli.ssonimi in (:roolit)
+where kayttajaroolioikeus.kayttajaroolitunnus in (:roolit)
 
 -- name: select-roolitunnukset
 select tunnus from kayttajarooli where ssonimi in (:ssogroup)
 
 -- name: select-roles
 select kayttajaroolitunnus from kayttajakayttajarooli where kayttajatunnus = :tunnus
+
+-- name: select-rolenames
+select kayttajarooli.nimi
+from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
+where kayttajatunnus = :tunnus
 
 -- name: insert-new-roles!
 insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus)
