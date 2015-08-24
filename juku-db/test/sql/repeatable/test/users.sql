@@ -44,6 +44,15 @@ values ('juku_paatoksentekija', 'Päivi', 'Päätöksentekijä', 'petri.sirkkala
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
 values ('juku_paakayttaja', 'Jussi', 'Koskinen', 'petri.sirkkala@solita.fi', (select id from organisaatio where lajitunnus = 'LV'), 0);
 
+insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus)
+select tunnus, 'HA' from kayttaja where tunnus like '%hakija%';
+
+insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus) values ('juku_allekirjoittaja', 'AK');
+insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus) values ('juku_kasittelija', 'KA');
+insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus) values ('juku_paatoksentekija', 'PA');
+insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus) values ('juku_paakayttaja', 'PK');
+
+
 --*******************************************************************
 -- END OF Kehitysympäristön OAM-testitunnusten mukaiset tunnukset   *
 --*******************************************************************

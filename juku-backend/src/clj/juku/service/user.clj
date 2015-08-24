@@ -1,7 +1,7 @@
 (ns juku.service.user
   (:require [juku.db.yesql-patch :as sql]
             [juku.db.sql :as dml]
-            [juku.db.database :refer [db]]
+            [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [juku.schema.user :as s]
@@ -66,5 +66,16 @@
 (defn has-privilege* [privilege]
   (has-privilege privilege *current-user*))
 
-(defn find-roolinimet [ssogroups]
-  (map :nimi (select-roolinimet {:ssogroup ssogroups})))
+(defn find-roolitunnukset [ssogroups]
+  (map :tunnus (select-roolitunnukset {:ssogroup ssogroups})))
+
+(defn update-roles! [uid ssogroups]
+  (let [old-roles (map :kayttajaroolitunnus (select-roles {:tunnus uid}))
+        roles (find-roolitunnukset ssogroups)
+        sql-params {:tunnus uid :roles roles}]
+    (if (not= (set roles) (set old-roles))
+      (with-transaction
+        (delete-previous-roles! sql-params)
+        (insert-new-roles! sql-params)
+        true)
+      false)))

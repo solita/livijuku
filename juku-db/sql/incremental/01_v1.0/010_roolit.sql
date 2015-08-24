@@ -6,6 +6,13 @@ create table kayttajarooli (
   description varchar2 (2000 char)
 );
 
+create table kayttajakayttajarooli (
+  kayttajatunnus references kayttaja(tunnus),
+  kayttajaroolitunnus references kayttajarooli(tunnus),
+
+  constraint kayttajakayttajarooli_pk primary key (kayttajatunnus, kayttajaroolitunnus)
+);
+
 create table kayttooikeus (
   tunnus varchar2 (30 char) constraint kayttooikeus_pk primary key,
   nimi varchar2 (200 char) not null,
@@ -23,6 +30,7 @@ begin
   model.define_mutable(model.new_entity('kayttajarooli', 'Käyttäjärooli', 'KAROOLI'));
   model.define_mutable(model.new_entity('kayttooikeus', 'Käyttöoikeus', 'OIKEUS'));
   model.define_immutable(model.new_entity('kayttajaroolioikeus', 'Käyttäjäroolioikeus', 'KAROOLIOIKEUS'));
+  model.define_immutable(model.new_entity('kayttajakayttajarooli', 'Käyttäjän käyttäjärooli', 'KKROOLI'));
 end;
 /
 

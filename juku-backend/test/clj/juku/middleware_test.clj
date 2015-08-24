@@ -18,14 +18,14 @@
 
   (fact "Uusi käyttäjä"
     (let [uid (str "tst" (rand-int 999999))
-          user (m/save-user uid (:id tampere) {:oam-user-first-name "T" :oam-user-last-name "T"})]
+          user (m/save-user uid (:id tampere) ["juku_hakija"] {:oam-user-first-name "T" :oam-user-last-name "T"})]
 
           user => (user/find-user uid)))
 
   (fact "Käyttäjän tiedon päivittäminen"
        (let [uid (str "tst" (rand-int 999999))
-             user (m/save-user uid (:id tampere) {:oam-user-first-name "T" :oam-user-last-name "T"})
-             updated-user (m/save-user uid (:id tampere) {:oam-user-first-name "A" :oam-user-last-name "A"})]
+             user (m/save-user uid (:id tampere) ["juku_hakija"] {:oam-user-first-name "T" :oam-user-last-name "T"})
+             updated-user (m/save-user uid (:id tampere) ["juku_hakija"] {:oam-user-first-name "A" :oam-user-last-name "A"})]
 
          updated-user => (user/find-user uid))))
 
@@ -39,7 +39,7 @@
                 :sahkoposti nil
                 :sahkopostiviestit true
                 :privileges (user/find-privileges ["juku_paakayttaja"])
-                :roolit '("Pääkäyttäjä")
+                :roolit ["Pääkäyttäjä"]
                 :jarjestelma false}
 
           request {:headers {"oam-remote-user"        uid
@@ -50,4 +50,4 @@
       ((m/wrap-user
          (fn [request] user/*current-user* => user))
         request)
-      (dissoc user :privileges :roolit) => (user/find-user uid))))
+      (user/find-user uid) => (dissoc user :privileges))))

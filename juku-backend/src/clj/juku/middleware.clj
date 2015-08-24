@@ -27,14 +27,17 @@
                        :sahkoposti (strx/trim (h/parse-header headers :oam-user-mail))} str/blank?)
                        :organisaatioid orgnisaatio-id))
 
-(defn save-user [uid orgnisaatio-id headers]
+(defn save-user [uid orgnisaatio-id groups headers]
   (let [user-data (headers->user-data orgnisaatio-id headers)]
     (if-let [user (user/find-user uid)]
       (let [updated-user (merge user user-data)]
         (if (not= user updated-user) (user/update-user! uid user-data))
-        updated-user)
+        (if (user/update-roles! uid groups)
+          (user/find-user uid)
+          updated-user))
       (do
         (user/create-user! uid user-data)
+        (user/update-roles! uid groups)
         (user/find-user uid)))))
 
 (defn- error [type & msg]
@@ -61,9 +64,8 @@
               " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")]
 
       (current-user/with-user-id uid
-        (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id headers)
-                          :privileges privileges
-                          :roolit (user/find-roolinimet groups)) (handler request))))))
+        (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id groups headers)
+                          :privileges privileges) (handler request))))))
 
 (defn ^String message [^Throwable t] (.getMessage t))
 

@@ -12,7 +12,7 @@
   (test/with-user "juku_hakija" ["juku_hakija"]
     (let [user-email-off {:sahkopostiviestit false}
           user-email-on {:sahkopostiviestit true}
-          updated-user (dissoc (user/save-user! user-email-off) :privileges :roolit)]
+          updated-user (dissoc (user/save-user! user-email-off) :privileges)]
 
       updated-user => (user/find-user (:tunnus user/*current-user*))
       (user/save-user! user-email-on) => user/*current-user*)))

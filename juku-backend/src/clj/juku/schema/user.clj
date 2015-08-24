@@ -8,8 +8,9 @@
                    :sahkoposti (s/maybe s/Str)
                    :sahkopostiviestit s/Bool
                    :organisaatioid s/Num
+                   :roolit [s/Str]
                    :jarjestelma s/Bool})
 
 (s/defschema EditUser {:sahkopostiviestit s/Bool})
 
-(s/defschema User+Privileges (assoc User :privileges [s/Keyword] :roolit [s/Str]))
+(s/defschema User+Privileges (assoc User :privileges [s/Keyword]))
