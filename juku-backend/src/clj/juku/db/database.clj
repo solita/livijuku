@@ -49,7 +49,7 @@
       (ss/throw+ "Collection type sql parameter value object must contain db-type definition in the metadata.")))
   DateTime
   (set-parameter [^DateTime v ^PreparedStatement s  i]
-    (.setDate s i (time-coerce/to-sql-date v))))
+    (.setTimestamp s i (time-coerce/to-sql-time v))))
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array

@@ -2,6 +2,7 @@
   (:require [midje.sweet :refer :all]
             [juku.service.test :as test]
             [juku.service.user :as user]
+            [clojure.tools.logging :as log]
             [clj-time.core :as time]))
 
 (fact "Käytäjän oikeudet"
@@ -23,5 +24,6 @@
 (fact "Käyttäjän omien tietojen haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
     (let [user (user/current-user+updatekirjautumisaika!)]
-      (dissoc user :kirjautumisaika) => (assoc-roolit (dissoc user/*current-user* :kirjautumisaika)))))
-      ;(:kirjautumisaika user) => (partial time/before? (:kirjautumisaika user/*current-user*)))))
+      (dissoc user :kirjautumisaika) => (assoc-roolit (dissoc user/*current-user* :kirjautumisaika))
+      (log/info (:kirjautumisaika user) " > " (:kirjautumisaika user/*current-user*))
+      (:kirjautumisaika user) => (partial time/before? (:kirjautumisaika user/*current-user*)))))
