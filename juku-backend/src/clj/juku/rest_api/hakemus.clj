@@ -12,11 +12,6 @@
             :path-params [vuosi :- s/Int, hakemustyyppitunnus :- s/Str]
             :summary "Hae hakemussuunnitelmat tietylle vuodella ja hakemustyypille."
             (ok (service/find-hakemussuunnitelmat vuosi hakemustyyppitunnus)))
-      (GET* "/hakemukset/hakija" []
-            :auth [:view-oma-hakemus]
-            :return [Hakemuskausi]
-            :summary "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain (vuosittain) ryhmitettynä."
-            (ok (service/find-kayttajan-hakemukset-vuosittain)))
       (GET* "/hakemus/:hakemusid" []
             :auth [:view-kaikki-hakemukset :view-oma-hakemus]
             :return Hakemus+

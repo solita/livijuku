@@ -51,6 +51,11 @@
         hakemukset (hakemus/find-all-hakemukset)]
     (col/assoc-join hakemuskaudet :hakemukset hakemukset [:vuosi])))
 
+(defn find-kayttajan-hakemuskaudet+hakemukset []
+  (let [hakemuskaudet (map coerce-vuosiluku->int (select-all-hakemuskaudet))
+        hakemukset (hakemus/find-kayttajan-hakemukset)]
+    (col/assoc-join hakemuskaudet :hakemukset hakemukset [:vuosi])))
+
 (defn find-hakuohje-sisalto [vuosi]
   (if-let [ohje (first (select-hakuohje-sisalto {:vuosi vuosi}))]
     (update-in ohje [:sisalto] #(.getBinaryStream ^Blob %))))

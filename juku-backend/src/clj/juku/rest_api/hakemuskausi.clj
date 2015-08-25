@@ -17,8 +17,21 @@
       (GET* "/hakemuskaudet/yhteenveto" []
             :auth [:modify-hakemuskausi]
             :return [Hakemuskausi+Summary]
-            :summary "Hae kaikki hakemuskaudet ja yhteenvedon jokaisen hakemuskauden tiloista ja hakuajoista."
+            :summary "Hae kaikki hakemuskaudet ja yhteenvedon jokaisen hakemuskauden hakemustyypeistä, tiloista ja hakuajoista."
             (ok (service/find-hakemuskaudet+summary)))
+
+      (GET* "/hakemuskaudet/omat" []
+            :auth [:view-oma-hakemus]
+            :return [Hakemuskausi+Hakemukset]
+            :summary "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain ryhmitettynä."
+            (ok (service/find-kayttajan-hakemuskaudet+hakemukset)))
+
+      (GET* "/hakemukset/hakija" []
+            :auth [:view-oma-hakemus]
+            :return [Hakemuskausi+Hakemukset]
+            :summary (str "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain ryhmitettynä. "
+                          "Depricated use service endpoint: GET /hakemuskaudet/omat instead.")
+            (ok (service/find-kayttajan-hakemuskaudet+hakemukset)))
 
       (POST* "/hakemuskausi" []
              :auth [:modify-hakemuskausi]

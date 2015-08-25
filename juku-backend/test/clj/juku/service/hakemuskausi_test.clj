@@ -2,7 +2,8 @@
   (:require [midje.sweet :refer :all]
             [juku.service.hakemuskausi :as hk]
             [juku.service.hakemus :as h]
-            [common.collection :as c]
+            [common.collection :as coll]
+            [common.core :as c]
             [common.string :as str]
             [common.map :as m]
             [juku.service.test :as test]
@@ -14,7 +15,7 @@
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
 
-(defn find-hakemuskausi+ [vuosi] (c/find-first (c/eq :vuosi vuosi) (hk/find-hakemuskaudet+summary)))
+(defn find-hakemuskausi+ [vuosi] (coll/find-first (coll/eq :vuosi vuosi) (hk/find-hakemuskaudet+summary)))
 
 (defn assert-avustuskohteet [vuosi]
   (fact (str "Test avustuskohteet on luotu oikein avauksen jälkeen vuodelle: " vuosi)
@@ -112,26 +113,26 @@
                   (assoc hakuaika :hakemustyyppitunnus "MH2")]]
 
     (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
-    (:hakemukset  (find-hakemuskausi+ vuosi)) => (partial every? (c/eq :hakuaika hakuaika))))
+    (:hakemukset  (find-hakemuskausi+ vuosi)) => (partial every? (coll/eq :hakuaika hakuaika))))
 
 (fact "Hakemuskausiyhteenvetohaku - seuraava kausi"
-      (let [hakemuskausi (find-hakemuskausi+ (+ (time/year (time/now)) 1))
-            vuosi (:vuosi hakemuskausi)]
+  (let [hakemuskausi (find-hakemuskausi+ (+ (time/year (time/now)) 1))
+        vuosi (:vuosi hakemuskausi)]
 
-        hakemuskausi =>
-        {:vuosi      vuosi
-         :tilatunnus "0"
-         :hakuohje_contenttype nil
-         :hakemukset [{:hakemustyyppitunnus "AH0"
-                       :hakemustilat []
-                       :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
-                                  :loppupvm (time/local-date (- vuosi 1) 12 15)}}
+    hakemuskausi =>
+    {:vuosi      vuosi
+     :tilatunnus "0"
+     :hakuohje_contenttype nil
+     :hakemukset [{:hakemustyyppitunnus "AH0"
+                   :hakemustilat []
+                   :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
+                              :loppupvm (time/local-date (- vuosi 1) 12 15)}}
 
-                      {:hakuaika {:alkupvm (time/local-date vuosi 7 1)
-                                  :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat [], :hakemustyyppitunnus "MH1"}
+                  {:hakuaika {:alkupvm (time/local-date vuosi 7 1)
+                              :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat [], :hakemustyyppitunnus "MH1"}
 
-                      {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
-                                  :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}]}))
+                  {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
+                              :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}]}))
 
 (fact "Hakemuskausiyhteenvetohaku"
   (let [hakemuskausi (test/next-hakemuskausi!)
@@ -157,4 +158,30 @@
 
                        {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
                                    :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}]}))
+
+(fact "Käyttäjän hakemuskausihaku"
+  (let [hakemuskausi (test/next-hakemuskausi!)
+        vuosi (:vuosi hakemuskausi)
+        hakemus1 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+        hakemus2 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 2M}
+        id (h/add-hakemus! hakemus1)]
+
+
+    (h/add-hakemus! hakemus2)
+    (test/with-user "juku_hakija" ["juku_hakija"]
+      (update-in
+        (coll/find-first (coll/eq :vuosi vuosi) (hk/find-kayttajan-hakemuskaudet+hakemukset))
+        [:hakemukset] (partial map (c/partial-first-arg dissoc :muokkausaika))) =>
+      {:vuosi      vuosi
+       :tilatunnus "A"
+       :hakuohje_contenttype nil
+       :hakemukset [{:id id
+                     :hakemustyyppitunnus "AH0"
+                     :diaarinumero nil
+                     :hakemustilatunnus "K"
+                     :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
+                                :loppupvm (time/local-date (- vuosi 1) 12 15)}
+                     :organisaatioid 1M
+                     :kasittelijanimi "Ei määritelty"
+                     :vuosi vuosi}]})))
 
