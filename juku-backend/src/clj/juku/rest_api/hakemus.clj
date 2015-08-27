@@ -14,7 +14,7 @@
             :summary "Hae hakemussuunnitelmat tietylle vuodella ja hakemustyypille."
             (ok (core/find-hakemussuunnitelmat vuosi hakemustyyppitunnus)))
       (GET* "/hakemus/:hakemusid" []
-            :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+            :auth [:view-hakemus]
             :return Hakemus+
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
@@ -68,7 +68,7 @@
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
       (GET* "/hakemus/:hakemusid/pdf" []
-            :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+            :auth [:view-hakemus]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."
             (content-type (ok (service/find-hakemus-pdf hakemusid))

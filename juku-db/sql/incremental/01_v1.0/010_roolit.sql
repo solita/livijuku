@@ -40,9 +40,15 @@ insert into kayttajarooli (tunnus, nimi, ssonimi) values ('KA', 'Käsittelijä',
 insert into kayttajarooli (tunnus, nimi, ssonimi) values ('PA', 'Päätöksentekijä', 'juku_paatoksentekija');
 insert into kayttajarooli (tunnus, nimi, ssonimi) values ('PK', 'Pääkäyttäjä', 'juku_paakayttaja');
 
-insert into kayttooikeus (tunnus, nimi) values ('view-oma-hakemus', 'Omien hakemusten katseluoikeus');
-insert into kayttooikeus (tunnus, nimi) values ('view-kaikki-hakemukset', 'Kaikkien hakemusten katseluoikeus');
-insert into kayttooikeus (tunnus, nimi) values ('view-kaikki-lahetetyt-hakemukset', 'Kaikkien lähetettyjen (ei keskeneräisten) hakemusten katseluoikeus');
+insert into kayttooikeus (tunnus, nimi) values ('view-hakemus', 'Hakemuksen perustiedon katseluoikeus');
+
+insert into kayttooikeus (tunnus, nimi) values ('view-oma-hakemus',
+                                                'Omien hakemusten sisältötietojen katseluoikeus.');
+insert into kayttooikeus (tunnus, nimi) values ('view-kaikki-hakemukset',
+                                                'Kaikkien hakemusten sisältötietojen katseluoikeus');
+insert into kayttooikeus (tunnus, nimi) values ('view-kaikki-lahetetyt-hakemukset',
+                                                'Kaikkien lähetettyjen (ei keskeneräisten) hakemusten sisältötietojen katseluoikeus');
+
 insert into kayttooikeus (tunnus, nimi) values ('view-hakemuskausi', 'Hakemuskauden katseluoikeus');
 
 insert into kayttooikeus (tunnus, nimi) values ('modify-hakemuskausi', 'Hakemuskauden hallinnointioikeus');
@@ -80,11 +86,9 @@ from kayttajaroolioikeus ha_oikeudet where ha_oikeudet.kayttajaroolitunnus = 'HA
 
 -- Kaikkien oikeudet --
 
--- Ei ole tällä hetkellä
-/*
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
 select * from 
 (select tunnus from kayttajarooli)
 cross join
-(select * from table(sys.odcivarchar2list('view-kaikki-hakemukset')))
-*/
+(select * from table(sys.odcivarchar2list('view-hakemus')));
+

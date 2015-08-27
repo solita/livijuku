@@ -7,7 +7,7 @@
 
 (defroutes* avustuskohde-routes
       (GET* "/hakemus/avustuskohteet/:hakemusid" []
-            :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+            :auth [:view-hakemus]
             :return [Avustuskohde+alv]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen avustuskohteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."

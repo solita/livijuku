@@ -7,21 +7,21 @@
 
 (defroutes* paatos-routes
     (GET* "/hakemus/:hakemusid/paatos" []
-          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+          :auth [:view-hakemus]
           :return (s/maybe Paatos)
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen nykyinen päätös."
           (ok (service/find-current-paatos hakemusid)))
 
     (GET* "/hakemus/:hakemusid/paatos/:paatosnumero/pdf" []
-          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+          :auth [:view-hakemus]
           :path-params [hakemusid :- Long, paatosnumero :- Long]
           :summary "Hae hakemuksen (hakemusid) päätöksen (päätösnumero) päätösasiakirja. Deprecated - do not use this."
           (content-type (ok (service/paatos-pdf hakemusid))
                         "application/pdf"))
 
     (GET* "/hakemus/:hakemusid/paatos/pdf" []
-          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+          :auth [:view-hakemus]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen (hakemusid) nykyisen ratkaisun päätösasiakirja."
           (content-type (ok (service/find-paatos-pdf hakemusid))

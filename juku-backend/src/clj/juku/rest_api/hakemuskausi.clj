@@ -9,7 +9,7 @@
 
 (defroutes* hakemuskausi-routes
       (GET* "/hakemuskaudet" []
-            :auth [:view-kaikki-hakemukset]
+            :auth [:view-hakemus]
             :return [Hakemuskausi+Hakemukset]
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
             (ok (service/find-hakemuskaudet+hakemukset)))
@@ -48,7 +48,7 @@
             (ok (service/find-maararaha vuosi organisaatiolajitunnus)))
 
       (GET* "/hakemuskausi/:vuosi/hakuohje" []
-            :auth [:view-kaikki-hakemukset]
+            :auth [:view-hakemus]
             :path-params [vuosi :- s/Int]
             :summary "Lataa hakuohjeen sisältö."
             (if-let [hakuohje (service/find-hakuohje-sisalto vuosi)]

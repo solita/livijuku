@@ -11,14 +11,14 @@
 
 (defroutes* liitteet-routes
     (GET* "/hakemus/:hakemusid/liitteet" []
-          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+          :auth [:view-hakemus]
           :return [Liite+Size]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen liitteet."
           (ok (service/find-liitteet hakemusid)))
 
     (GET* "/hakemus/:hakemusid/liite/:liitenumero" []
-          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+          :auth [:view-hakemus]
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö."
           (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
@@ -26,7 +26,7 @@
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
     (GET* "/hakemus/:hakemusid/liite/:liitenumero/*" []
-          :auth [:view-kaikki-hakemukset :view-oma-hakemus]
+          :auth [:view-hakemus]
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö - liitenumeron jälkeen annetaan haluttu tiedostonimi selaimelle, joka ei tue rfc6266 ja rfc5987."
           (if-let [liite (service/find-liite-sisalto hakemusid liitenumero)]
