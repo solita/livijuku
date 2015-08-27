@@ -101,3 +101,25 @@
           avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
       (ak/save-avustuskohteet! [avustuskohde]) => (throws (str "Käyttäjä juku_kasittelija ei omista hakemuksia: " id)))))
+
+(defn create-avustuskohde [hakemusid]
+  {:hakemusid hakemusid, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M})
+
+(facts "Avustuskohteiden haku ja käyttöoikeudet"
+  (fact "Keskeneräinen oma hakemus"
+    (test/with-user "juku_hakija" ["juku_hakija"]
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
+            avustuskohde (create-avustuskohde id)]
+
+        (ak/add-avustuskohde! avustuskohde)
+        (ak/find-avustuskohteet id) => [(assoc-10alv avustuskohde)])))
+
+  (fact "Keskeneräinen hakemus - käyttäjä ei omista hakemusta eikä ole käsittelijä"
+    (test/with-user "juku_hakija" ["juku_hakija"]
+      (let [id (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 2M})
+            avustuskohde (create-avustuskohde id)]
+
+       (ak/add-avustuskohde! avustuskohde)
+       (ak/find-avustuskohteet id) =>
+        (throws (str "Käyttäjällä juku_hakija ei ole oikeutta nähdä hakemuksen: " id " sisältöä. "
+                     "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia."))))))

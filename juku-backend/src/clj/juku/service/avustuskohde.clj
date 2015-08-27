@@ -5,9 +5,11 @@
             [juku.db.sql :as dml]
             [juku.service.common :as service]
             [juku.service.user :as user]
+            [juku.service.hakemus-core :as h]
             [common.string :as xstr]
             [common.map :as m]
             [juku.service.pdf :as pdf]
+            [slingshot.slingshot :as ss]
             [clojure.string :as str]
             [schema.coerce :as scoerce]
             [juku.schema.hakemus :refer :all]
@@ -86,12 +88,12 @@
 
 (defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
 
-#_(defn find-avustuskohteet [hakemusid]
-    (let [hakemus (get-hakemus hakemusid)]
-      (if (has-privilege-to-view-hakemus-content* hakemus)
-        (ak/find-avustuskohteet-by-hakemusid hakemusid)
-        (let [msg (str "Käyttäjällä " (:tunnus user/*current-user*)
-                       " ei ole oikeutta nähdä hakemuksen: " (:id hakemus) " sisältöä."
-                       "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia.")]
-          (ss/throw+ {:http-response r/forbidden :message msg} msg)))))
+(defn find-avustuskohteet [hakemusid]
+  (let [hakemus (h/get-hakemus hakemusid)]
+    (if (h/has-privilege-to-view-hakemus-content* hakemus)
+      (find-avustuskohteet-by-hakemusid hakemusid)
+      (let [msg (str "Käyttäjällä " (:tunnus user/*current-user*)
+                     " ei ole oikeutta nähdä hakemuksen: " (:id hakemus) " sisältöä. "
+                     "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia.")]
+        (ss/throw+ {:http-response r/forbidden :message msg} msg)))))
 

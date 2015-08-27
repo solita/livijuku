@@ -11,7 +11,7 @@
             :return [Avustuskohde+alv]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen avustuskohteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
-            (ok (service/find-avustuskohteet-by-hakemusid hakemusid)))
+            (ok (service/find-avustuskohteet hakemusid)))
       (PUT* "/avustuskohteet" []
             :auth [:modify-oma-hakemus]
             :return   nil
