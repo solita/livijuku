@@ -8,7 +8,7 @@
 (defmethod meta/restructure-param :auth [_ auth {:keys [body] :as acc}]
   (assoc acc :body `((if (some user/has-privilege* ~auth)
                        (do ~@body)
-                       (let [msg (str "Käyttäjällä " (:tunnus user/*current-user*) " ei ole vaadittua käyttöoikeutta. "
+                       (let [msg# (str "Käyttäjällä " (:tunnus user/*current-user*) " ei ole vaadittua käyttöoikeutta. "
                                       "Käyttäjällä pitää olla vähintään yksi seuraavista käyttöoikeuksista: " ~auth)]
-                         (log/error msg)
-                         (http/forbidden msg))))))
+                         (log/error msg#)
+                         (http/forbidden msg#))))))
