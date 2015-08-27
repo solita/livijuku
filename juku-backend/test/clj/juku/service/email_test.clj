@@ -2,6 +2,7 @@
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
             [common.string :as strx]
+            [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [juku.service.paatos :as p]
             [juku.service.hakemuskausi :as hk]
@@ -22,7 +23,7 @@
   `(test/with-user "juku_hakija" ["juku_hakija"]
      (asha/with-asha
         (email/with-mock-email
-          (let [~(symbol "id") (h/add-hakemus! (hakemus ~hakemustyyppi))] ~@body)))))
+          (let [~(symbol "id") (hc/add-hakemus! (hakemus ~hakemustyyppi))] ~@body)))))
 
 (defn assert-message
   ([subject body] (assert-message 0 subject body))

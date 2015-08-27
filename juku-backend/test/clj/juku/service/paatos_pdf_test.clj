@@ -8,6 +8,7 @@
             [juku.db.coerce :as dbc]
             [juku.service.pdf-mock :as pdf]
             [juku.service.paatos :as p]
+            [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [juku.service.hakemuskausi :as hk]
             [juku.service.liitteet :as l]
@@ -29,7 +30,7 @@
 (def hsl-mh1-hakemus {:vuosi vuosi :hakemustyyppitunnus "MH1" :organisaatioid 1M})
 (def hsl-mh2-hakemus {:vuosi vuosi :hakemustyyppitunnus "MH2" :organisaatioid 1M})
 
-(defn add-hakemus! [kausi tyyppi] (h/add-hakemus! {:vuosi (:vuosi kausi) :hakemustyyppitunnus tyyppi :organisaatioid 1M}))
+(defn add-hakemus! [kausi tyyppi] (hc/add-hakemus! {:vuosi (:vuosi kausi) :hakemustyyppitunnus tyyppi :organisaatioid 1M}))
 
 (defmacro test-ctx [& body]
   `(test/with-user "juku_hakija" ["juku_hakija" "juku_kasittelija"]
@@ -73,7 +74,7 @@
 
 (fact "Avustushakemuksen päätöksen esikatselu"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
 
       (p/find-paatos-pdf id) => (partial instance? InputStream)
 
@@ -84,7 +85,7 @@
 
 (fact "1. maksatushakemuksen päätöksen esikatselu"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-mh1-hakemus)]
+    (let [id (hc/add-hakemus! hsl-mh1-hakemus)]
 
       (p/find-paatos-pdf id) => (partial instance? InputStream)
 
@@ -97,7 +98,7 @@
 
 (fact "2. maksatushakemuksen päätöksen esikatselu"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-mh2-hakemus)]
+    (let [id (hc/add-hakemus! hsl-mh2-hakemus)]
 
       (p/find-paatos-pdf id) => (partial instance? InputStream)
 
@@ -108,7 +109,7 @@
 
 (fact "Voimassaolevan päätöksen hakeminen"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-ah0-hakemus)
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)
           paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
       (p/save-paatos! paatos)
       (h/laheta-hakemus! id)
@@ -122,7 +123,7 @@
 
 (fact "Maksatushakemuksen päätöksen esikatselu avustushakemuksen päätös on tehty"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-mh1-hakemus)]
+    (let [id (hc/add-hakemus! hsl-mh1-hakemus)]
 
       (ak/add-avustuskohde! {:hakemusid id
                              :avustuskohdeluokkatunnus "PSA"
@@ -144,7 +145,7 @@
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
     (asha/with-asha
       (pdf/with-mock-pdf
-        (let [id (h/add-hakemus! hsl-ah0-hakemus)
+        (let [id (hc/add-hakemus! hsl-ah0-hakemus)
               paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar" :paattajanimi "Pentti Päättäjä"}]
 
           (p/save-paatos! paatos)

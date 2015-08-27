@@ -1,6 +1,7 @@
 (ns juku.service.hakemuskausi-test
   (:require [midje.sweet :refer :all]
             [juku.service.hakemuskausi :as hk]
+            [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [common.collection :as coll]
             [common.core :as c]
@@ -38,7 +39,7 @@
           (hk/avaa-hakemuskausi! vuosi)
 
           (assert-avustuskohteet vuosi)
-          (:diaarinumero (h/find-hakemuskausi {:vuosi vuosi})) => "testing"
+          (:diaarinumero (hc/find-hakemuskausi {:vuosi vuosi})) => "testing"
           (asha/headers :avaus) => asha/valid-headers?
           (:content (first (:multipart (asha/request :avaus)))) =>
             (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"asianNimi\":\"Hakemuskausi " vuosi "\"}"))))
@@ -63,7 +64,7 @@
           (hk/avaa-hakemuskausi! vuosi)
 
           (assert-avustuskohteet vuosi)
-          (:diaarinumero (h/find-hakemuskausi {:vuosi vuosi})) => nil)
+          (:diaarinumero (hc/find-hakemuskausi {:vuosi vuosi})) => nil)
 
     (fact "Sulje hakemuskausi"
       (let [vuosi (:vuosi (test/next-hakemuskausi!))]
@@ -139,9 +140,9 @@
         vuosi (:vuosi hakemuskausi)
         hakemus1 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
         hakemus2 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 2M}
-        id1 (h/add-hakemus! hakemus1)]
+        id1 (hc/add-hakemus! hakemus1)]
 
-      (h/add-hakemus! hakemus2)
+      (hc/add-hakemus! hakemus2)
       (asha/with-asha-off (h/laheta-hakemus! id1))
 
       (update-in (find-hakemuskausi+ vuosi) [:hakemukset 0 :hakemustilat] set) =>
@@ -164,10 +165,10 @@
         vuosi (:vuosi hakemuskausi)
         hakemus1 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
         hakemus2 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 2M}
-        id (h/add-hakemus! hakemus1)]
+        id (hc/add-hakemus! hakemus1)]
 
 
-    (h/add-hakemus! hakemus2)
+    (hc/add-hakemus! hakemus2)
     (test/with-user "juku_hakija" ["juku_hakija"]
       (update-in
         (coll/find-first (coll/eq :vuosi vuosi) (hk/find-kayttajan-hakemuskaudet+hakemukset))

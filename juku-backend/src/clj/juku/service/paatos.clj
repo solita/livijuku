@@ -5,7 +5,7 @@
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
-            [juku.service.hakemus :as h]
+            [juku.service.hakemus-core :as h]
             [juku.service.hakemuskausi :as hk]
             [juku.service.avustuskohde :as ak]
             [juku.service.pdf :as pdf]

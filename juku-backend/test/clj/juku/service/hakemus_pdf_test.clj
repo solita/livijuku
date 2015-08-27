@@ -7,6 +7,7 @@
             [clj-time.format :as timef]
             [juku.db.coerce :as dbc]
             [juku.service.pdf-mock :as pdf]
+            [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [juku.service.hakemuskausi :as hk]
             [juku.service.liitteet :as l]
@@ -47,7 +48,7 @@
 
 (fact "Ei avustuskohteita"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
 
       (h/find-hakemus-pdf id) => (partial instance? InputStream)
 
@@ -59,7 +60,7 @@
 
 (fact "Hakemuksella avustuskohteita"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
 
       (ak/add-avustuskohde! {:hakemusid id
                              :avustuskohdeluokkatunnus "PSA"
@@ -96,7 +97,7 @@
 
 (fact "Hakemuksella avustuskohteita - iso rahasumma"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
 
       (ak/add-avustuskohde! {:hakemusid id
                              :avustuskohdeluokkatunnus "PSA"
@@ -126,7 +127,7 @@
 
 (fact "Lähetetty hakemus"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-ah0-hakemus)]
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
 
       (h/laheta-hakemus! id)
 
@@ -140,7 +141,7 @@
 
 (fact "Keskeneräinen 1. maksatushakemus"
   (test-ctx
-    (let [id (h/add-hakemus! hsl-mh1-hakemus)
+    (let [id (hc/add-hakemus! hsl-mh1-hakemus)
           asiakirja (h/find-hakemus-pdf id)]
 
       asiakirja => (partial instance? InputStream)

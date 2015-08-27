@@ -1,6 +1,6 @@
 (ns juku.service.hakemuskausi
   (:require [juku.service.organisaatio :as organisaatio]
-            [juku.service.hakemus :as hakemus]
+            [juku.service.hakemus-core :as hakemus]
             [juku.service.asiahallinta :as asha]
             [juku.service.user :as user]
             [juku.service.organisaatio :as org]

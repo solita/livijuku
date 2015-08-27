@@ -1,6 +1,6 @@
 (ns juku.service.liite-test
   (:require [midje.sweet :refer :all]
-            [juku.service.hakemus :as h]
+            [juku.service.hakemus-core :as h]
             [juku.service.liitteet :as l]
             [juku.service.test :as test]))
 

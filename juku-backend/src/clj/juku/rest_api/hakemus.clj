@@ -1,6 +1,7 @@
 (ns juku.rest-api.hakemus
   (:require [compojure.api.sweet :refer :all]
             [juku.service.hakemus :as service]
+            [juku.service.hakemus-core :as core]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :refer :all]
             [schema.core :as s]))
@@ -11,7 +12,7 @@
             :return [HakemusSuunnitelma]
             :path-params [vuosi :- s/Int, hakemustyyppitunnus :- s/Str]
             :summary "Hae hakemussuunnitelmat tietylle vuodella ja hakemustyypille."
-            (ok (service/find-hakemussuunnitelmat vuosi hakemustyyppitunnus)))
+            (ok (core/find-hakemussuunnitelmat vuosi hakemustyyppitunnus)))
       (GET* "/hakemus/:hakemusid" []
             :auth [:view-kaikki-hakemukset :view-oma-hakemus]
             :return Hakemus+
@@ -23,25 +24,25 @@
              :return   s/Num
              :body     [hakemus NewHakemus]
              :summary  "Lisää yksittäinen hakemus."
-             (ok (service/add-hakemus! hakemus)))
+             (ok (core/add-hakemus! hakemus)))
       (PUT* "/hakemus/suunniteltuavustus" []
             :auth [:kasittely-hakemus]
             :return   nil
             :body-params [hakemusid :- Long, suunniteltuavustus :- s/Num]
             :summary  "Päivittää hakemuksen myönnettävän avustusrahamäärän suunnitelmaan."
-            (ok (service/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
+            (ok (core/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
       (PUT* "/hakemus/kasittelija" []
             :auth [:kasittely-hakemus]
             :return   nil
             :body-params [hakemusid :- Long, kasittelija :- s/Str]
             :summary  "Päivittää hakemuksen käsittelijän."
-            (ok (service/save-hakemus-kasittelija! hakemusid kasittelija)))
+            (ok (core/save-hakemus-kasittelija! hakemusid kasittelija)))
       (PUT* "/hakemus/selite" []
             :auth [:modify-oma-hakemus]
             :return   nil
             :body-params [hakemusid :- Long, selite :- s/Str]
             :summary  "Päivittää hakemuksen selitteen."
-            (ok (service/save-hakemus-selite! hakemusid selite)))
+            (ok (core/save-hakemus-selite! hakemusid selite)))
       (POST* "/laheta-hakemus" []
              :auth [:allekirjoita-oma-hakemus]
              :return  nil

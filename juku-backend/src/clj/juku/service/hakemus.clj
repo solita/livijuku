@@ -7,6 +7,7 @@
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
             [juku.service.avustuskohde :as ak]
+            [juku.service.hakemus-core :as h]
             [juku.service.email :as email]
             [slingshot.slingshot :as ss]
             [juku.service.liitteet :as l]
@@ -23,81 +24,8 @@
             [common.core :as c])
   (:import (org.joda.time LocalDate)))
 
-; *** Hakemukseen liittyvät kyselyt ***
-(sql/defqueries "hakemus.sql")
-
-; *** Hakemus skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
-(def coerce-hakemus (scoerce/coercer Hakemus coerce/db-coercion-matcher))
-(def coerce-hakemus+ (scoerce/coercer Hakemus+ coerce/db-coercion-matcher))
-(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnitelma coerce/db-coercion-matcher))
-
-; *** Virheviestit tietokannan rajoitteista ***
-(def constraint-errors
-  {:hakemus_hakemustyyppi_fk {:http-response r/not-found :message "Hakemustyyppiä {hakemustyyppitunnus} ei ole olemassa."}
-   :hakemus_organisaatio_fk {:http-response r/not-found :message "Hakemuksen organisaatiota {organisaatioid} ei ole olemassa."}
-   :hakemus_kasittelija_fk {:http-response r/not-found :message "Hakemuksen käsittelijää {kasittelija} ei ole olemassa."}
-   :hakemus_hakemuskausi_fk {:http-response r/not-found :message "Hakemuskautta {vuosi} ei ole olemassa."}})
-
-; *** Hakemukseen liittyvät poikkeustyypit ***
-(derive ::hakemus-not-found ::coll/not-found)
-
-; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
-
-(defn find-organisaation-hakemukset [organisaatioid]
-  (map (comp coerce-hakemus coerce/row->object)
-    (select-organisaation-hakemukset {:organisaatioid organisaatioid})))
-
-(defn find-all-hakemukset []
-  (map (comp coerce-hakemus coerce/row->object)
-       (select-all-hakemukset)))
-
-(defn find-kayttajan-hakemukset []
-  (find-organisaation-hakemukset (:organisaatioid user/*current-user*)))
-
-(defn- get-any-hakemus [hakemusid select]
-  (-> (select {:hakemusid hakemusid})
-      (coll/single-result-required! {:type ::hakemus-not-found
-                                     :hakemusid hakemusid
-                                     :message (str "Hakemusta " hakemusid " ei ole olemassa.")})
-      coerce/row->object))
-
-(defn get-hakemus+ [hakemusid]
-  (let [hakemus (get-any-hakemus hakemusid select-hakemus+)]
-    (coerce-hakemus+
-      (assoc
-        (if (= (:hakemustilatunnus hakemus) "T0")
-          (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid hakemusid})))
-          hakemus)
-        :other-hakemukset (select-other-hakemukset {:hakemusid hakemusid})))))
-
-(defn get-hakemus [hakemusid] (coerce-hakemus (get-any-hakemus hakemusid select-hakemus)))
-
-(defn find-hakemussuunnitelmat [vuosi hakemustyyppitunnus]
-  (map (comp coerce-hakemus-suunnitelma coerce/row->object)
-       (select-hakemussuunnitelmat {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus})))
-
-(defn add-hakemus! [hakemus]
-  (:id (dml/insert-with-id db "hakemus"
-                           (-> hakemus
-                               coerce/object->row
-                               coerce/localdate->sql-date)
-                           constraint-errors hakemus)))
-
-(defn- update-hakemus-by-id [hakemus hakemusid]
-  (dml/assert-update (dml/update-where-id db "hakemus" hakemus hakemusid)
-                     {:type ::hakemus-not-found :message (str "Hakemusta " hakemusid " ei ole olemassa.")}))
-
-(defn save-hakemus-selite! [hakemusid selite]
-  (update-hakemus-by-id {:selite selite} hakemusid))
-
-(defn save-hakemus-suunniteltuavustus! [hakemusid suunniteltuavustus]
-  (update-hakemus-by-id {:suunniteltuavustus suunniteltuavustus} hakemusid))
-
-(defn save-hakemus-kasittelija! [hakemusid kasittelija]
-  (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
-
 (defn get-hakemus-by-id! [hakemusid]
-  (let [hakemus (get-hakemus+ hakemusid)
+  (let [hakemus (h/get-hakemus+ hakemusid)
         diaarinumero (:diaarinumero hakemus)]
     (if (and (user/has-privilege* :kasittely-hakemus)
              (nil? (:kasittelija hakemus))
@@ -105,26 +33,18 @@
              (#{"V" "TV"} (:hakemustilatunnus hakemus)))
       (do
         (asha/kasittelyssa diaarinumero)
-        (save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))))
+        (h/save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))))
     hakemus))
 
 ;; *** Hakemusasiakirjan (pdf-dokumentti) tuotattaminen ***
 
-(def organisaatiolaji->plural-genetive
-  {"KS1" "suurten kaupunkiseutujen",
-   "KS2" "keskisuurten kaupunkiseutujen",
-   "ELY" "ELY-keskusten"})
-
 (defn hakemus-template [hakemus]
   (str "hakemus-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
-
-(defn ^String format-date [^LocalDate date]
-  (.toString ^LocalDate date "d.M.y"))
 
 (defn hakemus-pdf
   ([hakemus] (hakemus-pdf hakemus nil))
   ([hakemus esikatselu-message]
-    (let [pvm (format-date (time/today))
+    (let [pvm (h/format-date (time/today))
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           avustuskohteet (ak/find-avustuskohteet-by-hakemusid (:id hakemus))
 
@@ -137,7 +57,7 @@
         {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}
          :teksti (xstr/interpolate template
                                    {:organisaatio-nimi (:nimi organisaatio)
-                                    :organisaatiolaji-pl-gen (organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+                                    :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
                                     :vireillepvm pvm
                                     :vuosi (:vuosi hakemus)
                                     :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
@@ -149,62 +69,30 @@
          :footer (c/maybe-nil #(str "Liikennevirasto - esikatselu - " %) "Liikennevirasto" esikatselu-message)}))))
 
 (defn find-hakemus-pdf [hakemusid]
-  (let [hakemus (get-hakemus hakemusid)]
+  (let [hakemus (h/get-hakemus hakemusid)]
     (case (:hakemustilatunnus hakemus)
       "0" (hakemus-pdf hakemus (str "hakuaika ei ole alkanut"))
       "K" (hakemus-pdf hakemus (str "hakemus on keskeneräinen"))
       "T0" (hakemus-pdf hakemus (str "hakemus on täydennettävänä"))
-      (if-let [asiakirja (:asiakirja (first (select-latest-hakemusasiakirja {:hakemusid hakemusid})))]
+      (if-let [asiakirja (:asiakirja (first (h/select-latest-hakemusasiakirja {:hakemusid hakemusid})))]
         (coerce/inputstream asiakirja)
         (ss/throw+ (str "Hakemuksen " hakemusid " asiakirjaa ei löydy hakemustilahistoriasta."))))))
 
 ;; *** Hakemustilan käsittely ***
 
-(defn find-hakemuskausi [vuosi] (first (select-hakemuskausi vuosi)))
-
-(defn change-hakemustila! [hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
-  (dml/assert-update
-    (update-hakemustila! {:hakemusid (:id hakemus)
-                          :hakemustilatunnus new-hakemustilatunnus
-                          :expectedhakemustilatunnus expected-hakemustilatunnus})
-
-    {:http-response r/method-not-allowed
-     :message (str "Hakemuksen (" (:id hakemus) ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
-                   ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
-     :hakemusid (:id hakemus)
-     :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})
-  (email/send-hakemustapahtuma-message hakemus new-hakemustilatunnus asiakirja))
-
-(defn change-hakemustila+log!
-  ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
-    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation nil)
-
-    ;; hakemustilan muutoshistoria
-    (insert-hakemustila-event! {:hakemusid (:id hakemus)
-                                :hakemustilatunnus new-hakemustilatunnus}))
-
-  ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
-    (let [asiakirja-bytes (c/slurp-bytes asiakirja)]
-      (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja-bytes)
-
-      ;; hakemustilan muutoshistoria
-      (insert-hakemustila-event+asiakirja! {:hakemusid (:id hakemus)
-                                            :hakemustilatunnus new-hakemustilatunnus
-                                            :asiakirja (io/input-stream asiakirja-bytes)}))))
-
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus hakemusid)
-          hakemuskausi (find-hakemuskausi hakemus)
+    (let [hakemus (h/get-hakemus hakemusid)
+          hakemuskausi (h/find-hakemuskausi hakemus)
           hakemus-asiakirja (hakemus-pdf hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila! hakemus "V" ["K"] "vireillelaitto" nil)
+      (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto" nil)
 
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
-        (update-hakemus-set-diaarinumero!
+        (h/update-hakemus-set-diaarinumero!
           {:vuosi (:vuosi hakemus)
            :organisaatioid (:organisaatioid hakemus)
            :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi) :hakija (:nimi organisaatio)}
@@ -212,23 +100,23 @@
 
         (if-let [diaarinumero (:diaarinumero hakemus)]
           (let [kasittelija (user/find-user (or (:kasittelija hakemus)
-                                                (:kasittelija (first (select-avustushakemus-kasittelija hakemus)))
+                                                (:kasittelija (first (h/select-avustushakemus-kasittelija hakemus)))
                                                 (:luontitunnus hakemus)))]
             (asha/maksatushakemus diaarinumero
                                   {:kasittelija (user/user-fullname kasittelija)
                                    :lahettaja (:nimi organisaatio)}
                                   hakemus-asiakirja liitteet))))
 
-      (insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
+      (h/insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
                                             :hakemustilatunnus "V"
-                                            :asiakirja (hakemus-pdf (get-hakemus hakemusid))})))
+                                            :asiakirja (hakemus-pdf (h/get-hakemus hakemusid))})))
   nil)
 
 (defn tarkasta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus hakemusid)]
-      (change-hakemustila+log! hakemus "T" ["V" "TV"] "tarkastaminen")
-      (save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))
+    (let [hakemus (h/get-hakemus hakemusid)]
+      (h/change-hakemustila+log! hakemus "T" ["V" "TV"] "tarkastaminen")
+      (h/save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/tarkastettu diaarinumero))))
   nil)
@@ -237,18 +125,18 @@
   (time/latest [loppupvm (time/plus (time/today) (time/days 14))]))
 
 (defn add-taydennyspyynto! [hakemusid maarapaiva selite]
-  (insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm (coerce/localdate->sql-date maarapaiva) :selite selite}))
+  (h/insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm (coerce/localdate->sql-date maarapaiva) :selite selite}))
 
 (defn taydennyspyynto!
   ([hakemusid] (taydennyspyynto! hakemusid nil))
   ([hakemusid selite]
   (with-transaction
-    (let [hakemus (get-hakemus hakemusid)
+    (let [hakemus (h/get-hakemus hakemusid)
           maarapvm (maarapvm (get-in hakemus [:hakuaika :loppupvm]))
           kasittelija user/*current-user*
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
 
-      (change-hakemustila+log! hakemus "T0" ["V" "TV"] "täydennyspyyntö")
+      (h/change-hakemustila+log! hakemus "T0" ["V" "TV"] "täydennyspyyntö")
 
       (add-taydennyspyynto! hakemusid maarapvm selite)
       (if-let [diaarinumero (:diaarinumero hakemus)]
@@ -260,13 +148,13 @@
 
 (defn laheta-taydennys! [hakemusid]
   (with-transaction
-    (let [hakemus (get-hakemus+ hakemusid)
+    (let [hakemus (h/get-hakemus+ hakemusid)
           hakemus-asiakirja (hakemus-pdf hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
-      (change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
+      (h/change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero

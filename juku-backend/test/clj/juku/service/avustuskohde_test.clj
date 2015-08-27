@@ -2,7 +2,7 @@
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
             [common.collection :as c]
-            [juku.service.hakemus :as h]
+            [juku.service.hakemus-core :as h]
             [juku.service.avustuskohde :as ak]
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.test :as test]
