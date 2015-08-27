@@ -122,4 +122,12 @@
        (ak/add-avustuskohde! avustuskohde)
        (ak/find-avustuskohteet id) =>
         (throws (str "Käyttäjällä juku_hakija ei ole oikeutta nähdä hakemuksen: " id " sisältöä. "
-                     "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia."))))))
+                     "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia.")))))
+
+  (fact "Keskeneräinen hakemus - käyttäjä on käsittelijä"
+    (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+      (let [id (h/add-hakemus! hsl-ah0-hakemus)
+           avustuskohde (create-avustuskohde id)]
+
+       (ak/add-avustuskohde! avustuskohde)
+       (ak/find-avustuskohteet id) => [(assoc-10alv avustuskohde)]))))
