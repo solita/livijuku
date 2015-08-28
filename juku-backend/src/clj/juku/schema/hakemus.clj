@@ -32,6 +32,7 @@
   (assoc Hakemus :selite (s/maybe s/Str)
                  (s/optional-key :taydennyspyynto) Taydennyspyynto
                  :other-hakemukset [Hakemusviite]
+                 :contentvisible s/Bool
                  :kasittelija (s/maybe s/Str)
                  :luontitunnus s/Str
                  :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)

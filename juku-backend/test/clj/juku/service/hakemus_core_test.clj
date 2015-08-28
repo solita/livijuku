@@ -27,7 +27,8 @@
   (assoc hakemus :id id, :hakemustilatunnus "K", :kasittelijanimi "Ei määritelty", :diaarinumero nil, :hakuaika hakuaika))
 
 (defn assoc-hakemus-defaults+ [hakemus id selite]
-  (assoc (assoc-hakemus-defaults hakemus id) :luontitunnus "juku_kasittelija",
+  (assoc (assoc-hakemus-defaults hakemus id) :contentvisible true
+                                             :luontitunnus "juku_kasittelija",
                                              :kasittelija nil, :kasittelijanimi "Ei määritelty", :selite selite,
                                              :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
 

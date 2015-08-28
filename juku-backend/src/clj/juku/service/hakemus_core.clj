@@ -51,6 +51,15 @@
                                      :message (str "Hakemusta " hakemusid " ei ole olemassa.")})
       coerce/row->object))
 
+(defn is-hakemus-owner?* [hakemus]
+  (= (:organisaatioid user/*current-user*) (:organisaatioid hakemus)))
+
+(defn has-privilege-to-view-hakemus-content* [hakemus]
+  (or (user/has-privilege* :view-kaikki-hakemukset)
+      (and (is-hakemus-owner?* hakemus) (user/has-privilege* :view-oma-hakemus))
+      (and (user/has-privilege* :view-kaikki-lahetetyt-hakemukset)
+           (not (#{"0" "K" "T0"} (:hakemustilatunnus hakemus))))))
+
 (defn get-hakemus+ [hakemusid]
   (let [hakemus (get-any-hakemus hakemusid select-hakemus+)]
     (coerce-hakemus+
@@ -58,6 +67,8 @@
         (if (= (:hakemustilatunnus hakemus) "T0")
           (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid hakemusid})))
           hakemus)
+
+        :contentvisible (has-privilege-to-view-hakemus-content* hakemus)
         :other-hakemukset (select-other-hakemukset {:hakemusid hakemusid})))))
 
 (defn get-hakemus [hakemusid] (coerce-hakemus (get-any-hakemus hakemusid select-hakemus)))
@@ -85,15 +96,6 @@
 
 (defn save-hakemus-kasittelija! [hakemusid kasittelija]
   (update-hakemus-by-id {:kasittelija kasittelija} hakemusid))
-
-(defn is-hakemus-owner?* [hakemus]
-  (= (:organisaatioid user/*current-user*) (:organisaatioid hakemus)))
-
-(defn has-privilege-to-view-hakemus-content* [hakemus]
-  (or (user/has-privilege* :view-kaikki-hakemukset)
-      (and (is-hakemus-owner?* hakemus) (user/has-privilege* :view-oma-hakemus))
-      (and (user/has-privilege* :view-kaikki-lahetetyt-hakemukset)
-           (not (#{"0" "K" "T0"} (:hakemustilatunnus hakemus))))))
 
 (defn find-hakemuskausi [vuosi] (first (select-hakemuskausi vuosi)))
 
