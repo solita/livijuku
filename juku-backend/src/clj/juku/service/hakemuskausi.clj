@@ -156,7 +156,7 @@
          {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
          {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
 
-    (doseq [organisaatio (organisaatio/hakija-organisaatiot)]
+    (doseq [organisaatio (filter (col/predicate not= :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
       (let [hakemus (fn [hakemustyyppitunnus] {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus :organisaatioid (:id organisaatio)})]
         (hakemus/add-hakemus! (hakemus "AH0"))
         (hakemus/add-hakemus! (hakemus "MH1"))
