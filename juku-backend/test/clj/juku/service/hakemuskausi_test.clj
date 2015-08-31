@@ -25,9 +25,9 @@
           distinct (map :distinctvalues (vals stats))]
       (get-in stats ["KS1" :akohdeamount]) => aklaji-count
       (get-in stats ["KS2" :akohdeamount]) => (- aklaji-count 1)
-      (get-in stats ["ELY" :akohdeamount]) => (- aklaji-count 1)
+      (get-in stats ["ELY" :akohdeamount]) => nil ;(- aklaji-count 1)
       (get-in stats ["LV" :akohdeamount]) => nil
-      distinct => [1M 1M 1M])))
+      distinct => [1M 1M])))
 
 (facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen --"
 
