@@ -52,7 +52,12 @@
           (hk/sulje-hakemuskausi! vuosi)
 
           (asha/headers :sulkeminen) => asha/valid-headers?
-          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje"))))))
+          (:uri (asha/request :sulkeminen)) => (partial str/substring? "hakemuskausi/testing/sulje")
+
+          (let [hakemustyypit (:hakemukset (find-hakemuskausi+ vuosi))]
+               (count hakemustyypit) => 3
+               (every? (coll/eq (comp count :hakemustilat) 1) hakemustyypit) => true
+               (every? (coll/eq (comp :hakemustilatunnus (c/partial-first-arg get 0) :hakemustilat) "S") hakemustyypit)))))))
 
 (facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen - asiahallinta kytketty pois päältä--"
 

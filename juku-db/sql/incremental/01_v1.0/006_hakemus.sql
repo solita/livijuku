@@ -50,6 +50,7 @@ insert into hakemustila (tunnus, nimi) values ('T0', 'Täydennettävää');
 insert into hakemustila (tunnus, nimi) values ('TV', 'Täydennytty - täydennys valmis tarkastettavaksi');
 insert into hakemustila (tunnus, nimi) values ('P', 'Päätetty');
 insert into hakemustila (tunnus, nimi) values ('M', 'Maksettu');
+insert into hakemustila (tunnus, nimi, description) values ('S', 'Suljettu', 'Hakemuskausi on suljettu.');
 
 create table hakemus (
   id number constraint hakemus_pk primary key,

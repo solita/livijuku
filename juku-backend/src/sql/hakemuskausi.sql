@@ -52,3 +52,6 @@ where hakemus.vuosi = :vuosi and
       (avustuskohdelaji.avustuskohdeluokkatunnus != 'K' or
        avustuskohdelaji.tunnus != 'RT' or
        organisaatio.lajitunnus = 'KS1')
+
+-- name: sulje-kaikki-hakemuskauden-hakemukset!
+update hakemus set hakemustilatunnus = 'S' where vuosi = :vuosi
