@@ -9,7 +9,8 @@
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.email-mock :as email]
             [juku.service.test :as test]
-            [common.core :as c]))
+            [common.core :as c]
+            [juku.service.user :as user]))
 
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
@@ -27,9 +28,10 @@
 
 (defn assert-message
   ([subject body] (assert-message 0 subject body))
-  ([index subject body]
+  ([index subject body] (assert-message index #{"petri.sirkkala@solita.fi"} subject body))
+  ([index to subject body]
     (fact "sähköpostiviestin tarkastaminen"
-      (:to (email/*mock-email* index)) => #{"petri.sirkkala@solita.fi"}
+      (:to (email/*mock-email* index)) => to
       (:subject (email/*mock-email* index)) => subject
       (:body (email/*mock-email* index)) => (partial strx/substring? body))))
 
@@ -73,6 +75,34 @@
 
     (assert-message 2 (str "Avustuspäätös " vuosi)
                       (str "Joukkoliikenteen valtionavustushakemukseenne vuodelle " vuosi " on tehty päätös"))))
+
+;; *** sähköpostiviestit organisaatiossa useita käyttäjiä ***
+
+(fact "Hakemuksen lähettäminen"
+  (test-ctx "AH0"
+    (user/update-user! "juku_allekirjoittaja" {:sahkoposti "yes@test.fi"})
+    (h/laheta-hakemus! id)
+
+    (assert-message 0 #{"petri.sirkkala@solita.fi" "yes@test.fi"}
+                      (str "Avustushakemus " vuosi " on saapunut")
+                      (str "valtionavustushakemuksenne vuodelle " vuosi " on saapunut"))
+    (assert-message 1 (str "Helsingin seudun liikenne - avustushakemus " vuosi " on saapunut")
+                      (str "valtionavustushakemus vuodelle " vuosi " on saapunut"))
+
+    (user/update-user! "juku_allekirjoittaja" {:sahkoposti "petri.sirkkala@solita.fi"})))
+
+(fact "Hakemuksen lähettäminen"
+  (test-ctx "AH0"
+    (user/update-user! "juku_allekirjoittaja" {:sahkoposti "yes@test.fi" :sahkopostiviestit false})
+
+    (h/laheta-hakemus! id)
+
+    (assert-message (str "Avustushakemus " vuosi " on saapunut")
+                    (str "valtionavustushakemuksenne vuodelle " vuosi " on saapunut"))
+    (assert-message 1 (str "Helsingin seudun liikenne - avustushakemus " vuosi " on saapunut")
+                    (str "valtionavustushakemus vuodelle " vuosi " on saapunut"))
+
+    (user/update-user! "juku_allekirjoittaja" {:sahkoposti "petri.sirkkala@solita.fi" :sahkopostiviestit true})))
 
 ;; *** Sähköpostiviestit maksatushakemuksista ***
 

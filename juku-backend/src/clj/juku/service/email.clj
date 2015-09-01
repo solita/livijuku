@@ -2,6 +2,7 @@
   (:require [juku.db.yesql-patch :as sql]
             [postal.core :as mail]
             [common.string :as strx]
+            [common.collection :as coll]
             [common.core :as c]
             [clojure.java.io :as io]
             [clojure.string :as str]
@@ -156,7 +157,7 @@
 
 (defn send-kasittelija-message [hakemus hakemustilatunnus _]
   (c/if-let*
-    [to (set (filter (comp not str/blank?) (map :sahkoposti (user/find-all-livi-users))))
+    [to (set (filter (comp not str/blank?) (map :sahkoposti (filter (coll/eq :sahkopostiviestit true) (user/find-all-livi-users)))))
      template-key (template-key hakemus hakemustilatunnus)
      subject-template (get-in kasittelija-subjects template-key)
      body-template (get-in kasittelija-messages template-key)
