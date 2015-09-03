@@ -57,6 +57,7 @@
 
       (PUT* "/hakemuskausi/:vuosi/hakuajat" []
             :auth [:modify-hakemuskausi]
+            :audit [:body-params]
             :return   nil
             :path-params [vuosi :- s/Int]
             :body     [hakuajat [Hakuaika+]]
