@@ -53,7 +53,7 @@
        group-txt (:oam-groups headers)
         (error r/bad-request "Käyttäjäryhmiä ei löydy pyynnön otsikkotiedosta: oam-groups.")
        roles (c/nil-if empty? (user/find-roleids (str/split group-txt #",")))
-        (error r/bad-request (str "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt))
+        (error r/forbidden (str "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt))
        organisaatio-name (h/parse-header headers :oam-user-organization nil)
         (error r/bad-request "Käyttäjän organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
        privileges (c/nil-if empty? (user/find-privileges roles))
