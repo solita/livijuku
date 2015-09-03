@@ -4,6 +4,7 @@
    Encoded form is =?UTF-8?B?base64-encoded-txt?= and it is used only if the original value contains non us-ascii characters."
 
   (:require [ring.util.codec :as codec]
+            [ring.util.http-response :as r]
             [common.core :as c]))
 
 ;; Header-arvojen base64-enkoodaukseen käytetty muoto
@@ -29,4 +30,6 @@
       (if-let [value (get headers header)] (decode-value value) not-found))
 
    ([headers header] (parse-header headers header nil)))
+
+(defn content-type-text-plain [response] (r/content-type response "text/plain; charset=UTF-8"))
 

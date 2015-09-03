@@ -41,7 +41,7 @@
 
 (defn- error [type & msg]
   (log/error msg)
-  (r/content-type (type (apply str msg)) "text/plain; charset=UTF-8"))
+  (h/content-type-text-plain (type (apply str msg))))
 
 (defn wrap-user [handler]
   (fn [request]
@@ -52,11 +52,11 @@
         (error r/bad-request "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user.")
        group-txt (:oam-groups headers)
         (error r/bad-request "Käyttäjäryhmiä ei löydy pyynnön otsikkotiedosta: oam-groups.")
-       roles (user/find-roleids (str/split group-txt #","))
+       roles (c/nil-if empty? (user/find-roleids (str/split group-txt #",")))
         (error r/bad-request (str "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt))
        organisaatio-name (h/parse-header headers :oam-user-organization nil)
         (error r/bad-request "Käyttäjän organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
-       privileges (coll/nil-if-empty (user/find-privileges roles))
+       privileges (c/nil-if empty? (user/find-privileges roles))
         (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")
        orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :oam-user-department))
         (error r/forbidden "Käyttäjän " uid " organisaatiota: " organisaatio-name

@@ -3,6 +3,7 @@
             [juku.middleware :as m]
             [juku.service.user :as user]
             [common.collection :as coll]
+            [slingshot.slingshot :as ss]
             [juku.service.organisaatio :as org]))
 
 (def tampere (coll/single-result-required! (filter (coll/eq :nimi "Tampere") (org/organisaatiot))
@@ -49,4 +50,27 @@
       ((m/wrap-user
          (fn [request] (dissoc user/*current-user* :kirjautumisaika) => user))
         request)
-      (dissoc (user/find-user uid) :kirjautumisaika) => (dissoc user :privileges))))
+      (dissoc (user/find-user uid) :kirjautumisaika) => (dissoc user :privileges)))
+
+  (fact "Uusi käyttäjä - virheellinen ryhmätieto"
+     (let [uid (str "tst" (rand-int 999999))
+           user {:tunnus uid
+                 :organisaatioid (m/find-matching-organisaatio "liikennevirasto" nil)
+                 :etunimi "Päkä"
+                 :sukunimi "Pääkäyttäjä"
+                 :sahkoposti nil
+                 :sahkopostiviestit true
+                 :privileges (user/find-privileges ["PK"])
+                 :jarjestelma false}
+
+           request {:headers {"oam-remote-user"        uid
+                              "oam-groups"             "asdf"
+                              "oam-user-organization"  "liikennevirasto"
+                              "oam-user-first-name"    "test"
+                              "oam-user-last-name"     "test"}}]
+
+       (let [handler (fn [_] (ss/throw+ "käsittelijää ei pitäisi kutsua"))
+             error ((m/wrap-user handler) request)]
+         (:status error) => 400
+         (:body error) => "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: asdf")
+       (dissoc (user/find-user uid) :kirjautumisaika) => nil)))

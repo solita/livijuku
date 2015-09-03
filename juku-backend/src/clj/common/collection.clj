@@ -29,8 +29,6 @@
     result
     (not-found! required-error))))
 
-(defn nil-if-empty [col] (if (empty? col) nil col))
-
 (defn find-first [predicate collection]
   (first (filter predicate collection)))
 
