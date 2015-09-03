@@ -71,6 +71,6 @@
 
        (let [handler (fn [_] (ss/throw+ "käsittelijää ei pitäisi kutsua"))
              error ((m/wrap-user handler) request)]
-         (:status error) => 400
+         (:status error) => 403
          (:body error) => "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: asdf")
        (dissoc (user/find-user uid) :kirjautumisaika) => nil)))
