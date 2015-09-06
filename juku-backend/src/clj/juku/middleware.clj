@@ -40,8 +40,8 @@
         (user/find-user uid)))))
 
 (defn- error [type & msg]
-  (log/error msg)
-  (h/content-type-text-plain (type (apply str msg))))
+  (log/error (str/join msg))
+  (h/content-type-text-plain (type (str/join msg))))
 
 (defn wrap-user [handler]
   (fn [request]
@@ -53,7 +53,7 @@
        group-txt (:oam-groups headers)
         (error r/bad-request "Käyttäjäryhmiä ei löydy pyynnön otsikkotiedosta: oam-groups.")
        roles (c/nil-if empty? (user/find-roleids (str/split group-txt #",")))
-        (error r/forbidden (str "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt))
+        (error r/forbidden "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt)
        organisaatio-name (h/parse-header headers :oam-user-organization nil)
         (error r/bad-request "Käyttäjän organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
        privileges (c/nil-if empty? (user/find-privileges roles))
