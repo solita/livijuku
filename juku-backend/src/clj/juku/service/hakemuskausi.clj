@@ -18,7 +18,8 @@
             [common.map :as m]
             [ring.util.http-response :as r]
             [clj-time.core :as time]
-            [slingshot.slingshot :as ss])
+            [slingshot.slingshot :as ss]
+            [common.collection :as coll])
 
   (:import (java.sql Blob)
            (java.io InputStream)))
@@ -52,7 +53,7 @@
     (col/assoc-join hakemuskaudet :hakemukset hakemukset [:vuosi])))
 
 (defn find-kayttajan-hakemuskaudet+hakemukset []
-  (let [hakemuskaudet (map coerce-vuosiluku->int (select-all-hakemuskaudet))
+  (let [hakemuskaudet (filter (comp #{"K" "S"} :tilatunnus) (map coerce-vuosiluku->int (select-all-hakemuskaudet)))
         hakemukset (hakemus/find-kayttajan-hakemukset)]
     (col/assoc-join hakemuskaudet :hakemukset hakemukset [:vuosi])))
 

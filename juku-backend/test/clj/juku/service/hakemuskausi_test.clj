@@ -166,7 +166,7 @@
                                    :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}]}))
 
 (fact "Käyttäjän hakemuskausihaku"
-  (let [hakemuskausi (test/next-hakemuskausi!)
+  (let [hakemuskausi (test/next-avattu-empty-hakemuskausi!)
         vuosi (:vuosi hakemuskausi)
         hakemus1 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
         hakemus2 {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 2M}
@@ -179,8 +179,8 @@
         (coll/find-first (coll/eq :vuosi vuosi) (hk/find-kayttajan-hakemuskaudet+hakemukset))
         [:hakemukset] (partial map (c/partial-first-arg dissoc :muokkausaika))) =>
       {:vuosi      vuosi
-       :tilatunnus "A"
-       :hakuohje_contenttype nil
+       :tilatunnus "K"
+       :hakuohje_contenttype "text/plain"
        :hakemukset [{:id id
                      :hakemustyyppitunnus "AH0"
                      :diaarinumero nil
