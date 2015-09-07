@@ -13,7 +13,7 @@ info:
     ##### Tarkennuksia
 
     Polkuparametrissa oleva diaarinumero on utf-8 url-koodattu.
-    Hakemu, hakemuksen täydennys ja maksatushakemus -palveluissa on mahdollista lähettää kuvattujen parametrien lisäksi n kpl liitteitä.
+    Hakemus, hakemuksen täydennys ja maksatushakemus -palveluissa on mahdollista lähettää kuvattujen parametrien lisäksi n kpl liitteitä.
     Näiden liitteiden nimi on utf-8 base64 -koodattu standardin rfc2047 mukaan, jos ko. nimi sisältää muita kuin us-ascii merkkejä.
 
     ##### Ongelmat
