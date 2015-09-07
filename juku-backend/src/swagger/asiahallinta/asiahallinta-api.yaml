@@ -2,7 +2,7 @@
 swagger: '2.0'
 
 info:
-  version: "0.0.5"
+  version: "0.0.6"
   title: Livi-juku asiahallinta rajapinta
   description: 
     "Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
@@ -261,6 +261,12 @@ definitions:
       kausi:
         type: string
         description: Hakemuskauden yksilöivä diaarinumero
+      tyyppi:
+        type: string
+        description: "Hakemuksen tyyppi: AH (avustushakemus) tai ELY (ely-hakemus)"
+        enum:
+          - AH
+          - ELY
       omistavaOrganisaatio: 
         type: string
         description: Kauden avanneen käyttäjän organisaatio
