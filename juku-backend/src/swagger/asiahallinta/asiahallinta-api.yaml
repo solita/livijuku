@@ -298,10 +298,10 @@ definitions:
           "Hakemuskausi {hakemuskauden vuosi}" esim. "Hakemuskausi 2016"
       omistavaOrganisaatio: 
         type: string
-        description: Kauden avanneen käyttäjän organisaatio
+        description: Tämä on vakioarvo: "Liikennevirasto"
       omistavaHenkilo: 
         type: string
-        description: Kauden (JUKUn käyttöliittymästä) avannut käyttäjä
+        description: Jukun asetuksissa (asiahallinta.omistavahenkilo) määritetty vakioarvo
   Hakemus:
     properties:
       kausi:
@@ -315,10 +315,10 @@ definitions:
           - ELY
       omistavaOrganisaatio: 
         type: string
-        description: Kauden avanneen käyttäjän organisaatio
+        description: Tämä on vakioarvo: "Liikennevirasto"
       omistavaHenkilo: 
         type: string
-        description: Kauden (JUKUn käyttöliittymästä) avannut käyttäjä
+        description: Jukun asetuksissa (asiahallinta.omistavahenkilo) määritetty vakioarvo
       hakija:
         type: string
         description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
