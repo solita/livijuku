@@ -10,7 +10,11 @@ info:
 
     Tämä kuvaus (versio 0.0.7) sisältää ely-hakemusprosessin muutokset.
 
+    ##### Tarkennuksia
+
     Polkuparametrissa oleva diaarinumero on utf-8 url-koodattu.
+    Hakemus ja hakemuksen täydennys -palveluissa on mahdollista lähettää kuvattujen parametrien lisäksi n kpl liitteitä.
+    Näiden liitteiden nimi on utf-8 base64 -koodattu standardin rfc2047 mukaan, jos ko. nimi sisältää muita kuin us-ascii merkkejä.
 
     ##### Ongelmat
 
