@@ -2,11 +2,13 @@
 swagger: '2.0'
 
 info:
-  version: "0.0.6"
+  version: "0.0.7"
   title: Livi-juku asiahallinta rajapinta
   description: 
     "Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
     Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA (13.3.2015) v0.8.
+
+    Tämä kuvaus (versio 0.0.7) sisältää ely-hakemusprosessin muutokset.
 
     ##### Ongelmat
 
@@ -50,6 +52,38 @@ paths:
           schema: 
             description: Hakemuskauden diaarinumero
             type: string
+
+  /hakemuskausi/{diaarinumero}/hakuohje:
+    post:
+      consumes: [multipart/form-data]
+      description: Hakemuskauden hakuohjeen pävitys
+      parameters:
+        -
+          name: diaarinumero
+          in: path
+          description: Hakemuskauden diaarinumero
+          required: true
+          type: string
+          format: diaarinumero
+        -
+          name: hakuohje
+          in: formData
+          description: Hakuohjeen tiedot
+          required: true
+          type: string
+          format: '#/definitions/TaydennysHakuohje'
+        -
+          name: hakuohje-asiakirja
+          in: formData
+          description: Hakemuskauden hakuohje (pdf/a)
+          required: true
+          type: file
+          format: application/pdf
+      responses:
+        200:
+          description: Hakemuskauden hakuohje on päivitetty
+        404:
+          description: Hakemuskautta {diaarinumero} ei ole olemassa
             
   /hakemuskausi/{diaarinumero}/sulje:   
     put: 
@@ -297,3 +331,9 @@ definitions:
       lahettaja:
         type: string
         description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
+  TaydennysHakuohje:
+    properties:
+      käsittelijä:
+        type: string
+        description:
+          Hakuohjeen päivittäjä muodossa sukunimi etunimi, esim "Bärman Toni".
