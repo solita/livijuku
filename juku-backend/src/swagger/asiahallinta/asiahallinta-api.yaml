@@ -2,11 +2,24 @@
 swagger: '2.0'
 
 info:
-  version: "0.0.4"
+  version: "0.0.5"
   title: Livi-juku asiahallinta rajapinta
   description: 
-    Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
+    "Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
     Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA (13.3.2015) v0.8.
+
+    ##### Ongelmat
+
+    Swagger-rajapintakuvaus ei tue kunnolla liitetiedostoja ja skeemallista json-metadataa samassa pyynnössä:
+    https://github.com/swagger-api/swagger-spec/issues/222.
+
+    Tämä koskee kaikkia palveluja joiden sisältöyyppi on: multipart/form-data (consumes: [multipart/form-data]).
+
+    Tässä dokumentissa ongelma on kierretty laittamalla metadatakuvaus string-tyyppiseen (**application/json**; charset=**utf-8**)
+    parametriin ja viite json-skeema määritykseen on vapaamuotoisessa format-kentässä.
+
+    Swagger-editori ei ymmärrä skeemaviitettä format-kentässä ja tästä tulee turhia varoituksia.
+    Lisäksi Try this operation -toiminto ei osaa lähettää viestiä oikein."
   
 schemes: [http]
 produces: [text/plain; charset=utf-8]
@@ -19,17 +32,18 @@ paths:
       parameters:
         -
           name: hakemuskausi
-          in: body
+          in: formData
           description: Hakemuskauden tiedot
           required: true
-          schema: 
-            $ref: '#/definitions/Hakemuskausi'
+          type: string
+          format: '#/definitions/Hakemuskausi'
         -
           name: hakuohje-asiakirja
           in: formData
           description: Hakemuskauden hakuohje (pdf/a)
           required: true
-          type: file  
+          type: file
+          format: application/pdf
       responses:
         200:
           description: Uusi hakemuskausi on avattu
@@ -64,11 +78,11 @@ paths:
       parameters:
         -
           name: hakemus
-          in: body
+          in: formData
           description: Hakemuksen tiedot
           required: true
-          schema: 
-            $ref: '#/definitions/Hakemus'
+          type: string
+          format: '#/definitions/Hakemus'
         -
           name: hakemus-asiakirja
           in: formData
@@ -155,11 +169,11 @@ paths:
           type: string
         -
           name: täydennys
-          in: body
+          in: formData
           description: Täydennyksen sisältö 
           required: true
-          schema: 
-            $ref: '#/definitions/Taydennys'
+          type: string
+          format: '#/definitions/Taydennys'
         -
           name: hakemus-asiakirja
           in: formData
@@ -211,11 +225,11 @@ paths:
           type: string
         -
           name: maksatushakemus
-          in: body
+          in: formData
           description: Maksatushakemuksen tiedot 
           required: true
-          schema: 
-            $ref: '#/definitions/Taydennys'
+          type: string
+          format: '#/definitions/Taydennys'
         -
           name: hakemus-asiakirja
           in: formData
