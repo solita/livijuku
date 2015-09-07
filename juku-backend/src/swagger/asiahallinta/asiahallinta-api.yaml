@@ -298,7 +298,7 @@ definitions:
           "Hakemuskausi {hakemuskauden vuosi}" esim. "Hakemuskausi 2016"
       omistavaOrganisaatio: 
         type: string
-        description: Tämä on vakioarvo: "Liikennevirasto"
+        description: Tämä on vakioarvo "Liikennevirasto"
       omistavaHenkilo: 
         type: string
         description: Jukun asetuksissa (asiahallinta.omistavahenkilo) määritetty vakioarvo
@@ -315,7 +315,7 @@ definitions:
           - ELY
       omistavaOrganisaatio: 
         type: string
-        description: Tämä on vakioarvo: "Liikennevirasto"
+        description: Tämä on vakioarvo "Liikennevirasto"
       omistavaHenkilo: 
         type: string
         description: Jukun asetuksissa (asiahallinta.omistavahenkilo) määritetty vakioarvo
