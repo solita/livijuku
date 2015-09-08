@@ -20,7 +20,7 @@
   {:from (get-in settings [:email :from])})
 
 (def server
-  {:host (str/trim (get-in settings [:email :server]))
+  {:host (strx/trim (get-in settings [:email :server]))
    :port (get-in settings [:email :port])})
 
 #_(def server
