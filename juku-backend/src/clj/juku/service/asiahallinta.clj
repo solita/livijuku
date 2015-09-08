@@ -7,6 +7,7 @@
             [cheshire.core :as json]
             [ring.swagger.core]
             [common.string :as str]
+            [slingshot.slingshot :as ss]
             [clojure.set :as set]
             [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
@@ -26,6 +27,7 @@
               "SOA-Toiminto" operation}
 
     :debug true
+    :throw-entire-message true
     :socket-timeout 120000    ;; in milliseconds
     :conn-timeout 120000})    ;; in milliseconds
 
@@ -63,6 +65,20 @@
     (s/validate schema object)
     (json/generate-string object)))
 
+(defn wrap-exception* [f]
+  (ss/try+
+    (f)
+    (catch map? e (ss/throw+ {:type :arkistointi
+                              :message (str "Asiahallintajärjestelmän tuottama virheviesti: ("
+                                            (:status e) ") "
+                                            (:body e))}))
+
+    (catch Throwable t (ss/throw+ {:type :arkistointi
+                                   :message (str "Asiahallintajärjestelmästä ei saatu vastausta. Yhteysvirhe: "
+                                            (type t) " - " (.getMessage t))}))))
+
+(defmacro wrap-exception [& body] `(wrap-exception* (fn [] ~@body)))
+
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
   (if (not= (:asiahallinta settings) "off")
@@ -76,7 +92,7 @@
         url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
       (log/info "post multipart" url request)
-      (log-time (str "post " path) (client/post url request)))
+      (log-time (str "post " path) (wrap-exception (client/post url request))))
 
     (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti (" json-part-name "):" json-object)))
 
@@ -89,7 +105,7 @@
           url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
       (log/info "post" url request)
-      (log-time (str "post " path) (client/post url request)))
+      (log-time (str "post " path) (wrap-exception (client/post url request))))
 
     (log/info "Asiahallinta ei ole päällä - toimenpide: " operation " viesti:" json-object)))
 
