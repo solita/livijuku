@@ -5,6 +5,11 @@
         </encoder>
     </appender>
 
+    <!-- Only >= info from HikariPool messages -->
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
     <root level="debug">
         <appender-ref ref="CONSOLE"/>
     </root>
