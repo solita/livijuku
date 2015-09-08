@@ -20,7 +20,8 @@
 (defmethod meta/restructure-param :audit [_ data {:keys [body] :as acc}]
   (assoc acc :body `((log/log "juku.rest-api.audit" :info nil
                               (str (name (:request-method ~meta/+compojure-api-request+)) " "
-                                   (:uri ~meta/+compojure-api-request+)
+                                   (:uri ~meta/+compojure-api-request+) " - "
+                                   (:tunnus user/*current-user*)
                                    (if (empty? ~data)
                                      ""
                                      (str " - " (s/join " - "(map (comp pr-str ~meta/+compojure-api-request+) ~data))))))
