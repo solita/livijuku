@@ -23,3 +23,6 @@ select tunnus, nimi, jarjetys from avustuskohdeluokka
 -- name: select-avustuskohdelajit
 select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji
 
+-- name: select-hakemukset
+select id, organisaatioid, hakemustilatunnus from hakemus where id in (:hakemusids)
+

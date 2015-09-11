@@ -16,7 +16,8 @@
             [ring.util.http-response :as r]
             [common.collection :as coll]
             [clojure.set :as set]
-            [common.core :as c]))
+            [common.core :as c]
+            [juku.service.hakemus-core :as hc]))
 
 ; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "avustuskohde.sql")
@@ -53,7 +54,8 @@
     (add-avustuskohde! avustuskohde)))
 
 (defn save-avustuskohteet! [avustuskohteet]
-  (service/assert-user-is-hakemus-owner! user/*current-user* (set (map :hakemusid avustuskohteet)))
+  (doseq [hakemus (select-hakemukset {:hakemusids (set (map :hakemusid avustuskohteet))})]
+    (hc/assert-edit-hakemus-content-allowed*! hakemus))
   (with-transaction
     (doseq [avustuskohde avustuskohteet]
       (save-avustuskohde! avustuskohde))))
