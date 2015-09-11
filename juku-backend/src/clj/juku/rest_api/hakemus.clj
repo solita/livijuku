@@ -56,7 +56,7 @@
              :audit [:body-params]
              :return  nil
              :path-params     [hakemusid :- Long]
-             :body-params [selite :- s/Str]
+             :body-params [selite :- (s/maybe s/Str)]
              :summary  "Käsittelijä lähettää hakijalle täydennyspyynnön. Hakemus on tämän jälkeen tilassa täydennettävää."
              (ok (service/taydennyspyynto! hakemusid selite)))
       (POST* "/hakemus/:hakemusid/laheta-taydennys" []

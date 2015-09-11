@@ -20,7 +20,8 @@
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
-(defapi juku-api {:exceptions {:exception-handler jm/exception-handler}}
+(defapi juku-api {:exceptions {:exception-handler jm/exception-handler}
+                  :validation-errors {:error-handler jm/logging-validation-error-handler}}
         (swagger-ui "/api/ui")
         (swagger-docs :info {
             :title "Liikennevirasto - Juku API"
