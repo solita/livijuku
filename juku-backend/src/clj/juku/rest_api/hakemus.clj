@@ -25,10 +25,11 @@
              :body     [hakemus NewHakemus]
              :summary  "Lisää yksittäinen hakemus."
              (ok (core/add-hakemus! hakemus)))
-      (PUT* "/hakemus/suunniteltuavustus" []
+      (PUT* "/hakemus/:hakemusid/suunniteltuavustus" []
             :auth [:kasittely-hakemus]
             :return   nil
-            :body-params [hakemusid :- Long, suunniteltuavustus :- s/Num]
+            :path-params [hakemusid :- Long]
+            :body-params [suunniteltuavustus :- s/Num]
             :summary  "Päivittää hakemuksen myönnettävän avustusrahamäärän suunnitelmaan."
             (ok (core/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
       #_(PUT* "/hakemus/kasittelija" []

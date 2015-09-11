@@ -29,6 +29,7 @@
 
     (PUT* "/hakemus/:hakemusid/paatos" []
           :auth [:kasittely-hakemus]
+          :audit [:body-params]
           :return  nil
           :path-params [hakemusid :- Long]
           :body [paatos EditPaatos]
@@ -37,6 +38,7 @@
 
     (POST* "/hakemus/:hakemusid/hyvaksy-paatos" []
            :auth [:hyvaksy-paatos]
+           :audit []
            :return  nil
            :path-params [hakemusid :- Long]
            :summary "Hyväksy hakemuksen avoinna oleva päätös."
@@ -44,6 +46,7 @@
 
     (POST* "/hakemus/:hakemusid/peruuta-paatos" []
            :auth [:hyvaksy-paatos]
+           :audit []
            :return  nil
            :path-params [hakemusid :- Long]
            :summary "Peruuta hakemuksen hyväksytty päätös."
