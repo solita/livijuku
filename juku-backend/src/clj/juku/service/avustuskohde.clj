@@ -89,11 +89,6 @@
 (defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
 
 (defn find-avustuskohteet [hakemusid]
-  (let [hakemus (h/get-hakemus hakemusid)]
-    (if (h/has-privilege-to-view-hakemus-content* hakemus)
-      (find-avustuskohteet-by-hakemusid hakemusid)
-      (let [msg (str "Käyttäjällä " (:tunnus user/*current-user*)
-                     " ei ole oikeutta nähdä hakemuksen: " (:id hakemus) " sisältöä. "
-                     "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia.")]
-        (ss/throw+ {:http-response r/forbidden :message msg} msg)))))
+  (h/assert-view-hakemus-content-allowed*! (h/get-hakemus hakemusid))
+  (find-avustuskohteet-by-hakemusid hakemusid))
 

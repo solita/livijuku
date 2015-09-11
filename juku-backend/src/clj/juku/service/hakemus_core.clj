@@ -5,6 +5,7 @@
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [juku.service.email :as email]
+            [slingshot.slingshot :as ss]
             [schema.coerce :as scoerce]
             [clojure.java.io :as io]
             [juku.schema.hakemus :refer :all]
@@ -44,7 +45,7 @@
 (defn find-kayttajan-hakemukset []
   (find-organisaation-hakemukset (:organisaatioid user/*current-user*)))
 
-(defn- get-any-hakemus [hakemusid select]
+(defn get-any-hakemus [hakemusid select]
   (-> (select {:hakemusid hakemusid})
       (coll/single-result-required! {:type ::hakemus-not-found
                                      :hakemusid hakemusid
@@ -59,6 +60,43 @@
       (and (is-hakemus-owner?* hakemus) (user/has-privilege* :view-oma-hakemus))
       (and (user/has-privilege* :view-kaikki-lahetetyt-hakemukset)
            (not (#{"0" "K" "T0"} (:hakemustilatunnus hakemus))))))
+
+(defn is-hakemus-keskenerainen?
+  "Tässä keskeneräinen-sana on laajemmassa merkityksessä ja tarkoittaa yleisesti kaikkia hakemuksen tiloja,
+   joissa hakemus on hakijalla työstettävänä. Nämä tilat ovat: keskeneräinen (K) ja täydennettävänä (T0)."
+  [hakemus] (#{"K" "T0"} (:hakemustilatunnus hakemus)))
+
+(defn- throw! [response msg] (ss/throw+ {:http-response response :message msg} msg))
+
+(defn assert-view-hakemus-content-allowed*! [hakemus]
+  (when-not (has-privilege-to-view-hakemus-content* hakemus)
+    (throw! r/forbidden
+            (str "Käyttäjällä " (:tunnus user/*current-user*)
+            " ei ole oikeutta nähdä hakemuksen: " (:id hakemus) " sisältöä. "
+            "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta nähdä keskeneräisiä hakemuksia."))))
+
+(defn assert-edit-hakemus-content-allowed*!
+  "Hakemusta voi muokata vain jos kaikki seuraavat ehdot täyttyvät:
+   - käyttäjällä on hakemuksen muokkausoikeus
+   - käyttäjä on hakemuksen omistaja
+   - hakemus on keskeneräinen"
+
+  [hakemus]
+  (when-not (user/has-privilege* :modify-oma-hakemus)
+    (throw! r/forbidden
+            (str "Käyttäjällä " (:tunnus user/*current-user*)
+                 " ei ole oikeutta muokata hakemuksen: " (:id hakemus) " sisältöä.")))
+
+  (when-not (is-hakemus-owner?* hakemus)
+    (throw! r/forbidden
+            (str "Käyttäjä " (:tunnus user/*current-user*) " ei ole hakemuksen: " (:id hakemus) " omistaja.")))
+
+  (when (= (:hakemustilatunnus hakemus) "0")
+    (throw! r/conflict (str "Hakemusta " (:id hakemus) " ei voi muokata, koska hakuaika ei ole alkanut.")))
+
+  (when-not (is-hakemus-keskenerainen? hakemus)
+    (throw! r/conflict (str "Hakemusta " (:id hakemus) " ei voi muokata, koska se ei ole enää keskeneräinen. "
+                            "Hakemus on lähetetty käsiteltäväksi."))))
 
 (defn get-hakemus+ [hakemusid]
   (let [hakemus (get-any-hakemus hakemusid select-hakemus+)]
@@ -114,7 +152,7 @@
                           :hakemustilatunnus new-hakemustilatunnus
                           :expectedhakemustilatunnus expected-hakemustilatunnus})
 
-    {:http-response r/method-not-allowed
+    {:http-response r/conflict
      :message (str "Hakemuksen (" (:id hakemus) ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
                    ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
      :hakemusid (:id hakemus)

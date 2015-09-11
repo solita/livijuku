@@ -36,7 +36,7 @@
         (h/save-hakemus-kasittelija! hakemusid (:tunnus user/*current-user*))))
     hakemus))
 
-;; *** Hakemusasiakirjan (pdf-dokumentti) tuotattaminen ***
+;; *** Hakemusasiakirjan (pdf-dokumentti) tuottaminen ***
 
 (defn hakemus-template [hakemus]
   (str "hakemus-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))

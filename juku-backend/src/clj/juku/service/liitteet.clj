@@ -3,6 +3,7 @@
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
+            [juku.service.hakemus-core :as hc]
             [ring.util.http-response :as r]
             [slingshot.slingshot :as ss]
             [juku.schema.liitteet :as s]
@@ -34,19 +35,23 @@
 
 (defn add-liite! [liite ^InputStream sisalto]
   (with-transaction
-    (select-hakemus-for-update liite)
-    (insert-liite! (assoc liite :sisalto sisalto))
-    (assert-liite-maxsize! (:hakemusid liite) (:liite-max-size settings)))
+    (let [hakemus (hc/get-any-hakemus (:hakemusid liite) select-hakemus-for-update)]
+      (hc/assert-edit-hakemus-content-allowed*! hakemus)
+      (insert-liite! (assoc liite :sisalto sisalto))
+      (assert-liite-maxsize! (:hakemusid liite) (:liite-max-size settings))))
   nil)
 
-(defn delete-liite [hakemusid liitenumero]
+(defn delete-liite! [hakemusid liitenumero]
+  (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
   (update-liite-set-poistoaika! {:hakemusid hakemusid :liitenumero liitenumero})
   nil)
 
 (defn update-liite-nimi! [hakemusid liitenumero nimi]
+  (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
   (update-liite-set-nimi! {:hakemusid hakemusid :liitenumero liitenumero :nimi nimi})
   nil)
 
 (defn find-liite-sisalto [hakemusid liitenumero]
+  (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
   (if-let [liite (first (select-liite-sisalto {:hakemusid hakemusid :liitenumero liitenumero}))]
     (update-in liite [:sisalto] coerce/inputstream)))

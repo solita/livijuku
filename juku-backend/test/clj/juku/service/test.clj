@@ -64,3 +64,8 @@
 (defn before-today [days]
   (time/plus (time/today) (time/days days)))
 
+(defn set-hakuaika-today [vuosi hakemustyyppitunnus]
+  (k/save-hakemuskauden-hakuajat! vuosi [{:hakemustyyppitunnus hakemustyyppitunnus
+                                           :alkupvm (time/today)
+                                           :loppupvm (from-today 1)}]))
+

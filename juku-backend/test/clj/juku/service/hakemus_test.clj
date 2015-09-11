@@ -21,8 +21,8 @@
 
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
-(def hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0")))
 (hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
+(test/set-hakuaika-today vuosi "AH0")
 
 (log/info (str "user.timezone: " (get (System/getProperties) "user.timezone")))
 

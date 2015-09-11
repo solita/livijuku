@@ -56,4 +56,4 @@
          :return nil
          :path-params [hakemusid :- Long, liitenumero :- Long]
          :summary "Poista hakemuksen liite"
-         (ok (service/delete-liite hakemusid liitenumero))))
+         (ok (service/delete-liite! hakemusid liitenumero))))

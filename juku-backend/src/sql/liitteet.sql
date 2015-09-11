@@ -29,4 +29,4 @@ select nvl(sum(dbms_lob.getlength(sisalto)), 0) bytesize
 from liite where hakemusid = :hakemusid and poistoaika is null
 
 -- name: select-hakemus-for-update
-select id from hakemus where id = :hakemusid for update
+select id, organisaatioid, hakemustilatunnus from hakemus where id = :hakemusid for update
