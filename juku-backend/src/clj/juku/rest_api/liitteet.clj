@@ -35,6 +35,7 @@
 
     (POST* "/hakemus/:hakemusid/liite" []
            :auth [:modify-oma-hakemus]
+           :audit []
            :path-params [hakemusid :- Long]
            :multipart-params [liite :- upload/TempFileUpload]
            (ok (service/add-liite! {:hakemusid hakemusid
@@ -45,6 +46,7 @@
 
     (PUT* "/hakemus/:hakemusid/liite/:liitenumero" []
           :auth [:modify-oma-hakemus]
+          :audit [:body-params]
           :return nil
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :body-params     [nimi :- s/Str]
@@ -53,6 +55,7 @@
 
     (DELETE* "/hakemus/:hakemusid/liite/:liitenumero" []
          :auth [:modify-oma-hakemus]
+         :audit []
          :return nil
          :path-params [hakemusid :- Long, liitenumero :- Long]
          :summary "Poista hakemuksen liite"
