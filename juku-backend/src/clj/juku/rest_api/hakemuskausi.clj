@@ -33,10 +33,11 @@
                           "Depricated use service endpoint: GET /hakemuskaudet/omat instead.")
             (ok (service/find-kayttajan-hakemuskaudet+hakemukset)))
 
-      (POST* "/hakemuskausi" []
+      (POST* "/hakemuskausi/:vuosi" []
              :auth [:modify-hakemuskausi]
+             :audit []
              :return   nil
-             :body-params     [vuosi :- s/Int]
+             :path-params     [vuosi :- s/Int]
              :summary  "Avaa uusi hakemuskausi."
              (ok (service/avaa-hakemuskausi! vuosi)))
 
@@ -66,6 +67,7 @@
 
       (PUT* "/maararaha/:vuosi/:organisaatiolajitunnus" []
             :auth [:modify-hakemuskausi]
+            :audit [:body-params]
             :return   nil
             :path-params [vuosi :- s/Int, organisaatiolajitunnus :- s/Str]
             :body     [maararaha Maararaha]
@@ -83,6 +85,7 @@
 
       (POST* "/hakemuskausi/:vuosi/sulje" []
              :auth [:modify-hakemuskausi]
+             :audit []
              :return   nil
              :path-params     [vuosi :- s/Int]
              :summary  "Sulje olemassaoleva hakemuskausi."
