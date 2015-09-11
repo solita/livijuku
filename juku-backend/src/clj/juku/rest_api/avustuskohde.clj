@@ -14,6 +14,7 @@
             (ok (service/find-avustuskohteet hakemusid)))
       (PUT* "/avustuskohteet" []
             :auth [:modify-oma-hakemus]
+            :audit []
             :return   nil
             :body     [avustuskohteet [Avustuskohde]]
             :summary  "Päivittää tai lisää annetut avustuskohteet."
