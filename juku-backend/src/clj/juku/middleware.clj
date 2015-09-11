@@ -93,8 +93,6 @@
 
 (defn logging-validation-error-handler [{:keys [error] :as data}]
   (log/error "Bad request - validation error - "
-;;    (name (:request-method meta/+compojure-api-request+)) " "
- ;;   (:uri meta/+compojure-api-request+)
     (rm/stringify-error error))
 
   (rm/default-error-handler data))
