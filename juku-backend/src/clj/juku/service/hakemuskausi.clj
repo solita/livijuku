@@ -155,7 +155,7 @@
     (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
        (if (empty? (hakemus/select-hakemuskausi {:vuosi vuosi}))
          {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
-         {:http-response r/method-not-allowed :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
+         {:http-response r/conflict :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
 
     (doseq [organisaatio (filter (col/predicate not= :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
       (let [hakemus (fn [hakemustyyppitunnus] {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus :organisaatioid (:id organisaatio)})]
@@ -177,7 +177,7 @@
     (with-transaction
 
       (dml/assert-update (update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "S" :expectedtunnus "K"})
-          {:http-response r/method-not-allowed :message (str "Hakemuskausi ei ole avattu vuodelle: " vuosi) :vuosi vuosi})
+          {:http-response r/conflict :message (str "Hakemuskausi ei ole avattu vuodelle: " vuosi) :vuosi vuosi})
 
       (sulje-kaikki-hakemuskauden-hakemukset! {:vuosi vuosi})
 
