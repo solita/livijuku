@@ -170,7 +170,7 @@
 
 (defn assert-state-transition [expected-hakemustilatunnus operation operationname]
   (fact (str "Hakemuksen " operationname " tehdään väärässä tilassa K")
-      (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+      (test/with-user "juku_hakija" ["juku_hakija" "juku_kasittelija"]
           (asha/with-asha-off
             (let [id (hc/add-hakemus! hsl-hakemus)]
 
@@ -188,10 +188,11 @@
 (facts "Hakemuksen tilan hallinta - asiahallinta pois päältä"
   (fact "Hakemuksen lähettäminen - asiahallinta on pois päältä"
      (asha/with-asha-off
-       (let [id (hc/add-hakemus! hsl-hakemus)]
+       (test/with-hakija
+         (let [id (hc/add-hakemus! hsl-hakemus)]
 
-         (h/laheta-hakemus! id)
-         (:diaarinumero (hc/get-hakemus+ id)) => nil))))
+           (h/laheta-hakemus! id)
+           (:diaarinumero (hc/get-hakemus+ id)) => nil)))))
 
 (fact "Hakemuksen käsittelijän automaattinen asettaminen"
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
@@ -199,7 +200,7 @@
       (let [id (hc/add-hakemus! hsl-hakemus)]
 
         (:kasittelija (h/get-hakemus-by-id! id)) => nil
-        (h/laheta-hakemus! id)
+        (test/with-hakija (h/laheta-hakemus! id))
 
         (:kasittelija (h/get-hakemus-by-id! id)) => nil
         (:kasittelija (h/get-hakemus-by-id! id)) => "juku_kasittelija"

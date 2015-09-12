@@ -35,7 +35,7 @@
 
         (p/save-paatos! paatos)
 
-        (h/laheta-hakemus! id)
+        (test/with-hakija (h/laheta-hakemus! id))
         (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id)
 
@@ -51,7 +51,7 @@
     (asha/with-asha
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
 
-        (h/laheta-hakemus! id)
+        (test/with-hakija (h/laheta-hakemus! id))
         (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id) => (throws (str "Hakemuksella " id " ei ole avointa päätöstä"))))))
 
@@ -61,7 +61,7 @@
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
             paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
-        (h/laheta-hakemus! id)
+        (test/with-hakija (h/laheta-hakemus! id))
         (p/save-paatos! paatos)
         (p/hyvaksy-paatos! id) => (throws (str "Hakemuksen (" id
                                                ") päättäminen ei ole sallittu tilassa: V. Hakemuksen päättäminen on sallittu vain tilassa: T"))))))
@@ -74,7 +74,7 @@
 
         (p/save-paatos! paatos)
 
-        (h/laheta-hakemus! id)
+        (test/with-hakija (h/laheta-hakemus! id))
         (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id)
         (p/peruuta-paatos! id)

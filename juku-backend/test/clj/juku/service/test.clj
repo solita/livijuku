@@ -53,6 +53,8 @@
           (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test)))
        (ss/throw+ (str "Käyttäjällä " ~uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
 
+(defmacro with-hakija [& test] `(with-user "juku_hakija" ["juku_hakija"] ~@test))
+
 (defn before-now? [time]
   (time/before? time (time/now)))
 

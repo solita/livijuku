@@ -21,7 +21,8 @@
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
             [common.collection :as coll]
-            [common.core :as c])
+            [common.core :as c]
+            [juku.service.hakemus-core :as hc])
   (:import (org.joda.time LocalDate)))
 
 (defn get-hakemus-by-id! [hakemusid]
@@ -80,6 +81,13 @@
 
 ;; *** Hakemustilan käsittely ***
 
+(defn assert-oma-hakemus*! [hakemus]
+  (when-not (hc/is-hakemus-owner?* hakemus)
+    (hc/throw! r/forbidden
+               (str "Käyttäjällä " (:tunnus user/*current-user*)
+                    " ei ole oikeutta lähettaa hakemusta: " (:id hakemus) ". "
+                    "Ainoastaan oman hakemuksen saa lähettää."))))
+
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (h/get-hakemus hakemusid)
@@ -89,6 +97,7 @@
 
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
+      (assert-oma-hakemus*! hakemus)
       (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto" nil)
 
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
@@ -154,6 +163,7 @@
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
+      (assert-oma-hakemus*! hakemus)
       (h/change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
 
       (if-let [diaarinumero (:diaarinumero hakemus)]

@@ -148,7 +148,7 @@
         id1 (hc/add-hakemus! hakemus1)]
 
       (hc/add-hakemus! hakemus2)
-      (asha/with-asha-off (h/laheta-hakemus! id1))
+      (test/with-hakija (asha/with-asha-off (h/laheta-hakemus! id1)))
 
       (update-in (find-hakemuskausi+ vuosi) [:hakemukset 0 :hakemustilat] set) =>
         {:vuosi      vuosi

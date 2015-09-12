@@ -18,13 +18,16 @@
 (defn assoc-10alv [ak] (assoc ak :alv 10))
 (defn assoc-24alv [ak] (assoc ak :alv 24))
 
+(defn avustuskohde-psa1 [hakemusid]
+  {:hakemusid hakemusid, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M})
+
 ; -- Avustuskohteiden testit --
 
 (facts "Avustuskohteiden testit"
 (test/with-user "juku_hakija" ["juku_hakija"]
   (fact "Avustuskohteen lisääminen - alv10"
     (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-          avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
+          avustuskohde (avustuskohde-psa1 id)]
 
       (ak/add-avustuskohde! avustuskohde)
 
@@ -46,16 +49,16 @@
 
       (ak/find-avustuskohteet-by-hakemusid id) => [(assoc-24alv avustuskohde)]))
 
-  (fact "Avustuskohteen tallentaminen ja hakeminen - uusi avustukohde"
+  (fact "Avustuskohteen tallentaminen ja hakeminen - uusi avustuskohde"
     (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-          avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
+          avustuskohde (avustuskohde-psa1 id)]
 
         (ak/save-avustuskohteet![avustuskohde])
         (ak/find-avustuskohteet-by-hakemusid id) => [(assoc-10alv avustuskohde)]))
 
   (fact "Avustuskohteiden päivittäminen"
      (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-           ak1 {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}
+           ak1 (avustuskohde-psa1 id)
            ak2 (assoc ak1 :avustuskohdelajitunnus "2")]
 
        (:muokkaaja (hc/get-hakemus+ id)) => nil
@@ -93,22 +96,33 @@
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
             avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1000000000M, :omarahoitus 1M}]
 
-        (ak/save-avustuskohteet! [avustuskohde]) => (throws #"Failed to execute: insert into avustuskohde.*" ))))
+        (ak/save-avustuskohteet! [avustuskohde]) => (throws #"Failed to execute: insert into avustuskohde.*" )))
 
-  (fact "Avustuskohteen lisääminen - hakemus lähetetty"
+    (fact "Avustuskohteen lisääminen - hakemus on lähetetty"
+      (let [id (hc/add-hakemus! hsl-ah0-hakemus)
+           avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
+
+        (asha/with-asha (h/laheta-hakemus! id))
+        (ak/save-avustuskohteet! [avustuskohde]) =>
+          (throws (str "Hakemusta " id " ei voi muokata, koska se ei ole enää keskeneräinen. Hakemus on lähetetty käsiteltäväksi."))))))
+
+
+
+(fact "Avustuskohteen lisääminen - käyttäjällä ei ole oikeutta muokata hakemusta"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
      (let [id (hc/add-hakemus! hsl-ah0-hakemus)
            avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
-       (asha/with-asha (h/laheta-hakemus! id))
-       (ak/save-avustuskohteet! [avustuskohde]) => (throws (str "Käyttäjällä  ei ole oikeutta muokata hakemuksen: " id " sisältöä." )))))
+       (ak/save-avustuskohteet! [avustuskohde]) =>
+       (throws (str "Käyttäjällä juku_kasittelija ei ole oikeutta muokata hakemuksen: " id " sisältöä." )))))
 
 
 (fact "Avustuskohteen lisääminen - ei oma hakemus"
-  (test/with-user "juku_kasittelija" ["juku_hakija"]
+  (test/with-user "juku_hakija_tampere" ["juku_hakija"]
     (let [id (hc/add-hakemus! hsl-ah0-hakemus)
           avustuskohde {:hakemusid id, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}]
 
-      (ak/save-avustuskohteet! [avustuskohde]) => (throws (str "Käyttäjä juku_kasittelija ei ole hakemuksen: " id " omistaja.")))))
+      (ak/save-avustuskohteet! [avustuskohde]) => (throws (str "Käyttäjä juku_hakija_tampere ei ole hakemuksen: " id " omistaja.")))))
 
 (defn create-avustuskohde [hakemusid]
   {:hakemusid hakemusid, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M})

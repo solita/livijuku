@@ -66,7 +66,7 @@
    joissa hakemus on hakijalla työstettävänä. Nämä tilat ovat: keskeneräinen (K) ja täydennettävänä (T0)."
   [hakemus] (#{"K" "T0"} (:hakemustilatunnus hakemus)))
 
-(defn- throw! [response msg] (ss/throw+ {:http-response response :message msg} msg))
+(defn throw! [response msg] (ss/throw+ {:http-response response :message msg} msg))
 
 (defn assert-view-hakemus-content-allowed*! [hakemus]
   (when-not (has-privilege-to-view-hakemus-content* hakemus)

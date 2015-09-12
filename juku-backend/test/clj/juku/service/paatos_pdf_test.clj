@@ -149,7 +149,7 @@
               paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar" :paattajanimi "Pentti Päättäjä"}]
 
           (p/save-paatos! paatos)
-          (h/laheta-hakemus! id)
+          (test/with-hakija (h/laheta-hakemus! id))
           (h/tarkasta-hakemus! id)
           (p/hyvaksy-paatos! id)
 
