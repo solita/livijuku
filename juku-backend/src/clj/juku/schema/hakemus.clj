@@ -1,8 +1,7 @@
 (ns juku.schema.hakemus
   (:import (org.joda.time DateTime)
            (org.joda.time LocalDate))
-  (:require [schema.core :as s]
-            [clj-time.core :as time]))
+  (:require [schema.core :as s]))
 
 (s/defschema Hakuaika {:alkupvm LocalDate
                        :loppupvm LocalDate})
@@ -23,13 +22,15 @@
                  :myonnettava-avustus s/Num))
 
 (s/defschema Hakemus+Kasittely
-  "Tämä skeema laajentaa hakemuksen perustietoja käsittelytiedolla:
+  "Tämä skeema laajentaa hakemuksen perustietoja hakemuksen käsittelytiedolla:
   - käsittelijän nimi
   - hakemuksen muokkausaika
 
   Muokkausajan tarkka merkitys riippuu palvelusta. Muokkausaika voi tarkoittaa:
   1) hakemuksen sisältötietojen muokkausaikaa
-  2) hakemuksen sisältötietojen ja perustietojen viimeisintä muokkausaikaa."
+  2) hakemuksen sisältötietojen ja perustietojen viimeisintä muokkausaikaa.
+
+  Hakemuksen sisältötiedoiksi lasketaan avustuskohteet ja liitteet."
 
   (assoc Hakemus :kasittelijanimi (s/maybe s/Str)
                  :muokkausaika (s/maybe DateTime)))
@@ -42,6 +43,9 @@
                            :hakemustyyppitunnus s/Str})
 
 (s/defschema Hakemus+
+  "Tämä skeema laajentaa hakemuksen perustietoja hakemuksen yksityiskohtaisilla.
+  Nämä tiedot sisältävät käsittelytiedot ja muita hakemuksen lisätietoja."
+
   (assoc Hakemus+Kasittely
     :selite (s/maybe s/Str)
     (s/optional-key :taydennyspyynto) Taydennyspyynto
