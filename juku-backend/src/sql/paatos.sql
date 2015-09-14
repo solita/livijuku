@@ -49,7 +49,7 @@ select paattajanimi from (
 
 -- name: select-hakemus-paatos
 select hakemus.id hakemusid, p.voimaantuloaika, p.myonnettyavustus
-from hakemus left join paatos p
+from hakemus inner join paatos p
     on p.hakemusid = hakemus.id
 where hakemus.vuosi = :vuosi and
       hakemus.organisaatioid = :organisaatioid and
