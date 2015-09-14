@@ -17,3 +17,6 @@ select count(*) amount from avustuskohdelaji
 
 -- name: select-taydennyspyynto
 select maarapvm, selite from taydennyspyynto where hakemusid = :hakemusid and numero = :nro
+
+-- name: select-count-hakemus
+select count(*) count from hakemus

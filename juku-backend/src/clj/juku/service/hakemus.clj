@@ -90,7 +90,7 @@
 
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
-    (let [hakemus (h/get-hakemus hakemusid)
+    (let [hakemus (h/get-hakemus+ hakemusid)
           hakemuskausi (h/find-hakemuskausi hakemus)
           hakemus-asiakirja (hakemus-pdf hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))

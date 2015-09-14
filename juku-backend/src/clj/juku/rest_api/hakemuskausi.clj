@@ -26,7 +26,7 @@
             :summary "Hae sisäänkirjautuneen käyttäjän omat hakemukset hakemuskausittain ryhmitettynä."
             (ok (service/find-kayttajan-hakemuskaudet+hakemukset)))
 
-      (GET* "/hakemukset/hakija" []
+      #_(GET* "/hakemukset/hakija" []
             :auth [:view-oma-hakemus]
             :return [Hakemuskausi+Hakemukset]
             :summary (str "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain ryhmitettynä. "

@@ -23,17 +23,24 @@
 (def hakuaika (:hakuaika (test/hakemus-summary hakemuskausi "AH0")))
 (hk/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero (str "dnro:" vuosi)})
 
+(def hsl-hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
+
 (defn assoc-hakemus-defaults [hakemus id]
-  (assoc hakemus :id id, :hakemustilatunnus "K", :kasittelijanimi "Ei määritelty", :diaarinumero nil, :hakuaika hakuaika))
+  (assoc hakemus :id id, :hakemustilatunnus "K", :diaarinumero nil, :hakuaika hakuaika))
+
+(defn assoc-hakemus-defaults+kasittely [hakemus id]
+  (assoc (assoc-hakemus-defaults hakemus id) :kasittelijanimi nil))
 
 (defn assoc-hakemus-defaults+ [hakemus id selite]
-  (assoc (assoc-hakemus-defaults hakemus id) :contentvisible true
-                                             :luontitunnus "juku_kasittelija",
-                                             :kasittelija nil, :kasittelijanimi "Ei määritelty", :selite selite,
-                                             :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
+  (assoc (assoc-hakemus-defaults+kasittely hakemus id) :contentvisible true
+                                                       :luontitunnus "juku_kasittelija",
+                                                       :kasittelija nil, :selite selite,
+                                                       :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
   (assoc (assoc-hakemus-defaults hakemus id) :haettu-avustus haettu-avustus :myonnettava-avustus myonnettava-avustus))
+
+(defn dissoc-muokkausaika [obj] (dissoc obj :muokkausaika))
 
 (log/info (str "user.timezone: " (get (System/getProperties) "user.timezone")))
 
@@ -45,10 +52,9 @@
 
   (fact "Uuden hakemuksen luonti"
     (let [organisaatioid 1M
-          hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid organisaatioid}
-          id (h/add-hakemus! hakemus)]
+          id (h/add-hakemus! hsl-hakemus)]
 
-      (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hakemus id nil)))
+      (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hsl-hakemus id nil)))
 
   (fact "Uuden hakemuksen luonti - organisaatio ei ole olemassa"
     (let [organisaatioid 23453453453453
@@ -91,8 +97,19 @@
       organisaation-hakemukset => (partial every? (coll/eq :organisaatioid organisaatioid))
 
       ;; hakemus (:id = id) löytyy hakutuloksista
-      (dissoc (coll/find-first (find-by-id id) organisaation-hakemukset) :muokkausaika)
+      (dissoc-muokkausaika (coll/find-first (find-by-id id) organisaation-hakemukset))
         => (assoc-hakemus-defaults hakemus id)))
+
+  (fact "Kaikkien hakemusten haku"
+    (let [organisaatioid 1M
+          id (h/add-hakemus! hsl-hakemus)
+          hakemukset (h/find-all-hakemukset)]
+
+      (count hakemukset) => (:count (first (test/select-count-hakemus)))
+
+      ;; hakemus (:id = id) löytyy hakutuloksista
+      (dissoc-muokkausaika (coll/find-first (find-by-id id) hakemukset))
+        => (assoc-hakemus-defaults+kasittely hsl-hakemus id)))
 
   (fact "Hakemussuunnitelmien haku"
     (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
@@ -106,7 +123,7 @@
       hakemussuunnitelmat => (partial every? (coll/eq :hakemustyyppitunnus "AH0"))
 
       ;; hakemus (:id = id) löytyy hakutuloksista
-      (dissoc (coll/find-first (find-by-id id) hakemussuunnitelmat) :muokkausaika)
+      (dissoc-muokkausaika (coll/find-first (find-by-id id) hakemussuunnitelmat))
         => (expected-hakemussuunnitelma id hakemus 0M 0M)))
 
   (fact "Hakemussuunnitelmien haku - lisätty avustuskohde ja myönnetty avustus"
@@ -136,7 +153,7 @@
             => (expected-hakemussuunnitelma id1 (hakemus 1M) 2M 1M)
 
           ;; hakemus (:id = id) löytyy hakutuloksista
-          (dissoc (coll/find-first (find-by-id id2) hakemussuunnitelmat) :muokkausaika)
+          (dissoc-muokkausaika (coll/find-first (find-by-id id2) hakemussuunnitelmat))
             => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))))
 
 (facts "Ei käynnissä tilan käsittely"
@@ -160,3 +177,22 @@
 
           (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
           (:hakemustilatunnus (h/get-hakemus+ id)) => "0")))
+
+(defn avustuskohde-psa1 [hakemusid]
+  {:hakemusid hakemusid, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M})
+
+(fact "Kaikkien hakemusten haku - sisällön muokkaus muuttaa muokkausaikaa"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [id (h/add-hakemus! hsl-hakemus)
+          hakemukset (h/find-all-hakemukset)
+          hakemus (coll/find-first (find-by-id id) hakemukset)
+          original-muokkausaika (:muokkausaika hakemus)]
+
+      (count hakemukset) => (:count (first (test/select-count-hakemus)))
+
+      (dissoc-muokkausaika hakemus) => (assoc-hakemus-defaults+kasittely hsl-hakemus id)
+      (Thread/sleep 1000)
+      (ak/save-avustuskohteet! [(avustuskohde-psa1 id)])
+
+      (coll/find-first (find-by-id id) (h/find-all-hakemukset)) =>
+        (coll/predicate time/after? :muokkausaika original-muokkausaika))))

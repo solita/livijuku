@@ -3,8 +3,8 @@
 select vuosi, diaarinumero from hakemuskausi where vuosi = :vuosi
 
 -- name: select-organisaation-hakemukset
-select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-       organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+       organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus_view where organisaatioid = :organisaatioid
 
 -- name: select-hakemus+
@@ -12,8 +12,8 @@ with
 kayttajanimi as (
   select tunnus, nvl(nimi, etunimi || ' ' || sukunimi) nimi from kayttaja
 ), 
-muokkaus as (
-  select (select nimi from kayttajanimi where tunnus = muokkaustunnus) muokkaaja
+sisalto as (
+  select (select nimi from kayttajanimi where tunnus = muokkaustunnus) muokkaaja, muokkausaika
   from (
     select avustuskohde.muokkaustunnus, avustuskohde.muokkausaika from avustuskohde
     where avustuskohde.hakemusid = :hakemusid and avustuskohde.muokkausaika <> avustuskohde.luontiaika
@@ -32,25 +32,36 @@ lahetys as (
     order by luontiaika desc)
   where rownum = 1
 )
-select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
        organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
-       muokkaus.*, lahetys.*
-from hakemus_view left join muokkaus on (1=1) left join lahetys on (1=1)
+       sisalto.muokkaaja,
+       case when sisalto.muokkausaika is null then hakemus.muokkausaika else sisalto.muokkausaika end muokkausaika,
+       lahetys.*
+from hakemus_view hakemus left join sisalto on (1=1) left join lahetys on (1=1)
 where id = :hakemusid
 
 -- name: select-hakemus
-select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-  organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm
 from hakemus_view where id = :hakemusid
 
 -- name: select-all-hakemukset
-select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
+with sisalto as (
+  select hakemusid, max(muokkausaika) muokkausaika
+  from (
+    select avustuskohde.hakemusid, avustuskohde.muokkausaika from avustuskohde
+    union all
+    select liite.hakemusid, liite.muokkausaika from liite)
+  group by hakemusid
+)
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+       greatest(hakemus.muokkausaika, coalesce(sisalto.muokkausaika, date'1-1-1')) muokkausaika,
        organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm
-from hakemus_view
+from hakemus_view hakemus left join sisalto on hakemus.id = sisalto.hakemusid
 
 -- name: select-hakemussuunnitelmat
-select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, muokkausaika,
-  organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm,
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm,
   (select nvl(sum(avustuskohde.haettavaavustus), 0) from avustuskohde
   where hakemusid = hakemus.id) "haettu-avustus",
   nvl(suunniteltuavustus, 0) "myonnettava-avustus"

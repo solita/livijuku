@@ -188,6 +188,5 @@
                      :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
                                 :loppupvm (time/local-date (- vuosi 1) 12 15)}
                      :organisaatioid 1M
-                     :kasittelijanimi "Ei määritelty"
                      :vuosi vuosi}]})))
 

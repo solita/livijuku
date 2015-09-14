@@ -7,19 +7,32 @@
 (s/defschema Hakuaika {:alkupvm LocalDate
                        :loppupvm LocalDate})
 
-(s/defschema Hakemus {:id     s/Num
-                      :diaarinumero     (s/maybe s/Str)
-                      :vuosi  s/Int
-                      :hakemustyyppitunnus s/Str
-                      :hakemustilatunnus s/Str
-                      :organisaatioid s/Num
-                      :kasittelijanimi s/Str
-                      :hakuaika Hakuaika
-                      :muokkausaika DateTime})
+(s/defschema Hakemus
+  "Tämä skeema määrittää hakemuksen perustiedot."
+
+  { :id     s/Num
+    :diaarinumero     (s/maybe s/Str)
+    :vuosi  s/Int
+    :hakemustyyppitunnus s/Str
+    :hakemustilatunnus s/Str
+    :organisaatioid s/Num
+    :hakuaika Hakuaika})
 
 (s/defschema HakemusSuunnitelma
   (assoc Hakemus :haettu-avustus s/Num
                  :myonnettava-avustus s/Num))
+
+(s/defschema Hakemus+Kasittely
+  "Tämä skeema laajentaa hakemuksen perustietoja käsittelytiedolla:
+  - käsittelijän nimi
+  - hakemuksen muokkausaika
+
+  Muokkausajan tarkka merkitys riippuu palvelusta. Muokkausaika voi tarkoittaa:
+  1) hakemuksen sisältötietojen muokkausaikaa
+  2) hakemuksen sisältötietojen ja perustietojen viimeisintä muokkausaikaa."
+
+  (assoc Hakemus :kasittelijanimi (s/maybe s/Str)
+                 :muokkausaika (s/maybe DateTime)))
 
 (s/defschema Taydennyspyynto {:numero s/Int
                               :maarapvm LocalDate
@@ -29,15 +42,16 @@
                            :hakemustyyppitunnus s/Str})
 
 (s/defschema Hakemus+
-  (assoc Hakemus :selite (s/maybe s/Str)
-                 (s/optional-key :taydennyspyynto) Taydennyspyynto
-                 :other-hakemukset [Hakemusviite]
-                 :contentvisible s/Bool
-                 :kasittelija (s/maybe s/Str)
-                 :luontitunnus s/Str
-                 :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)
-                 :lahettaja (s/maybe s/Str)        ; hakemuksen viimeisimmän lähetyksen tehnyt hakija (fullname)
-                 :lahetysaika (s/maybe DateTime))) ; hakemuksen viimeisin lähetysaika
+  (assoc Hakemus+Kasittely
+    :selite (s/maybe s/Str)
+    (s/optional-key :taydennyspyynto) Taydennyspyynto
+    :other-hakemukset [Hakemusviite]
+    :contentvisible s/Bool
+    :kasittelija (s/maybe s/Str)
+    :luontitunnus s/Str
+    :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)
+    :lahettaja (s/maybe s/Str)        ; hakemuksen viimeisimmän lähetyksen tehnyt hakija (fullname)
+    :lahetysaika (s/maybe DateTime))) ; hakemuksen viimeisin lähetysaika
 
 
 (s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika :hakuaika))

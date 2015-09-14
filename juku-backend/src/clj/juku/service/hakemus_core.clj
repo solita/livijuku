@@ -18,9 +18,10 @@
 (sql/defqueries "hakemus.sql")
 
 ; *** Hakemus skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
-(def coerce-hakemus (scoerce/coercer Hakemus coerce/db-coercion-matcher))
-(def coerce-hakemus+ (scoerce/coercer Hakemus+ coerce/db-coercion-matcher))
-(def coerce-hakemus-suunnitelma (scoerce/coercer HakemusSuunnitelma coerce/db-coercion-matcher))
+(def coerce-hakemus (coerce/coercer Hakemus))
+(def coerce-hakemus+kasittely (coerce/coercer Hakemus+Kasittely))
+(def coerce-hakemus+ (coerce/coercer Hakemus+))
+(def coerce-hakemus-suunnitelma (coerce/coercer HakemusSuunnitelma))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def constraint-errors
@@ -39,7 +40,7 @@
     (select-organisaation-hakemukset {:organisaatioid organisaatioid})))
 
 (defn find-all-hakemukset []
-  (map (comp coerce-hakemus coerce/row->object)
+  (map (comp coerce-hakemus+kasittely coerce/row->object)
        (select-all-hakemukset)))
 
 (defn find-kayttajan-hakemukset []

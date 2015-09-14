@@ -10,14 +10,14 @@ select
   hakuaika.alkupvm hakuaika_alkupvm, hakuaika.loppupvm hakuaika_loppupvm, selite,
   hakemus.kasittelija,
   case
-    when hakemus.kasittelija is null then 'Ei määritelty'
-    else concat(concat(kayttaja.etunimi, ' '), kayttaja.sukunimi)
+    when hakemus.kasittelija is null then null
+    else coalesce(kasittelija.nimi, kasittelija.etunimi || ' ' || kasittelija.sukunimi)
   end kasittelijanimi,
   hakemus.luontitunnus, hakemus.suunniteltuavustus
 from hakemus 
 inner join hakuaika 
   on hakemus.vuosi = hakuaika.vuosi and 
      hakemus.hakemustyyppitunnus = hakuaika.hakemustyyppitunnus
-left join kayttaja
-  on hakemus.kasittelija = kayttaja.tunnus
+left join kayttaja kasittelija
+  on hakemus.kasittelija = kasittelija.tunnus
 ;
