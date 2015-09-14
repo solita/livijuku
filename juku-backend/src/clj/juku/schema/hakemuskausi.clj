@@ -6,7 +6,12 @@
                             :tilatunnus s/Str
                             :hakuohje_contenttype (s/maybe s/Str)})
 
-(s/defschema Hakemuskausi+Hakemukset (assoc Hakemuskausi+ :hakemukset [h/Hakemus+Kasittely]))
+(defn hakemuskausi+hakemukset [hakemusschema] (assoc Hakemuskausi+ :hakemukset [hakemusschema]))
+
+(s/defschema Hakemuskausi+Hakemukset+Kasittely (hakemuskausi+hakemukset h/Hakemus+Kasittely))
+
+(s/defschema Hakemuskausi+Hakemukset (hakemuskausi+hakemukset h/Hakemus))
+
 
 (s/defschema Maararaha {:maararaha s/Num
                         :ylijaama s/Num})

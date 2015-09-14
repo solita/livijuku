@@ -10,7 +10,7 @@
 (defroutes* hakemuskausi-routes
       (GET* "/hakemuskaudet" []
             :auth [:view-hakemus]
-            :return [Hakemuskausi+Hakemukset]
+            :return [Hakemuskausi+Hakemukset+Kasittely]
             :summary "Hae kaikki hakemuskaudet ja niiden hakemukset."
             (ok (service/find-hakemuskaudet+hakemukset)))
 
@@ -28,7 +28,7 @@
 
       #_(GET* "/hakemukset/hakija" []
             :auth [:view-oma-hakemus]
-            :return [Hakemuskausi+Hakemukset]
+            :return [Hakemuskausi+Hakemukset+Kasittely]
             :summary (str "Hae sisäänkirjautuneen käyttäjän hakemukset hakemuskausittain ryhmitettynä. "
                           "Depricated use service endpoint: GET /hakemuskaudet/omat instead.")
             (ok (service/find-kayttajan-hakemuskaudet+hakemukset)))
