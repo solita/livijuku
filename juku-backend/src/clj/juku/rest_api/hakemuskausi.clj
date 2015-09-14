@@ -4,6 +4,7 @@
             [juku.service.hakemuskausi :as service]
             [juku.schema.hakemuskausi :refer :all]
             [ring.util.http-response :refer :all]
+            [compojure.api.upload :as upload]
             [schema.core :as s]
             [clojure.java.io :as io]))
 
@@ -67,14 +68,26 @@
             :summary  "Päivittää tai lisää määrärahan tietylle vuodella ja organisaatiolajille."
             (ok (service/save-maararaha! (assoc maararaha :vuosi vuosi :organisaatiolajitunnus organisaatiolajitunnus))))
 
-      (PUT "/hakemuskausi/:vuosi/hakuohje"
-            [vuosi :as {{{tempfile :tempfile filename :filename content-type :content-type} :hakuohje} :params}]
-            (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile))))
+      (PUT* "/hakemuskausi/:vuosi/hakuohje" []
+             :auth [:modify-hakemuskausi]
+             :audit []
+             :path-params [vuosi :- s/Int]
+             :multipart-params [hakuohje :- upload/TempFileUpload]
+             (ok (service/save-hakuohje vuosi
+                                        (:filename hakuohje)
+                                        (:content-type hakuohje)
+                                        (io/input-stream (:tempfile hakuohje)))))
 
       ;; this end point is for legacy UAs which does not support put requests
-      (POST "/hakemuskausi/:vuosi/hakuohje"
-           [vuosi :as {{{tempfile :tempfile filename :filename content-type :content-type} :hakuohje} :params}]
-           (ok (service/save-hakuohje (Integer/parseInt vuosi) filename content-type (io/input-stream tempfile))))
+      (POST* "/hakemuskausi/:vuosi/hakuohje" []
+             :auth [:modify-hakemuskausi]
+             :audit []
+             :path-params [vuosi :- s/Int]
+             :multipart-params [hakuohje :- upload/TempFileUpload]
+             (ok (service/save-hakuohje vuosi
+                                        (:filename hakuohje)
+                                        (:content-type hakuohje)
+                                        (io/input-stream (:tempfile hakuohje)))))
 
       (POST* "/hakemuskausi/:vuosi/sulje" []
              :auth [:modify-hakemuskausi]
