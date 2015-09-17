@@ -88,7 +88,7 @@
 
 (defn save-user! [user]
   (let [uid (:tunnus *current-user*)]
-    (update-user! uid user)
+    (update-user! uid (dissoc user :tunnus))
     (assoc (merge *current-user* user) :roolit (find-user-rolenames uid))))
 
 (defn current-user+updatekirjautumisaika! []
