@@ -83,7 +83,9 @@
              :auth [:modify-hakemuskausi]
              :audit []
              :path-params [vuosi :- s/Int]
-             :multipart-params [hakuohje :- upload/TempFileUpload]
+             :multipart-params [hakuohje :- upload/TempFileUpload
+                                Filename :- s/Any
+                                Upload :- s/Any]
              (ok (service/save-hakuohje vuosi
                                         (:filename hakuohje)
                                         (:content-type hakuohje)
