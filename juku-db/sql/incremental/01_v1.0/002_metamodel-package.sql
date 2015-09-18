@@ -98,6 +98,8 @@ create or replace package model authid current_user as
   return varchar2 deterministic;
   
   procedure rename_fk_constraints(e entity%rowtype);
+  
+  function first_valid_oracle_name(n1 varchar2, n2 varchar2, n3 varchar2 default null) return varchar2 deterministic;
 end model;
 /
 
