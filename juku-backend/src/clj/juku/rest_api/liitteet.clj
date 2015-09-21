@@ -37,7 +37,10 @@
            :auth [:modify-oma-hakemus]
            :audit []
            :path-params [hakemusid :- Long]
-           :multipart-params [liite :- upload/TempFileUpload]
+           :multipart-params [liite :- upload/TempFileUpload
+                              {Filename :- s/Any nil}
+                              {Upload :- s/Any nil}]
+
            (ok (service/add-liite! {:hakemusid hakemusid
                                     :nimi (:filename liite)
                                     :contenttype (:content-type liite)}
