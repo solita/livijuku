@@ -47,6 +47,8 @@
 (s/defschema Taydennys {:kasittelija s/Str
                         :lahettaja      s/Str})
 
+(s/defschema Hakuohje {:kasittelija s/Str})
+
 (s/defschema Paatos {:paattaja s/Str})
 
 (def omistaja {:omistavaOrganisaatio "Liikennevirasto"
@@ -122,12 +124,15 @@
 
 (defn rename-content-keys [content] (set/rename-keys content {:sisalto :content :contenttype :mime-type :nimi :name}))
 
+(defn hakuohje-asiakirja [hakuohje]
+  (assoc (rename-content-keys hakuohje) :part-name "hakuohje-asiakirja"
+                                        :name "hakuohje.pdf"))
+
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
                      Hakemuskausi (merge hakemuskausi omistaja)
-                     [(assoc (rename-content-keys hakuohje) :part-name "hakuohje-asiakirja"
-                                                            :name "hakuohje.pdf")]))))
+                     [(hakuohje-asiakirja hakuohje)]))))
 
 (defn hakemus-asiakirja-multipart [asiakirja]
   {:part-name "hakemus-asiakirja"
@@ -174,5 +179,10 @@
 
 (defn sulje-hakemuskausi [diaarinumero]
   (put (str "hakemuskausi/" (codec/url-encode diaarinumero) "/sulje") "SuljeKausi"))
+
+(defn update-hakuohje [diaarinumero hakuohje hakuohje-asiakirja]
+  (post-with-liitteet (str "hakemuskausi/" (codec/url-encode diaarinumero) "/hakuohje")
+                      "Hakuohje" "hakuohje" Hakuohje hakuohje
+                      [(hakuohje-asiakirja hakuohje)]))
 
 

@@ -39,9 +39,11 @@
 
 (defn- coerce-vuosiluku->int [m] (update-in m [:vuosi] int))
 
+(defn nextvuosi [] (+ (time/year (time/now)) 1))
+
 (defn- find-all-hakemuskaudet+seuraava-kausi [new-hakemuskausi]
   (let [hakemuskaudet (map coerce-vuosiluku->int (select-all-hakemuskaudet))
-        nextvuosi (+ (time/year (time/now)) 1)]
+        nextvuosi (nextvuosi)]
     (if (some (col/eq :vuosi nextvuosi) hakemuskaudet)
       hakemuskaudet
       (conj hakemuskaudet (new-hakemuskausi nextvuosi)))))
@@ -124,6 +126,11 @@
     (insert-hakuaika! (assoc-vuosi (oletus-maksatus-hakuaika2 vuosi)))))
 
 (defn init-hakemuskausi! [vuosi]
+  (when (> vuosi (nextvuosi))
+    (ss/throw+  {:http-response r/bad-request
+                 :message (str "Hakemuskautta " vuosi
+                               " ei ole vielä mahdollista luoda. Uusin sallittu hakemuskausi on " (nextvuosi))}))
+
   (if (= (insert-hakemuskausi-if-not-exists! {:vuosi vuosi}) 1)
     (insert-hakemuskauden-oletus-hakuajat! vuosi) 0))
 
@@ -141,8 +148,18 @@
 (defn save-hakuohje [^Integer vuosi nimi content-type ^InputStream hakuohje]
   (with-transaction
     (init-hakemuskausi! vuosi)
-    (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
-    nil))
+    (let [hakemuskausi (hakemus/find-hakemuskausi {:vuosi vuosi})]
+      (when (= (:tilatunnus hakemuskausi) "S")
+        (ss/throw+  {:http-response r/conflict
+                     :message (str "Hakemuskausi " vuosi " on suljettu. Hakuohjetta ei voi enää päivittää.")}))
+
+      (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
+
+      (when (= (:tilatunnus hakemuskausi) "K")
+        (asha/update-hakuohje (:diaarinumero hakemuskausi)
+                              {:kasittelija (user/user-fullname user/*current-user*)}
+                              (find-hakuohje-sisalto vuosi)))
+      nil)))
 
 (defn find-hakuajat [vuosi]
   (m/map-values (comp coerce-hakuaika first)
