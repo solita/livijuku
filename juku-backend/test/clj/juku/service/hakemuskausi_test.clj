@@ -189,4 +189,24 @@
                                 :loppupvm (time/local-date (- vuosi 1) 12 15)}
                      :organisaatioid 1M
                      :vuosi vuosi}]})))
+(fact
+  "Uuden hakuohjeen tallentaminen ja hakemuskausi on avattu"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (let [hakemuskausi (test/next-avattu-empty-hakemuskausi!)
+          vuosi (:vuosi hakemuskausi)
+          hakuohje {:vuosi vuosi :nimi "test" :contenttype "text/plain"}]
 
+      (asha/with-asha
+        (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from "test"))
+
+        (asha/headers :hakuohje) => asha/valid-headers?
+        (let [multiparts (asha/group-by-multiparts :hakuohje)
+              hakuohje (multiparts "hakuohje")
+              hakuohje-asiakirja (multiparts "hakuohje-asiakirja")]
+
+          (:content hakuohje) => "{\"kasittelija\":\"Katri Käsittelijä\"}"
+
+          (:name hakuohje-asiakirja) => "hakuohje.pdf"
+          (slurp (:content hakuohje-asiakirja)) => "test")
+
+      (slurp (:sisalto (hk/find-hakuohje-sisalto vuosi))) => "test"))))

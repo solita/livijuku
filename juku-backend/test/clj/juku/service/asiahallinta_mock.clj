@@ -2,7 +2,9 @@
   (:require [juku.user :as user]
             [clj-time.core :as time]
             [clj-time.format :as tf]
+            [common.map :as m]
             [juku.service.asiahallinta]
+            [common.collection :as coll]
             [clj-http.fake :as fake]
             [juku.settings :refer [settings]]))
 
@@ -28,6 +30,7 @@
 (defmacro with-asha [& body]
   `(fake/with-fake-routes {#"http://(.+)/hakemuskausi" (asha-handler :avaus "testing\n")
                            #"http://(.+)/hakemuskausi/(.+)/sulje" (asha-handler :sulkeminen "")
+                           #"http://(.+)/hakemuskausi/(.+)/hakuohje" (asha-handler :hakuohje "")
 
                            #"http://(.+)/hakemus" (asha-handler :vireille "testing\n")
                            #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha-handler :taydennyspyynto "")
@@ -41,3 +44,6 @@
       (binding [*asha* {}] ~@body)))
 
 (defmacro with-asha-off [& body] `(with-redefs [settings (assoc settings :asiahallinta "off")] ~@body))
+
+(defn group-by-multiparts [operation]
+  (m/map-values first (group-by (coll/or* :part-name :name) (:multipart (request operation)))))
