@@ -155,7 +155,7 @@
 
       (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
 
-      (when (= (:tilatunnus hakemuskausi) "K")
+      (when (and (= (:tilatunnus hakemuskausi) "K") (:diaarinumero hakemuskausi))
         (asha/update-hakuohje (:diaarinumero hakemuskausi)
                               {:kasittelija (user/user-fullname user/*current-user*)}
                               (find-hakuohje-sisalto vuosi)))

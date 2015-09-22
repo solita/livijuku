@@ -38,7 +38,7 @@
       (k/update-hakemuskausi-set-tila! {:vuosi vuosi :newtunnus "K" :expectedtunnus "A"})
       (k/save-hakuohje vuosi "test" "text/plain" (inputstream-from  "test"))
       (k/update-hakemuskausi-set-diaarinumero! {:vuosi vuosi
-                                              :diaarinumero (str "test/" vuosi)}))
+                                                :diaarinumero (str "test/" vuosi)}))
     hk))
 
 (defn hakemus-summary [hakemuskausi hakemustyyppi]
