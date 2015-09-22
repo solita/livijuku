@@ -124,7 +124,7 @@
 
 (defn rename-content-keys [content] (set/rename-keys content {:sisalto :content :contenttype :mime-type :nimi :name}))
 
-(defn hakuohje-asiakirja [hakuohje]
+(defn hakuohje-asiakirja-multipart [hakuohje]
   (assoc (rename-content-keys hakuohje) :part-name "hakuohje-asiakirja"
                                         :name "hakuohje.pdf"))
 
@@ -182,7 +182,7 @@
 
 (defn update-hakuohje [diaarinumero hakuohje hakuohje-asiakirja]
   (post-with-liitteet (str "hakemuskausi/" (codec/url-encode diaarinumero) "/hakuohje")
-                      "Hakuohje" "hakuohje" Hakuohje hakuohje
-                      [(hakuohje-asiakirja hakuohje)]))
+                      "HakuohjeTaydennys" "hakuohje" Hakuohje hakuohje
+                      [(hakuohje-asiakirja-multipart hakuohje-asiakirja)]))
 
 
