@@ -12,14 +12,15 @@
             [juku.db.coerce :as coerce]
             [schema.coerce :as scoerce]
             [juku.db.yesql-patch :as sql]
-            [juku.settings :refer [settings]]
+            [juku.settings :refer [settings asiahallinta-on?]]
             [common.collection :as col]
             [common.core :as c]
             [common.map :as m]
             [ring.util.http-response :as r]
             [clj-time.core :as time]
             [slingshot.slingshot :as ss]
-            [common.collection :as coll])
+            [common.collection :as coll]
+            [common.string :as strx])
 
   (:import (java.sql Blob)
            (java.io InputStream)))
@@ -183,10 +184,13 @@
     (insert-avustuskohteet-for-kausi! {:vuosi vuosi})
 
     ;; -- diaarioi hakemuskauden avaaminen --
-    (c/if-let3! [hakuohje (find-hakuohje-sisalto vuosi) {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}]
+    (when (asiahallinta-on?)
+      (c/if-let3! [hakuohje (find-hakuohje-sisalto vuosi)
+                    {:http-response r/not-found :message (str "Hakemuskaudella " vuosi "ei ole hakuohjetta.")}
+                   diaarinumero (strx/trim (asha/avaa-hakemuskausi {:asianNimi (str "Hakemuskausi " vuosi)} hakuohje))
+                    {:type :arkistointi :message (str "Asiahallintajärjestelmä ei palauttanut diaarinumeroa kaudelle: " vuosi)}]
 
-      (update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero
-        (asha/avaa-hakemuskausi {:asianNimi (str "Hakemuskausi " vuosi)} hakuohje)})))
+        (update-hakemuskausi-set-diaarinumero! {:vuosi vuosi :diaarinumero diaarinumero}))))
     nil)
 
 (defn sulje-hakemuskausi! [^Integer vuosi]

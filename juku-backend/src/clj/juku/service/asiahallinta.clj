@@ -7,6 +7,7 @@
             [cheshire.core :as json]
             [ring.swagger.core]
             [common.string :as str]
+            [common.string :as strx]
             [slingshot.slingshot :as ss]
             [clojure.set :as set]
             [ring.util.codec :as codec]
@@ -129,7 +130,7 @@
                                         :name "hakuohje.pdf"))
 
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
-  (str/trim (:body (post-with-liitteet
+  (strx/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
                      Hakemuskausi (merge hakemuskausi omistaja)
                      [(hakuohje-asiakirja-multipart hakuohje)]))))
