@@ -132,7 +132,7 @@
   (str/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
                      Hakemuskausi (merge hakemuskausi omistaja)
-                     [(hakuohje-asiakirja hakuohje)]))))
+                     [(hakuohje-asiakirja-multipart hakuohje)]))))
 
 (defn hakemus-asiakirja-multipart [asiakirja]
   {:part-name "hakemus-asiakirja"
