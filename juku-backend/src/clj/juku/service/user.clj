@@ -91,6 +91,10 @@
     (update-user! uid (dissoc user :tunnus))
     (assoc (merge *current-user* user) :roolit (find-user-rolenames uid))))
 
+(defn delete-user! [tunnus]
+  (update-kayttaja-mark-deleted! {:tunnus tunnus})
+  nil)
+
 (defn current-user+updatekirjautumisaika! []
   (let [uid (:tunnus *current-user*)]
     (assoc (save-user! {:tunnus uid :kirjautumisaika (time/now)})

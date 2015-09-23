@@ -51,3 +51,7 @@ where
 
 -- name: delete-previous-roles!
 delete from kayttajakayttajarooli where kayttajatunnus = :tunnus and kayttajaroolitunnus not in (:roles)
+
+-- name: update-kayttaja-mark-deleted!
+update kayttaja set poistettuaika = sysdate, poistaja = sys_context('userenv', 'CLIENT_IDENTIFIER')
+where tunnus = :tunnus

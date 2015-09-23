@@ -23,4 +23,10 @@
     (GET* "/users" []
           :return [User+Roles]
           :summary "Hae kaikkien käyttäjien tiedot."
-          (ok (service/find-all-users))))
+          (ok (service/find-all-users)))
+    (DELETE* "/user/:tunnus" []
+          :auth [:delete-kayttaja]
+          :return nil
+          :path-params [tunnus :- s/Str]
+          :summary "Merkitsee käyttäjän poistetuksi."
+          (ok (service/delete-user! tunnus))))

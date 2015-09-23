@@ -58,6 +58,8 @@ insert into kayttooikeus (tunnus, nimi) values ('kasittely-hakemus', 'Hakemuksie
 insert into kayttooikeus (tunnus, nimi) values ('allekirjoita-oma-hakemus', 'Oman hakemuksen allekirjoitusoikeus');
 insert into kayttooikeus (tunnus, nimi) values ('hyvaksy-paatos', 'Päätöksen hyväksymisoikeus');
 
+insert into kayttooikeus (tunnus, nimi) values ('delete-kayttaja', 'Oikeus merkitä käyttäjä poistetuksi');
+
 
 -- Käsittelijän oikeudet
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
@@ -92,3 +94,5 @@ select * from
 cross join
 (select * from table(sys.odcivarchar2list('view-hakemus')));
 
+-- Vain pääkäyttäjän oikeudet
+insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus) values ('PA', 'delete-kayttaja');

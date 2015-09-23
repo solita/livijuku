@@ -71,7 +71,9 @@ create table kayttaja (
   etunimi varchar2 (200 char),
   sukunimi varchar2 (200 char),
   nimi varchar2 (200 char),
-  sahkoposti varchar2 (200 char)
+  sahkoposti varchar2 (200 char),
+  poistettuaika date,
+  poistaja references kayttaja (tunnus)
 );
 
 begin
