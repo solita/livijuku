@@ -65,7 +65,7 @@
               " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")]
 
       (current-user/with-user-id uid
-        (user/with-user (assoc (sc/retry 1 save-user uid orgnisaatio-id roles headers)
+        (user/with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
                           :privileges privileges) (handler request))))))
 
 (defn ^String message [^Throwable t] (.getMessage t))
