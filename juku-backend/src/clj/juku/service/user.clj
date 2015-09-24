@@ -52,6 +52,9 @@
 (defn find-all-livi-users []
   (map dbuser->user (select-all-livi-users)))
 
+(defn find-all-non-livi-users []
+  (map dbuser->user (select-all-non-livi-users)))
+
 (defn create-user! [uid user]
   (dml/insert db "kayttaja" (assoc user :tunnus uid) constraint-errors user))
 

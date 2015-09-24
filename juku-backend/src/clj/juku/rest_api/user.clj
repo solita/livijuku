@@ -20,10 +20,14 @@
           :path-params [organisaatioid :- Long]
           :summary "Hae organisaation kaikki käyttäjät."
           (ok (service/find-users-by-organization organisaatioid)))
-    (GET* "/users" []
+    (GET* "/users/livi" []
           :return [User+Roles]
-          :summary "Hae kaikkien käyttäjien tiedot."
-          (ok (service/find-all-users)))
+          :summary "Hae kaikkien liikenneviraston käyttäjien tiedot."
+          (ok (service/find-all-livi-users)))
+    (GET* "/users/others" []
+          :return [User+Roles]
+          :summary "Hae kaikkien muiden käyttäjien tiedot."
+          (ok (service/find-all-non-livi-users)))
     (DELETE* "/user/:tunnus" []
           :auth [:delete-kayttaja]
           :return nil

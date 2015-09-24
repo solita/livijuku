@@ -3,26 +3,22 @@ select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti,
 from kayttaja where tunnus = :tunnus
 
 -- name: select-users-where-organization
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika,
-  (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
-   from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
-   where kayttajatunnus = kayttaja.tunnus) roolit
-from kayttaja where organisaatioid = :organisaatioid
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika, roolit
+from kayttaja_view where organisaatioid = :organisaatioid and poistettuaika is null
 
 -- name: select-all-human-users
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika,
-  (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
-   from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
-   where kayttajatunnus = kayttaja.tunnus) roolit
-from kayttaja where jarjestelma = 0
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika, roolit
+from kayttaja_view where jarjestelma = 0 and poistettuaika is null
 
 -- name: select-all-livi-users
-select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika,
-  (select cast (collect (kayttajarooli.nimi) as sys.odcivarchar2list)
-   from kayttajakayttajarooli inner join kayttajarooli on kayttajarooli.tunnus = kayttajakayttajarooli.kayttajaroolitunnus
-   where kayttajatunnus = kayttaja.tunnus) roolit
-from kayttaja
-where kayttaja.organisaatioid = (select id from organisaatio where organisaatio.lajitunnus = 'LV')
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika, roolit
+from kayttaja_view kayttaja
+where kayttaja.organisaatioid = (select id from organisaatio where organisaatio.lajitunnus = 'LV') and poistettuaika is null
+
+-- name: select-all-non-livi-users
+select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika, roolit
+from kayttaja_view kayttaja
+where kayttaja.organisaatioid <> (select id from organisaatio where organisaatio.lajitunnus = 'LV') and poistettuaika is null
 
 -- name: select-oikeudet-where-roolit-in
 select distinct kayttooikeus.tunnus from kayttooikeus 
