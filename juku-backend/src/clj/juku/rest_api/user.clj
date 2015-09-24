@@ -16,6 +16,7 @@
           :summary "Päivitä nykyisen käyttäjän tiedot."
           (ok (service/save-user! user)))
     (GET* "/organisaatio/:organisaatioid/users" []
+          :auth [:view-non-livi-kayttaja]
           :return [User+Roles]
           :path-params [organisaatioid :- Long]
           :summary "Hae organisaation kaikki käyttäjät."
@@ -25,6 +26,7 @@
           :summary "Hae kaikkien liikenneviraston käyttäjien tiedot."
           (ok (service/find-all-livi-users)))
     (GET* "/users/others" []
+          :auth [:view-non-livi-kayttaja]
           :return [User+Roles]
           :summary "Hae kaikkien muiden käyttäjien tiedot."
           (ok (service/find-all-non-livi-users)))
