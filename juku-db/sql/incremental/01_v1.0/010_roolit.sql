@@ -60,10 +60,12 @@ insert into kayttooikeus (tunnus, nimi) values ('hyvaksy-paatos', 'Päätöksen 
 
 insert into kayttooikeus (tunnus, nimi) values ('delete-kayttaja', 'Oikeus merkitä käyttäjä poistetuksi');
 
+insert into kayttooikeus (tunnus, nimi) values ('view-non-livi-kayttaja', 'Oikeus nähdä muiden kuin liikenneviraston käyttäjien tietoja');
+
 
 -- Käsittelijän oikeudet
 insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus)
-select 'KA', column_value from table(sys.odcivarchar2list('view-kaikki-hakemukset', 'view-hakemuskausi', 'modify-hakemuskausi', 'kasittely-hakemus'))
+select 'KA', column_value from table(sys.odcivarchar2list('view-kaikki-hakemukset', 'view-hakemuskausi', 'modify-hakemuskausi', 'kasittely-hakemus', 'delete-kayttaja', 'view-non-livi-kayttaja'))
 ;
 
 -- Pääkäyttäjän ja päätöksentekijän oikeudet oikeudet
@@ -94,5 +96,3 @@ select * from
 cross join
 (select * from table(sys.odcivarchar2list('view-hakemus')));
 
--- Vain pääkäyttäjän oikeudet
-insert into kayttajaroolioikeus (kayttajaroolitunnus, kayttooikeustunnus) values ('PA', 'delete-kayttaja');
