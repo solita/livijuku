@@ -15,7 +15,7 @@
   :taksit               s/Num,
   :ajokilometrit        s/Num,
   :matkustajamaara      s/Num,
-  :asiakastulo          s/Num,
+  :lipputulo          s/Num,
   :nettohinta           s/Num,
   :bruttohinta          s/Num
 })

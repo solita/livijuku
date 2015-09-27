@@ -16,7 +16,7 @@ create table liikennesuorite (
   taksit number,
   ajokilometrit number,
   matkustajamaara number,
-  asiakastulo number,
+  lipputulo number,
   nettohinta number,
   bruttohinta number,
 
@@ -32,7 +32,7 @@ create table lippusuorite (
   matkat number,
   asiakashinta number,
   keskipituus number,
-  asiakastulo number,
+  lipputulo number,
   julkinenrahoitus number,
 
   seutulippualue varchar2(200 char),

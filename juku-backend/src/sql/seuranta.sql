@@ -2,7 +2,7 @@
 -- name: select-hakemus-liikennesuorite
 select
   hakemusid, liikennetyyppitunnus, numero, suoritetyyppitunnus, nimi,
-  linjaautot, taksit, ajokilometrit, matkustajamaara, asiakastulo, nettohinta, bruttohinta
+  linjaautot, taksit, ajokilometrit, matkustajamaara, lipputulo, nettohinta, bruttohinta
 from liikennesuorite where hakemusid = :hakemusid
 
 -- name: select-hakemus-lippusuorite

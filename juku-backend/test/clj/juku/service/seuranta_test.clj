@@ -27,7 +27,7 @@
    :taksit               1M,
    :ajokilometrit        1M,
    :matkustajamaara      1M,
-   :asiakastulo          1M,
+   :lipputulo          1M,
    :nettohinta           1M,
    :bruttohinta          1M
 }))
