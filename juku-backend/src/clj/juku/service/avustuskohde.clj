@@ -32,7 +32,7 @@
    :avustuskohde_hakemus_fk {:http-response r/not-found :message "Avustuskohteen {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} hakemusta (id = {hakemusid}) ei ole olemassa."}
    :avustuskohde_aklaji_fk {:http-response r/not-found :message "Avustuskohdelajia {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} ei ole olemassa."}})
 
-; *** Hakemukseen ja sen sisältöön liittyvät palvelut ***
+; *** Hakemuksen avustuskohteisiin liittyvät palvelut ***
 
 (defn alv [avustuskohde]
   (if (= (:avustuskohdeluokkatunnus avustuskohde) "K") 24 10))
@@ -51,7 +51,7 @@
 
 (defn save-avustuskohde! [avustuskohde]
   (if (= (update-avustuskohde! avustuskohde) 0)
-    (add-avustuskohde! avustuskohde)))
+    (add-avustuskohde! avustuskohde))) ;; TODO remove add-avustuskohde
 
 (defn save-avustuskohteet! [avustuskohteet]
   (doseq [hakemus (select-hakemukset {:hakemusids (set (map :hakemusid avustuskohteet))})]

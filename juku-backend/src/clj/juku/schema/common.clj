@@ -6,3 +6,7 @@
                              :luontiaika org.joda.time.DateTime
                              :muokkaustunnus s/Str
                              :muokkausaika org.joda.time.DateTime})
+
+(s/defschema Luokka {:tunnus   s/Str
+                     :nimi     s/Str
+                     :jarjetys s/Num})

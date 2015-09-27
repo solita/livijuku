@@ -11,6 +11,7 @@
             [juku.rest-api.paatos :refer [paatos-routes]]
             [juku.rest-api.liitteet :refer [liitteet-routes]]
             [juku.rest-api.organisaatio :refer [organisaatio-routes]]
+            [juku.rest-api.seuranta :refer [seuranta-routes]]
             [juku.rest-api.user :refer [user-routes]]
 
             [ring.middleware.defaults :as m]
@@ -37,6 +38,7 @@
         (context* "" [] :tags ["Päätös API"] paatos-routes)
         (context* "" [] :tags ["Liite API"] liitteet-routes)
         (context* "" [] :tags ["Organisaatio API"] organisaatio-routes)
+        (context* "" [] :tags ["Seuranta API"] seuranta-routes)
         (context* "" [] :tags ["Käyttäjä API"] user-routes)
         notfound))
 

@@ -1,7 +1,8 @@
 (ns juku.schema.hakemus
   (:import (org.joda.time DateTime)
            (org.joda.time LocalDate))
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [juku.schema.common :as sc]))
 
 (s/defschema Hakuaika {:alkupvm LocalDate
                        :loppupvm LocalDate})
@@ -72,11 +73,7 @@
 
 (s/defschema Avustuskohde+alv Avustuskohde #_(assoc Avustuskohde :alv s/Num))
 
-(s/defschema Luokka {:tunnus   s/Str
-                     :nimi     s/Str
-                     :jarjetys s/Num})
-
-(s/defschema Avustuskohdeluokka (assoc Luokka :avustuskohdelajit [(assoc Luokka :avustuskohdeluokkatunnus s/Str)]))
+(s/defschema Avustuskohdeluokka (assoc sc/Luokka :avustuskohdelajit [(assoc sc/Luokka :avustuskohdeluokkatunnus s/Str)]))
 
 (s/defschema NewTaydennyspyynto {:hakemusid s/Num
                                 (s/optional-key :selite) (s/maybe s/Str)})
