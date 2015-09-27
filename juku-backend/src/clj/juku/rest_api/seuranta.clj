@@ -20,7 +20,7 @@
             :path-params [hakemusid :- Long]
             :body     [suoritteet [Liikennesuorite]]
             :summary  "Päivittää tai lisää annetut avustuskohteet."
-            (ok (service/save-liikennesuoritteet hakemusid suoritteet)))
+            (ok (service/save-liikennesuoritteet! hakemusid suoritteet)))
       (GET* "/suoritetyypit" []
              :return [sc/Luokka]
              :summary "Hae avustuskohteiden luokittelu: kaikki luokat ja lajit"

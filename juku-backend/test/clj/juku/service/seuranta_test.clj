@@ -42,7 +42,7 @@
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
             liikennesuorite (liikennesuorite id 1M) ]
 
-        (s/save-liikennesuoritteet id [liikennesuorite])
+        (s/save-liikennesuoritteet! id [liikennesuorite])
 
         (s/find-hakemus-liikennesuoritteet id) => [liikennesuorite]))
 
@@ -51,7 +51,7 @@
             l1 (liikennesuorite id 1M)
             l2 (liikennesuorite id 2M)]
 
-        (s/save-liikennesuoritteet id [l1 l2])
+        (s/save-liikennesuoritteet! id [l1 l2])
 
         (s/find-hakemus-liikennesuoritteet id) => [l1 l2]))
 
@@ -60,8 +60,8 @@
             l1 (liikennesuorite id 1M)
             l2 (liikennesuorite id 2M)]
 
-        (s/save-liikennesuoritteet id [l1 l2])
-        (s/save-liikennesuoritteet id [l1])
+        (s/save-liikennesuoritteet! id [l1 l2])
+        (s/save-liikennesuoritteet! id [l1])
 
         (s/find-hakemus-liikennesuoritteet id) => [l1]))))
 
@@ -73,14 +73,14 @@
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
             liikennesuorite (liikennesuorite id "123" 1M) ]
 
-        (s/save-liikennesuoritteet id [liikennesuorite]) =>
+        (s/save-liikennesuoritteet! id [liikennesuorite]) =>
           (throws "Liikennetyyppiä 123 ei ole olemassa.")))
 
     (fact "Liikennesuoritteen tallentaminen - kaksi samaa riviä"
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
             liikennesuorite (liikennesuorite id 1M) ]
 
-        (s/save-liikennesuoritteet id [liikennesuorite liikennesuorite]) =>
+        (s/save-liikennesuoritteet! id [liikennesuorite liikennesuorite]) =>
           (throws (str "Liikennesuorite PSA-1 on jo olemassa hakemuksella (id = " id ")."))))))
 
 
