@@ -76,7 +76,7 @@ from avustuskohde
   inner join avustuskohdeluokka akluokka on akluokka.tunnus = avustuskohde.avustuskohdeluokkatunnus
   inner join avustuskohdelaji aklaji on aklaji.avustuskohdeluokkatunnus = avustuskohde.avustuskohdeluokkatunnus and aklaji.tunnus = avustuskohde.avustuskohdelajitunnus
 where avustuskohde.hakemusid = :hakemusid
-order by akluokka.jarjetys, aklaji.jarjetys
+order by akluokka.jarjestys, aklaji.jarjestys
 
 -- name: select-avustushakemus-kasittelija
 select kasittelija from hakemus where vuosi = :vuosi and organisaatioid = :organisaatioid and hakemustyyppitunnus = 'AH0' and kasittelija is not null
@@ -95,10 +95,10 @@ update hakemus set hakemustilatunnus = :hakemustilatunnus
 where id = :hakemusid and hakemustilatunnus in (:expectedhakemustilatunnus)
 
 -- name: select-avustuskohdeluokat
-select tunnus, nimi, jarjetys from avustuskohdeluokka
+select tunnus, nimi, jarjestys from avustuskohdeluokka
 
 -- name: select-avustuskohdelajit
-select avustuskohdeluokkatunnus, tunnus, nimi, jarjetys from avustuskohdelaji
+select avustuskohdeluokkatunnus, tunnus, nimi, jarjestys from avustuskohdelaji
 
 -- name: update-hakemus-set-diaarinumero!
 update hakemus set diaarinumero = :diaarinumero where vuosi = :vuosi and organisaatioid = :organisaatioid

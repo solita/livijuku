@@ -9,4 +9,4 @@
 
 (s/defschema Luokka {:tunnus   s/Str
                      :nimi     s/Str
-                     :jarjetys s/Num})
+                     :jarjestys s/Num})

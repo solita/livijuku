@@ -9,7 +9,7 @@ from liikennesuorite where hakemusid = :hakemusid
 select * from lippusuorite where hakemusid = :hakemusid
 
 -- name: select-suoritetyypit
-select tunnus, nimi, 1 jarjetys from suoritetyyppi
+select tunnus, nimi, 1 jarjestys from suoritetyyppi
 
 -- name: delete-hakemus-liikennesuorite!
 delete from liikennesuorite where hakemusid = :hakemusid
