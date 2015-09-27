@@ -5,7 +5,6 @@
   "Tämä skeema määrittää liikennesuoritteen tiedot."
 
 {
-  :hakemusid            s/Num,
   :liikennetyyppitunnus s/Str,
   :numero               s/Num,
 

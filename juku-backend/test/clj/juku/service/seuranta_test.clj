@@ -15,9 +15,8 @@
 (def hsl-ah0-hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
 
 (defn liikennesuorite
-  ([hakemusid numero] (liikennesuorite hakemusid "PSA" numero))
-  ([hakemusid liikennetyyppitunnus numero] {
-   :hakemusid            hakemusid,
+  ([numero] (liikennesuorite "PSA" numero))
+  ([liikennetyyppitunnus numero] {
    :liikennetyyppitunnus liikennetyyppitunnus,
    :numero               numero,
 
@@ -39,7 +38,7 @@
     "juku_hakija" ["juku_hakija"]
     (fact "Liikennesuoritteen tallentaminen ja haku"
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-            liikennesuorite (liikennesuorite id 1M) ]
+            liikennesuorite (liikennesuorite 1M) ]
 
         (s/save-liikennesuoritteet! id [liikennesuorite])
 
@@ -47,8 +46,8 @@
 
     (fact "Usean liikennesuoritteen tallentaminen ja haku"
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-            l1 (liikennesuorite id 1M)
-            l2 (liikennesuorite id 2M)]
+            l1 (liikennesuorite 1M)
+            l2 (liikennesuorite 2M)]
 
         (s/save-liikennesuoritteet! id [l1 l2])
 
@@ -56,8 +55,8 @@
 
     (fact "Liikennesuoritteen päivittäminen ja haku"
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-            l1 (liikennesuorite id 1M)
-            l2 (liikennesuorite id 2M)]
+            l1 (liikennesuorite 1M)
+            l2 (liikennesuorite 2M)]
 
         (s/save-liikennesuoritteet! id [l1 l2])
         (s/save-liikennesuoritteet! id [l1])
@@ -70,14 +69,14 @@
     "juku_hakija" ["juku_hakija"]
     (fact "Liikennesuoritteen tallentaminen - liikennetyyppiä ei ole olemassa"
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-            liikennesuorite (liikennesuorite id "123" 1M) ]
+            liikennesuorite (liikennesuorite "123" 1M) ]
 
         (s/save-liikennesuoritteet! id [liikennesuorite]) =>
           (throws "Liikennetyyppiä 123 ei ole olemassa.")))
 
     (fact "Liikennesuoritteen tallentaminen - kaksi samaa riviä"
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-            liikennesuorite (liikennesuorite id 1M) ]
+            liikennesuorite (liikennesuorite 1M) ]
 
         (s/save-liikennesuoritteet! id [liikennesuorite liikennesuorite]) =>
           (throws (str "Liikennesuorite PSA-1 on jo olemassa hakemuksella (id = " id ")."))))))

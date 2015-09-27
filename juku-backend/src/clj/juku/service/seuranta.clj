@@ -34,14 +34,10 @@
 (defn save-liikennesuoritteet! [hakemusid suoritteet]
   (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
 
-  (when (some (coll/predicate not= :hakemusid hakemusid) suoritteet)
-    (ss/throw+ {:http-response r/bad-request
-                :message (str "Kaikki suoritteet pitää olla hakemuksesta: " hakemusid)}))
-
   (with-transaction
     (delete-hakemus-liikennesuorite! {:hakemusid hakemusid})
     (doseq [suorite suoritteet]
-      (insert-liikennesuorite suorite)))
+      (insert-liikennesuorite (assoc suorite :hakemusid hakemusid))))
   nil)
 
 (defn find-hakemus-liikennesuoritteet [hakemusid]
