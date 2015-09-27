@@ -18,7 +18,6 @@ create table liikennesuorite (
   matkustajamaara number,
   lipputulo number,
   nettohinta number,
-  bruttohinta number,
 
   constraint liikennesuorite_pk primary key (hakemusid, liikennetyyppitunnus, numero)
 );
