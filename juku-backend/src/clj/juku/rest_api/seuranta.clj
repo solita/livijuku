@@ -11,7 +11,7 @@
             :auth [:view-hakemus]
             :return [Liikennesuorite]
             :path-params [hakemusid :- Long]
-            :summary "Hae hakemuksen avustuskohteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
+            :summary "Hae hakemuksen liikennesuoritteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/find-hakemus-liikennesuoritteet hakemusid)))
       (PUT* "/hakemus/:hakemusid/liikennesuoritteet" []
             :auth [:modify-oma-hakemus]
@@ -19,10 +19,10 @@
             :return   nil
             :path-params [hakemusid :- Long]
             :body     [suoritteet [Liikennesuorite]]
-            :summary  "Päivittää tai lisää annetut avustuskohteet."
+            :summary  "Päivittää hakemuksen liikennesuoritteet."
             (ok (service/save-liikennesuoritteet! hakemusid suoritteet)))
       (GET* "/suoritetyypit" []
              :return [sc/Luokka]
-             :summary "Hae avustuskohteiden luokittelu: kaikki luokat ja lajit"
+             :summary "Hae liikennesuoritteen suoritetyypit."
             (ok (service/find-suoritetyypit))))
 
