@@ -15,6 +15,7 @@
 
 ; *** Seuranta-skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 (def coerce-liikennesuorite (coerce/coercer s/Liikennesuorite))
+(def coerce-lippusuorite (coerce/coercer s/Lippusuorite))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikennesuorite-constraint-errors
@@ -27,7 +28,15 @@
    :liikennesuorite_styyppi_fk {:http-response r/not-found
                                 :message "Suoritetyyppiä {suoritetyyppitunnus} ei ole olemassa."}})
 
+(def lippusuorite-constraint-errors
+  {:lippusuorite_pk {:http-response r/bad-request
+                     :message "Lippusuorite {lipputyyppitunnus}-{numero} on jo olemassa hakemuksella (id = {hakemusid})."}
+   :lippusuorite_hakemus_fk {:http-response r/not-found
+                             :message "Lippusuoritteen {lipputyyppitunnus}-{numero} hakemusta (id = {hakemusid}) ei ole olemassa."}
+   :lippusuorite_lputyyppi_fk {:http-response r/not-found
+                               :message "Lipputyyppiä {lipputyyppitunnus} ei ole olemassa."}})
 
+; *** Liikennesuoritteiden toiminnot ***
 (defn- insert-liikennesuorite [suorite]
   (:id (dml/insert db "liikennesuorite" suorite liikennesuorite-constraint-errors suorite)))
 
@@ -46,3 +55,23 @@
   (map coerce-liikennesuorite (select-hakemus-liikennesuorite {:hakemusid hakemusid})))
 
 (defn find-suoritetyypit [] (select-suoritetyypit))
+
+; *** Lippusuoritteiden toiminnot ***
+(defn- insert-lippusuorite [suorite]
+  (:id (dml/insert db "lippusuorite" suorite lippusuorite-constraint-errors suorite)))
+
+(defn save-lippusuoritteet! [hakemusid suoritteet]
+  (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
+
+  (with-transaction
+    (delete-hakemus-lippusuorite! {:hakemusid hakemusid})
+    (doseq [suorite suoritteet]
+      (insert-lippusuorite (assoc suorite :hakemusid hakemusid))))
+  nil)
+
+(defn find-hakemus-lippusuoritteet [hakemusid]
+  (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
+
+  (map coerce-lippusuorite (select-hakemus-lippusuorite {:hakemusid hakemusid})))
+
+(defn find-lipputyypit [] (select-lipputyypit))

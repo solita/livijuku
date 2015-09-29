@@ -30,6 +30,21 @@
    :nettohinta           1M
 }))
 
+(defn lippusuorite
+  ([numero] (lippusuorite "VL" numero nil))
+  ([lipputyyppitunnus numero seutulippualue] {
+  :lipputyyppitunnus lipputyyppitunnus,
+  :numero               numero,
+
+  :myynti 1M,
+  :matkat 1M,
+  :asiakashinta 1M,
+  :keskipituus 1M,
+  :lipputulo 1M,
+  :julkinenrahoitus 1M,
+  :seutulippualue seutulippualue
+}))
+
 ; -- Liikennesuoritteiden testit --
 
 (facts
@@ -81,6 +96,38 @@
         (s/save-liikennesuoritteet! id [liikennesuorite liikennesuorite]) =>
           (throws (str "Liikennesuorite PSA-1 on jo olemassa hakemuksella (id = " id ")."))))))
 
+; -- Lippusuoritteiden testit --
+
+(facts
+  "Lippusuoritteiden testit"
+  (test/with-user
+    "juku_hakija" ["juku_hakija"]
+    (fact "Liikennesuoritteen tallentaminen ja haku"
+          (let [id (hc/add-hakemus! hsl-ah0-hakemus)
+                lippusuorite (lippusuorite 1M) ]
+
+            (s/save-lippusuoritteet! id [lippusuorite])
+
+            (s/find-hakemus-lippusuoritteet id) => [lippusuorite]))
+
+    (fact "Usean lippusuoritteen tallentaminen ja haku"
+          (let [id (hc/add-hakemus! hsl-ah0-hakemus)
+                l1 (lippusuorite 1M)
+                l2 (lippusuorite 2M)]
+
+            (s/save-lippusuoritteet! id [l1 l2])
+
+            (s/find-hakemus-lippusuoritteet id) => [l1 l2]))
+
+    (fact "Liikennesuoritteen päivittäminen ja haku"
+          (let [id (hc/add-hakemus! hsl-ah0-hakemus)
+                l1 (lippusuorite 1M)
+                l2 (lippusuorite 2M)]
+
+            (s/save-lippusuoritteet! id [l1 l2])
+            (s/save-lippusuoritteet! id [l1])
+
+            (s/find-hakemus-lippusuoritteet id) => [l1]))))
 
 
 
