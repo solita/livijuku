@@ -13,9 +13,11 @@
             [clojure.walk :as w]
             [ring.util.http-response :as r]
             [compojure.api.middleware :as cm]
+            [ring.middleware.anti-forgery :as af]
             [ring.swagger.middleware :as rm]
             [juku.headers :as h]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [crypto.random :as random]))
 
 (defn find-matching-organisaatio [organisaatio-name department]
   (c/if-let* [normalized-org-name (-> organisaatio-name str/trim str/lower-case (str/replace #"(\s)+" "-"))
@@ -110,5 +112,41 @@
         response
         (no-cache response)))))
 
+(defn wrap-xsrf-token-cookie-for-angular [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (if (not= af/*anti-forgery-token* (get-in request [:cookies "XSRF-TOKEN" :value]))
+        (assoc-in response [:cookies "XSRF-TOKEN"] {:value af/*anti-forgery-token* :http-only false :path "/"})
+        response))))
+
+(defn wrap-double-submit-cookie
+
+  "CSRF-hyökkäyksen esto ja json-haavoittovuuden suoja perustuu double submit cookie -malliin.
+  Double submit cookie -mallissa sovellus todistaa olevansa oikea pystymällä joko kirjoittamaan tai lukemaan
+  sovelluksen domainin sessiokeksejä. Kaikki pyynnöt edellyttävät että tietojen:
+  - x-xsrf-token (http-otsikko)
+  - XSRF-TOKEN (keksin)
+  arvot ovat samat.
+
+  Lähteet:
+  - https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Double_Submit_Cookies
+  - https://en.wikipedia.org/wiki/Cross-site_request_forgery#Forging_login_requests
+  - http://security.stackexchange.com/questions/61110/why-does-double-submit-cookies-require-a-separate-cookie
+  - http://security.stackexchange.com/questions/59470/double-submit-cookies-vulnerabilities
+  - http://stackoverflow.com/questions/4463422/csrf-can-i-use-a-cookie
+  - https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies
+  - https://docs.angularjs.org/api/ng/service/$http#security-considerations"
+
+  [handler]
+  (fn [request]
+    (let [header-token (get-in request [:headers "x-xsrf-token"])
+          cookie-token (get-in request [:cookies "XSRF-TOKEN" :value])]
+      (if (= header-token cookie-token)
+        (let [response (handler request)]
+          (if (strx/substring? "unsecure" cookie-token)
+            (assoc-in response [:cookies "XSRF-TOKEN"] {:value (random/base64 60):http-only false :path "/"})
+            response))
+        (r/forbidden (str "Pyyntö on mahdollisesti väärennetty. Keksissä XSRF-TOKEN oleva arvo: "
+                     cookie-token " ei vastaa otsikkotiedossa olevaa arvoa: " header-token))))))
 
 
