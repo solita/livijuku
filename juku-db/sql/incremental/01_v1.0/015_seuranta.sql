@@ -58,3 +58,4 @@ insert into lipputyyppi (tunnus, nimi) values ('SL', 'Sarjalippu');
 insert into lipputyyppi (tunnus, nimi) values ('KL', 'Kaupunkilippu');
 insert into lipputyyppi (tunnus, nimi) values ('NL', 'Nuorisolipppu');
 insert into lipputyyppi (tunnus, nimi) values ('M', 'Muu kunnan tukema lippu');
+insert into lipputyyppi (tunnus, nimi) values ('SE', 'Seutulippu');
