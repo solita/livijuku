@@ -147,7 +147,7 @@
       (if (or (= header-token cookie-token)
               (some #(re-matches % (str (str/upper-case (name (:request-method request))) " " (:uri request))) whitelist))
         (let [response (handler request)]
-          (if (strx/substring? "unsecure" cookie-token)
+          (if ((c/nil-safe strx/substring?) "unsecure" cookie-token)
             (assoc-in response [:cookies "XSRF-TOKEN"] {:value (random/base64 60) :http-only false :path "/"})
             response))
         (error r/forbidden (str "Taustapalvelu tunnisti mahdollisesti väärennetyn pyynnön. Keksissä XSRF-TOKEN oleva arvo: "
