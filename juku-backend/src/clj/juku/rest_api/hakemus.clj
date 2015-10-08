@@ -19,12 +19,6 @@
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen perustiedot. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/get-hakemus-by-id! hakemusid)))
-      #_(POST* "/hakemus" []
-             :auth [:modify-hakemuskausi]
-             :return   s/Num
-             :body     [hakemus NewHakemus]
-             :summary  "Lisää yksittäinen hakemus."
-             (ok (core/add-hakemus! hakemus)))
       (PUT* "/hakemus/:hakemusid/suunniteltuavustus" []
             :auth [:kasittely-hakemus]
             :return   nil
@@ -32,18 +26,6 @@
             :body-params [suunniteltuavustus :- s/Num]
             :summary  "Päivittää hakemuksen myönnettävän avustusrahamäärän suunnitelmaan."
             (ok (core/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
-      #_(PUT* "/hakemus/kasittelija" []
-            :auth [:kasittely-hakemus]
-            :return   nil
-            :body-params [hakemusid :- Long, kasittelija :- s/Str]
-            :summary  "Päivittää hakemuksen käsittelijän."
-            (ok (core/save-hakemus-kasittelija! hakemusid kasittelija)))
-      #_(PUT* "/hakemus/selite" []
-            :auth [:modify-oma-hakemus]
-            :return   nil
-            :body-params [hakemusid :- Long, selite :- s/Str]
-            :summary  "Päivittää hakemuksen selitteen."
-            (ok (core/save-hakemus-selite! hakemusid selite)))
       (POST* "/hakemus/:hakemusid/laheta" []
              :auth [:allekirjoita-oma-hakemus]
              :audit []

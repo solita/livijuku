@@ -50,8 +50,10 @@
 (defn wrap-user [handler]
   (fn [request]
     (c/if-let3
-      [headers (m/keys-to-keywords (:headers request))
+      [original-headers (c/nil-if empty? (:headers request))
         (error r/bad-request "Pyynnössä ei ole otsikkotietoa.")
+       headers (c/nil-if (coll/predicate not= count (count original-headers)) (m/keys-to-keywords original-headers))
+        (error r/bad-request "Pyynnön otsikkotiedossa on päällekkäisiä otsikoita.")
        uid (:oam-remote-user headers)
         (error r/bad-request "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: oam-remote-user.")
        group-txt (:oam-groups headers)
@@ -137,16 +139,18 @@
   - https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies
   - https://docs.angularjs.org/api/ng/service/$http#security-considerations"
 
-  [handler]
+  [handler whitelist]
   (fn [request]
     (let [header-token (get-in request [:headers "x-xsrf-token"])
           cookie-token (get-in request [:cookies "XSRF-TOKEN" :value])]
-      (if (= header-token cookie-token)
+
+      (if (or (= header-token cookie-token)
+              (some #(re-matches % (str (str/upper-case (name (:request-method request))) " " (:uri request))) whitelist))
         (let [response (handler request)]
           (if (strx/substring? "unsecure" cookie-token)
-            (assoc-in response [:cookies "XSRF-TOKEN"] {:value (random/base64 60):http-only false :path "/"})
+            (assoc-in response [:cookies "XSRF-TOKEN"] {:value (random/base64 60) :http-only false :path "/"})
             response))
-        (r/forbidden (str "Pyyntö on mahdollisesti väärennetty. Keksissä XSRF-TOKEN oleva arvo: "
-                     cookie-token " ei vastaa otsikkotiedossa olevaa arvoa: " header-token))))))
+        (error r/forbidden (str "Taustapalvelu tunnisti mahdollisesti väärennetyn pyynnön. Keksissä XSRF-TOKEN oleva arvo: "
+                                cookie-token " ei vastaa x-xsrf-token-otsikkotiedossa olevaa arvoa: " header-token))))))
 
 

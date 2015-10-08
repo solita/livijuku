@@ -43,7 +43,15 @@
         notfound))
 
 (def app (-> juku-api
-             ;;jm/wrap-double-submit-cookie
+             (jm/wrap-double-submit-cookie [#"GET /hakemuskausi/.*/hakuohje"
+                                            #"GET /hakemus/.*/pdf"
+                                            #"GET /hakemus/.*/liite/.*"
+                                            #"GET /hakemus/.*/paatos/pdf"
+                                            #"GET /api/ui/.*"
+                                            #"GET /swagger.json"
+
+                                            #"POST /hakemuskausi/.*/hakuohje"
+                                            #"POST /hakemus/.*/liite"])
             (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))
              jm/wrap-no-cache))
 
