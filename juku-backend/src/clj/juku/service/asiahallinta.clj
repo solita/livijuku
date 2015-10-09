@@ -119,7 +119,7 @@
           url (str (get-in settings [:asiahallinta :url]) "/" path)]
 
       (log/info "put" url request)
-      (log-time (str "put " path) (client/put url request)))
+      (log-time (str "put " path) (wrap-exception (client/put url request))))
 
     (log/info "Asiahallinta ei ole päällä - toimenpide: " operation )))
 
