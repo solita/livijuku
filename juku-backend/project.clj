@@ -7,7 +7,7 @@
             :dependencies [[org.clojure/clojure "1.6.0"]
                            [org.clojure/java.jdbc "0.3.6"]
                            [slingshot "0.12.1"]
-                           [clj-time "0.8.0"]
+                           [clj-time "0.11.0"]
                            [com.google.guava/guava "18.0"]
                            [org.apache.pdfbox/pdfbox "1.8.8"]
 
