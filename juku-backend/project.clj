@@ -2,6 +2,7 @@
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "http://example.com/FIXME"
             :min-lein-version "2.4.3"
+            :repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita"}]]
 
             :dependencies [[org.clojure/clojure "1.6.0"]
                            [org.clojure/java.jdbc "0.3.6"]
@@ -24,7 +25,7 @@
                            [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***
-                           [org.clojars.zentrope/ojdbc "11.2.0.3.0"]
+                           [oracle/ojdbc7 "12.1.0.2"]
                            [yesql "0.5.0-beta2"]
                            [com.zaxxer/HikariCP-java6 "2.2.5"]
 

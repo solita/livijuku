@@ -105,6 +105,8 @@
 
 (facts "Hakuajan tallennus"
   (test-hakuaika-talleennus (time/local-date 1 1 1))
+  (test-hakuaika-talleennus (time/local-date 1 1 2))
+  (test-hakuaika-talleennus (time/local-date 2 1 1))
   (test-hakuaika-talleennus (time/local-date 100 1 1))
   (test-hakuaika-talleennus (time/local-date 1900 1 1))
   (test-hakuaika-talleennus (time/local-date 1921 4 1))

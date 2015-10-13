@@ -119,8 +119,7 @@
 (defn add-hakemus! [hakemus]
   (:id (dml/insert-with-id db "hakemus"
                            (-> hakemus
-                               coerce/object->row
-                               coerce/localdate->sql-date)
+                               coerce/object->row)
                            constraint-errors hakemus)))
 
 (defn- update-hakemus-by-id [hakemus hakemusid]

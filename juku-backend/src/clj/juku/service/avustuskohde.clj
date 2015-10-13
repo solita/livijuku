@@ -45,8 +45,7 @@
   (:id (dml/insert db "avustuskohde"
                            (-> avustuskohde
                                (dissoc :alv) ;; TODO remove
-                               coerce/object->row
-                               coerce/localdate->sql-date)
+                               coerce/object->row)
                            constraint-errors avustuskohde)))
 
 (defn save-avustuskohde! [avustuskohde]

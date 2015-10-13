@@ -9,11 +9,13 @@
             [schema.coerce :as scoerce])
   (:import (org.joda.time LocalDate)
            (org.joda.time DateTime)
-           (java.util Date)
+           (java.util Date Calendar)
            (java.io InputStream)
            (java.sql Blob)))
 
-(defn date->localdate [^Date v] (LocalDate. (.getTime v)))
+(defn date->calendar [^Date v] (doto ^Calendar (Calendar/getInstance) (.setTime v)))
+
+(defn date->localdate [^Date v] (LocalDate/fromCalendarFields (date->calendar v)))
 
 (defn date->datetime [^Date v] (DateTime. (.getTime v)))
 
@@ -46,7 +48,7 @@
 (defn- convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))
 
-(defn localdate->sql-date [m]
+#_(defn localdate->sql-date [m]
   (convert-instances-of LocalDate time-coerce/to-sql-date m))
 
 (defn row->object [row]

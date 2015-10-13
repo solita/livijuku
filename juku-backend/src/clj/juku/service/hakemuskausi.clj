@@ -118,7 +118,7 @@
                                        col/dissoc-join-keys))))
 
 (defn- insert-hakuaika! [hakuaika]
-  (dml/insert db "hakuaika" (coerce/localdate->sql-date hakuaika) constraint-errors hakuaika))
+  (dml/insert db "hakuaika" hakuaika constraint-errors hakuaika))
 
 (defn- insert-hakemuskauden-oletus-hakuajat! [vuosi]
   (let [assoc-vuosi (fn [m] (assoc m :vuosi vuosi))]
@@ -137,7 +137,7 @@
 
 (defn- update-hakuaika! [hakuaika]
   (dml/update-where! db "hakuaika"
-     (coerce/localdate->sql-date(dissoc hakuaika :vuosi :hakemustyyppitunnus))
+     (dissoc hakuaika :vuosi :hakemustyyppitunnus)
      (select-keys hakuaika [:vuosi :hakemustyyppitunnus])))
 
 (defn save-hakemuskauden-hakuajat! [vuosi hakuajat]

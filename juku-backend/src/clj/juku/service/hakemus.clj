@@ -134,7 +134,7 @@
   (time/latest [loppupvm (time/plus (time/today) (time/days 14))]))
 
 (defn add-taydennyspyynto! [hakemusid maarapaiva selite]
-  (h/insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm (coerce/localdate->sql-date maarapaiva) :selite selite}))
+  (h/insert-taydennyspyynto! {:hakemusid hakemusid :maarapvm maarapaiva :selite selite}))
 
 (defn taydennyspyynto!
   ([hakemusid] (taydennyspyynto! hakemusid nil))
