@@ -11,7 +11,7 @@
            (org.joda.time DateTime)
            (java.util Date Calendar)
            (java.io InputStream)
-           (java.sql Blob)))
+           (java.sql Blob Clob)))
 
 (defn date->calendar [^Date v] (doto ^Calendar (Calendar/getInstance) (.setTime v)))
 
@@ -23,7 +23,7 @@
 
 (defn number->boolean [^Number v] (not (== v 0)))
 
-(defn clob->string [^java.sql.Clob v]
+(defn clob->string [^Clob v]
   (let [length (.length v)] (.getSubString v 1 length)))
 
 (defn- create-match-fn [conversion]
