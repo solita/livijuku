@@ -34,7 +34,7 @@
 (defn setup-shutdown-hook! [f]
   (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
 
-(defn shutdown [] (.shutdown (:datasource db)))
+(defn shutdown [] (.close (:datasource db)))
 
 (setup-shutdown-hook! shutdown)
 
@@ -75,4 +75,4 @@
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array
-  (result-set-read-column [x _ _] (vec (.getArray x))))
+  (result-set-read-column [^Array x _ _] (vec (.getArray x))))

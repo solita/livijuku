@@ -14,6 +14,9 @@
                       :user        s/Str
                       :password    s/Str})
 
+(s/defschema Web {:url            s/Str
+                  :context-path   s/Str})
+
 (s/defschema Email {:from         s/Str
                     :server       s/Str
                     :port         s/Int})
@@ -22,6 +25,7 @@
 
 (s/defschema Settings {:server Server
                        :liite-max-size s/Num
+                       :web Web
                        :db Db
                        :email (s/either Email (s/eq "off"))
                        :asiahallinta (s/either Asiahallinta (s/eq "off"))})
@@ -29,6 +33,9 @@
 (def default-settings {
            :server {:port 8082}
            :liite-max-size 52428800
+           :web {
+             :url "http://localhost:9000"
+             :context-path ""}
            :db {
               :url "jdbc:oracle:thin:@localhost:1521:orcl"
               :user "juku_app"

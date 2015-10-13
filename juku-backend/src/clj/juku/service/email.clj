@@ -78,7 +78,8 @@
 
 (def linkki
   (str "Tarkemmat tiedot löydätte kirjautumalla seuraavasta linkistä järjestelmään:\n\n"
-       "http:\\\\juku.liikennevirasto.fi"))
+       (get-in settings [:web :url])
+       (get-in settings [:web :context-path])))
 
 (def messages
   {:ah0 {:v "Joukkoliikenteen valtionavustushakemuksenne vuodelle {vuosi} on saapunut JUKU-järjestelmään."
