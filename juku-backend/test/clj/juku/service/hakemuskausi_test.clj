@@ -93,7 +93,7 @@
     (hk/save-maararaha! maararaha)
     (hk/find-maararaha vuosi "ELY") => (dissoc maararaha :vuosi :organisaatiolajitunnus)))
 
-(defn test-hakuaika-talleennus [alkupvm]
+(defn test-hakuaika-tallennnus [alkupvm]
   (fact (str alkupvm)
     (let [vuosi (:vuosi (test/next-hakemuskausi!))
           hakuaika {:alkupvm alkupvm
@@ -104,13 +104,13 @@
       (:ah0 (hk/find-hakuajat vuosi)) => (hakuajat 0))))
 
 (facts "Hakuajan tallennus"
-  (test-hakuaika-talleennus (time/local-date 1 1 1))
-  (test-hakuaika-talleennus (time/local-date 1 1 2))
-  (test-hakuaika-talleennus (time/local-date 2 1 1))
-  (test-hakuaika-talleennus (time/local-date 100 1 1))
-  (test-hakuaika-talleennus (time/local-date 1900 1 1))
-  (test-hakuaika-talleennus (time/local-date 1921 4 1))
-  (test-hakuaika-talleennus (time/local-date 2016 1 1)))
+  (test-hakuaika-tallennnus (time/local-date 1 1 1))
+  (test-hakuaika-tallennnus (time/local-date 1 1 2))
+  (test-hakuaika-tallennnus (time/local-date 2 1 1))
+  (test-hakuaika-tallennnus (time/local-date 100 1 1))
+  (test-hakuaika-tallennnus (time/local-date 1900 1 1))
+  (test-hakuaika-tallennnus (time/local-date 1921 4 1))
+  (test-hakuaika-tallennnus (time/local-date 2016 1 1)))
 
 (fact "Tallenna hakuajat"
   (let [vuosi (:vuosi (test/next-hakemuskausi!))
