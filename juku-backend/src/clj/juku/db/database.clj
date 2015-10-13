@@ -38,6 +38,14 @@
 
 (setup-shutdown-hook! shutdown)
 
+(defmacro with-transaction [& body] `(jdbc/with-db-transaction [tx# db] (binding [db tx#] ~@body)))
+
+(defmacro with-transaction*
+  ([tx-options & body] `(jdbc/with-db-transaction [tx# db ~@tx-options] (binding [db tx#] ~@body))))
+
+
+; *** clojure.java.jdbc protocol extensions ***
+
 (def ^:private ^Calendar utc-calendar_template
   (doto (Calendar/getInstance (TimeZone/getTimeZone "UTC")) .clear))
 
@@ -60,17 +68,11 @@
   LocalDate
   (set-parameter [^LocalDate v ^PreparedStatement s  i]
     (let [^Calendar cal (utc-calendar)]
-      (do
-        (.set cal (time/year v) (- (time/month v) 1) (time/day v))
-        (.setDate s i (Date. (.getTimeInMillis cal)) cal))))
+      (.set cal (time/year v) (- (time/month v) 1) (time/day v))
+      (.setDate s i (Date. (.getTimeInMillis cal)) cal)))
   #_(set-parameter [^LocalDate v ^PreparedStatement s  i]
-    (.setDate s i (time-coerce/to-sql-date v))))
+                   (.setDate s i (time-coerce/to-sql-date v))))
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array
   (result-set-read-column [x _ _] (vec (.getArray x))))
-
-(defmacro with-transaction [& body] `(jdbc/with-db-transaction [tx# db] (binding [db tx#] ~@body)))
-
-(defmacro with-transaction*
-  ([tx-options & body] `(jdbc/with-db-transaction [tx# db ~@tx-options] (binding [db tx#] ~@body))))
