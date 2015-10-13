@@ -4,9 +4,9 @@
             :min-lein-version "2.4.3"
             :repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita"}]]
 
-            :dependencies [[org.clojure/clojure "1.6.0"]
+            :dependencies [[org.clojure/clojure "1.7.0"]
                            [org.clojure/java.jdbc "0.4.2"]
-                           [slingshot "0.12.1"]
+                           [slingshot "0.12.2"]
                            [clj-time "0.11.0"]
                            [com.google.guava/guava "18.0"]
                            [org.apache.pdfbox/pdfbox "1.8.8"]
@@ -26,7 +26,7 @@
 
                            ;; *** datababse ***
                            [oracle/ojdbc7 "12.1.0.2"]
-                           [yesql "0.5.0-beta2"]
+                           [yesql "0.5.1"]
                            [com.zaxxer/HikariCP-java6 "2.2.5"]
 
                            ;; *** logging libraries ***
@@ -39,7 +39,8 @@
             :plugins [[test2junit "1.1.0"]
                       [lein-ring "0.8.12"]
                       ;; Library for managing environment settings from a number of different sources
-                      [lein-environ "1.0.0"]]
+                      [lein-environ "1.0.0"]
+                      [lein-ancient "0.6.7"]]
 
             :ring {:handler      juku.handler/app
                    :uberwar-name "juku.war"}

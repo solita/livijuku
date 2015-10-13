@@ -42,7 +42,7 @@
           (:diaarinumero (hc/find-hakemuskausi {:vuosi vuosi})) => "testing"
           (asha/headers :avaus) => asha/valid-headers?
           (:content (first (:multipart (asha/request :avaus)))) =>
-            (str "{\"omistavaHenkilo\":\"test\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"asianNimi\":\"Hakemuskausi " vuosi "\"}"))))
+            (str "{\"asianNimi\":\"Hakemuskausi " vuosi "\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"omistavaHenkilo\":\"test\"}"))))
 
     (fact "Sulje hakemuskausi"
       (asha/with-asha

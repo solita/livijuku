@@ -52,7 +52,7 @@
     (add-avustuskohde! avustuskohde))) ;; TODO remove add-avustuskohde
 
 (defn save-avustuskohteet! [avustuskohteet]
-  (doseq [hakemus (select-hakemukset {:hakemusids (set (map :hakemusid avustuskohteet))})]
+  (doseq [hakemus (select-hakemukset {:hakemusids (vec (set (map :hakemusid avustuskohteet)))})]
     (hc/assert-edit-hakemus-content-allowed*! hakemus))
   (with-transaction
     (doseq [avustuskohde avustuskohteet]

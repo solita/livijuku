@@ -66,10 +66,10 @@
                  hakemus-asiakirja (get multipart "hakemus-asiakirja")]
 
              (get-in multipart ["hakemus" :content]) =>
-                (str "{\"omistavaHenkilo\":\"test\","
+                (str "{\"kausi\":\"dnro:" vuosi "\","
+                      "\"hakija\":\"Helsingin seudun liikenne\","
                       "\"omistavaOrganisaatio\":\"Liikennevirasto\","
-                      "\"kausi\":\"dnro:" vuosi "\","
-                      "\"hakija\":\"Helsingin seudun liikenne\"}")
+                      "\"omistavaHenkilo\":\"test\"}")
 
              (:mime-type hakemus-asiakirja) => "application/pdf"
              (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
