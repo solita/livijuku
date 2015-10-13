@@ -9,15 +9,15 @@
                            [slingshot "0.12.2"]
                            [clj-time "0.11.0"]
                            [com.google.guava/guava "18.0"]
-                           [org.apache.pdfbox/pdfbox "1.8.8"]
+                           [org.apache.pdfbox/pdfbox "1.8.10"]
 
-                           [clj-http "1.1.0"]
-                           [com.draines/postal "1.11.3"]
+                           [clj-http "2.0.0"]
+                           [com.draines/postal "1.11.4"]
 
-                           [environ "1.0.0"] ;; Library for managing environment variables in Clojure.
+                           [environ "1.0.1"] ;; Library for managing environment variables in Clojure.
 
                            ;; *** web application ***
-                           [http-kit "2.1.18"] ;; http server
+                           [http-kit "2.1.19"] ;; http server
                            [ring "1.3.1"]
                            [ring/ring-defaults "0.1.2"]
 
@@ -27,7 +27,7 @@
                            ;; *** datababse ***
                            [oracle/ojdbc7 "12.1.0.2"]
                            [yesql "0.5.1"]
-                           [com.zaxxer/HikariCP-java6 "2.2.5"]
+                           [com.zaxxer/HikariCP "2.4.1"]
 
                            ;; *** logging libraries ***
                            [org.clojure/tools.logging "0.3.1"]
@@ -48,7 +48,7 @@
             :profiles {:dev     {:dependencies [[javax.servlet/servlet-api "2.5"]
                                                 [ring-mock "0.1.5"]
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
-                                                [midje "1.6.3"]
+                                                [midje "1.7.0"]
                                                 [midje-junit-formatter "0.1.0-SNAPSHOT"]
                                                 [clj-http-fake "1.0.1"]
                                                 [metosin/scjsv "0.2.0"]]
