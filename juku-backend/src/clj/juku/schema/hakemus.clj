@@ -67,11 +67,10 @@
 (s/defschema Avustuskohde {:hakemusid     s/Num
                            :avustuskohdeluokkatunnus s/Str
                            :avustuskohdelajitunnus s/Str
-                           :haettavaavustus s/Num,
-                           (s/optional-key :alv) s/Num
+                           :haettavaavustus s/Num
                            :omarahoitus s/Num})
 
-(s/defschema Avustuskohde+alv Avustuskohde #_(assoc Avustuskohde :alv s/Num))
+(s/defschema Avustuskohde+alv (assoc Avustuskohde :alv s/Num))
 
 (s/defschema Avustuskohdeluokka (assoc sc/Luokka :avustuskohdelajit [(assoc sc/Luokka :avustuskohdeluokkatunnus s/Str)]))
 
