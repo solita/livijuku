@@ -107,10 +107,12 @@
   (test-hakuaika-tallennnus (time/local-date 1 1 1))
   (test-hakuaika-tallennnus (time/local-date 1 1 2))
   (test-hakuaika-tallennnus (time/local-date 2 1 1))
+  (test-hakuaika-tallennnus (time/local-date 2 1 2))
   (test-hakuaika-tallennnus (time/local-date 100 1 1))
   (test-hakuaika-tallennnus (time/local-date 1900 1 1))
   (test-hakuaika-tallennnus (time/local-date 1921 4 1))
-  (test-hakuaika-tallennnus (time/local-date 2016 1 1)))
+  (test-hakuaika-tallennnus (time/local-date 2016 1 1))
+  (test-hakuaika-tallennnus (time/today)))
 
 (fact "Tallenna hakuajat"
   (let [vuosi (:vuosi (test/next-hakemuskausi!))
