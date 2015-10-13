@@ -5,6 +5,7 @@
             [schema.coerce :as scoerce]
             [juku.service.hakemus-core :as hc]
             [ring.util.http-response :as r]
+            [clojure.string :as str]
             [slingshot.slingshot :as ss]
             [juku.schema.liitteet :as s]
             [juku.settings :refer [settings]])
@@ -55,3 +56,8 @@
   (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
   (if-let [liite (first (select-liite-sisalto {:hakemusid hakemusid :liitenumero liitenumero}))]
     (update-in liite [:sisalto] coerce/inputstream)))
+
+(defn liitteet-section [hakemusid]
+  (let [liitteet (find-liitteet hakemusid)
+        nimet (map (comp (partial str "\t") :nimi) liitteet)]
+    (str/join "\n" nimet)))

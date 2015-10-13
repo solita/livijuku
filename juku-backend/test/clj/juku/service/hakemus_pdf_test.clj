@@ -95,6 +95,39 @@
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))
 
+(fact "Hakemuksella on liite"
+  (test-ctx
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)
+          liite {:hakemusid id :nimi "test" :contenttype "text/plain"}]
+
+      (l/add-liite! liite (test/inputstream-from "test"))
+
+      (h/find-hakemus-pdf id) => (partial instance? InputStream)
+
+      (pdf/assert-otsikko "Valtionavustushakemus" nil)
+
+      (assert-hsl-avustushakemus-teksti 0 0)
+
+      (:teksti pdf/*mock-pdf*) => (partial strx/substring? "test"))))
+
+(fact "Hakemuksella on liitteitä"
+  (test-ctx
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)
+          l1 {:hakemusid id :nimi "test1.txt" :contenttype "text/plain"}
+          l2 {:hakemusid id :nimi "test2.txt" :contenttype "text/plain"}]
+
+      (l/add-liite! l1 (test/inputstream-from "test"))
+      (l/add-liite! l2 (test/inputstream-from "test"))
+
+      (h/find-hakemus-pdf id) => (partial instance? InputStream)
+
+      (pdf/assert-otsikko "Valtionavustushakemus" nil)
+
+      (assert-hsl-avustushakemus-teksti 0 0)
+      (let [teksti (:teksti pdf/*mock-pdf*)]
+        teksti => (partial strx/substring? "test1.txt")
+        teksti => (partial strx/substring? "test2.txt")))))
+
 (fact "Hakemuksella avustuskohteita - iso rahasumma"
   (test-ctx
     (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
