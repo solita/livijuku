@@ -5,7 +5,7 @@
             :repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita"}]]
 
             :dependencies [[org.clojure/clojure "1.6.0"]
-                           [org.clojure/java.jdbc "0.3.6"]
+                           [org.clojure/java.jdbc "0.4.2"]
                            [slingshot "0.12.1"]
                            [clj-time "0.11.0"]
                            [com.google.guava/guava "18.0"]
