@@ -23,7 +23,6 @@
 
 (defn number->boolean [^Number v] (not (== v 0)))
 
-;; TODO check if this works for strings longer than 4000 bytes
 (defn clob->string [^java.sql.Clob v]
   (let [length (.length v)] (.getSubString v 1 length)))
 

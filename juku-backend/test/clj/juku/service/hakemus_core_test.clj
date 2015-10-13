@@ -79,7 +79,9 @@
       (h/save-hakemus-selite! id selite)
       (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hakemus id selite)))
 
-  (fact "Hakemuksen selitteen päivittäminen - yli 4000 merkkiä ja sisältää ei ascii merkkejä"
+  (fact "Hakemuksen selitteen päivittäminen - yli 32000 merkkiä ja sisältää ei ascii merkkejä.
+         Oraclessa on tyypillisesti kaksi kynnysarvoa merkkijonojen käsittelyssä, jotka kannattaa testata 4K ja 32K."
+
     (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
           id (h/add-hakemus! hakemus)
           selite (str/join (take 4000 (repeat "selite-äöå-âãä")))]
