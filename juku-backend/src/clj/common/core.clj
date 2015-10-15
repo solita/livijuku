@@ -63,3 +63,6 @@
   (with-open [^ByteArrayOutputStream out (ByteArrayOutputStream.)]
     (io/copy (io/input-stream input) out)
     (.toByteArray out)))
+
+(defn setup-shutdown-hook! [f]
+  (.addShutdownHook (Runtime/getRuntime) (Thread. f)))

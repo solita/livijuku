@@ -6,7 +6,10 @@
     </appender>
 
     <!-- Only >= info from HikariPool messages -->
-    <logger name="com.zaxxer.hikari" level="info" additivity="false">
+    <logger name="com.zaxxer.hikari.pool" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.zaxxer.hikari.proxy" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 

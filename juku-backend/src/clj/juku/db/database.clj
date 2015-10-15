@@ -5,6 +5,7 @@
             [clj-time.core :as time]
             [slingshot.slingshot :as ss]
             [clojure.tools.logging :as log]
+            [common.core :as c]
             [juku.settings :refer [settings]]
             [juku.db.coerce :as coerce])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]
@@ -22,7 +23,7 @@
 (defn data-source [settings]
   (log/info "Starting database connection pool: " (:url settings) (:user settings) "****")
   (HikariDataSource. (doto (HikariConfig.)
-                       (.setMaximumPoolSize 10)
+                       (.setMaximumPoolSize 20)
                        (.setDriverClassName "oracle.jdbc.OracleDriver")
                        (.setJdbcUrl (:url settings))
                        (.setUsername (:user settings))
@@ -31,12 +32,9 @@
 
 (defonce ^:dynamic db {:datasource (data-source db-settings)})
 
-(defn setup-shutdown-hook! [f]
-  (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
-
 (defn shutdown [] (.close (:datasource db)))
 
-(setup-shutdown-hook! shutdown)
+(c/setup-shutdown-hook! shutdown)
 
 (defmacro with-transaction [& body] `(jdbc/with-db-transaction [tx# db] (binding [db tx#] ~@body)))
 
