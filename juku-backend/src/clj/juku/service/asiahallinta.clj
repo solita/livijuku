@@ -29,8 +29,8 @@
 
     :debug true
     :throw-entire-message true
-    :socket-timeout 120000    ;; in milliseconds
-    :conn-timeout 120000})    ;; in milliseconds
+    :socket-timeout 130000    ;; in milliseconds
+    :conn-timeout 130000})    ;; in milliseconds
 
 (s/defschema Hakemuskausi {:asianNimi             s/Str
                            :omistavaOrganisaatio  s/Str
