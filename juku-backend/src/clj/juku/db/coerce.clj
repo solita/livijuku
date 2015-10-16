@@ -50,13 +50,13 @@
 #_(defn localdate->sql-date [m]
   (convert-instances-of LocalDate time-coerce/to-sql-date m))
 
-(defn row->object [row]
+(defn row->object
   "Transforms a database row to a more hierarchical object structure so that all keyvalues,
   which have the same prefix, are combined to a new map. This map contains all the
   keyvalues, which have the same prefix. The prefix is removed from the map keys.
 
   e.g. {:a_x 1, :a_y 2 :b 3} -> {a: {:x 1 :y 2} :b 3}"
-  (m/flat->tree row #"_"))
+  [row] (m/flat->tree row #"_"))
 
 (defn object->row [obj]
   (m/tree->flat obj "_"))
