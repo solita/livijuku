@@ -76,6 +76,9 @@
 
 (defn ^Throwable cause [^Throwable t] (.getCause t))
 
+(defn service-name [request]
+  (str ((c/nil-safe str/upper-case) (name (:request-method request))) " " (:uri request)))
+
 (defn throwable->http-error [^Throwable t]
   (if t
     (let [error (or (ss/get-thrown-object t) (ex-data t))]
@@ -86,20 +89,25 @@
         {:message (message t)
          :cause (throwable->http-error (cause t))}))))
 
-(defn exception-handler [exception]
+(defn exception-handler [exception _ request]
   (let [error (throwable->http-error exception)
         http-response (or (:http-response error)
                           (if (isa? (:type error) ::coll/not-found) r/not-found)
                           r/internal-server-error)
         response (http-response (dissoc error :http-response))]
-    (log/error exception (:status response))
+    (log/error exception
+               (service-name request) " -> "
+               (:status response))
     response))
 
-(defn logging-validation-error-handler [{:keys [error] :as data}]
-  (log/error "Bad request - validation error - "
-    (rm/stringify-error error))
-
-  (rm/default-error-handler data))
+(defn logging-wrapper [error-msg f]
+  (fn [exception data request]
+    (let [response (f exception data request)
+          body (:body response)]
+      (log/error (service-name request) "->" error-msg (or (:errors body)
+                                                           (str (:type body) " - "
+                                                                (:message body) )))
+      response)))
 
 (defn no-cache [response]
   (r/header response "Cache-Control" "no-store"))
@@ -113,13 +121,6 @@
               (r/get-header response "Etag"))
         response
         (no-cache response)))))
-
-(defn wrap-xsrf-token-cookie-for-angular [handler]
-  (fn [request]
-    (let [response (handler request)]
-      (if (not= af/*anti-forgery-token* (get-in request [:cookies "XSRF-TOKEN" :value]))
-        (assoc-in response [:cookies "XSRF-TOKEN"] {:value af/*anti-forgery-token* :http-only false :path "/"})
-        response))))
 
 (defn wrap-double-submit-cookie
 

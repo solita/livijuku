@@ -18,10 +18,10 @@
 
                            ;; *** web application ***
                            [http-kit "2.1.19"] ;; http server
-                           [ring "1.3.1"]
-                           [ring/ring-defaults "0.1.2"]
+                           [ring "1.4.0"]
+                           [ring/ring-defaults "0.1.5"]
 
-                           [metosin/compojure-api "0.21.0"]
+                           [metosin/compojure-api "0.23.1"]
                            [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***
@@ -31,10 +31,7 @@
 
                            ;; *** logging libraries ***
                            [org.clojure/tools.logging "0.3.1"]
-                           [ch.qos.logback/logback-classic "1.1.3"]
-
-                           ;; Timbre brings functional, Clojure-y goodness to all your logging needs.
-                           [com.taoensso/timbre "3.3.1"]]
+                           [ch.qos.logback/logback-classic "1.1.3"]]
 
             :plugins [[test2junit "1.1.0"]
                       [lein-ring "0.8.12"]

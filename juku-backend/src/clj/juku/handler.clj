@@ -3,6 +3,7 @@
             [compojure.route :as r]
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
+            [compojure.api.exception :as ex]
 
             [juku.rest-api.authorization]
             [juku.rest-api.hakemus :refer [hakemus-routes]]
@@ -21,8 +22,17 @@
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
-(defapi juku-api {:exceptions {:exception-handler jm/exception-handler}
-                  :validation-errors {:error-handler jm/logging-validation-error-handler}}
+(defapi juku-api
+        {:exceptions
+          {:handlers
+           {:compojure.api.exception/request-parsing
+              (jm/logging-wrapper "400 bad request - parse error:" ex/request-parsing-handler)
+            :compojure.api.exception/request-validation
+              (jm/logging-wrapper "400 bad request - validation error:" ex/request-validation-handler)
+            :compojure.api.exception/response-validation
+              (jm/logging-wrapper "500 system error (bad response) - validation error:" ex/request-validation-handler)
+            :compojure.api.exception/default jm/exception-handler}}}
+
         (swagger-ui "/api/ui")
         (swagger-docs :info {
             :title "Liikennevirasto - Juku API"

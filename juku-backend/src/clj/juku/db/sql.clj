@@ -17,7 +17,7 @@
       :else (c/maybe-nil violated-constraint nil (.getCause e)))))
 
 (defn- default-error-message [sql params]
-  (str "Failed to execute: " sql " - values: " params))
+  (str "Failed to execute: " sql " - values: " (str/join ", " params)))
 
 (defn with-db-exception-translation
   ([db-operation sql params constraint-violation-error error-parameters]
