@@ -37,7 +37,8 @@
                       [lein-ring "0.8.12"]
                       ;; Library for managing environment settings from a number of different sources
                       [lein-environ "1.0.0"]
-                      [lein-ancient "0.6.7"]]
+                      [lein-ancient "0.6.7"]
+                      [jonase/eastwood "0.2.1"]]
 
             :ring {:handler      juku.handler/app
                    :uberwar-name "juku.war"}
