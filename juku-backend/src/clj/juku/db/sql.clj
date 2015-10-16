@@ -37,9 +37,14 @@
 
   ([operation db sql params] (db-do operation db sql params (constantly nil) {}) ))
 
+(defn isValidDatabaseIdentifier [identifier]
+  (c/not-nil? (re-matches #"\p{Lower}+[\p{Lower}_]*" (str/lower-case identifier))))
+
 ;; insert statements
 
 (defn insert-statement [table columns values]
+  {:pre [(isValidDatabaseIdentifier table)
+         (every? isValidDatabaseIdentifier columns)]}
   (let [separator ", "]
     (str "insert into " table " (" (str/join separator columns)
          ") values (" (str/join separator values) ")")))
@@ -65,9 +70,11 @@
 ;; update statements
 
 (defn- assignment-expression [key]
+  {:pre [(isValidDatabaseIdentifier (str (name key)))]}
   (str (name key) " = ?"))
 
 (defn update-statement [table obj]
+  {:pre [(isValidDatabaseIdentifier table)]}
   (let [separator ", "
         set-clause  (str/join separator (map assignment-expression (keys obj)))]
        (str "update " table " set " set-clause)))
