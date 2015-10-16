@@ -68,8 +68,8 @@
   [collection keys] (map (fn [v] (apply dissoc v keys)) collection))
 
 (defn no-transformation
-  "The default asoc-join transformation option. The children are associated to the parent as is."
-  [children _] (if children children []))
+  "The default assoc-join transformation option. The children are associated to the parent as is."
+  [children _] (or children []))
 
 (defn assoc-join
   "Assoc-join is a join function (see join) where children are associated (assoc) to parents.
