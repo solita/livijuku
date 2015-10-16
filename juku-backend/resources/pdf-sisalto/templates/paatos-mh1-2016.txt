@@ -23,7 +23,7 @@
 
 	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin {momentti} määrärahasta.
 
-	Avustus maksetaan hakijan ilmoittamalle tilille: [hakijan tilinumero].
+	Avustus maksetaan hakijan ilmoittamalle tilille.
 
 *Sovellettava lainsäädäntö
 
