@@ -4,12 +4,12 @@
   (:import (java.io ByteArrayOutputStream)))
 
 (defn is-divisible-by [num divisor]
-  (= (mod num divisor) 0))
+  (zero? (mod num divisor)))
 
 (defn maybe-nil [f default maybe-nil]
-  (if (= maybe-nil nil) default (f maybe-nil)))
+  (if (nil? maybe-nil) default (f maybe-nil)))
 
-(defn third [collection] (first (next (next collection))))
+(defn third [collection] (fnext (next collection)))
 
 (def not-nil? (comp not nil?))
 
