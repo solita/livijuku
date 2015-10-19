@@ -39,7 +39,7 @@ create or replace package body testing as
     var_user_tables sys.odcivarchar2list;
   begin
     select cast(collect(to_char(table_name)) as sys.odcivarchar2list) into var_user_tables from user_tables where temporary = 'N' and not exists (select 1 from user_mviews where user_mviews.mview_name = user_tables.table_name);
-    run('flashback table ' || list_to_char(var_user_tables, ', ') || ' to restore point ' || user || '_' || restorepoint);
+    run('flashback table ' || list_to_char(var_user_tables, ', ') || ' to restore point ''' || user || '_' || upper(restorepoint) || '''');
   end;
   
 end;
