@@ -27,7 +27,7 @@
               "SOA-Aikaleima" (str (time/now))
               "SOA-Toiminto" operation}
 
-    :debug true
+    :debug false
     :throw-entire-message true
     :socket-timeout 130000    ;; in milliseconds
     :conn-timeout 130000})    ;; in milliseconds
