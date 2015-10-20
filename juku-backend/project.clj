@@ -1,6 +1,6 @@
-(defproject juku-backend "1.1.0-SNAPSHOT"
+(defproject juku-backend "1.2.0"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
-            :url "http://example.com/FIXME"
+            :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
             :repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita"}]]
 
@@ -45,7 +45,7 @@
                                                 [ring-mock "0.1.5"]
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
                                                 [midje "1.7.0"]
-                                                [midje-junit-formatter "0.1.0-SNAPSHOT"]
+                                                ;;[midje-junit-formatter "0.1.0-SNAPSHOT"]
                                                 [clj-http-fake "1.0.1"]
                                                 [metosin/scjsv "0.2.0"]]
 
