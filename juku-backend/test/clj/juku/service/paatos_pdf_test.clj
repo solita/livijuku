@@ -213,13 +213,58 @@
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 2 50 1)
       (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
 
+(fact "Maksatushakemus (mh1) - avustusta myönnetty 0€"
+  (test-ctx
+    (let [kausi (test/next-avattu-empty-hakemuskausi!)
+          ah0 (add-hakemus! kausi "AH0")
+          mh1 (add-hakemus! kausi "MH1")
+          paatos {:hakemusid ah0, :myonnettyavustus 0 :selite "Ei tipu" :paattajanimi "Roope Ankka"}
+          ak {:hakemusid     mh1
+              :avustuskohdeluokkatunnus "PSA"
+              :avustuskohdelajitunnus "1"
+              :haettavaavustus 1
+              :omarahoitus 1}]
+
+      (h/laheta-hakemus! ah0)
+      (h/tarkasta-hakemus! ah0)
+      (p/save-paatos! paatos)
+      (p/hyvaksy-paatos! ah0)
+
+      (ak/add-avustuskohde! ak)
+
+      (p/find-paatos-pdf mh1) => (partial instance? InputStream)
+
+      (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 1)
+      (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 0 "**" 1)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+
+(fact "Maksatushakemus (mh1) - maksuun ei haettu vielä mitään"
+  (test-ctx
+    (let [kausi (test/next-avattu-empty-hakemuskausi!)
+          ah0 (add-hakemus! kausi "AH0")
+          mh1 (add-hakemus! kausi "MH1")
+          paatos {:hakemusid ah0, :myonnettyavustus 1 :selite nil :paattajanimi "Pentti Päättäjä"}]
+
+      (h/laheta-hakemus! ah0)
+      (h/tarkasta-hakemus! ah0)
+      (p/save-paatos! paatos)
+      (p/hyvaksy-paatos! ah0)
+
+      (p/find-paatos-pdf mh1) => (partial instance? InputStream)
+
+      (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 0)
+      (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) pdf/today 1 0 0)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+
+(def percentage (comp p/format-bigdec p/percentage))
+
 (fact "Prosenttilasku"
-      (p/percentage 1M 1M) => 100M
-      (p/percentage 0M 1M) => 0M
-      (p/percentage 1M 2M) => 50M
-      (p/percentage 1M 3M) => 33M
-      (p/percentage 2M 3M) => 67M
-      (p/percentage 5M 9M) => 56M
-      (p/percentage 1M 1000M) => 0M
-      (p/percentage 4M 1000M) => 0M
-      (p/percentage 5M 1000M) => 1M)
+      (percentage 1M 1M) => "100"
+      (percentage 0M 1M) => "0"
+      (percentage 1M 2M) => "50"
+      (percentage 1M 3M) => "33"
+      (percentage 2M 3M) => "67"
+      (percentage 5M 9M) => "56"
+      (percentage 1M 1000M) => "0.1"
+      (percentage 4M 1000M) => "0.4"
+      (percentage 5M 1000M) => "0.5")
