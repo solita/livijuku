@@ -66,9 +66,10 @@
   {"KS1"	"31.30.63.09"
    "KS2"	"31.30.63.11"})
 
-;; (with-precision 2 :rounding HALF_UP (bigdec (* (/ x y) 100)))
-(defn percentage [^BigDecimal x ^BigDecimal y]
-  (.setScale ^BigDecimal (* (.divide x y 2 RoundingMode/HALF_UP) 100) 0))
+(defn ^BigDecimal percentage [x y]
+  (with-precision 2 :rounding HALF_UP (bigdec (* (/ x y) 100))))
+
+(defn format-bigdec [^BigDecimal v] (-> v .stripTrailingZeros .toPlainString))
 
 (defn mh-template-values [hakemus mh-haettuavustus organisaatio]
   (let [{:keys [voimaantuloaika, myonnettyavustus]}
@@ -77,8 +78,9 @@
                         "<avustuksen myöntämispvm>")
      :ah0-myonnettyavustus (or (pdf/format-number myonnettyavustus)
                                "<myönnetty avustus>")
-     :osuusavustuksesta (or ((c/nil-safe percentage) mh-haettuavustus myonnettyavustus)
-                            "<osuus avustuksesta>")
+     :osuusavustuksesta (or (when (some nil? [mh-haettuavustus, myonnettyavustus]) "<osuus avustuksesta>")
+                            (when (zero? myonnettyavustus) "**")
+                            ((comp format-bigdec percentage) mh-haettuavustus myonnettyavustus))
      :momentti (maararahamomentti (:lajitunnus organisaatio))}))
 
 (defn mh2-templatevalues [hakemus]

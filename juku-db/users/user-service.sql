@@ -42,7 +42,7 @@ create or replace package body juku_users.testing as
   end;
 
   procedure create_users (username varchar2) is
-    juku constant varchar2(30 char) := 'juku_' || username;
+    juku constant varchar2(30 char) := 'juku_' || translate(username, '-', '_');
     juku_app constant varchar2(30 char) := juku || '_app';
     create_juku constant varchar2(1000 char) :=
       'create user ' || juku || ' identified by juku default tablespace juku_data quota unlimited on juku_data quota unlimited on juku_indx account unlock';
