@@ -9,7 +9,7 @@
 
 {avustuskohteet}
 
-	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
+	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. Kaikki luvut sisältävät arvonlisäveron.
 
 *Päätös
 
