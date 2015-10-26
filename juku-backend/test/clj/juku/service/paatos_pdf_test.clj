@@ -44,7 +44,7 @@
       teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta 0 euroa."))
       teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä 0 euroa."))
 
-      teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 31.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
+      teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.1. - 30.6." vuosi " päivämäärään 31.8." vuosi " mennessä."))
       teksti => (partial strx/substring? (str "seurantatiedot ajalta 1.7. - 31.12." vuosi " päivämäärään 31.1." (+ vuosi 1) " mennessä.")))))
 
 (defn assert-hsl-maksatushakemuspaatos-teksti [vuosi kausi summa]
