@@ -17,7 +17,8 @@
             [ring.swagger.middleware :as rm]
             [juku.headers :as h]
             [clojure.tools.logging :as log]
-            [crypto.random :as random]))
+            [crypto.random :as random]
+            [compojure.api.exception :as ex]))
 
 (defn find-matching-organisaatio [organisaatio-name department]
   (c/if-let* [normalized-org-name (-> organisaatio-name str/trim str/lower-case (str/replace #"(\s)+" "-"))
@@ -108,6 +109,9 @@
                                                            (str (:type body) " - "
                                                                 (:message body) )))
       response)))
+
+(defn response-validation-handler [exception data request]
+  (assoc-in (ex/response-validation-handler exception data request) [:body :type] "response-validation-error"))
 
 (defn no-cache [response]
   (r/header response "Cache-Control" "no-store"))
