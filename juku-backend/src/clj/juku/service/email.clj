@@ -166,7 +166,8 @@
      hakemus+org (assoc hakemus :organisaatio (:nimi organisaatio))
      subject (strx/interpolate subject-template hakemus+org)
      message (str "Hakija: " (:nimi organisaatio) "\n\n"
-                  (strx/interpolate body-template hakemus+org))]
+                  (strx/interpolate body-template hakemus+org) "\n\n"
+                  footer)]
     (post to subject message)
     nil))
 
