@@ -20,7 +20,7 @@
           (content-type (ok (service/paatos-pdf hakemusid))
                         "application/pdf"))
 
-    (GET* "/hakemus/:hakemusid/paatos/*pdf" []
+    (GET* "/hakemus/:hakemusid/paatos/pdf*" []
           :auth [:view-hakemus]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen (hakemusid) nykyisen ratkaisun päätösasiakirja."
