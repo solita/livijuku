@@ -55,7 +55,7 @@
              :path-params     [hakemusid :- Long]
              :summary  "Käsittelijä merkitsee hakemuksen tarkastetuksi."
              (ok (service/tarkasta-hakemus! hakemusid)))
-      (GET* "/hakemus/:hakemusid/pdf" []
+      (GET* "/hakemus/:hakemusid/*pdf" []
             :auth [:view-hakemus]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."
