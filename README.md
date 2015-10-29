@@ -5,6 +5,7 @@ Liikennevirasto Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräy
 
 ## Versiohallinta
 
+
 Versiontikäytännöt perustuvat malliin: [http://nvie.com/posts/a-successful-git-branching-model/](http://nvie.com/posts/a-successful-git-branching-model/)
 
 Kehitysympäristön käynnistäminen
