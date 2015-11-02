@@ -9,7 +9,7 @@
 
 {avustuskohteet}
 
-	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
+	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. Kaikki luvut sisältävät arvonlisäveron.
 
 *Päätös
 

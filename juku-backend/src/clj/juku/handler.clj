@@ -30,7 +30,7 @@
             :compojure.api.exception/request-validation
               (jm/logging-wrapper "400 bad request - validation error:" ex/request-validation-handler)
             :compojure.api.exception/response-validation
-              (jm/logging-wrapper "500 system error (bad response) - validation error:" ex/request-validation-handler)
+              (jm/logging-wrapper "500 system error (bad response) - validation error:" jm/response-validation-handler)
             :compojure.api.exception/default jm/exception-handler}}}
 
         (swagger-ui "/api/ui")
@@ -54,9 +54,9 @@
 
 (def app (-> juku-api
              (jm/wrap-double-submit-cookie [#"GET /hakemuskausi/.*/hakuohje"
-                                            #"GET /hakemus/.*/pdf"
+                                            #"GET /hakemus/.*/.*pdf"
                                             #"GET /hakemus/.*/liite/.*"
-                                            #"GET /hakemus/.*/paatos/pdf"
+                                            #"GET /hakemus/.*/paatos/.*pdf"
                                             #"GET /api/ui/.*"
                                             #"GET /swagger.json"
 

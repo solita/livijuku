@@ -184,7 +184,7 @@
       (let [teksti (:teksti pdf/*mock-pdf*)]
         teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
         teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi
-                                                " suurten kaupunkiseutujen joukkoliikenteen valtionavustuksen maksatusta 0 euroa ajalta 1.1.- 31.6."
+                                                " suurten kaupunkiseutujen joukkoliikenteen valtionavustuksen maksatusta 0 euroa ajalta 1.1.- 30.6."
                                                 vuosi))
         teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä 0 euroa.")))
 
