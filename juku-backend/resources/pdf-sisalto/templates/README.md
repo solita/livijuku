@@ -12,12 +12,20 @@ Avustushakemuksen päätöksen tapauksessa: paatos-ah0-[organisaatiolaji]-[voima
 Dokumenttityyppejä ovat hakemus tai päätös.
 
 Hakemustyyppejä ovat:
-*	ah0 – avustushakemus
-*	mh1 – 1. maksatushakemus
-*	mh2 – 2. maksatushakemus
+* **ah0** – avustushakemus
+* **mh1** – 1. maksatushakemus
+* **mh2** – 2. maksatushakemus
 
 Voimaantulovuosi tarkoittaa hakemuskautta, jolloin ko. pohja astuu voimaan. Pohja on niin kauan voimassa kunnes seuraava pohja korvaa sen.
 
 Organisaatiolajit ovat:
-* ks1 - Suuri kaupunkiseutu
-* ks2 - Keskisuuri kaupunkiseutu
+* **ks1** - Suuri kaupunkiseutu
+* **ks2** - Keskisuuri kaupunkiseutu
+
+Dokumenttipohjan tiedostomuoto on utf-8 (ilman BOM-merkintää) ja rivinvaihtomerkkeinä käytetään linefeed-merkkiä unix-käytännön mukaisesti.
+
+Dokumenttipohja tukee hyvin yksinkertaista tekstin muotoilua:
+* Lihavointi - Lihavoiturivi aloitetaan *-merkillä. Yksittäistä sanaa ei voi lihavoida.
+* Automaattinen rivitys - Kappaleen automaattinen rivittäminen. Kappaleet erotetaan toisistaan rivinvaihtomerkillä. 
+* Sisennys - Sisennys tehdään tabulaattori-merkillä. Yksi tabulaattori sisentää aina vakiopituuden.
+ 
