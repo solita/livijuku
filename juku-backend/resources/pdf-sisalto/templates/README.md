@@ -25,7 +25,11 @@ Organisaatiolajit ovat:
 Dokumenttipohjan tiedostomuoto on utf-8 (ilman BOM-merkintää) ja rivinvaihtomerkkeinä käytetään linefeed-merkkiä unix-käytännön mukaisesti.
 
 Dokumenttipohja tukee hyvin yksinkertaista tekstin muotoilua:
-* Lihavointi - Lihavoiturivi aloitetaan *-merkillä. Yksittäistä sanaa ei voi lihavoida.
-* Automaattinen rivitys - Kappaleen automaattinen rivittäminen. Kappaleet erotetaan toisistaan rivinvaihtomerkillä. 
-* Sisennys - Sisennys tehdään tabulaattori-merkillä. Yksi tabulaattori sisentää aina vakiopituuden.
+* **Lihavointi** - Lihavoiturivi aloitetaan *-merkillä. Yksittäistä sanaa ei voi lihavoida.
+* **Kappaleen automaattinen rivittäminen** - Kappaleet erotetaan toisistaan rivinvaihtomerkillä (LF). 
+* **Sisennys** - Sisennys tehdään tabulaattori-merkillä. Yksi tabulaattori sisentää aina vakiopituuden. Kappaleen tapauksessa sisennys koskee koko kappaletta.
+
+Pohjassa olevan tekstin lisäksi dokumentiin tulee:
+* **Yläotsikko** jossa on dokumentin otsikko, päiväys ja diaarinumero
+* **Alaotsikko**
  
