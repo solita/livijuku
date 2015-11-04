@@ -1,5 +1,4 @@
-
-*Valtionavustuspäätös maksamisesta ajalta 1.7.-31.12.{vuosi}
+*Valtionavustustuksen maksatuspäätös 1.7.-31.12.{vuosi}
 
 *Hakemus {lahetyspvm}
 
@@ -33,8 +32,7 @@
 
 *Muutoksenhaku ja oikaisuvaatimus
 
-	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on tämän päätöksen liitteenä.
-
+	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on saatavilla JUKU-järjestelmässä.
 
 	Päättäjä	{paattaja}
 	Esittelijä	{esittelija}

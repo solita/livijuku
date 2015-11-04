@@ -59,8 +59,12 @@
     (if (== updated 0) (new-paatos! (assoc-paattajanimi paatos)))
     nil))
 
-(defn paatos-template [hakemus]
-  (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
+(defn paatos-template [hakemus organisaatio]
+  (if (= (:hakemustyyppitunnus hakemus) "AH0")
+    (str "paatos-"
+         (str/lower-case (:hakemustyyppitunnus hakemus)) "-"
+         (str/lower-case (:lajitunnus organisaatio)) "-2016.txt")
+    (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt")))
 
 (def maararahamomentti
   {"KS1"	"31.30.63.09"
@@ -105,7 +109,7 @@
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
           haettuavustus (ak/total-haettavaavustus avustuskohteet)
 
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus)))))
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
           common-template-values
             {:organisaatio-nimi (:nimi organisaatio)
              :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
