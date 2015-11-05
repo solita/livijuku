@@ -1,305 +1,281 @@
-
 swagger: '2.0'
-
 info:
-  version: "0.0.8"
+  version: 1.0.0
   title: Livi-juku asiahallinta rajapinta
-  description: 
-    "Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan kuvauksen juku-järjestelmälle.
-    Rajapintakuvaus perustuu dokumenttiin Integraatiopalvelukuvaus JUKU-ASHA (13.3.2015) v0.8.
+  description: >-
+    Tämä dokumentti sisältää Liikenneviraston asiahallintajärjestelmän rajapinnan
+    kuvauksen juku-järjestelmälle. Rajapintakuvaus perustuu dokumenttiin
+    Integraatiopalvelukuvaus JUKU-ASHA (13.3.2015) v0.8.
 
     Tämä kuvaus (versio 0.0.7) sisältää ely-hakemusprosessin muutokset.
 
     ##### Tarkennuksia
 
-    Polkuparametrissa oleva diaarinumero on utf-8 url-koodattu.
-    Hakemus, hakemuksen täydennys ja maksatushakemus -palveluissa on mahdollista lähettää kuvattujen parametrien lisäksi n kpl liitteitä.
-    Näiden liitteiden nimi on utf-8 base64 -koodattu standardin rfc2047 mukaan, jos ko. nimi sisältää muita kuin us-ascii merkkejä.
+    Polkuparametrissa oleva diaarinumero on utf-8 url-koodattu. Hakemus,
+    hakemuksen täydennys ja maksatushakemus -palveluissa on mahdollista lähettää
+    kuvattujen parametrien lisäksi n kpl liitteitä. Näiden liitteiden nimi on
+    utf-8 base64 -koodattu standardin rfc2047 mukaan, jos ko. nimi sisältää muita
+    kuin us-ascii merkkejä.
 
     ##### Ongelmat
 
-    Swagger-rajapintakuvaus ei tue kunnolla liitetiedostoja ja skeemallista json-metadataa samassa pyynnössä:
+    Swagger-rajapintakuvaus ei tue kunnolla liitetiedostoja ja skeemallista
+    json-metadataa samassa pyynnössä:
     https://github.com/swagger-api/swagger-spec/issues/222.
 
-    Tämä koskee kaikkia palveluja joiden sisältöyyppi on: multipart/form-data (consumes: [multipart/form-data]).
+    Tämä koskee kaikkia palveluja joiden sisältöyyppi on: multipart/form-data
+    (consumes: [multipart/form-data]).
 
-    Tässä dokumentissa ongelma on kierretty laittamalla metadatakuvaus string-tyyppiseen (**application/json**; charset=**utf-8**)
-    parametriin ja viite json-skeema määritykseen on vapaamuotoisessa format-kentässä.
+    Tässä dokumentissa ongelma on kierretty laittamalla metadatakuvaus
+    string-tyyppiseen (**application/json**; charset=**utf-8**) parametriin ja
+    viite json-skeema määritykseen on vapaamuotoisessa format-kentässä.
 
-    Swagger-editori ei ymmärrä skeemaviitettä format-kentässä ja tästä tulee turhia varoituksia.
-    Lisäksi Try this operation -toiminto ei osaa lähettää viestiä oikein."
-  
-schemes: [http]
-produces: [text/plain; charset=utf-8]
-
+    Swagger-editori ei ymmärrä skeemaviitettä format-kentässä ja tästä tulee
+    turhia varoituksia. Lisäksi Try this operation -toiminto ei osaa lähettää
+    viestiä oikein.
+schemes:
+  - http
+produces:
+  - text/plain; charset=utf-8
 paths:
   /hakemuskausi:
     post:
-      consumes: [multipart/form-data]
+      consumes:
+        - multipart/form-data
       description: Uuden hakemuskauden avaaminen
       parameters:
-        -
-          name: hakemuskausi
+        - name: hakemuskausi
           in: formData
           description: Hakemuskauden tiedot
           required: true
           type: string
           format: '#/definitions/Hakemuskausi'
-        -
-          name: hakuohje-asiakirja
+        - name: hakuohje-asiakirja
           in: formData
           description: Hakemuskauden hakuohje (pdf/a)
           required: true
           type: file
           format: application/pdf
       responses:
-        200:
+        '200':
           description: Uusi hakemuskausi on avattu
-          schema: 
+          schema:
             description: Hakemuskauden diaarinumero
             type: string
-
-  /hakemuskausi/{diaarinumero}/hakuohje:
+  '/hakemuskausi/{diaarinumero}/hakuohje':
     post:
-      consumes: [multipart/form-data]
+      consumes:
+        - multipart/form-data
       description: Hakemuskauden hakuohjeen pävitys
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
           description: Hakemuskauden diaarinumero
           required: true
           type: string
           format: url-encoded utf-8
-        -
-          name: hakuohje
+        - name: hakuohje
           in: formData
           description: Hakuohjeen tiedot
           required: true
           type: string
           format: '#/definitions/TaydennysHakuohje'
-        -
-          name: hakuohje-asiakirja
+        - name: hakuohje-asiakirja
           in: formData
           description: Hakemuskauden hakuohje (pdf/a)
           required: true
           type: file
           format: application/pdf
       responses:
-        200:
+        '200':
           description: Hakemuskauden hakuohje on päivitetty
-        404:
-          description: Hakemuskautta {diaarinumero} ei ole olemassa
-            
-  /hakemuskausi/{diaarinumero}/sulje:   
-    put: 
+        '404':
+          description: 'Hakemuskautta {diaarinumero} ei ole olemassa'
+  '/hakemuskausi/{diaarinumero}/sulje':
+    put:
       description: Hakemuskauden sulkeminen asiahallintajärjestelmään
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
           description: Hakemuskauden diaarinumero
           required: true
           type: string
           format: url-encoded utf-8
       responses:
-        200:
+        '200':
           description: Hakemuskausi on suljettu
-        404:
-          description: Hakemuskautta {diaarinumero} ei ole olemassa
-          
+        '404':
+          description: 'Hakemuskautta {diaarinumero} ei ole olemassa'
   /hakemus:
     post:
-      consumes: [multipart/form-data]
-      description: 
-        Hakija lähettää avustushakemuksen juku-järjstelmään. 
-        Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
-        mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
+      consumes:
+        - multipart/form-data
+      description: Hakija lähettää avustushakemuksen juku-järjstelmään. Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
       parameters:
-        -
-          name: hakemus
+        - name: hakemus
           in: formData
           description: Hakemuksen tiedot
           required: true
           type: string
           format: '#/definitions/Hakemus'
-        -
-          name: hakemus-asiakirja
+        - name: hakemus-asiakirja
           in: formData
           description: Avustushakemuksen dokumentti (pdf/a)
           required: true
           type: file
       responses:
-        200:
+        '200':
           description: Hakemus on luotu
-          schema: 
+          schema:
             description: Hakemuksen diaarinumero
             type: string
-        404:
-          description: Hakemuskautta {diaarinumero} ei ole olemassa
-            
-  /hakemus/{diaarinumero}/kasittely:
+        '404':
+          description: 'Hakemuskautta {diaarinumero} ei ole olemassa'
+  '/hakemus/{diaarinumero}/kasittely':
     put:
       description: Käsittelijä ottaa hakemuksen käsittelyyn
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
           description: Hakemuksen diaarinumero
           required: true
           type: string
           format: url-encoded utf-8
       responses:
-        200:
+        '200':
           description: Hakemuksen tila on käsittelyssä
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
-  /hakemus/{diaarinumero}/tarkastettu:
+        '404':
+          description: 'Hakemusta {diaarinumero} ei ole olemassa'
+  '/hakemus/{diaarinumero}/tarkastettu':
     put:
       description: Käsittelijä ottaa hakemuksen käsittelyyn
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
           description: Hakemuksen diaarinumero
           required: true
           type: string
           format: url-encoded utf-8
       responses:
-        200:
+        '200':
           description: Hakemuksen tila on tarkastettu
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
-  /hakemus/{diaarinumero}/taydennyspyynto:
+        '404':
+          description: 'Hakemusta {diaarinumero} ei ole olemassa'
+  '/hakemus/{diaarinumero}/taydennyspyynto':
     post:
       description: Hakemukseen tehdään täydennyspyyntö
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
-          description: Hakemuksen diaarinumero. 
+          description: Hakemuksen diaarinumero.
           required: true
           type: string
           format: url-encoded utf-8
-        -
-          name: täydennyspyyntö
+        - name: täydennyspyyntö
           in: body
-          description: Täydennyspyynnön sisältö 
+          description: Täydennyspyynnön sisältö
           required: true
-          schema: 
+          schema:
             $ref: '#/definitions/Taydennyspyynto'
       responses:
-        200:
+        '200':
           description: Hakemukseen on liitetty täydennyspyyntö
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
-  /hakemus/{diaarinumero}/taydennys:
+        '404':
+          description: 'Hakemusta {diaarinumero} ei ole olemassa'
+  '/hakemus/{diaarinumero}/taydennys':
     post:
-      consumes: [multipart/form-data]
-      description: 
-        Hakija lähettää täydennyksen hakemukseen. 
-        Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
-        mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
+      consumes:
+        - multipart/form-data
+      description: Hakija lähettää täydennyksen hakemukseen. Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
-          description: Hakemuksen diaarinumero. 
+          description: Hakemuksen diaarinumero.
           required: true
           type: string
           format: url-encoded utf-8
-        -
-          name: täydennys
+        - name: taydennys
           in: formData
-          description: Täydennyksen sisältö 
+          description: Täydennyksen sisältö
           required: true
           type: string
           format: '#/definitions/Taydennys'
-        -
-          name: hakemus-asiakirja
+        - name: hakemus-asiakirja
           in: formData
           description: Täydennetty hakemus dokumentti (pdf/a)
           required: true
           type: file
       responses:
-        200:
+        '200':
           description: Hakemukseen on liitetty täydennys
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
-  /hakemus/{diaarinumero}/paatos:
+        '404':
+          description: 'Hakemusta {diaarinumero} ei ole olemassa'
+  '/hakemus/{diaarinumero}/paatos':
     post:
-      consumes: [multipart/form-data]
+      consumes:
+        - multipart/form-data
       description: Hakemukseen on tehty päätös.
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
           description: Hakemuksen diaarinumero
           required: true
           type: string
           format: url-encoded utf-8
-        -
-          name: asiakirja
+        - name: paatos
+          in: formData
+          description: Päätöksen tiedot
+          required: true
+          type: string
+          format: '#/definitions/Paatos'
+        - name: paatos-asiakirja
           in: formData
           description: Päätösdokumentti (pdf/a)
           required: true
           type: file
       responses:
-        200:
+        '200':
           description: Hakemukseen on liitetty päätös
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
-  /hakemus/{diaarinumero}/maksatushakemus:
+        '404':
+          description: 'Hakemusta {diaarinumero} ei ole olemassa'
+  '/hakemus/{diaarinumero}/maksatushakemus':
     post:
-      consumes: [multipart/form-data]
-      description: 
-        Hakija lähettää maksatushakemuksen juku-järjstelmään. 
-        Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla 
-        mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
+      consumes:
+        - multipart/form-data
+      description: Hakija lähettää maksatushakemuksen juku-järjstelmään. Hakemus-asiakirjan lisäksi tässä pyynnössä voi tulla mukana n kpl hakemuksen liitedokumentteja omina multipart-osioina.
       parameters:
-        -
-          name: diaarinumero
+        - name: diaarinumero
           in: path
-          description: Hakemuksen diaarinumero. 
+          description: Hakemuksen diaarinumero.
           required: true
           type: string
           format: url-encoded utf-8
-        -
-          name: maksatushakemus
+        - name: maksatushakemus
           in: formData
-          description: Maksatushakemuksen tiedot 
+          description: Maksatushakemuksen tiedot
           required: true
           type: string
           format: '#/definitions/Taydennys'
-        -
-          name: hakemus-asiakirja
+        - name: hakemus-asiakirja
           in: formData
           description: Maksatushakemuksen dokumentti (pdf/a)
           required: true
           type: file
       responses:
-        200:
+        '200':
           description: Uusi maksatushakemus on tallennettu asiahallintaan
-        404:
-          description: Hakemusta {diaarinumero} ei ole olemassa
-          
+        '404':
+          description: 'Hakemusta {diaarinumero} ei ole olemassa'
 definitions:
   Hakemuskausi:
     properties:
-      asianNimi: 
+      asianNimi:
         type: string
-        description: 
-          Vapaamuotoinen tekstikenttä, johon tulee teksti 
-          "Hakemuskausi {hakemuskauden vuosi}" esim. "Hakemuskausi 2016"
-      omistavaOrganisaatio: 
+        description: 'Vapaamuotoinen tekstikenttä, johon tulee teksti "Hakemuskausi {hakemuskauden vuosi}" esim. "Hakemuskausi 2016"'
+      omistavaOrganisaatio:
         type: string
-        description: Tämä on vakioarvo "Liikennevirasto"
-      omistavaHenkilo: 
+        description: 'Tämä on vakioarvo "Liikennevirasto"'
+      omistavaHenkilo:
         type: string
         description: Jukun asetuksissa (asiahallinta.omistavahenkilo) määritetty vakioarvo
   Hakemus:
@@ -309,14 +285,14 @@ definitions:
         description: Hakemuskauden yksilöivä diaarinumero
       tyyppi:
         type: string
-        description: "Hakemuksen tyyppi: AH (avustushakemus) tai ELY (ely-hakemus)"
+        description: 'Hakemuksen tyyppi: AH (avustushakemus) tai ELY (ely-hakemus)'
         enum:
           - AH
           - ELY
-      omistavaOrganisaatio: 
+      omistavaOrganisaatio:
         type: string
-        description: Tämä on vakioarvo "Liikennevirasto"
-      omistavaHenkilo: 
+        description: 'Tämä on vakioarvo "Liikennevirasto"'
+      omistavaHenkilo:
         type: string
         description: Jukun asetuksissa (asiahallinta.omistavahenkilo) määritetty vakioarvo
       hakija:
@@ -324,22 +300,21 @@ definitions:
         description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
   Taydennyspyynto:
     properties:
-      maaraaika: 
+      maaraaika:
         type: string
         format: date
-        description: Täydennyspyynnön määräaika (minuutin tarkkuudella), johon mennessä tähän pyyntöön pitää vastata
-      kasittelija: 
+        description: 'Täydennyspyynnön määräaika (minuutin tarkkuudella), johon mennessä tähän pyyntöön pitää vastata'
+      kasittelija:
         type: string
-        description: Hakemuksen käsittelijän nimi muodossa sukunimi etunimi, esim "Bärman Toni".
+        description: 'Hakemuksen käsittelijän nimi muodossa etunimi sukunimi, esim "Toni Bärman".'
       vastaanottaja:
         type: string
         description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
   Taydennys:
     properties:
-      käsittelijä: 
+      käsittelijä:
         type: string
-        description: 
-          Hakemuksen käsittelijän nimi muodossa sukunimi etunimi, esim "Bärman Toni".
+        description: 'Hakemuksen käsittelijän nimi muodossa etunimi sukunimi, esim "Toni Bärman".'
       lahettaja:
         type: string
         description: Hakemuksen organisaation nimi (esim. Oulun kaupunki)
@@ -347,5 +322,9 @@ definitions:
     properties:
       käsittelijä:
         type: string
-        description:
-          Hakuohjeen päivittäjä muodossa sukunimi etunimi, esim "Bärman Toni".
+        description: 'Hakuohjeen päivittäjä muodossa etunimi sukunimi, esim "Toni Bärman".'
+  Paatos:
+    properties:
+      paattaja:
+        type: string
+        description: 'Päätöksen tehneen käyttäjän nimi muodossa etunimi sukunimi, esim "Toni Bärman".'
