@@ -73,6 +73,7 @@
              :audit []
              :path-params [vuosi :- s/Int]
              :multipart-params [hakuohje :- upload/TempFileUpload]
+             :summary "Päivittää hakemuskauden hakuohjeen."
              (ok (service/save-hakuohje vuosi
                                         (:filename hakuohje)
                                         (:content-type hakuohje)
@@ -86,6 +87,7 @@
              :multipart-params [hakuohje :- upload/TempFileUpload
                                 Filename :- s/Any
                                 Upload :- s/Any]
+             :summary "Päivittää hakemuskauden hakuohjeen. Tämä palvelu on tarkoitettu ie9 flash tiedoston lataukselle."
              (ok (service/save-hakuohje vuosi
                                         (:filename hakuohje)
                                         (:content-type hakuohje)
