@@ -1,4 +1,4 @@
-(defproject juku-db "1.2.2"
+(defproject juku-db "1.2.3"
   :min-lein-version "2.5.1"
 	:repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita" :snapshots true}]]
 

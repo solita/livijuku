@@ -40,7 +40,7 @@
            :multipart-params [liite :- upload/TempFileUpload
                               {Filename :- s/Any nil}
                               {Upload :- s/Any nil}]
-
+           :summary "Tallenna uusi hakemusliite juku-järjestelmään."
            (ok (service/add-liite! {:hakemusid hakemusid
                                     :nimi (:filename liite)
                                     :contenttype (:content-type liite)}
