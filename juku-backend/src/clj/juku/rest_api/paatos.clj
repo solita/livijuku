@@ -13,13 +13,6 @@
           :summary "Hae hakemuksen nykyinen päätös."
           (ok (service/find-current-paatos hakemusid)))
 
-    (GET* "/hakemus/:hakemusid/paatos/:paatosnumero/pdf" []
-          :auth [:view-hakemus]
-          :path-params [hakemusid :- Long, paatosnumero :- Long]
-          :summary "Hae hakemuksen (hakemusid) päätöksen (päätösnumero) päätösasiakirja. Deprecated - do not use this."
-          (content-type (ok (service/paatos-pdf hakemusid))
-                        "application/pdf"))
-
     (GET* "/hakemus/:hakemusid/paatos/pdf*" []
           :auth [:view-hakemus]
           :path-params [hakemusid :- Long]

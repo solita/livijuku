@@ -1,11 +1,10 @@
-
 *VALTIONAVUSTUSPÄÄTÖS
 
 *Hakemus {lahetyspvm}
 
 	Hakija: {organisaatio-nimi}
 
-	Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
+	Hakija hakee vuodelle {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 
 {avustuskohteet}
 
@@ -15,25 +14,23 @@
 
 	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustuksena enintään {myonnettyavustus} euroa (sis. alv) {organisaatiolaji-gen-pl} joukkoliikenteen osoitetusta talousarvion momentin 31.30.63.11 määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.{selite}
 
-	Avustusta ei myönnetä haetun suuruisena määrärahan suuruuden vuoksi. Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
+	Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
 
 *Valtionavustuksen määrä ja saamisen edellytykset
 
 	Valtionavustuksen määrä on päätöskohdan mukainen, mutta kuitenkin siten, että avustus on enintään 50 % hyväksyttävistä kokonaiskustannuksista. Hyväksyttävät kustannukset on yksilöity joukkoliikenteen valtionavustusasetuksen 5 §:ssä. Hintavelvoitteiden korvaamisen osalta kunnan ja valtion subventio yhteensä ei saa ylittää asiakastulojen määrää. Avustukseen sisältyy arvonlisävero.
 
-	Joukkoliikenteen valtionavustusasetuksen 5 §:n mukaan valtionavustuksen myöntämisen edellytyksenä on, että avustusta hakeva kaupunki on tehnyt joukkoliikenteen kehittämisestä Liikenneviraston ja toimivaltaisen elinkeino-, liikenne- ja ympäristökeskuksen kanssa aiesopimuksen. Liikennevirasto, Kaakkois-Suomen elinkeino-, liikenne ja ympäristökeskus ja hakija ovat laatineet yhteistyössä joukkoliikenteen aiesopimuksen, joten valtionavustushakemus täyttää valtionavustusasetuksen mukaisen edellytyksen.
+	Joukkoliikenteen valtionavustusasetuksen 4 §:n mukaan valtionavustuksen myöntämisen edellytyksenä on, että avustus kytketään maankäyttöä, asumista ja liikennettä koskevassa aiesopimuksessa sovittuihin joukkoliikenteen kehittämistoimiin. Joukkoliikenteen tavoitteista on sovittu valtion ja hakijan kanssa MAL-aiesopimuksessa. Näin ollen hakemus täyttää valtionavustusastuksen mukaiset edellytykset.
 
 *Avustuksen käyttö ja hyväksyttävät kustannukset
 
-	PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen. Avustuksen tavoitteena on turvata joukkoliikenteen palvelutasoa. Hintavelvoitteiden korvaamiseen myönnettyä avustusta saa käyttää seutu- ja kaupunkilippujen kustannuksiin. Valtionavustuksen edellytyksenä on, että hakija osallistuu hinnanalennuksen rahoittamiseen ainakin yhtä suurella osuudella kuin Liikennevirasto. Avustuksen tavoitteena on lisätä joukkoliikenteen käyttöä. Joukkoliikenteen kehittämisohjelman toteuttamisen rahoittamiseen myönnettävän valtionavustuksen tavoitteena on tukea valtakunnallisia ja hakijan joukkoliikenteen kehittämistoimia aiesopimuksessa sovitulla tavalla.
+	Valtionavustusta voidaan myöntää enintään 50 % hyväksyttävistä kustannuksista. Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, hintavelvoitteiden korvaamisesta ja jouk-koliikenteen kehittämisestä aiheutuvia kustannuksia.
 
-	Mikäli hakija saa valtionavustusta keskisuurten kaupunkiseutujen joukkoliikennetuen lisäksi muun lainsäädännön perusteella hakemuksessa esitettyihin tarkoituksiin, tulee sen ilmoittaa näistä ja osoittaa, ettei yhteenlaskettu valtionavustuksen määrä ylitä 50 % hyväksyttävistä kustannuksista. Valtionavustusta saa käyttää tämän päätöksen perusteella vuoden {vuosi} aikana syntyneiden kustannusten kattamiseen.
+	Mikäli hakija saa valtionavustusta suurten kaupunkiseutujen joukkoliikennetuen lisäksi muun lainsäädännön perusteella hakemuksessa esitettyihin tarkoituksiin, tulee sen ilmoittaa näistä ja osoittaa, ettei yhteenlaskettu valtionavustuksen määrä ylitä 50 % hyväksyttävistä kustannuksista. Valtionavustusta saa käyttää tämän päätöksen perusteella vuoden {vuosi} aikana syntyneiden kustannusten kattamiseen.
 
 *Maksatus
 
-	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun hakija on toimittanut seurantatiedot ajalta 1.1. - 30.6.{vuosi} päivämäärään {mh1-hakuaika-loppupvm} mennessä. Toinen erä maksetaan, kun hakija on toimittanut seurantatiedot ajalta 1.7. - 31.12.{vuosi} päivämäärään {mh2-hakuaika-loppupvm} mennessä. Ohjeet ja lomakkeet, joita tulee seurantatietojen ilmoittamiseksi käyttää, ovat saatavilla Liikenneviraston internetsivuilta:
-
-	http://bit.ly/1Fdjl6N
+	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun hakija on toimittanut seurantatiedot ajalta 1.1. - 30.6.{vuosi} päivämäärään {mh1-hakuaika-loppupvm} mennessä. Toinen erä maksetaan, kun hakija on toimittanut seurantatiedot ajalta 1.7. - 31.12.{vuosi} päivämäärään {mh2-hakuaika-loppupvm} mennessä. Valtionavustuksen maksatushakemus ja tarvittavat seurantatiedot tulee täyttää JUKU-järjestelmässä.
 
 	Lisäksi Liikennevirastolla on oikeus pyytää tuen saajalta myös muita selvityksiä valtionavustuksen käytöstä.
 
@@ -59,7 +56,7 @@
 
 *Muutoksenhaku ja oikaisuvaatimus
 
-	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on tämän päätöksen liitteenä.
+	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on saatavilla JUKU-järjestelmässä.
 
 
 	Päättäjä	{paattaja}

@@ -88,6 +88,7 @@
           :message (or (:message error) (message t))
           :cause (throwable->http-error (cause t)))
         {:message (message t)
+         :type (.getName ^Class (.getClass t))
          :cause (throwable->http-error (cause t))}))))
 
 (defn exception-handler [exception _ request]

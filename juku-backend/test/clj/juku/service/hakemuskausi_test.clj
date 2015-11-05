@@ -204,7 +204,7 @@
         (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from "test"))
 
         (asha/headers :hakuohje) => asha/valid-headers?
-        (let [multiparts (asha/group-by-multiparts :hakuohje)
+        (let [multiparts (asha/group-by-multiparts (asha/request :hakuohje))
               hakuohje (multiparts "hakuohje")
               hakuohje-asiakirja (multiparts "hakuohje-asiakirja")]
 

@@ -1,5 +1,5 @@
 (defproject juku-db "1.3.0-SNAPSHOT"
-  :min-lein-version "2.5.1"
+  	:min-lein-version "2.5.1"
 	:repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita" :snapshots true}]]
 
 	:dependencies [[oracle/ojdbc7 "12.1.0.2"]

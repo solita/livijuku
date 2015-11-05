@@ -45,5 +45,5 @@
 
 (defmacro with-asha-off [& body] `(with-redefs [settings (assoc settings :asiahallinta "off")] ~@body))
 
-(defn group-by-multiparts [operation]
-  (m/map-values first (group-by (coll/or* :part-name :name) (:multipart (request operation)))))
+(defn group-by-multiparts [request]
+  (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request))))

@@ -14,6 +14,8 @@
             [juku.service.avustuskohde :as ak]
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.test :as test]
+            [juku.service.hakemus-pdf-test :as hakemus-pdf]
+            [juku.service.pdf-mock :as pdf]
             [juku.headers :as headers]
             [common.core :as c]))
 
@@ -62,7 +64,7 @@
            (asha/headers :vireille) => asha/valid-headers?
 
            (let [request (asha/request :vireille)
-                 multipart (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request)))
+                 multipart (asha/group-by-multiparts request)
                  hakemus-asiakirja (get multipart "hakemus-asiakirja")]
 
              (get-in multipart ["hakemus" :content]) =>
@@ -74,6 +76,9 @@
              (:mime-type hakemus-asiakirja) => "application/pdf"
              (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
              (:name hakemus-asiakirja) => "hakemus.pdf"
+
+             (hakemus-pdf/assert-hsl-avustushakemus-teksti
+               (pdf/pdf->text (:content hakemus-asiakirja)) vuosi 0 0)
 
              (slurp (get-in multipart ["t-1" :content])) => "test-1"
              (slurp (get-in multipart [(headers/encode-value "t-åäö") :content])) => "test-2")
@@ -118,7 +123,7 @@
          (asha/headers :taydennys) => asha/valid-headers?
 
          (let [request (asha/request :taydennys)
-               multipart (m/map-values first (group-by (coll/or* :part-name :name) (:multipart request)))
+               multipart (asha/group-by-multiparts request)
                hakemus-asiakirja (get multipart "hakemus-asiakirja")]
 
            (:uri request) => "/api/hakemus/testing/taydennys"
@@ -128,7 +133,10 @@
 
            (:mime-type hakemus-asiakirja) => "application/pdf"
            (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
-           (:name hakemus-asiakirja) => "hakemus.pdf"))))
+           (:name hakemus-asiakirja) => "hakemus.pdf"
+
+           (hakemus-pdf/assert-hsl-avustushakemus-teksti
+             (pdf/pdf->text (:content hakemus-asiakirja)) vuosi 0 0)))))
 
     (fact "Tarkastaminen"
       (asha/with-asha

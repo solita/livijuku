@@ -10,6 +10,8 @@
 
 	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. Kaikki luvut sisältävät arvonlisäveron.
 
+	Avustus maksetaan hakijan ilmoittamalle tilille.
+
 	Lähettäjä: {lahettaja}
 
 *Liitteet

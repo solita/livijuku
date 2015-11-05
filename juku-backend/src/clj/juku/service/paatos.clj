@@ -11,6 +11,7 @@
             [juku.service.pdf :as pdf]
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
+            [juku.service.email :as email]
             [schema.coerce :as scoerce]
             [juku.schema.paatos :as s]
             [common.collection :as col]
@@ -59,8 +60,12 @@
     (if (== updated 0) (new-paatos! (assoc-paattajanimi paatos)))
     nil))
 
-(defn paatos-template [hakemus]
-  (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
+(defn paatos-template [hakemus organisaatio]
+  (if (= (:hakemustyyppitunnus hakemus) "AH0")
+    (str "paatos-"
+         (str/lower-case (:hakemustyyppitunnus hakemus)) "-"
+         (str/lower-case (:lajitunnus organisaatio)) "-2016.txt")
+    (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt")))
 
 (def maararahamomentti
   {"KS1"	"31.30.63.09"
@@ -105,7 +110,7 @@
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
           haettuavustus (ak/total-haettavaavustus avustuskohteet)
 
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus)))))
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
           common-template-values
             {:organisaatio-nimi (:nimi organisaatio)
              :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
@@ -149,14 +154,16 @@
   (with-transaction
     (let [hakemus (h/get-hakemus hakemusid)
           updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
-          paatos-asiakirja (paatos-pdf hakemusid)]
+          ^io/byte-array-type paatos-asiakirja-bytes (c/slurp-bytes (paatos-pdf hakemusid))]
       (assert-unique-update! updated hakemusid)
       (dml/assert-update updated {:type ::paatos-not-found
                                   :hakemusid hakemusid
                                   :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
-      (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" paatos-asiakirja)
+      (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" (io/input-stream paatos-asiakirja-bytes))
       (if-let [diaarinumero (:diaarinumero hakemus)]
-        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} paatos-asiakirja))))
+        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} (io/input-stream paatos-asiakirja-bytes)))
+
+      (email/send-hakemustapahtuma-message hakemus "P" (io/input-stream paatos-asiakirja-bytes))))
   nil)
 
 (defn peruuta-paatos! [hakemusid]

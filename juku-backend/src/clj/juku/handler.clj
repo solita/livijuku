@@ -36,7 +36,7 @@
         (swagger-ui "/api/ui")
         (swagger-docs :info {
             :title "Liikennevirasto - Juku API"
-            :version "1.2.0"
+            :version "1.2.2"
             :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut"
             :license {
               :name "Euroopan unionin yleinen lisenssi v.1.1"
@@ -54,9 +54,9 @@
 
 (def app (-> juku-api
              (jm/wrap-double-submit-cookie [#"GET /hakemuskausi/.*/hakuohje"
-                                            #"GET /hakemus/.*/.*pdf"
+                                            #"GET /hakemus/.*/pdf.*"
                                             #"GET /hakemus/.*/liite/.*"
-                                            #"GET /hakemus/.*/paatos/.*pdf"
+                                            #"GET /hakemus/.*/paatos/pdf.*"
                                             #"GET /api/ui/.*"
                                             #"GET /swagger.json"
 

@@ -146,7 +146,7 @@
 
 ;; *** Hakemustilan käsittely ***
 
-(defn change-hakemustila! [hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
+(defn change-hakemustila! [hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
   (dml/assert-update
     (update-hakemustila! {:hakemusid (:id hakemus)
                           :hakemustilatunnus new-hakemustilatunnus
@@ -156,23 +156,21 @@
      :message (str "Hakemuksen (" (:id hakemus) ") " operation " ei ole sallittu tilassa: " (:hakemustilatunnus hakemus)
                    ". Hakemuksen " operation " on sallittu vain tilassa: " expected-hakemustilatunnus)
      :hakemusid (:id hakemus)
-     :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus})
-  (email/send-hakemustapahtuma-message hakemus new-hakemustilatunnus asiakirja))
+     :new-hakemustilatunnus new-hakemustilatunnus :expected-hakemustilatunnus expected-hakemustilatunnus}))
 
 (defn change-hakemustila+log!
   ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation]
-   (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation nil)
+    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation)
 
     ;; hakemustilan muutoshistoria
-   (insert-hakemustila-event! {:hakemusid (:id hakemus)
-                               :hakemustilatunnus new-hakemustilatunnus}))
+    (insert-hakemustila-event! {:hakemusid (:id hakemus)
+                                :hakemustilatunnus new-hakemustilatunnus}))
 
   ([hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja]
-   (let [asiakirja-bytes (c/slurp-bytes asiakirja)]
-     (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation asiakirja-bytes)
+    (change-hakemustila! hakemus new-hakemustilatunnus expected-hakemustilatunnus operation)
 
-     ;; hakemustilan muutoshistoria
-     (insert-hakemustila-event+asiakirja! {:hakemusid (:id hakemus)
-                                           :hakemustilatunnus new-hakemustilatunnus
-                                           :asiakirja (io/input-stream asiakirja-bytes)}))))
+    ;; hakemustilan muutoshistoria
+    (insert-hakemustila-event+asiakirja! {:hakemusid (:id hakemus)
+                                          :hakemustilatunnus new-hakemustilatunnus
+                                          :asiakirja asiakirja})))
 

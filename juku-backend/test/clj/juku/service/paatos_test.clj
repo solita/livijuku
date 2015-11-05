@@ -6,8 +6,12 @@
             [juku.service.hakemuskausi :as hk]
             [juku.service.paatos :as p]
             [common.core :as c]
+            [common.map :as m]
+            [common.collection :as coll]
             [juku.service.user :as u]
             [juku.service.asiahallinta-mock :as asha]
+            [juku.service.pdf-mock :as pdf]
+            [juku.service.paatos-pdf-test :as paatos-pdf]
             [juku.service.test :as test]
             [clj-http.fake :as fake]))
 
@@ -38,6 +42,20 @@
         (test/with-hakija (h/laheta-hakemus! id))
         (h/tarkasta-hakemus! id)
         (p/hyvaksy-paatos! id)
+
+        (let [request (asha/request :paatos)
+              multipart (asha/group-by-multiparts request)
+              paatos-asiakirja (get multipart "paatos-asiakirja")]
+
+          (:uri request) => "/api/hakemus/testing/paatos"
+
+          (get-in multipart ["paatos" :content]) => "{\"paattaja\":\"Katri Käsittelijä\"}"
+
+          (:mime-type paatos-asiakirja) => "application/pdf"
+          (:part-name paatos-asiakirja) => "paatos-asiakirja"
+          (:name paatos-asiakirja) => "paatos.pdf"
+          (paatos-pdf/assert-hsl-avustushakemuspaatos-teksti
+            (pdf/pdf->text (:content paatos-asiakirja)) vuosi))
 
         (:hakemustilatunnus (hc/get-hakemus+ id)) => "P"
 
