@@ -99,7 +99,7 @@
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
       (assert-oma-hakemus*! hakemus)
-      (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto" nil)
+      (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto")
 
       (if (= (:hakemustyyppitunnus hakemus) "AH0")
         (h/update-hakemus-set-diaarinumero!
@@ -119,7 +119,9 @@
 
       (h/insert-hakemustila-event+asiakirja! {:hakemusid hakemusid
                                             :hakemustilatunnus "V"
-                                            :asiakirja (hakemus-pdf (h/get-hakemus hakemusid))})))
+                                            :asiakirja (hakemus-pdf (h/get-hakemus hakemusid))})
+
+      (email/send-hakemustapahtuma-message hakemus "V" nil)))
   nil)
 
 (defn tarkasta-hakemus! [hakemusid]
@@ -153,7 +155,9 @@
         (asha/taydennyspyynto diaarinumero
                               {:maaraaika   (time/from-time-zone (timec/to-date-time maarapvm) (time/default-time-zone))
                                :kasittelija (user/user-fullname kasittelija)
-                               :hakija      (:nimi organisaatio)}))))
+                               :hakija      (:nimi organisaatio)}))
+
+      (email/send-hakemustapahtuma-message hakemus "T0" nil)))
   nil))
 
 (defn laheta-taydennys! [hakemusid]
@@ -171,5 +175,7 @@
         (asha/taydennys diaarinumero
                         {:kasittelija (user/user-fullname kasittelija)
                          :lahettaja (:nimi organisaatio)}
-                        (io/input-stream hakemus-asiakirja-bytes) liitteet))))
+                        (io/input-stream hakemus-asiakirja-bytes) liitteet))
+
+      (email/send-hakemustapahtuma-message hakemus "TV" nil)))
   nil)

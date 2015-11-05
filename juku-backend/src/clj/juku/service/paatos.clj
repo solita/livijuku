@@ -11,6 +11,7 @@
             [juku.service.pdf :as pdf]
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
+            [juku.service.email :as email]
             [schema.coerce :as scoerce]
             [juku.schema.paatos :as s]
             [common.collection :as col]
@@ -160,7 +161,9 @@
                                   :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
       (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" (io/input-stream paatos-asiakirja-bytes))
       (if-let [diaarinumero (:diaarinumero hakemus)]
-        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} (io/input-stream paatos-asiakirja-bytes)))))
+        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} (io/input-stream paatos-asiakirja-bytes)))
+
+      (email/send-hakemustapahtuma-message hakemus "P" (io/input-stream paatos-asiakirja-bytes))))
   nil)
 
 (defn peruuta-paatos! [hakemusid]
