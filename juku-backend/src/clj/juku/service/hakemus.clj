@@ -159,17 +159,17 @@
 (defn laheta-taydennys! [hakemusid]
   (with-transaction
     (let [hakemus (h/get-hakemus+ hakemusid)
-          hakemus-asiakirja (hakemus-pdf hakemus)
+          hakemus-asiakirja-bytes (c/slurp-bytes (hakemus-pdf hakemus))
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
           liitteet (l/find-liitteet+sisalto hakemusid)]
 
       (assert-oma-hakemus*! hakemus)
-      (h/change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" hakemus-asiakirja)
+      (h/change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" (io/input-stream hakemus-asiakirja-bytes))
 
       (if-let [diaarinumero (:diaarinumero hakemus)]
         (asha/taydennys diaarinumero
                         {:kasittelija (user/user-fullname kasittelija)
                          :lahettaja (:nimi organisaatio)}
-                        hakemus-asiakirja liitteet))))
+                        (io/input-stream hakemus-asiakirja-bytes) liitteet))))
   nil)

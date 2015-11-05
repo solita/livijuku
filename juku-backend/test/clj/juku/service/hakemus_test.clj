@@ -133,7 +133,10 @@
 
            (:mime-type hakemus-asiakirja) => "application/pdf"
            (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
-           (:name hakemus-asiakirja) => "hakemus.pdf"))))
+           (:name hakemus-asiakirja) => "hakemus.pdf"
+
+           (hakemus-pdf/assert-hsl-avustushakemus-teksti
+             (pdf/pdf->text (:content hakemus-asiakirja)) vuosi 0 0)))))
 
     (fact "Tarkastaminen"
       (asha/with-asha
