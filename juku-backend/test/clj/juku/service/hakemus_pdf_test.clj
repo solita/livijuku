@@ -33,16 +33,18 @@
      (asha/with-asha
        (pdf/with-mock-pdf ~@body))))
 
-(defn assert-hsl-avustushakemus-teksti [haettuavustus omarahoitus]
-  (fact "HSL avustushakemusdokumentin yleisen sisällön tarkastaminen"
+(defn assert-hsl-avustushakemus-teksti
+  ([haettuavustus omarahoitus] (assert-hsl-avustushakemus-teksti (:teksti pdf/*mock-pdf*) vuosi haettuavustus omarahoitus))
+  ([teksti vuosi haettuavustus omarahoitus]
+    (fact
+      "HSL avustushakemusdokumentin yleisen sisällön tarkastaminen"
 
-        (let [teksti (:teksti pdf/*mock-pdf*)]
-          teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
-          teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi
-                                                  " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta "
-                                                  haettuavustus " euroa."))
-          teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä "
-                                                  omarahoitus " euroa.")))))
+      teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
+      teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi
+                                              " suurten kaupunkiseutujen joukkoliikenteen valtionavustusta "
+                                              haettuavustus " euroa."))
+      teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä "
+                                              omarahoitus " euroa.")))))
 
 (fact "Keskeneräinen avustushakemus"
 

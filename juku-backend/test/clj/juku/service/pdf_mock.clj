@@ -2,7 +2,12 @@
   (:require [midje.sweet :refer :all]
             [clj-time.core :as time]
             [clj-time.format :as timef]
-            [juku.service.pdf :as pdf]))
+            [juku.service.pdf :as pdf]
+            [clojure.string :as str])
+  (:import (java.io InputStream)
+           (org.apache.pdfbox.pdfparser PDFParser)
+           (org.apache.pdfbox.pdmodel PDDocument)
+           (org.apache.pdfbox.util PDFTextStripper)))
 
 (def ^:dynamic *mock-pdf*)
 
@@ -25,3 +30,10 @@
           (:otsikko *mock-pdf*) => {:teksti teksti
                                     :paivays pvm
                                     :diaarinumero diaarinumero})))
+
+(defn pdf->text [^InputStream document]
+  (let [^PDFParser parser (doto (PDFParser. document) .parse)
+        ^PDFTextStripper stripper (PDFTextStripper. )]
+
+    (with-open [^PDDocument pdf (.getPDDocument parser)]
+      (str/replace (.getText stripper pdf) #"\s+" " "))))

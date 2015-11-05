@@ -153,14 +153,14 @@
   (with-transaction
     (let [hakemus (h/get-hakemus hakemusid)
           updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
-          paatos-asiakirja (paatos-pdf hakemusid)]
+          ^io/byte-array-type paatos-asiakirja-bytes (c/slurp-bytes (paatos-pdf hakemusid))]
       (assert-unique-update! updated hakemusid)
       (dml/assert-update updated {:type ::paatos-not-found
                                   :hakemusid hakemusid
                                   :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
-      (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" paatos-asiakirja)
+      (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" (io/input-stream paatos-asiakirja-bytes))
       (if-let [diaarinumero (:diaarinumero hakemus)]
-        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} paatos-asiakirja))))
+        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} (io/input-stream paatos-asiakirja-bytes)))))
   nil)
 
 (defn peruuta-paatos! [hakemusid]
