@@ -14,6 +14,7 @@ end;
 insert into hakemustyyppi (tunnus, nimi) values ('AH0', 'Avustushakemus');
 insert into hakemustyyppi (tunnus, nimi) values ('MH1', '1. maksatushakemus');
 insert into hakemustyyppi (tunnus, nimi) values ('MH2', '2. maksatushakemus');
+insert into hakemustyyppi (tunnus, nimi) values ('ELY', 'ELY hakemus');
 
 create table hakuaika (
   vuosi number(4) not null references hakemuskausi (vuosi),
