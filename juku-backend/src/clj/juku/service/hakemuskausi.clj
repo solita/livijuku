@@ -93,6 +93,11 @@
        :alkupvm (time/local-date (+ vuosi 1) 1 1)
        :loppupvm (time/local-date (+ vuosi 1) 1 31)})
 
+(defn- oletus-ely-hakuaika [vuosi] {
+      :hakemustyyppitunnus "ELY"
+      :alkupvm (time/local-date (- vuosi 1) 9 1)
+      :loppupvm (time/local-date (- vuosi 1) 10 31)})
+
 (defn hakuaika->hakemus-summary [hakuaika]
   {:hakemustyyppitunnus (:hakemustyyppitunnus hakuaika)
    :hakuaika {
@@ -104,7 +109,8 @@
   (assoc (oletushakemuskausi vuosi) :hakemukset
        [(hakuaika->hakemus-summary(oletus-avustus-hakuaika vuosi))
         (hakuaika->hakemus-summary(oletus-maksatus-hakuaika1 vuosi))
-        (hakuaika->hakemus-summary(oletus-maksatus-hakuaika2 vuosi))]))
+        (hakuaika->hakemus-summary(oletus-maksatus-hakuaika2 vuosi))
+        (hakuaika->hakemus-summary(oletus-ely-hakuaika vuosi))]))
 
 (defn find-hakemuskaudet+summary []
   (let [hakemuskaudet (find-all-hakemuskaudet+seuraava-kausi oletus-hakemuskausi)
@@ -124,7 +130,8 @@
   (let [assoc-vuosi (fn [m] (assoc m :vuosi vuosi))]
     (insert-hakuaika! (assoc-vuosi (oletus-avustus-hakuaika vuosi)))
     (insert-hakuaika! (assoc-vuosi (oletus-maksatus-hakuaika1 vuosi)))
-    (insert-hakuaika! (assoc-vuosi (oletus-maksatus-hakuaika2 vuosi)))))
+    (insert-hakuaika! (assoc-vuosi (oletus-maksatus-hakuaika2 vuosi)))
+    (insert-hakuaika! (assoc-vuosi (oletus-ely-hakuaika vuosi)))))
 
 (defn init-hakemuskausi! [vuosi]
   (when (> vuosi (nextvuosi))
@@ -182,6 +189,9 @@
         (hakemus/add-hakemus! (hakemus "MH2"))))
 
     (insert-avustuskohteet-for-kausi! {:vuosi vuosi})
+
+    (doseq [organisaatio (filter (col/eq :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
+      (hakemus/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "ELY" :organisaatioid (:id organisaatio)}))
 
     ;; -- diaarioi hakemuskauden avaaminen --
     (when (asiahallinta-on?)
