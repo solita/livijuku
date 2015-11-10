@@ -53,5 +53,18 @@ where hakemus.vuosi = :vuosi and
        avustuskohdelaji.tunnus != 'RT' or
        organisaatio.lajitunnus = 'KS1')
 
+-- name: insert-maararahatarpeet-for-kausi!
+insert into maararahatarve (hakemusid, maararahatarvetyyppitunnus)
+select hakemus.id,
+  maararahatarvetyyppi.tunnus
+from hakemus cross join maararahatarvetyyppi
+where hakemus.vuosi = :vuosi and
+      maararahatarvetyyppi.voimaantulovuosi <= :vuosi and
+      maararahatarvetyyppi.lakkaamisvuosi > :vuosi and
+      hakemus.hakemustyyppitunnus = 'ELY'
+
+-- name: sulje-kaikki-hakemuskauden-hakemukset!
+update hakemus set hakemustilatunnus = 'S' where vuosi = :vuosi
+
 -- name: sulje-kaikki-hakemuskauden-hakemukset!
 update hakemus set hakemustilatunnus = 'S' where vuosi = :vuosi

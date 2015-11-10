@@ -193,6 +193,8 @@
     (doseq [organisaatio (filter (col/eq :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
       (hakemus/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "ELY" :organisaatioid (:id organisaatio)}))
 
+    (insert-maararahatarpeet-for-kausi! {:vuosi vuosi})
+
     ;; -- diaarioi hakemuskauden avaaminen --
     (when (asiahallinta-on?)
       (c/if-let3! [hakuohje (find-hakuohje-sisalto vuosi)
