@@ -7,19 +7,19 @@
             [juku.schema.common :as sc]))
 
 (defroutes* ely-hakemus-routes
-      (GET* "/hakemus/:hakemusid/maararatarpeet" []
+      (GET* "/hakemus/:hakemusid/maararahatarpeet" []
             :auth [:view-hakemus]
             :return [Maararahatarve]
             :path-params [hakemusid :- Long]
-            :summary "Hae hakemuksen maararatarpeet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
+            :summary "Hae hakemuksen määrärahatarpeet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/find-hakemus-maararahatarpeet hakemusid)))
-      (PUT* "/hakemus/:hakemusid/maararatarpeet" []
+      (PUT* "/hakemus/:hakemusid/maararahatarpeet" []
             :auth [:modify-oma-hakemus]
             :audit []
             :return   nil
             :path-params [hakemusid :- Long]
             :body     [maararahatarpeet [Maararahatarve]]
-            :summary  "Päivittää hakemuksen maararatarpeet."
+            :summary  "Päivittää hakemuksen määrärahatarpeet."
             (ok (service/save-maararahatarpeet! hakemusid maararahatarpeet)))
       (GET* "/maararahatarvetyypit" []
              :return [sc/Luokka]
