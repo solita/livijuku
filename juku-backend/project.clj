@@ -2,7 +2,7 @@
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
-            :repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita"}]]
+            :repositories [["solita" {:url "http://mvn.solita.fi/repository/solita"}]]
 
             :dependencies [[org.clojure/clojure "1.7.0"]
                            [org.clojure/java.jdbc "0.4.2"]

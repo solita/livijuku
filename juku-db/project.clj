@@ -1,6 +1,6 @@
 (defproject juku-db "1.2.3"
   :min-lein-version "2.5.1"
-	:repositories [["solita" {:url "http://mvn.solita.fi/archiva/repository/solita" :snapshots true}]]
+	:repositories [["solita" {:url "http://mvn.solita.fi/repository/solita" :snapshots true}]]
 
 	:dependencies [[oracle/ojdbc7 "12.1.0.2"]
                  [org.dbmaintain/dbmaintain "2.4"]
