@@ -121,7 +121,9 @@
              :haettuavustus (pdf/format-number haettuavustus)
              :omarahoitus (pdf/format-number (ak/total-omarahoitus avustuskohteet))
 
-             :selite (c/maybe-nil #(str "\n\n\t" %) "" (:selite paatos))
+             :selite (c/maybe-nil #(str "\n\n\t" (str/trim (str/replace % #"\R+" "\n\n\t"))) ""
+                                  (c/nil-if str/blank? (:selite paatos)))
+
              :myonnettyavustus (pdf/format-number (:myonnettyavustus paatos))
              :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
              :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
