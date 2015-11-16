@@ -14,7 +14,7 @@ create table liikennesuorite (
   nimi varchar2(200 char) not null,
   linjaautot number(12) not null,
   taksit number(12) not null,
-  ajokilometrit number not null,
+  ajokilometrit number(12, 2) not null,
   matkustajamaara number(12) not null,
   lipputulo number(12, 2) not null,
   nettohinta number(12, 2) not null,
@@ -30,7 +30,7 @@ create table lippusuorite (
   myynti number(12) not null,
   matkat number(12) not null,
   asiakashinta number(12, 2) not null,
-  keskipituus number not null,
+  keskipituus number(12, 2) not null,
   lipputulo number(12, 2) not null,
   julkinenrahoitus number(12, 2) not null,
 
