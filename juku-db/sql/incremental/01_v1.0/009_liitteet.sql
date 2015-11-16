@@ -3,7 +3,7 @@
 
 create table liite (
   hakemusid references hakemus (id),
-  liitenumero number,
+  liitenumero number(6),
   nimi varchar2 (200 char),
   contenttype varchar2 (200 char),
   poistoaika date,

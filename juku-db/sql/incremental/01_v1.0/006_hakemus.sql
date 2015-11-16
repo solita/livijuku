@@ -68,7 +68,7 @@ end;
 create table hakemustilatapahtuma (
   hakemusid references hakemus (id),
   hakemustilatunnus references hakemustila (tunnus),
-  jarjestysnumero number,
+  jarjestysnumero number(6),
   asiakirjapdf blob,
 
   constraint hakemustilatapahtuma_pk primary key (hakemusid, hakemustilatunnus, jarjestysnumero)
