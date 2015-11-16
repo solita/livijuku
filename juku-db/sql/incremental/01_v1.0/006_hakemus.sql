@@ -29,14 +29,8 @@ begin
 end;
 /
 
-create table hakemustila (
-  tunnus varchar2(2 char) constraint hakemustila_pk primary key,
-  nimi varchar2(100 char),
-  kuvaus varchar2(2000 char)
-);
-
 begin
-  model.define_mutable(model.new_entity('hakemustila', 'Hakemustila', 'HATILA'));
+  model.new_state('hakemustila', 'Hakemustila', 2, 'HATILA');
 end;
 /
 
