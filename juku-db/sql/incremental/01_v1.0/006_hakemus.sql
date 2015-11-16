@@ -32,7 +32,7 @@ end;
 create table hakemustila (
   tunnus varchar2(2 char) constraint hakemustila_pk primary key,
   nimi varchar2(100 char),
-  description varchar2(2000 char)
+  kuvaus varchar2(2000 char)
 );
 
 begin
@@ -40,17 +40,19 @@ begin
 end;
 /
 
-insert into hakemustila (tunnus, nimi, description) values ('0', 'Ei käynnissä',
+insert into hakemustila (tunnus, nimi, kuvaus) values ('0', 'Ei käynnissä',
    'Hakemus on keskeneräinen ja hakuaika ei ole alkanut. Huom! tätä tilaa ei tallenneta tietokantaan. Tämä on puhtaasti laskennallinen tila.');
 
 insert into hakemustila (tunnus, nimi) values ('K', 'Keskeneräinen');
 insert into hakemustila (tunnus, nimi) values ('V', 'Vireillä');
 insert into hakemustila (tunnus, nimi) values ('T', 'Tarkastettu');
-insert into hakemustila (tunnus, nimi) values ('T0', 'Täydennettävää');
-insert into hakemustila (tunnus, nimi) values ('TV', 'Täydennytty - täydennys valmis tarkastettavaksi');
+insert into hakemustila (tunnus, nimi, kuvaus) values
+  ('T0', 'Täydennettävää', 'Hakemus on palautettu täydennettäväksi hakijalle.');
+insert into hakemustila (tunnus, nimi, kuvaus) values
+  ('TV', 'Täydennytty', 'Hakija on lähettänyt täydennyksen ja se on valmis tarkastettavaksi');
 insert into hakemustila (tunnus, nimi) values ('P', 'Päätetty');
 insert into hakemustila (tunnus, nimi) values ('M', 'Maksettu');
-insert into hakemustila (tunnus, nimi, description) values ('S', 'Suljettu', 'Hakemuskausi on suljettu.');
+insert into hakemustila (tunnus, nimi, kuvaus) values ('S', 'Suljettu', 'Hakemuskausi on suljettu.');
 
 create table hakemus (
   id number constraint hakemus_pk primary key,

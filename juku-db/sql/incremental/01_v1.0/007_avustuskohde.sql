@@ -4,7 +4,7 @@ create table avustuskohdeluokka (
   tunnus varchar2(3 char) constraint avustuskohdeluokka_pk primary key,
   nimi varchar2(100 char),
   jarjestys number(3) default 1,
-  description varchar2(100 char)
+  kuvaus varchar2(2000 char)
 );
 
 begin
@@ -21,7 +21,7 @@ create table avustuskohdelaji (
   tunnus varchar2(3 char),
   nimi varchar2(100 char),
   jarjestys number(3) default 1,
-  description varchar2(100 char),
+  kuvaus varchar2(2000 char),
   voimaantulovuosi number(4) default 0 not null,
   lakkaamisvuosi number(4) default 9999 not null,
   

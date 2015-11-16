@@ -3,7 +3,7 @@ create table kayttajarooli (
   tunnus varchar2 (2 char) constraint kayttajarooli_pk primary key,
   nimi varchar2 (200 char) not null,
   ssonimi varchar2 (200 char) not null,
-  description varchar2 (2000 char)
+  kuvaus varchar2 (2000 char)
 );
 
 create table kayttajakayttajarooli (
@@ -16,7 +16,7 @@ create table kayttajakayttajarooli (
 create table kayttooikeus (
   tunnus varchar2 (50 char) constraint kayttooikeus_pk primary key,
   nimi varchar2 (200 char) not null,
-  description varchar2 (2000 char)
+  kuvaus varchar2 (2000 char)
 );
 
 create table kayttajaroolioikeus (
