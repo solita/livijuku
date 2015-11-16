@@ -1,14 +1,6 @@
 
- 
-create table avustuskohdeluokka (
-  tunnus varchar2(3 char) constraint avustuskohdeluokka_pk primary key,
-  nimi varchar2(100 char),
-  jarjestys number(3) default 1,
-  kuvaus varchar2(2000 char)
-);
-
 begin
-  model.define_mutable(model.new_entity('avustuskohdeluokka', 'Avustuskohdeluokka', 'AKLUOKKA'));
+  model.new_classification('avustuskohdeluokka', 'Avustuskohdeluokka', 3, 'AKLUOKKA');
 end;
 /
 
@@ -19,8 +11,8 @@ insert into avustuskohdeluokka (tunnus, nimi, jarjestys) values ('K', 'Liikentee
 create table avustuskohdelaji (
   avustuskohdeluokkatunnus not null references avustuskohdeluokka (tunnus),
   tunnus varchar2(3 char),
-  nimi varchar2(100 char),
-  jarjestys number(3) default 1,
+  nimi varchar2(100 char) not null,
+  jarjestys number(3) default 1 not null,
   kuvaus varchar2(2000 char),
   voimaantulovuosi number(4) default 0 not null,
   lakkaamisvuosi number(4) default 9999 not null,

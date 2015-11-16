@@ -73,7 +73,7 @@ create table kayttaja (
   nimi varchar2 (200 char),
   sahkoposti varchar2 (200 char),
   poistettuaika date,
-  poistaja references kayttaja (tunnus)
+  poistaja constraint kayttaja_poistaja_fk references kayttaja (tunnus)
 );
 
 begin
