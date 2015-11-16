@@ -49,7 +49,7 @@ insert into hakemustila (tunnus, nimi) values ('M', 'Maksettu');
 insert into hakemustila (tunnus, nimi, kuvaus) values ('S', 'Suljettu', 'Hakemuskausi on suljettu.');
 
 create table hakemus (
-  id number constraint hakemus_pk primary key,
+  id number(19) constraint hakemus_pk primary key,
   vuosi number(4) not null references hakemuskausi (vuosi),
   organisaatioid not null references organisaatio (id),
   hakemustyyppitunnus not null references hakemustyyppi (tunnus),
