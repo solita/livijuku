@@ -25,6 +25,11 @@ values ('juku_hakija_pori', 'Pekka', 'Pori', 'petri.sirkkala@solita.fi', (select
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
 values ('juku_hakija_kotka', 'Kalle', 'Kotka', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Kotka'), 0);
 
+
+-- Uusimaa, ELY
+insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
+values ('juku_hakija_ely', 'Elli', 'Ely', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Uusimaa'), 0);
+
 -- Etelä-Pohjanmaa, ELY
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
 values ('juku_hakija_epo', 'Ellu', 'Etelä-Pohjanmaa', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Etelä-Pohjanmaa'), 0);
