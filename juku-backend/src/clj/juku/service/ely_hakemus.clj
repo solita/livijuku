@@ -33,8 +33,8 @@
 ; *** Määrärahatarpeiden toiminnot ***
 (defn update-maararahatarve [hakemusid maararahatarve]
   (dml/update-where! db "maararahatarve"
-                     (dissoc maararahatarve :maararahatarvetyyppi)
-                     (assoc (select-keys maararahatarve [:maararahatarvetyyppi]) :hakemusid hakemusid)))
+                     (dissoc maararahatarve :maararahatarvetyyppitunnus)
+                     (assoc (select-keys maararahatarve [:maararahatarvetyyppitunnus]) :hakemusid hakemusid)))
 
 (defn save-maararahatarpeet! [hakemusid maararahatarpeet]
   (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))

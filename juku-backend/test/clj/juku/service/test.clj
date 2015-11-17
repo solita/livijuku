@@ -41,6 +41,11 @@
                                                 :diaarinumero (str "test/" vuosi)}))
     hk))
 
+(defn next-avattu-hakemuskausi! []
+  (let [hk (next-hakemuskausi!)]
+    (avaa-hakemuskausi! (:vuosi hk))
+    hk))
+
 (defn hakemus-summary [hakemuskausi hakemustyyppi]
   (first (filter (col/eq :hakemustyyppitunnus hakemustyyppi) (:hakemukset hakemuskausi))))
 
