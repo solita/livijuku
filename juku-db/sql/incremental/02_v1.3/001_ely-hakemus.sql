@@ -45,9 +45,9 @@ create table maararahatarve (
   hakemusid not null references hakemus (id),
   maararahatarvetyyppitunnus not null references maararahatarvetyyppi (tunnus),
 
-  sidotut number,
-  uudet number,
-  tulot number,
+  sidotut number(12,2),
+  uudet number(12,2),
+  tulot number(12,2),
   kuvaus varchar2(2000 char),
 
   constraint maararahatarve_pk primary key (hakemusid, maararahatarvetyyppitunnus)
@@ -57,7 +57,7 @@ create table maararahatarve (
 
 create table kehityshanke (
   hakemusid not null references hakemus (id),
-  numero number,
+  numero number(6),
 
   nimi varchar2(200 char),
   arvo number,
@@ -71,3 +71,10 @@ begin
   model.define_mutable(model.new_entity('kehityshanke', 'Kehityshanke', 'KHANKE'));
 end;
 /
+
+-- Ely hakemuksen perustiedot --
+
+alter table hakemus add (
+  ely_siirtymaaikasopimukset number(12,2),
+  ely_joukkoliikennetukikunnat number(12,2)
+);

@@ -13,7 +13,8 @@ select
     when hakemus.kasittelija is null then null
     else coalesce(kasittelija.nimi, kasittelija.etunimi || ' ' || kasittelija.sukunimi)
   end kasittelijanimi,
-  hakemus.luontitunnus, hakemus.suunniteltuavustus
+  hakemus.luontitunnus, hakemus.suunniteltuavustus,
+  ely_siirtymaaikasopimukset, ely_joukkoliikennetukikunnat
 from hakemus 
 inner join hakuaika 
   on hakemus.vuosi = hakuaika.vuosi and 
