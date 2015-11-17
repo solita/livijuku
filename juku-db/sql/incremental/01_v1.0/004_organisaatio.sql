@@ -17,7 +17,7 @@ insert into organisaatiolaji (tunnus, nimi) values ('ELY', 'ELY-keskus');
 insert into organisaatiolaji (tunnus, nimi) values ('LV', 'Liikennevirasto');
 
 create table organisaatio (
-  id number constraint organisaatio_pk primary key,
+  id number(19) constraint organisaatio_pk primary key,
   lajitunnus not null references organisaatiolaji (tunnus),
   nimi varchar2(200 char),
   exttunnus varchar2(200 char),

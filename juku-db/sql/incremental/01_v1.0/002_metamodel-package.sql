@@ -335,7 +335,7 @@ create or replace package body model as
     putline_or_execute(
     'alter table ' || e.table_name || ' add ('||
         'luontitunnus varchar2(30 char) constraint ' || shortname
-            || '_LTNNUS_NN not null constraint ' || shortname || '_A_FK REFERENCES KAYTTAJA, ' ||
+            || '_LTNNUS_NN not null constraint ' || shortname || '_C_FK REFERENCES KAYTTAJA, ' ||
         'luontiaika date constraint ' || shortname || '_LAIKA_NN not null, ' ||
         'muokkaustunnus varchar2(30 char) constraint '|| shortname
             || '_MTNNUS_NN not null constraint '|| shortname ||'_E_FK REFERENCES KAYTTAJA, ' ||
@@ -362,7 +362,7 @@ create or replace package body model as
       putline_or_execute(
       'alter table ' || e.table_name || ' add ('||
           'luontitunnus varchar2(30 char) constraint ' || shortname
-              || '_LTNNUS_NN not null constraint ' || shortname || '_A_FK REFERENCES KAYTTAJA, ' ||
+              || '_LTNNUS_NN not null constraint ' || shortname || '_C_FK REFERENCES KAYTTAJA, ' ||
           'luontiaika date constraint ' || shortname || '_LAIKA_NN not null)');
 
       comment_column(e.table_name, 'luontitunnus', 'Käyttäjä, joka on lisännyt (insert) tämän rivin tietokantaan.');
@@ -384,7 +384,8 @@ create or replace package body model as
     create_table_stm constant varchar2(2000 char) :=
     'create table ' || e.table_name || ' ( ' ||
        tunnus_declaration || ', ' ||
-       'nimi varchar2 (200 char), ' ||
+       'nimi varchar2 (200 char) not null, ' ||
+       'jarjestys number(3) default 1 not null, ' ||
        'kuvaus varchar2 (2000 char), ' ||
        'constraint ' || e.table_name || '_PK primary key (' || tunnus || ') ' ||
     ') logging';
@@ -402,6 +403,7 @@ create or replace package body model as
     define_datetemporal(classification);
     --define_localizable(classification);
     define_mutable(classification);
+    rename_nn_constraints(classification);
   end;
 
   procedure new_state (tablename varchar2, entityname varchar2 default null, tunnuksenpituus number default 2, abbreviation varchar2 default null) as
@@ -411,6 +413,7 @@ create or replace package body model as
     insert into entitytypeentity (table_name, entitytypename) values (state.table_name, 'state');
     
     define_mutable(state);
+    rename_nn_constraints(state);
   end;
 
   -- max 20 characters tablename or abbreviation

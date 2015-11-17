@@ -8,16 +8,16 @@ end;
 create table liikennesuorite (
   hakemusid not null references hakemus (id),
   liikennetyyppitunnus not null references liikennetyyppi (tunnus),
-  numero number,
+  numero number(6),
 
   suoritetyyppitunnus not null references suoritetyyppi (tunnus),
-  nimi varchar2(200 char),
-  linjaautot number,
-  taksit number,
-  ajokilometrit number,
-  matkustajamaara number,
-  lipputulo number,
-  nettohinta number,
+  nimi varchar2(200 char) not null,
+  linjaautot number(12) not null,
+  taksit number(12) not null,
+  ajokilometrit number(12, 2) not null,
+  matkustajamaara number(12) not null,
+  lipputulo number(12, 2) not null,
+  nettohinta number(12, 2) not null,
 
   constraint liikennesuorite_pk primary key (hakemusid, liikennetyyppitunnus, numero)
 );
@@ -25,14 +25,14 @@ create table liikennesuorite (
 create table lippusuorite (
   hakemusid not null references hakemus (id),
   lipputyyppitunnus not null references lipputyyppi (tunnus),
-  numero number,
+  numero number(6),
 
-  myynti number,
-  matkat number,
-  asiakashinta number,
-  keskipituus number,
-  lipputulo number,
-  julkinenrahoitus number,
+  myynti number(12) not null,
+  matkat number(12) not null,
+  asiakashinta number(12, 2) not null,
+  keskipituus number(12, 2) not null,
+  lipputulo number(12, 2) not null,
+  julkinenrahoitus number(12, 2) not null,
 
   seutulippualue varchar2(200 char),
 

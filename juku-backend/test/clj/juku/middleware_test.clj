@@ -63,7 +63,22 @@
        (let [handler (fn [_] (ss/throw+ "käsittelijää ei pitäisi kutsua"))
              error ((m/wrap-user handler) request)]
          (:status error) => 403
-         (:body error) => "Käyttäjäryhmillä ei löydy yhtään juku-järjestelmän käyttäjäroolia - oam-groups: asdf")
+         (:body error) => (str "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - oam-groups: asdf"))
+       (dissoc (user/find-user uid) :kirjautumisaika) => nil))
+
+
+  (fact "Uusi käyttäjä - virheellinen organisaatio"
+     (let [uid (str "tst" (rand-int 999999))
+           request {:headers {"oam-remote-user"        uid
+                              "oam-groups"             "juku_paatoksentekija"
+                              "oam-user-organization"  "liikennevirast1"
+                              "oam-user-first-name"    "test"
+                              "oam-user-last-name"     "test"}}]
+
+       (let [handler (fn [_] (ss/throw+ "käsittelijää ei pitäisi kutsua"))
+             error ((m/wrap-user handler) request)]
+         (:status error) => 403
+         (:body error) => (str "Käyttäjän " uid " organisaatiota: liikennevirast1 (osasto: ) ei tunnisteta."))
        (dissoc (user/find-user uid) :kirjautumisaika) => nil))
 
   (fact "Uusi käyttäjä - päällekkäinen otsikkotieto"

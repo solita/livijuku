@@ -64,16 +64,16 @@ create table kieli (
 
 create table kayttaja ( 
   tunnus varchar2 (30 char)  not null constraint kayttaja_pk primary key,
-  sahkopostiviestit number (1) default 1 not null check ( sahkopostiviestit in (0, 1)),
-  organisaatioid number,
-  jarjestelma number (1) default 0 not null check ( jarjestelma in (0, 1)),
+  sahkopostiviestit number (1) default 1 not null constraint kayttaja_spviestit_bool check ( sahkopostiviestit in (0, 1)),
+  organisaatioid number(19),
+  jarjestelma number (1) default 0 not null constraint kayttaja_jarjestelma_bool check ( jarjestelma in (0, 1)),
   kirjautumisaika date default sysdate not null,
   etunimi varchar2 (200 char),
   sukunimi varchar2 (200 char),
   nimi varchar2 (200 char),
   sahkoposti varchar2 (200 char),
   poistettuaika date,
-  poistaja references kayttaja (tunnus)
+  poistaja constraint kayttaja_poistaja_fk references kayttaja (tunnus)
 );
 
 begin

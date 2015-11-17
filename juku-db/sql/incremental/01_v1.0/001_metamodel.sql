@@ -16,12 +16,12 @@ create table entity (
 create table entitytype ( 
    entitytypename varchar2 (200 char) not null constraint entitytype_pk primary key, 
    name varchar2 (200 char), 
-   description varchar2 (300 char) 
+   description varchar2 (2000 char)
 );
 
 create table entitytypeentity ( 
-   entitytypename varchar2 (200 char) not null references entitytype (entitytypename), 
-   table_name varchar2 (30 char) not null references entity (table_name), 
+   entitytypename varchar2 (200 char) not null constraint entitytypeentity_type references entitytype (entitytypename),
+   table_name varchar2 (30 char) not null constraint entitytypeentity_entity references entity (table_name),
    constraint entitytypeentity_pk primary key ( entitytypename, table_name ) 
 );
 
