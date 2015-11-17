@@ -36,7 +36,8 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
        organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
        sisalto.muokkaaja,
        case when sisalto.muokkausaika is null then hakemus.muokkausaika else sisalto.muokkausaika end muokkausaika,
-       lahetys.*
+       lahetys.*,
+       ely_siirtymaaikasopimukset, ely_joukkoliikennetukikunnat -- ely hakemuksen perustiedot
 from hakemus_view hakemus left join sisalto on (1=1) left join lahetys on (1=1)
 where id = :hakemusid
 

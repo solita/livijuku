@@ -19,3 +19,10 @@
    :arvo   s/Num
    :kuvaus (s/maybe s/Str)
 })
+
+(s/defschema ELY-hakemus
+  "Tämä skeema määrittää ely-hakemuksen perustiedot."
+  {
+   :siirtymaaikasopimukset s/Num   ; ELY hakemuksen siirtymäajan sopimukset
+   :joukkoliikennetukikunnat s/Num ; ELY hakemuksen joukkoliikennetuki kunnille
+  })

@@ -72,3 +72,12 @@
   (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
 
   (map coerce-kehityshanke (select-hakemus-kehityshanke {:hakemusid hakemusid})))
+
+; *** Perustiedot ***
+(defn save-elyhakemus [hakemusid elyhakemus]
+  (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
+
+  (dml/assert-update
+    (dml/update-where! db "hakemus" (coerce/object->row {:ely elyhakemus}) {:id hakemusid})
+    (ss/throw+ {:http-response r/not-found
+                :message (str "Hakemusta " hakemusid " ei ole olemassa.")})))

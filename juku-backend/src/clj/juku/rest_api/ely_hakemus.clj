@@ -39,5 +39,14 @@
             :path-params [hakemusid :- Long]
             :body     [kehityshankkeet [Kehityshanke]]
             :summary  "Päivittää hakemuksen kehityshankkeet."
-            (ok (service/save-kehityshankkeet! hakemusid kehityshankkeet))))
+            (ok (service/save-kehityshankkeet! hakemusid kehityshankkeet)))
+
+      (PUT* "/hakemus/:hakemusid/ely" []
+            :auth [:modify-oma-hakemus]
+            :audit []
+            :return   nil
+            :path-params [hakemusid :- Long]
+            :body     [elyhakemus ELY-hakemus]
+            :summary  "Päivittää ely-hakemuksen perustiedot."
+            (ok (service/save-elyhakemus hakemusid elyhakemus))))
 

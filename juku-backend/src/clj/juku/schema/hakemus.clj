@@ -2,7 +2,8 @@
   (:import (org.joda.time DateTime)
            (org.joda.time LocalDate))
   (:require [schema.core :as s]
-            [juku.schema.common :as sc]))
+            [juku.schema.common :as sc]
+            [juku.schema.ely-hakemus :as ely]))
 
 (s/defschema Hakuaika {:alkupvm LocalDate
                        :loppupvm LocalDate})
@@ -56,7 +57,9 @@
     :luontitunnus s/Str
     :muokkaaja (s/maybe s/Str)        ; hakemuksen sisältöön viimeisimmän muokkauksen tehnyt hakija (avustuskohteet + liitteet) (fullname)
     :lahettaja (s/maybe s/Str)        ; hakemuksen viimeisimmän lähetyksen tehnyt hakija (fullname)
-    :lahetysaika (s/maybe DateTime))) ; hakemuksen viimeisin lähetysaika
+    :lahetysaika (s/maybe DateTime)   ; hakemuksen viimeisin lähetysaika
+    (s/optional-key :ely) ely/ELY-hakemus    ; ELY hakemuksen perustiedot
+    ))
 
 
 (s/defschema NewHakemus (dissoc Hakemus :id :hakemustilatunnus :muokkausaika :hakuaika))
@@ -72,7 +75,9 @@
 
 (s/defschema Avustuskohde+alv (assoc Avustuskohde :alv s/Num))
 
-(s/defschema Avustuskohdeluokka (assoc sc/Luokka :avustuskohdelajit [(assoc sc/Luokka :avustuskohdeluokkatunnus s/Str)]))
+(s/defschema Avustuskohdelaji (assoc sc/Luokka :avustuskohdeluokkatunnus s/Str))
+
+(s/defschema Avustuskohdeluokka (assoc sc/Luokka :avustuskohdelajit [Avustuskohdelaji]))
 
 (s/defschema NewTaydennyspyynto {:hakemusid s/Num
                                 (s/optional-key :selite) (s/maybe s/Str)})

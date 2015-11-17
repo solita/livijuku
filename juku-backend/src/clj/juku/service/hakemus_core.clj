@@ -11,7 +11,8 @@
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
             [common.collection :as coll]
-            [common.core :as c])
+            [common.core :as c]
+            [common.map :as map])
   (:import (org.joda.time LocalDate)))
 
 ; *** Hakemukseen liittyvät kyselyt ***
@@ -100,7 +101,7 @@
                             "Hakemus on lähetetty käsiteltäväksi."))))
 
 (defn get-hakemus+ [hakemusid]
-  (let [hakemus (get-any-hakemus hakemusid select-hakemus+)]
+  (let [hakemus (map/dissoc-if (get-any-hakemus hakemusid select-hakemus+) (partial map/every-value? nil?) :ely)]
     (coerce-hakemus+
       (assoc
         (if (= (:hakemustilatunnus hakemus) "T0")
