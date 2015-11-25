@@ -10,7 +10,9 @@
             [clojure.java.io :as io]
             [common.collection :as coll]
             [common.string :as xstr]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [common.core :as c]
+            [juku.service.pdf :as pdf]))
 
 ; *** ELY-hakemuksen tietoihin liittyvät kyselyt ***
 (sql/defqueries "ely.sql")
@@ -59,18 +61,6 @@
 
 (defn find-maararahatarvetyypit [] (select-maararahatarvetyypit))
 
-(defn maarahatarpeet-section [maararahatarpeet]
-  (let [maararahatarvetyypit (find-maararahatarvetyypit)
-        maararahatarpeet+nimi (coll/assoc-join maararahatarpeet :nimi
-                                               maararahatarvetyypit
-                                               {:maararahatarvetyyppitunnus :tunnus}
-                                               (comp :nimi first coll/children))
-        maarahatarve-template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/maararahatarve.txt"))))]
-    (str/join "\n" (map (partial xstr/interpolate maarahatarve-template) maararahatarpeet+nimi))))
-
-(defn ely-template-values [hakemus]
-  {:maararahatarpeet (maarahatarpeet-section (find-hakemus-maararahatarpeet (:id hakemus)))})
-
 ; *** Kehityshankkeiden toiminnot ***
 (defn- insert-kehityshanke [kehityshanke]
   (:id (dml/insert db "kehityshanke" kehityshanke kehityshanke-constraint-errors kehityshanke)))
@@ -88,6 +78,32 @@
   (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
 
   (map coerce-kehityshanke (select-hakemus-kehityshanke {:hakemusid hakemusid})))
+
+; *** ELY hakemus pdf dokumentin tiedot ***
+
+(defn maarahatarpeet-section [maararahatarpeet]
+  (let [maararahatarvetyypit (find-maararahatarvetyypit)
+        maararahatarpeet+nimi (coll/assoc-join maararahatarpeet :nimi
+                                               maararahatarvetyypit
+                                               {:maararahatarvetyyppitunnus :tunnus}
+                                               (comp :nimi first coll/children))
+        template-values (map (comp
+                               (c/partial-first-arg update :sidotut pdf/format-number)
+                               (c/partial-first-arg update :uudet pdf/format-number)
+                               (c/partial-first-arg update :tulot pdf/format-number))
+                             maararahatarpeet+nimi)
+        maarahatarve-template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/maararahatarve.txt"))))]
+    (str/join "\n" (map (partial xstr/interpolate maarahatarve-template) template-values))))
+
+(defn kehityshankkeet-section [kehityshankkeet]
+  (let [kehityshanke-template "\t{nimi}\t\t\t\t{arvo} e"]
+    (str/join "\n" (map (partial xstr/interpolate kehityshanke-template)
+                        (map (c/partial-first-arg update :arvo pdf/format-number) kehityshankkeet)))))
+
+(defn ely-template-values [hakemus]
+  (let [hakemusid (:id hakemus)]
+    {:maararahatarpeet (maarahatarpeet-section (find-hakemus-maararahatarpeet hakemusid))
+     :kehityshankkeet (kehityshankkeet-section (find-hakemus-kehityshankkeet hakemusid))}))
 
 ; *** Perustiedot ***
 (defn save-elyhakemus [hakemusid elyhakemus]
