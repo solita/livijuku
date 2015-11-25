@@ -6,7 +6,11 @@
             [juku.service.hakemus-core :as hc]
             [juku.schema.ely-hakemus :as s]
             [slingshot.slingshot :as ss]
-            [ring.util.http-response :as r]))
+            [ring.util.http-response :as r]
+            [clojure.java.io :as io]
+            [common.collection :as coll]
+            [common.string :as xstr]
+            [clojure.string :as str]))
 
 ; *** ELY-hakemuksen tietoihin liittyvät kyselyt ***
 (sql/defqueries "ely.sql")
@@ -54,6 +58,18 @@
   (map coerce-maararahatarve (select-hakemus-maararahatarve {:hakemusid hakemusid})))
 
 (defn find-maararahatarvetyypit [] (select-maararahatarvetyypit))
+
+(defn maarahatarpeet-section [maararahatarpeet]
+  (let [maararahatarvetyypit (find-maararahatarvetyypit)
+        maararahatarpeet+nimi (coll/assoc-join maararahatarpeet :nimi
+                                               maararahatarvetyypit
+                                               {:maararahatarvetyyppitunnus :tunnus}
+                                               (comp :nimi first coll/children))
+        maarahatarve-template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/maararahatarve.txt"))))]
+    (str/join "\n" (map (partial xstr/interpolate maarahatarve-template) maararahatarpeet+nimi))))
+
+(defn ely-template-values [hakemus]
+  {:maararahatarpeet (maarahatarpeet-section (find-hakemus-maararahatarpeet (:id hakemus)))})
 
 ; *** Kehityshankkeiden toiminnot ***
 (defn- insert-kehityshanke [kehityshanke]

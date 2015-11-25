@@ -44,24 +44,32 @@
 (defn eq [getter value]
   (predicate = getter value))
 
+(defn- join-
+  [^IPersistentCollection target join-children ^IPersistentCollection source
+   ^IPersistentCollection target-join-keys ^IPersistentCollection source-join-keys]
+ (let [index (group-by (apply juxt source-join-keys) source)
+       foreign-key-fn (apply juxt target-join-keys)]
+   (map (fn [parent]
+          (let [foreign-key (foreign-key-fn parent)
+                matching-objects (get index foreign-key)]
+            (join-children parent matching-objects)))
+        target)))
+
 (defn join
   "Each object (parent) in the target collection are joined with a subset (children) of the source collection.
   The children for the parent object are identified using join-keys.
   The child objects and the target object have the same join-key values e.g.
-  (select-keys parent eq-join-keys) = (select-keys child eq-join-keys).
+  (select-keys parent join-keys) = (select-keys child join-keys).
   The result of this join is determined using the join-children function."
 
-  [^IPersistentCollection target join-children ^IPersistentCollection source ^IPersistentCollection eq-join-keys]
+  [^IPersistentCollection target join-children ^IPersistentCollection source join-condition]
   {:pre [(coll? target)
          (coll? source)
-         (coll? eq-join-keys)]}
+         (or (coll? join-condition) (map? join-condition))]}
 
-  (let [index (group-by (c/partial-first-arg select-keys eq-join-keys) source)]
-    (map (fn [parent]
-           (let [foreign-key (select-keys parent eq-join-keys)
-                 matching-objects (get index foreign-key)]
-             (join-children parent matching-objects)))
-         target)))
+  (if (map? join-condition)
+    (join- target join-children source (keys join-condition) (vals join-condition))
+    (join- target join-children source join-condition join-condition)))
 
 (defn dissoc-join-keys
   "This defines an assoc-join transformation option which removes the join-keys from children."
@@ -70,6 +78,8 @@
 (defn no-transformation
   "The default assoc-join transformation option. The children are associated to the parent as is."
   [children _] (or children []))
+
+(defn children [children _] children)
 
 (defn assoc-join
   "Assoc-join is a join function (see join) where children are associated (assoc) to parents.

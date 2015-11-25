@@ -1,0 +1,4 @@
+	{nimi}
+	 - sidotut		{sidotut}
+	 - uudet		{uudet}
+	 - tulot		{tulot}

@@ -22,7 +22,8 @@
             [ring.util.http-response :as r]
             [common.collection :as coll]
             [common.core :as c]
-            [juku.service.hakemus-core :as hc])
+            [juku.service.hakemus-core :as hc]
+            [juku.service.ely-hakemus :as ely])
   (:import (org.joda.time LocalDate)))
 
 (defn get-hakemus-by-id! [hakemusid]
@@ -42,32 +43,31 @@
 (defn hakemus-template [hakemus]
   (str "hakemus-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
 
+(defn common-template-values[esikatselu-message pvm hakemus]
+  (let [organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
+    {:organisaatio-nimi (:nimi organisaatio)
+     :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+     :vireillepvm pvm
+     :vuosi (:vuosi hakemus)
+     :liitteet (l/liitteet-section (:id hakemus))
+     :lahettaja (if esikatselu-message "<hakijan nimi, joka on lähettänyt hakemuksen>"
+                                       (user/user-fullname user/*current-user*))}))
+
 (defn hakemus-pdf
   ([hakemus] (hakemus-pdf hakemus nil))
   ([hakemus esikatselu-message]
     (let [pvm (h/format-date (time/today))
-          organisaatio (o/find-organisaatio (:organisaatioid hakemus))
-          avustuskohteet (ak/find-avustuskohteet-by-hakemusid (:id hakemus))
-
-          total-haettavaavustus (reduce + 0 (map :haettavaavustus avustuskohteet))
-          total-omarahoitus (reduce + 0 (map :omarahoitus avustuskohteet))
-
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (hakemus-template hakemus)))))]
+          hakemusid (:id hakemus)
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (hakemus-template hakemus)))))
+          common-template-values (common-template-values esikatselu-message pvm hakemus)
+          template-values
+            (case (:hakemustyyppitunnus hakemus)
+              "ELY" (merge common-template-values (ely/ely-template-values hakemus))
+              (merge common-template-values (ak/avustuskohde-template-values-by-hakemusid hakemusid)))]
 
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}
-         :teksti (xstr/interpolate template
-                                   {:organisaatio-nimi (:nimi organisaatio)
-                                    :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
-                                    :vireillepvm pvm
-                                    :vuosi (:vuosi hakemus)
-                                    :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-                                    :liitteet (l/liitteet-section (:id hakemus))
-                                    :haettuavustus (pdf/format-number total-haettavaavustus)
-                                    :omarahoitus (pdf/format-number total-omarahoitus)
-                                    :lahettaja (if esikatselu-message "<hakijan nimi, joka on lähettänyt hakemuksen>"
-                                                                      (user/user-fullname user/*current-user*))})
-
+         :teksti (xstr/interpolate template template-values)
          :footer (c/maybe-nil #(str "Liikennevirasto - esikatselu - " %) "Liikennevirasto" esikatselu-message)}))))
 
 (defn find-hakemus-pdf [hakemusid]

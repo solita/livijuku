@@ -15,6 +15,7 @@ Hakemustyyppejä ovat:
 * **ah0** – avustushakemus
 * **mh1** – 1. maksatushakemus
 * **mh2** – 2. maksatushakemus
+* **ely** - ELY:jen hakemus
 
 Voimaantulovuosi tarkoittaa hakemuskautta, jolloin ko. pohja astuu voimaan. Pohja on niin kauan voimassa kunnes seuraava pohja korvaa sen.
 

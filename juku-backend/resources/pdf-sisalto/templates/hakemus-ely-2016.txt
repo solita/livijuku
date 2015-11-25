@@ -1,0 +1,23 @@
+*ELINKEINO-, LIIKENNE- JA YMPÄRISTÖKESKUKSEN MÄÄRÄRAHATARPEET {vuosi}
+
+*Hakemus {vireillepvm}
+
+	*ELY-keskus: {organisaatio-nimi}
+
+	ELY-keskuksen psa-liikenteen määrärahatarpeet:
+
+{maararahatarpeet}
+
+	Siirtymäajan sopimukset: {siirtymaaikasopimukset}
+	Joukkoliikennetuki kunnille: {joukkoliikennetukikunnat}
+
+	ELY-keskuksen kehityshankkeet:
+
+{kehityshankkeet}
+
+	Lähettäjä: {lahettaja}
+
+*Liitteet
+
+{liitteet}
+

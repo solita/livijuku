@@ -88,6 +88,14 @@
 
 (defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
 
+(defn avustuskohde-template-values [avustuskohteet]
+  {:avustuskohteet (avustuskohteet-section avustuskohteet)
+   :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet))
+   :omarahoitus (pdf/format-number (total-omarahoitus avustuskohteet))})
+
+(defn avustuskohde-template-values-by-hakemusid [hakemusid]
+  (avustuskohde-template-values (find-avustuskohteet-by-hakemusid hakemusid)))
+
 (defn find-avustuskohteet [hakemusid]
   (h/assert-view-hakemus-content-allowed*! (h/get-hakemus hakemusid))
   (find-avustuskohteet-by-hakemusid hakemusid))
