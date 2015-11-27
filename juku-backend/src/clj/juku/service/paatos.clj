@@ -117,9 +117,6 @@
              :paatosspvm paatospvm-txt
              :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
              :vuosi (:vuosi hakemus)
-             :avustuskohteet (ak/avustuskohteet-section avustuskohteet)
-             :haettuavustus (pdf/format-number haettuavustus)
-             :omarahoitus (pdf/format-number (ak/total-omarahoitus avustuskohteet))
 
              :selite (c/maybe-nil #(str "\n\n\t" (str/trim (str/replace % #"\R+" "\n\n\t"))) ""
                                   (c/nil-if str/blank? (:selite paatos)))
@@ -132,10 +129,16 @@
 
           template-values
             (case (:hakemustyyppitunnus hakemus)
-              "AH0" common-template-values
-              "MH1" (merge common-template-values (mh-template-values hakemus haettuavustus organisaatio))
-              "MH2" (merge common-template-values (mh-template-values hakemus haettuavustus organisaatio)
-                                                  (mh2-templatevalues hakemus)))]
+              "AH0" (merge common-template-values
+                           (ak/avustuskohde-template-values avustuskohteet))
+              "MH1" (merge common-template-values
+                           (ak/avustuskohde-template-values avustuskohteet)
+                           (mh-template-values hakemus haettuavustus organisaatio))
+              "MH2" (merge common-template-values
+                           (ak/avustuskohde-template-values avustuskohteet)
+                           (mh-template-values hakemus haettuavustus organisaatio)
+                           (mh2-templatevalues hakemus))
+              "ELY" common-template-values)]
 
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
