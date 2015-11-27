@@ -89,6 +89,10 @@
                     " ei ole oikeutta lähettaa hakemusta: " (:id hakemus) ". "
                     "Ainoastaan oman hakemuksen saa lähettää."))))
 
+(def hakemustyyppi->asiatyyppi
+  {"AH0" "AH"
+   "ELY" "ELY"})
+
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (h/get-hakemus+ hakemusid)
@@ -101,11 +105,13 @@
       (assert-oma-hakemus*! hakemus)
       (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto")
 
-      (if (= (:hakemustyyppitunnus hakemus) "AH0")
+      (if (#{"AH0" "ELY"} (:hakemustyyppitunnus hakemus))
         (h/update-hakemus-set-diaarinumero!
           {:vuosi (:vuosi hakemus)
            :organisaatioid (:organisaatioid hakemus)
-           :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi) :hakija (:nimi organisaatio)}
+           :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi)
+                                                 :tyyppi (hakemustyyppi->asiatyyppi (:hakemustyyppitunnus hakemus))
+                                                 :hakija (:nimi organisaatio)}
                                                 hakemus-asiakirja liitteet)})
 
         (if-let [diaarinumero (:diaarinumero hakemus)]

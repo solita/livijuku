@@ -37,6 +37,7 @@
                            :omistavaHenkilo       s/Str})
 
 (s/defschema Hakemus {:kausi                 s/Str
+                      :tyyppi                s/Str
                       :hakija                s/Str
                       :omistavaOrganisaatio  s/Str
                       :omistavaHenkilo       s/Str})

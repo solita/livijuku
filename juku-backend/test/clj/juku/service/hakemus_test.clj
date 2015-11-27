@@ -36,7 +36,7 @@
 (facts "Hakemuksen tilan hallinta - asiahallinta testit"
 
   (test/with-user "juku_hakija" ["juku_hakija"]
-    (fact "Hakemuksen lähettäminen"
+    (fact "Hakemuksen lähettäminen - ei liitteitä"
       (asha/with-asha
         (let [id (hc/add-hakemus! hsl-hakemus)]
 
@@ -69,6 +69,7 @@
 
              (get-in multipart ["hakemus" :content]) =>
                 (str "{\"kausi\":\"dnro:" vuosi "\","
+                      "\"tyyppi\":\"AH\","
                       "\"hakija\":\"Helsingin seudun liikenne\","
                       "\"omistavaOrganisaatio\":\"Liikennevirasto\","
                       "\"omistavaHenkilo\":\"test\"}")
