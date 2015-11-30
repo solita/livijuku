@@ -25,8 +25,8 @@
 
    ;; timeout-tiedot pitää olla Integer tyyppiä tai javax.mail api ei noudata näitä
    ;; ks. com.sun.mail.util.PropUtil.getIntProperty
-   :connectiontimeout (int (* 5 600000))
-   :timeout (int (* 5 600000))})
+   :connectiontimeout (int (* 1 60000))
+   :timeout (int (* 1 60000))})
 
 #_(def server
   {:host "solita-service-1.solita.fi"
