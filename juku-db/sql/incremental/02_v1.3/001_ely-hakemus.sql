@@ -45,8 +45,8 @@ create table maararahatarve (
   hakemusid not null references hakemus (id),
   maararahatarvetyyppitunnus not null references maararahatarvetyyppi (tunnus),
 
-  sidotut number(12,2),
-  uudet number(12,2),
+  sidotut number(12,2) default 0 not null,
+  uudet number(12,2) default 0 not null,
   tulot number(12,2),
   kuvaus varchar2(2000 char),
 

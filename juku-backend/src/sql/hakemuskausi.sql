@@ -54,9 +54,10 @@ where hakemus.vuosi = :vuosi and
        organisaatio.lajitunnus = 'KS1')
 
 -- name: insert-maararahatarpeet-for-kausi!
-insert into maararahatarve (hakemusid, maararahatarvetyyppitunnus)
+insert into maararahatarve (hakemusid, maararahatarvetyyppitunnus, tulot)
 select hakemus.id,
-  maararahatarvetyyppi.tunnus
+  maararahatarvetyyppi.tunnus,
+  decode(maararahatarvetyyppi.tunnus, 'BS', 0, null)
 from hakemus cross join maararahatarvetyyppi
 where hakemus.vuosi = :vuosi and
       maararahatarvetyyppi.voimaantulovuosi <= :vuosi and

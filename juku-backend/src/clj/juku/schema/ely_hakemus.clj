@@ -5,9 +5,9 @@
   "Tämä skeema määrittää ely-hakemuksen määrärahatarpeen tiedot." {
 
    :maararahatarvetyyppitunnus s/Str,
-   :sidotut                    (s/maybe s/Num)
-   :uudet                      (s/maybe s/Num)
-   :tulot                      (s/maybe s/Num)
+   :sidotut                    s/Num
+   :uudet                      s/Num
+   (s/optional-key :tulot)     s/Num
    :kuvaus                     (s/maybe s/Str)
 })
 

@@ -12,7 +12,8 @@
             [common.string :as xstr]
             [clojure.string :as str]
             [common.core :as c]
-            [juku.service.pdf :as pdf]))
+            [juku.service.pdf :as pdf]
+            [common.map :as m]))
 
 ; *** ELY-hakemuksen tietoihin liittyvät kyselyt ***
 (sql/defqueries "ely.sql")
@@ -57,7 +58,8 @@
 (defn find-hakemus-maararahatarpeet [hakemusid]
   (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
 
-  (map coerce-maararahatarve (select-hakemus-maararahatarve {:hakemusid hakemusid})))
+  (map (comp coerce-maararahatarve (c/partial-first-arg m/dissoc-if-nil :tulot))
+       (select-hakemus-maararahatarve {:hakemusid hakemusid})))
 
 (defn find-maararahatarvetyypit [] (select-maararahatarvetyypit))
 
