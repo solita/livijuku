@@ -21,7 +21,12 @@
 
 (def server
   {:host (strx/trim (get-in settings [:email :server]))
-   :port (get-in settings [:email :port])})
+   :port (get-in settings [:email :port])
+
+   ;; timeout-tiedot pitää olla Integer tyyppiä tai javax.mail api ei noudata näitä
+   ;; ks. com.sun.mail.util.PropUtil.getIntProperty
+   :connectiontimeout (int (* 1 60000))
+   :timeout (int (* 1 60000))})
 
 #_(def server
   {:host "solita-service-1.solita.fi"
