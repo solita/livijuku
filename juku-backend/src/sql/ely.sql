@@ -5,7 +5,7 @@ select
 from maararahatarve where hakemusid = :hakemusid
 
 -- name: select-maararahatarvetyypit
-select tunnus, nimi, 1 jarjestys from maararahatarvetyyppi
+select tunnus, nimi, jarjestys from maararahatarvetyyppi
 
 
 -- name: select-hakemus-kehityshanke
