@@ -95,7 +95,8 @@
                     :other-hakemukset []
                     :hakuaika (:hakuaika (coll/find-first (coll/eq :hakemustyyppitunnus "ELY") (:hakemukset hk)))
                     :luontitunnus "juku_hakija_ely"
-                    :kasittelijanimi nil
+                    :kasittelijanimi nil,
+                    :tilinumero nil,
                     :lahettaja nil
                     :muokkaaja nil
                     :hakemustilatunnus "K"

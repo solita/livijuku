@@ -35,6 +35,7 @@
   (assoc (assoc-hakemus-defaults+kasittely hakemus id) :contentvisible true
                                                        :luontitunnus "juku_kasittelija",
                                                        :kasittelija nil, :selite selite,
+                                                       :tilinumero nil,
                                                        :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
@@ -198,3 +199,16 @@
 
       (coll/find-first (find-by-id id) (h/find-all-hakemukset)) =>
         (coll/predicate time/after? :muokkausaika original-muokkausaika))))
+
+(fact
+  "Hakemuksen tilinumeron päivittäminen"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+          id (h/add-hakemus! hakemus)
+          tilinumero "asdf"]
+
+      (h/save-hakemus-tilinumero! id tilinumero)
+      (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) =>
+        (assoc (assoc-hakemus-defaults+ hakemus id nil)
+          :tilinumero tilinumero
+          :luontitunnus "juku_hakija"))))

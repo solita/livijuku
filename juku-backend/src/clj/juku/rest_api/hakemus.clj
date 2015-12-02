@@ -26,6 +26,14 @@
             :body-params [suunniteltuavustus :- s/Num]
             :summary  "Päivittää hakemuksen myönnettävän avustusrahamäärän suunnitelmaan."
             (ok (core/save-hakemus-suunniteltuavustus! hakemusid suunniteltuavustus)))
+      (PUT* "/hakemus/:hakemusid/tilinumero" []
+            :auth [:modify-oma-hakemus]
+            :audit [:body-params]
+            :return   nil
+            :path-params [hakemusid :- Long]
+            :body-params [tilinumero :- s/Str]
+            :summary  "Päivittää hakemuksen tilinumeron."
+            (ok (core/save-hakemus-tilinumero! hakemusid tilinumero)))
       (POST* "/hakemus/:hakemusid/laheta" []
              :auth [:allekirjoita-oma-hakemus]
              :audit []

@@ -32,7 +32,7 @@ lahetys as (
     order by luontiaika desc)
   where rownum = 1
 )
-select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, tilinumero,
        organisaatioid, kasittelijanimi, hakuaika_alkupvm, hakuaika_loppupvm, selite, kasittelija, luontitunnus,
        sisalto.muokkaaja,
        case when sisalto.muokkausaika is null then hakemus.muokkausaika else sisalto.muokkausaika end muokkausaika,

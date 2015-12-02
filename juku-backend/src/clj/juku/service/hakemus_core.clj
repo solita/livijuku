@@ -130,6 +130,10 @@
 (defn save-hakemus-selite! [hakemusid selite]
   (update-hakemus-by-id {:selite selite} hakemusid))
 
+(defn save-hakemus-tilinumero! [hakemusid tilinumero]
+  (assert-edit-hakemus-content-allowed*! (get-hakemus hakemusid))
+  (update-hakemus-by-id {:tilinumero tilinumero} hakemusid))
+
 (defn save-hakemus-suunniteltuavustus! [hakemusid suunniteltuavustus]
   (update-hakemus-by-id {:suunniteltuavustus suunniteltuavustus} hakemusid))
 
