@@ -3,6 +3,7 @@ create or replace view hakemus_view as
 select
   hakemus.id, hakemus.diaarinumero,
   hakemus.vuosi, hakemus.hakemustyyppitunnus,
+  hakemus.tilinumero,
   case
     when (hakemus.hakemustilatunnus = 'K' and sysdate < hakuaika.alkupvm) then '0'
     else hakemus.hakemustilatunnus
