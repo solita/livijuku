@@ -114,8 +114,11 @@
 (defn get-hakemus [hakemusid] (coerce-hakemus (get-any-hakemus hakemusid select-hakemus)))
 
 (defn find-hakemussuunnitelmat [vuosi hakemustyyppitunnus]
-  (map (comp coerce-hakemus-suunnitelma coerce/row->object)
-       (select-hakemussuunnitelmat {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus})))
+  (let [select (case hakemustyyppitunnus
+                     "ELY" select-hakemussuunnitelmat-ely
+                     select-hakemussuunnitelmat)]
+    (map (comp coerce-hakemus-suunnitelma coerce/row->object)
+         (select {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus}))))
 
 (defn add-hakemus! [hakemus]
   (:id (dml/insert-with-id db "hakemus"

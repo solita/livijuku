@@ -105,3 +105,20 @@
                     :lahetysaika nil
                     :contentvisible true
                     :id id))))
+
+(fact
+  "ELY hakemussuunnitelma haku"
+  (test/with-user "juku_hakija_ely" ["juku_hakija"]
+    (let [h (ely1-hakemus)
+          id (hc/add-hakemus! h)]
+
+      (insert-maararahatarve! id (assoc (maararahatarve "BS") :tulot 0))
+      (insert-maararahatarve! id (assoc (maararahatarve "KK1") :tulot 1))
+      (coll/find-first (coll/eq :id id) (hc/find-hakemussuunnitelmat vuosi "ELY"))
+        => (assoc h
+             :id id
+             :hakuaika (:hakuaika (coll/find-first (coll/eq :hakemustyyppitunnus "ELY") (:hakemukset hakemuskausi)))
+             :diaarinumero nil
+             :hakemustilatunnus "K"
+             :myonnettava-avustus 0M
+             :haettu-avustus 5M))))

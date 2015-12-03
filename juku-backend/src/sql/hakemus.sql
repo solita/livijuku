@@ -69,6 +69,19 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
 from hakemus_view hakemus
 where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
 
+-- name: select-hakemussuunnitelmat-ely
+select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
+  organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm,
+
+  (select nvl(sum(maararahatarve.sidotut + maararahatarve.uudet - nvl(maararahatarve.tulot, 0)), 0) from maararahatarve
+  where hakemusid = hakemus.id) +
+  (select nvl(sum(kehityshanke.arvo), 0) from kehityshanke
+  where hakemusid = hakemus.id) "haettu-avustus",
+
+  nvl(suunniteltuavustus, 0) "myonnettava-avustus"
+from hakemus_view hakemus
+where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
+
 -- name: select-avustuskohteet
 select avustuskohde.hakemusid,
   avustuskohde.avustuskohdeluokkatunnus, avustuskohde.avustuskohdelajitunnus,
