@@ -27,7 +27,7 @@
           :path-params [hakemusid :- Long]
           :body [paatos EditPaatos]
           :summary "Tallenna hakemuksen nykyisen päätöksen tiedot."
-          (ok (service/save-paatos! paatos)))
+          (ok (service/save-paatos! (assoc paatos :hakemusid hakemusid))))
 
     (POST* "/hakemus/:hakemusid/hyvaksy-paatos" []
            :auth [:hyvaksy-paatos]
@@ -43,4 +43,12 @@
            :return  nil
            :path-params [hakemusid :- Long]
            :summary "Peruuta hakemuksen hyväksytty päätös."
-           (ok (service/peruuta-paatos! hakemusid))))
+           (ok (service/peruuta-paatos! hakemusid)))
+
+    (PUT* "/paatokset" []
+          :auth [:kasittely-hakemus]
+          :audit []
+          :return   nil
+          :body     [paatokset [EditPaatos]]
+          :summary  "Päivittää kaikkien annettujen päätösten perustiedot."
+          (ok (service/save-paatokset! paatokset))))

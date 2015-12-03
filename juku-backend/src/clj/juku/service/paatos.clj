@@ -19,10 +19,7 @@
             [common.core :as c]
             [clojure.java.io :as io]
             [clj-time.core :as time]
-            [clj-time.coerce :as timec]
-            [juku.service.user :as user])
-  (:import (org.joda.time LocalDate)
-           (java.math RoundingMode)))
+            [juku.service.user :as user]))
 
 ; *** Päätökseen liittyvät kyselyt ***
 (sql/defqueries "paatos.sql")
@@ -181,3 +178,12 @@
                                   :message (str "Hakemuksella " hakemusid " ei ole voimassaolevaa päätöstä")})
       (h/change-hakemustila+log! hakemus "T" "P" "päätöksen peruuttaminen")))
   nil)
+
+(defn hyvaksy-paatokset! [vuosi hakemustyyppitunnus]
+  (with-transaction
+    (doseq [hakemusid (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus})]
+      (hyvaksy-paatos! hakemusid))))
+
+(defn save-paatokset! [paatokset]
+  (with-transaction
+    (doseq [paatos paatokset] (save-paatos! paatos))))
