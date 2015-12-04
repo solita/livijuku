@@ -181,7 +181,7 @@
 
 (defn hyvaksy-paatokset! [vuosi hakemustyyppitunnus]
   (with-transaction
-    (doseq [hakemusid (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus})]
+    (doseq [hakemusid (map :id (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus (str/upper-case hakemustyyppitunnus)}))]
       (hyvaksy-paatos! hakemusid))))
 
 (defn save-paatokset! [paatokset]
