@@ -4,6 +4,7 @@
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [juku.service.hakemus-core :as hc]
+            [juku.service.paatos :as p]
             [juku.schema.ely-hakemus :as s]
             [slingshot.slingshot :as ss]
             [ring.util.http-response :as r]
@@ -115,3 +116,8 @@
     (dml/update-where! db "hakemus" (coerce/object->row {:ely elyhakemus}) {:id hakemusid})
     (ss/throw+ {:http-response r/not-found
                 :message (str "Hakemusta " hakemusid " ei ole olemassa.")})))
+
+(defn find-any-ely-paatos [vuosi]
+  (let [hakemusid (-> {:vuosi vuosi :hakemustyyppitunnus "ELY"}
+                      p/select-hakemukset-from-kausi first :id)]
+    (p/find-current-paatos hakemusid)))

@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :refer :all]
             [juku.service.ely-hakemus :as service]
             [juku.schema.ely-hakemus :refer :all]
+            [juku.schema.paatos :as sp]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
             [juku.schema.common :as sc]))
@@ -48,5 +49,12 @@
             :path-params [hakemusid :- Long]
             :body     [elyhakemus ELY-hakemus]
             :summary  "Päivittää ely-hakemuksen perustiedot."
-            (ok (service/save-elyhakemus hakemusid elyhakemus))))
+            (ok (service/save-elyhakemus hakemusid elyhakemus)))
+
+      (GET* "/hakemuskausi/:vuosi/ely-paatos" []
+            :auth [:view-hakemus]
+            :return sp/Paatos
+            :path-params [vuosi :- Long]
+            :summary "Hae joku ELY-päätös annetulta kaudelta."
+            (ok (service/find-any-ely-paatos vuosi))))
 
