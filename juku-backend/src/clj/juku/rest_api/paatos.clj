@@ -51,4 +51,13 @@
           :return   nil
           :body     [paatokset [EditPaatos]]
           :summary  "Päivittää kaikkien annettujen päätösten perustiedot."
-          (ok (service/save-paatokset! paatokset))))
+          (ok (service/save-paatokset! paatokset)))
+
+    (POST* "/hakemuskausi/:vuosi/:hakemustyyppitunnus/hyvaksy-paatokset" []
+           :auth [:hyvaksy-paatos]
+           :audit []
+           :return  nil
+           :path-params [vuosi :- Long
+                         hakemustyyppitunnus :- s/Str]
+           :summary "Hyväksy kaikki kauden tietyn hakemustyypin päätökset."
+           (ok (service/hyvaksy-paatokset! vuosi hakemustyyppitunnus))))
