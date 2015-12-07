@@ -105,7 +105,7 @@
   (test/with-user "juku_kasittelija" ["juku_kasittelija"]
       (let [id (hc/add-hakemus! hsl-ah0-hakemus)
             id2 (hc/add-hakemus! hsl-ah0-hakemus)
-            paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar" :paattajanimi "FooBar"}]
+            paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
         (let [p (p/find-current-paatos id)]
           (:paatosnumero p) => -1
@@ -114,9 +114,8 @@
           (:selite p) => nil)
 
         (p/save-paatos! paatos)
-        (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :paattajanimi "FooBar",
+        (p/find-current-paatos id) => (assoc paatos :paatosnumero 1, :paattaja nil, :paattajanimi nil,
                                                     :poistoaika nil, :voimaantuloaika nil)
         (let [p (p/find-current-paatos id2)]
           (:paatosnumero p) => -1
-          (:hakemusid p) => id2
-          (:paattajanimi p) => "FooBar"))))
+          (:hakemusid p) => id2))))

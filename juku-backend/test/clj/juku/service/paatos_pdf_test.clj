@@ -209,19 +209,21 @@
     (asha/with-asha
       (pdf/with-mock-pdf
         (let [id (hc/add-hakemus! hsl-ah0-hakemus)
-              paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar" :paattajanimi "Pentti Päättäjä"}]
+              paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
 
           (p/save-paatos! paatos)
           (test/with-hakija (h/laheta-hakemus! id))
           (h/tarkasta-hakemus! id)
-          (p/hyvaksy-paatos! id)
+
+          (test/with-user "juku_paatoksentekija" ["juku_paatoksentekija"]
+            (p/hyvaksy-paatos! id))
 
           (p/find-paatos-pdf id) => (partial instance? InputStream)
           (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
           (assert-hsl-avustushakemuspaatos-teksti)
 
           (let [teksti (:teksti pdf/*mock-pdf*)]
-            teksti => (partial strx/substring? "Päättäjä\tPentti Päättäjä")
+            teksti => (partial strx/substring? "Päättäjä\tPäivi Päätöksentekijä")
             teksti => (partial strx/substring? "Esittelijä\tKatri Käsittelijä"))
 
           (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
@@ -231,7 +233,7 @@
     (let [kausi (test/next-avattu-empty-hakemuskausi!)
           ah0 (add-hakemus! kausi "AH0")
           mh1 (add-hakemus! kausi "MH1")
-          paatos {:hakemusid ah0, :myonnettyavustus 33000M :selite "FooBar" :paattajanimi "Pentti Päättäjä"}
+          paatos {:hakemusid ah0, :myonnettyavustus 33000M :selite "FooBar"}
           ak {:hakemusid     mh1
               :avustuskohdeluokkatunnus "PSA"
               :avustuskohdelajitunnus "1"
@@ -257,7 +259,7 @@
     (let [kausi (test/next-avattu-empty-hakemuskausi!)
           ah0 (add-hakemus! kausi "AH0")
           mh1 (add-hakemus! kausi "MH1")
-          paatos {:hakemusid ah0, :myonnettyavustus 2 :selite "FooBar" :paattajanimi "Pentti Päättäjä"}
+          paatos {:hakemusid ah0, :myonnettyavustus 2 :selite "FooBar"}
           ak {:hakemusid     mh1
               :avustuskohdeluokkatunnus "PSA"
               :avustuskohdelajitunnus "1"
@@ -281,7 +283,7 @@
     (let [kausi (test/next-avattu-empty-hakemuskausi!)
           ah0 (add-hakemus! kausi "AH0")
           mh1 (add-hakemus! kausi "MH1")
-          paatos {:hakemusid ah0, :myonnettyavustus 0 :selite "Ei tipu" :paattajanimi "Roope Ankka"}
+          paatos {:hakemusid ah0, :myonnettyavustus 0 :selite "Ei tipu"}
           ak {:hakemusid     mh1
               :avustuskohdeluokkatunnus "PSA"
               :avustuskohdelajitunnus "1"
@@ -306,7 +308,7 @@
     (let [kausi (test/next-avattu-empty-hakemuskausi!)
           ah0 (add-hakemus! kausi "AH0")
           mh1 (add-hakemus! kausi "MH1")
-          paatos {:hakemusid ah0, :myonnettyavustus 1 :selite nil :paattajanimi "Pentti Päättäjä"}]
+          paatos {:hakemusid ah0, :myonnettyavustus 1 :selite nil}]
 
       (h/laheta-hakemus! ah0)
       (h/tarkasta-hakemus! ah0)

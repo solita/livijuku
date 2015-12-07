@@ -13,5 +13,4 @@
 
 (s/defschema EditPaatos {:hakemusid         s/Num
                          :myonnettyavustus  s/Num
-                         :paattajanimi      s/Str
                          :selite            (s/maybe s/Str)})

@@ -30,31 +30,33 @@
 ; *** Päätökseen liittyvät poikkeustyypit ***
 (derive ::paatos-not-found ::col/not-found)
 
+(defn assoc-paattajanimi [paatos]
+  (assoc paatos :paattajanimi (c/maybe-nil (comp user/user-fullname user/find-user) nil
+                                           (:paattaja paatos))))
+
 (defn find-current-paatos [hakemusid]
-  (let [paatos (first (map coerce-paatos (select-current-paatos {:hakemusid hakemusid})))]
+  (let [paatos (first (map (comp coerce-paatos assoc-paattajanimi) (select-current-paatos {:hakemusid hakemusid})))]
     (or paatos {:hakemusid         hakemusid
                 :paatosnumero      -1
                 :myonnettyavustus  0
                 :voimaantuloaika   nil
                 :poistoaika        nil
                 :paattaja          nil
-                :paattajanimi      (:paattajanimi (first (select-latest-paattajanimi)))
+                :paattajanimi      nil
                 :selite            nil})))
 
 (defn find-paatos [hakemusid paatosnumero]
-  (first (map coerce-paatos (select-paatos {:hakemusid hakemusid :paatosnumero paatosnumero}))))
+  (first (map (comp coerce-paatos assoc-paattajanimi) (select-paatos {:hakemusid hakemusid :paatosnumero paatosnumero}))))
 
 (defn new-paatos! [paatos] (insert-paatos! paatos))
 
 (defn- assert-unique-update! [updateamount hakemusid]
   (if (> updateamount 1) (ss/throw+ (str "Tietokannan tiedot ovat virheelliset. Hakemuksella " hakemusid " on kaksi avointa päätöstä."))))
 
-(defn assoc-paattajanimi [paatos] (update-in paatos [:paattajanimi] (fn [x] (if x x))))
-
 (defn save-paatos! [paatos]
-  (let [updated (update-paatos! (assoc-paattajanimi paatos))]
+  (let [updated (update-paatos! paatos)]
     (assert-unique-update! updated (:hakemusid paatos))
-    (if (== updated 0) (new-paatos! (assoc-paattajanimi paatos)))
+    (if (== updated 0) (new-paatos! paatos))
     nil))
 
 (defn paatos-template [hakemus organisaatio]
