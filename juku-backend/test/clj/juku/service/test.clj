@@ -3,12 +3,15 @@
             [common.core :as c]
             [slingshot.slingshot :as ss]
             [juku.service.hakemuskausi :as k]
+            [juku.service.hakemus :as h]
             [juku.service.user :as user]
             [juku.user :as u]
             [juku.db.database :refer [db with-transaction]]
             [juku.service.asiahallinta-mock :as asha]
             [yesql.core :as sql]
-            [clj-time.core :as time])
+            [clj-time.core :as time]
+            [clojure.string :as str]
+            [common.collection :as coll])
   (:import (java.io ByteArrayInputStream)))
 
 (sql/defqueries "juku/service/test.sql" {:connection db})
@@ -75,4 +78,11 @@
   (k/save-hakemuskauden-hakuajat! vuosi [{:hakemustyyppitunnus hakemustyyppitunnus
                                            :alkupvm (time/today)
                                            :loppupvm (from-today 1)}]))
+
+(defn laheta-all-ely-hakemukset [vuosi hakemustyyppitunnus]
+  (with-hakija
+    (with-transaction
+      (doseq [hakemus (filter (coll/eq :hakemustilatunnus "K") (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus (str/upper-case hakemustyyppitunnus)}))]
+        (binding [user/*current-user* (assoc user/*current-user* :organisaatioid (:organisaatioid hakemus))]
+          (h/laheta-hakemus! (:id hakemus)))))))
 

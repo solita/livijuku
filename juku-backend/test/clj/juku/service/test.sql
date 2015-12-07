@@ -20,3 +20,7 @@ select maarapvm, selite from taydennyspyynto where hakemusid = :hakemusid and nu
 
 -- name: select-count-hakemus
 select count(*) count from hakemus
+
+-- name: select-hakemukset-from-kausi
+select id, organisaatioid, hakemustilatunnus from hakemus
+where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
