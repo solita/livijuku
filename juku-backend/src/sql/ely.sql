@@ -15,3 +15,6 @@ from kehityshanke where hakemusid = :hakemusid
 -- name: delete-hakemus-kehityshanke!
 delete from kehityshanke where hakemusid = :hakemusid
 
+-- name: select-ely-hakemus
+select ely_siirtymaaikasopimukset, ely_joukkoliikennetukikunnat from hakemus where id = :hakemusid
+

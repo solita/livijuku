@@ -93,20 +93,38 @@
         template-values (map (comp
                                (c/partial-first-arg update :sidotut pdf/format-number)
                                (c/partial-first-arg update :uudet pdf/format-number)
-                               (c/partial-first-arg update :tulot pdf/format-number))
+                               (c/partial-first-arg update :tulot (c/nil-safe pdf/format-number)))
                              maararahatarpeet+nimi)
-        maarahatarve-template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/maararahatarve.txt"))))]
-    (str/join "\n" (map (partial xstr/interpolate maarahatarve-template) template-values))))
+
+        maarahatarve-template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/maararahatarve.txt"))))
+        tulot-template "\t - Kauden tulot\t\t\t\t{tulot} e"
+        template (fn [maararahatarve] (if (:tulot maararahatarve)
+                                        (str maarahatarve-template "\n" tulot-template)
+                                        maarahatarve-template))]
+    (str/join "\n" (map (fn [maararahatarve] (xstr/interpolate (template maararahatarve) maararahatarve))
+                        template-values))))
 
 (defn kehityshankkeet-section [kehityshankkeet]
-  (let [kehityshanke-template "\t{nimi}\t\t\t\t{arvo} e"]
-    (str/join "\n" (map (partial xstr/interpolate kehityshanke-template)
-                        (map (c/partial-first-arg update :arvo pdf/format-number) kehityshankkeet)))))
+  (if (empty? kehityshankkeet)
+    "\tEi kehityshankkeita"
+    (let [kehityshanke-template "\t{nimi}\t\t\t\t{arvo} e"]
+      (str/join "\n" (map (partial xstr/interpolate kehityshanke-template)
+                          (map (c/partial-first-arg update :arvo pdf/format-number) kehityshankkeet))))))
 
 (defn ely-template-values [hakemus]
-  (let [hakemusid (:id hakemus)]
-    {:maararahatarpeet (maarahatarpeet-section (find-hakemus-maararahatarpeet hakemusid))
-     :kehityshankkeet (kehityshankkeet-section (find-hakemus-kehityshankkeet hakemusid))}))
+  (let [hakemusid (:id hakemus)
+        maararahatarpeet (find-hakemus-maararahatarpeet hakemusid)
+        kehityshankkeet (find-hakemus-kehityshankkeet hakemusid)
+        ely-hakemus (:ely (coerce/row->object (first (select-ely-hakemus {:hakemusid hakemusid}))))
+        haettuavustus
+          (+ (reduce (fn [acc x] (+ acc (- (+ (:sidotut x) (:uudet x)) (or (:tulot x) 0)))) 0 maararahatarpeet)
+             (reduce (fn [acc x] (+ acc (:arvo x) 0)) 0 kehityshankkeet)
+             (or (:siirtymaaikasopimukset ely-hakemus) 0)
+             (or (:joukkoliikennetukikunnat ely-hakemus) 0))]
+    (merge ely-hakemus
+      {:maararahatarpeet (maarahatarpeet-section maararahatarpeet)
+       :kehityshankkeet (kehityshankkeet-section kehityshankkeet)
+       :haettuavustus haettuavustus})))
 
 ; *** Perustiedot ***
 (defn save-elyhakemus [hakemusid elyhakemus]

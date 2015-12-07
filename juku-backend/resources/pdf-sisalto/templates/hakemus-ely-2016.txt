@@ -4,16 +4,18 @@
 
 	*ELY-keskus: {organisaatio-nimi}
 
-	ELY-keskuksen psa-liikenteen määrärahatarpeet:
-
 {maararahatarpeet}
 
-	Siirtymäajan sopimukset: {siirtymaaikasopimukset}
-	Joukkoliikennetuki kunnille: {joukkoliikennetukikunnat}
+	Muu PSA:n mukainen liikenne:
+
+	Siirtymäajan sopimusten lipputuki				{siirtymaaikasopimukset} e
+	Joukkoliikennetuki kunnille				{joukkoliikennetukikunnat} e
 
 	ELY-keskuksen kehityshankkeet:
 
 {kehityshankkeet}
+
+	Määrärahatarpeet yhteensä				{haettuavustus} euroa
 
 	Lähettäjä: {lahettaja}
 

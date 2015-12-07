@@ -1,4 +1,3 @@
 	{nimi}
-	 - Kaudelle sidotut kustannukset				{sidotut} e
-	 - Kauden uudet sopimukset				{uudet} e
-	 - Kauden tulot				{tulot} e
+	 - Sidotut kustannukset				{sidotut} e
+	 - Uudet sopimukset				{uudet} e
