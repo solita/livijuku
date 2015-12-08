@@ -9,7 +9,12 @@
             [juku.service.avustuskohde :as ak]
             [juku.service.test :as test]
             [juku.db.sql :as dml]
-            [common.collection :as coll]))
+            [common.collection :as coll]
+            [juku.service.asiahallinta-mock :as asha]
+            [juku.service.pdf-mock :as pdf]
+            [juku.service.liitteet :as l]
+            [juku.headers :as headers]
+            [common.string :as strx]))
 
 (defn- insert-maararahatarve! [hakemusid maararahatarve]
   (:id (dml/insert db "maararahatarve" (assoc maararahatarve :hakemusid hakemusid) ely/maararahatarve-constraint-errors maararahatarve)))
@@ -26,9 +31,10 @@
   :maararahatarvetyyppitunnus tyyppi,
   :sidotut                    1M
   :uudet                      2M
-  :tulot                      3M
   :kuvaus                     nil
   })
+
+(defn maararahatarve-bs [tulot] (assoc (maararahatarve "BS") :tulot tulot))
 
 (def ely-perustiedot
   {
@@ -40,8 +46,15 @@
   "Määrärahatarpeiden haku"
   (test/with-user "juku_hakija_ely" ["juku_hakija"]
     (let [id (hc/add-hakemus! (ely1-hakemus))]
-      (insert-maararahatarve! id (maararahatarve "BS"))
-      (ely/find-hakemus-maararahatarpeet id) => [(maararahatarve "BS")])))
+      (insert-maararahatarve! id (maararahatarve-bs 2M))
+      (ely/find-hakemus-maararahatarpeet id) => [(maararahatarve-bs 2M)])))
+
+(fact
+  "Määrärahatarpeiden haku - ei tuloa"
+  (test/with-user "juku_hakija_ely" ["juku_hakija"]
+    (let [id (hc/add-hakemus! (ely1-hakemus))]
+      (insert-maararahatarve! id (maararahatarve "KK1"))
+      (ely/find-hakemus-maararahatarpeet id) => [(maararahatarve "KK1")])))
 
 (fact
   "Määrärahatarpeiden haku - kaksi tarvetta"
@@ -78,6 +91,14 @@
 
       (ely/save-maararahatarpeet! id [new])
       (ely/find-hakemus-maararahatarpeet id) => [new kk1])))
+
+(fact
+  "Kehityshankkeiden haku"
+  (test/with-user "juku_hakija_ely" ["juku_hakija"]
+    (let [id (hc/add-hakemus! (ely1-hakemus))
+          kehityshanke {:numero 1M :nimi "testi" :arvo 1M :kuvaus "asdf"}]
+      (ely/save-kehityshankkeet! id [kehityshanke])
+      (ely/find-hakemus-kehityshankkeet id) => [kehityshanke])))
 
 
 (fact
@@ -122,3 +143,59 @@
              :hakemustilatunnus "K"
              :myonnettava-avustus 0M
              :haettu-avustus 5M))))
+
+(defn assert-elyhakemus-pdf [content]
+  (fact "tarkasta ely-hakemus"
+        content => (partial strx/substring? (str "Hakemus " pdf/today))
+        content => (partial strx/substring? "ELY-keskus: Uusimaa")
+        content => #"Sidotut kustannukset\s+1 e"
+        content => #"Uudet sopimukset\s+2 e"
+        content => #"Kauden tulot\s+1 e"
+        content => #"testi1234\s+1 e"
+        content => #"Määrärahatarpeet yhteensä\s+11 e"))
+
+(fact "ELY-hakemuksen lähettäminen"
+  (test/with-user "juku_hakija_ely" ["juku_hakija"]
+    (asha/with-asha
+      (let [id (hc/add-hakemus! (ely1-hakemus))
+            liite1 {:hakemusid id :nimi "test" :contenttype "text/plain"}]
+
+        (:muokkaaja (hc/get-hakemus+ id)) => nil
+
+        (insert-maararahatarve! id (maararahatarve-bs 1))
+        (insert-maararahatarve! id (maararahatarve "KK1"))
+        (insert-maararahatarve! id (maararahatarve "KK2"))
+
+        (ely/save-kehityshankkeet! id [{:numero 1M :nimi "testi1234" :arvo 1M :kuvaus "asdf"}])
+
+        (ely/save-elyhakemus id ely-perustiedot)
+
+        (l/add-liite! liite1 (test/inputstream-from "test"))
+
+        (:muokkaaja (hc/get-hakemus+ id)) => "Elli Ely"
+
+        (h/laheta-hakemus! id)
+        (asha/headers :vireille) => asha/valid-headers?
+
+        (let [request (asha/request :vireille)
+              multipart (asha/group-by-multiparts request)
+              hakemus-asiakirja (get multipart "hakemus-asiakirja")]
+
+          (get-in multipart ["hakemus" :content]) =>
+          (str "{\"kausi\":\"test/" vuosi "\","
+                "\"tyyppi\":\"ELY\","
+                "\"hakija\":\"Uusimaa\","
+                "\"omistavaOrganisaatio\":\"Liikennevirasto\","
+                "\"omistavaHenkilo\":\"test\"}")
+
+          (:mime-type hakemus-asiakirja) => "application/pdf"
+          (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
+          (:name hakemus-asiakirja) => "hakemus.pdf"
+
+          (assert-elyhakemus-pdf (pdf/pdf->text (:content hakemus-asiakirja)))
+
+          (slurp (get-in multipart ["test" :content])) => "test")
+
+        (:diaarinumero (hc/get-hakemus+ id)) => "testing"
+
+        (assert-elyhakemus-pdf (pdf/pdf->text (h/find-hakemus-pdf id)))))))
