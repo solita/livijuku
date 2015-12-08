@@ -124,7 +124,7 @@
     (merge ely-hakemus
       {:maararahatarpeet (maarahatarpeet-section maararahatarpeet)
        :kehityshankkeet (kehityshankkeet-section kehityshankkeet)
-       :haettuavustus haettuavustus})))
+       :haettuavustus (pdf/format-number haettuavustus)})))
 
 ; *** Perustiedot ***
 (defn save-elyhakemus [hakemusid elyhakemus]
