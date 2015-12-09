@@ -130,11 +130,11 @@
   (let [maararaha-template "\t{nimi}\t\t{myonnettyavustus} e"]
     (str/join "\n" (map (partial xstr/interpolate maararaha-template) paatokset))))
 
-(defn ely-paatos-template-values [paatos hakemus]
+(defn ely-paatos-template-values [_ hakemus]
   (let [vuosi (:vuosi hakemus)
         paatokset (select-ely-paatokset {:vuosi vuosi})
-        myonnettyavustus (reduce (coll/reduce-function + :myonnettyavustus) 0 paatokset)
-        maararaha (:maararaha (hk/find-maararaha vuosi "ELY"))]
+        myonnettyavustus (or (reduce (coll/reduce-function + (coll/or* :myonnettyavustus (constantly 0))) 0 paatokset) 0)
+        maararaha (or (:maararaha (hk/find-maararaha vuosi "ELY")) 0)]
 
     {:myonnettyavustus (pdf/format-number myonnettyavustus)
      :viimevuosi (- vuosi 1)

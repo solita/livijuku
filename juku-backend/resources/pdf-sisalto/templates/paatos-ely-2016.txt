@@ -12,7 +12,7 @@
 
 *Määrärahakiintiöt
 
-	Joukkoliikenteen valtion rahoituksen määrärahakiintiöt vuodelle {vuosi}
+	Joukkoliikenteen valtion rahoituksen määrärahakiintiöt vuodelle {vuosi}:
 
 {maararahakiintiot}{selite}
 
