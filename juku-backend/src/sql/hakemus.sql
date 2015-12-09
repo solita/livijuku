@@ -154,3 +154,7 @@ where rownum = 1
 select id, hakemustyyppitunnus from hakemus
 where (vuosi, organisaatioid) = (select vuosi, organisaatioid from hakemus where id = :hakemusid) and
       id <> :hakemusid
+
+-- name: select-hakemukset-from-kausi
+select id from hakemus
+where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus

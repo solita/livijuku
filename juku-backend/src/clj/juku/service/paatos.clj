@@ -19,7 +19,9 @@
             [common.core :as c]
             [clojure.java.io :as io]
             [clj-time.core :as time]
-            [juku.service.user :as user]))
+            [juku.service.user :as user]
+            [juku.service.ely-hakemus :as ely]
+            [juku.service.hakemus-core :as hc]))
 
 ; *** Päätökseen liittyvät kyselyt ***
 (sql/defqueries "paatos.sql")
@@ -137,7 +139,8 @@
                            (ak/avustuskohde-template-values avustuskohteet)
                            (mh-template-values hakemus haettuavustus organisaatio)
                            (mh2-templatevalues hakemus))
-              "ELY" common-template-values)]
+              "ELY" (merge common-template-values
+                           (ely/ely-paatos-template-values paatos hakemus)))]
 
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
@@ -183,9 +186,13 @@
 
 (defn hyvaksy-paatokset! [vuosi hakemustyyppitunnus]
   (with-transaction
-    (doseq [hakemusid (map :id (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus (str/upper-case hakemustyyppitunnus)}))]
+    (doseq [hakemusid (hc/find-hakemukset-from-kausi vuosi hakemustyyppitunnus)]
       (hyvaksy-paatos! hakemusid))))
 
 (defn save-paatokset! [paatokset]
   (with-transaction
     (doseq [paatos paatokset] (save-paatos! paatos))))
+
+(defn find-any-ely-paatos [vuosi]
+  (let [hakemusid (first (hc/find-hakemukset-from-kausi vuosi "ELY"))]
+    (find-current-paatos hakemusid)))

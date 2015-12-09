@@ -101,3 +101,6 @@
          (fn [parent child-set] (if child-set (assoc parent new-key (transform-children child-set eq-join-keys))
                                               parent))
          source eq-join-keys)))
+
+(defn reduce-function [operator convert]
+  (fn [a b] (operator a (convert b))))

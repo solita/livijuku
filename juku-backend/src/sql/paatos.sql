@@ -55,7 +55,3 @@ where hakemus.vuosi = :vuosi and
       hakemus.organisaatioid = :organisaatioid and
       p.poistoaika is null and
       hakemus.hakemustyyppitunnus = :hakemustyyppitunnus
-
--- name: select-hakemukset-from-kausi
-select id from hakemus
-where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus

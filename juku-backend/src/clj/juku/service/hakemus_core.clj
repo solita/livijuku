@@ -12,7 +12,8 @@
             [ring.util.http-response :as r]
             [common.collection :as coll]
             [common.core :as c]
-            [common.map :as map])
+            [common.map :as map]
+            [clojure.string :as str])
   (:import (org.joda.time LocalDate)))
 
 ; *** Hakemukseen liittyvät kyselyt ***
@@ -182,3 +183,5 @@
                                           :hakemustilatunnus new-hakemustilatunnus
                                           :asiakirja asiakirja})))
 
+(defn find-hakemukset-from-kausi [vuosi hakemustyyppitunnus]
+  (map :id (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus (str/upper-case hakemustyyppitunnus)})))

@@ -4,7 +4,6 @@
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [juku.service.hakemus-core :as hc]
-            [juku.service.paatos :as p]
             [juku.schema.ely-hakemus :as s]
             [slingshot.slingshot :as ss]
             [ring.util.http-response :as r]
@@ -14,7 +13,8 @@
             [clojure.string :as str]
             [common.core :as c]
             [juku.service.pdf :as pdf]
-            [common.map :as m]))
+            [common.map :as m]
+            [juku.service.hakemuskausi :as hk]))
 
 ; *** ELY-hakemuksen tietoihin liittyvät kyselyt ***
 (sql/defqueries "ely.sql")
@@ -117,14 +117,30 @@
         kehityshankkeet (find-hakemus-kehityshankkeet hakemusid)
         ely-hakemus (:ely (coerce/row->object (first (select-ely-hakemus {:hakemusid hakemusid}))))
         haettuavustus
-          (+ (reduce (fn [acc x] (+ acc (- (+ (:sidotut x) (:uudet x)) (or (:tulot x) 0)))) 0 maararahatarpeet)
-             (reduce (fn [acc x] (+ acc (:arvo x) 0)) 0 kehityshankkeet)
+          (+ (reduce (coll/reduce-function + (fn [x] (- (+ (:sidotut x) (:uudet x)) (or (:tulot x) 0)))) 0 maararahatarpeet)
+             (reduce (coll/reduce-function + :arvo) 0 kehityshankkeet)
              (or (:siirtymaaikasopimukset ely-hakemus) 0)
              (or (:joukkoliikennetukikunnat ely-hakemus) 0))]
     (merge ely-hakemus
       {:maararahatarpeet (maarahatarpeet-section maararahatarpeet)
        :kehityshankkeet (kehityshankkeet-section kehityshankkeet)
        :haettuavustus (pdf/format-number haettuavustus)})))
+
+(defn maararahakiintiot-section [paatokset]
+  (let [maararaha-template "\t{nimi}\t\t{myonnettyavustus} e"]
+    (str/join "\n" (map (partial xstr/interpolate maararaha-template) paatokset))))
+
+(defn ely-paatos-template-values [paatos hakemus]
+  (let [vuosi (:vuosi hakemus)
+        paatokset (select-ely-paatokset {:vuosi vuosi})
+        myonnettyavustus (reduce (coll/reduce-function + :myonnettyavustus) 0 paatokset)
+        maararaha (:maararaha (hk/find-maararaha vuosi "ELY"))]
+
+    {:myonnettyavustus (pdf/format-number myonnettyavustus)
+     :viimevuosi (- vuosi 1)
+     :maararaha (pdf/format-number maararaha)
+     :jakamatta (pdf/format-number (- maararaha myonnettyavustus))
+     :maararahakiintiot (maararahakiintiot-section paatokset)}))
 
 ; *** Perustiedot ***
 (defn save-elyhakemus [hakemusid elyhakemus]
@@ -135,7 +151,3 @@
     (ss/throw+ {:http-response r/not-found
                 :message (str "Hakemusta " hakemusid " ei ole olemassa.")})))
 
-(defn find-any-ely-paatos [vuosi]
-  (let [hakemusid (-> {:vuosi vuosi :hakemustyyppitunnus "ELY"}
-                      p/select-hakemukset-from-kausi first :id)]
-    (p/find-current-paatos hakemusid)))

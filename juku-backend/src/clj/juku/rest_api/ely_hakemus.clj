@@ -1,6 +1,7 @@
 (ns juku.rest-api.ely-hakemus
   (:require [compojure.api.sweet :refer :all]
             [juku.service.ely-hakemus :as service]
+            [juku.service.paatos :as paatos-service]
             [juku.schema.ely-hakemus :refer :all]
             [juku.schema.paatos :as sp]
             [ring.util.http-response :refer :all]
@@ -56,5 +57,5 @@
             :return sp/Paatos
             :path-params [vuosi :- Long]
             :summary "Hae joku ELY-päätös annetulta kaudelta."
-            (ok (service/find-any-ely-paatos vuosi))))
+            (ok (paatos-service/find-any-ely-paatos vuosi))))
 
