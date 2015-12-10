@@ -144,6 +144,25 @@
              :myonnettava-avustus 0M
              :haettu-avustus 5M))))
 
+(fact
+  "ELY hakemussuunnitelma haku - ely-hakemuksen perustiedot - LIVIJUKU-622"
+  (test/with-user "juku_hakija_ely" ["juku_hakija"]
+    (let [h (ely1-hakemus)
+          id (hc/add-hakemus! h)]
+
+      (ely/save-elyhakemus id ely-perustiedot)
+      (insert-maararahatarve! id (assoc (maararahatarve "BS") :tulot 2))
+      (insert-maararahatarve! id (maararahatarve "KK1"))
+
+      (coll/find-first (coll/eq :id id) (hc/find-hakemussuunnitelmat vuosi "ELY"))
+      => (assoc h
+           :id id
+           :hakuaika (:hakuaika (coll/find-first (coll/eq :hakemustyyppitunnus "ELY") (:hakemukset hakemuskausi)))
+           :diaarinumero nil
+           :hakemustilatunnus "K"
+           :myonnettava-avustus 0M
+           :haettu-avustus 6M))))
+
 (defn assert-elyhakemus-pdf [content]
   (fact "tarkasta ely-hakemus"
         content => (partial strx/substring? (str "Hakemus " pdf/today))

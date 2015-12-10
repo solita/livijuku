@@ -76,7 +76,8 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
   (select nvl(sum(maararahatarve.sidotut + maararahatarve.uudet - nvl(maararahatarve.tulot, 0)), 0) from maararahatarve
   where hakemusid = hakemus.id) +
   (select nvl(sum(kehityshanke.arvo), 0) from kehityshanke
-  where hakemusid = hakemus.id) "haettu-avustus",
+  where hakemusid = hakemus.id) +
+  nvl(hakemus.ely_siirtymaaikasopimukset, 0) + nvl(hakemus.ely_joukkoliikennetukikunnat, 0) "haettu-avustus",
 
   nvl(suunniteltuavustus, 0) "myonnettava-avustus"
 from hakemus_view hakemus
