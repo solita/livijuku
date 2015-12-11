@@ -34,11 +34,23 @@
 
 ; *** Hakemuksen avustuskohteisiin liittyvät palvelut ***
 
-(defn alv [avustuskohde]
-  (if (= (:avustuskohdeluokkatunnus avustuskohde) "K") 24 10))
+(defn alv
+  "Avustuskohteen arvonlisäveroprosentti"
+  [avustuskohde]
+  (case (:avustuskohdeluokkatunnus avustuskohde)
+    "K" 24
+    10))
+
+(defn include-alv
+  "Haetaanko avustuskohteen avustus arvonlisäverollisena."
+  [avustuskohde]
+  (case (:avustuskohdeluokkatunnus avustuskohde)
+    "HK" true
+    false))
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
-  (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv ak)))
+  (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv ak)
+                                                   :include-alv (include-alv ak)))
                                 (select-avustuskohteet {:hakemusid hakemusid}))))
 
 (defn add-avustuskohde! [avustuskohde]

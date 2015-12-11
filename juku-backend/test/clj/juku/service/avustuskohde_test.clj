@@ -15,8 +15,8 @@
 (def vuosi (:vuosi hakemuskausi))
 (def hsl-ah0-hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
 
-(defn assoc-10alv [ak] (assoc ak :alv 10))
-(defn assoc-24alv [ak] (assoc ak :alv 24))
+(defn assoc-10alv [ak] (assoc ak :alv 10 :include-alv false))
+(defn assoc-24alv [ak] (assoc ak :alv 24 :include-alv false))
 
 (defn avustuskohde-psa1 [hakemusid]
   {:hakemusid hakemusid, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M})
