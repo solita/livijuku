@@ -66,7 +66,7 @@
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
   (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv% ak)
-                                                   :include-alv (include-alv? ak)))
+                                                   :includealv (include-alv? ak)))
                                 (select-avustuskohteet {:hakemusid hakemusid}))))
 
 (defn add-avustuskohde! [avustuskohde]
