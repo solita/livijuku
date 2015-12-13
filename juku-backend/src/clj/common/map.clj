@@ -79,3 +79,7 @@
 (defn map-values [f m] (into {} (map (fn [[k, v]] [k (f v)]) m)))
 
 (defn every-value? [predicate map] (every? predicate (vals map)))
+
+(defn update-vals
+  ([object key-update-function-map] (reduce #(update %1 (first %2) (second %2)) object key-update-function-map))
+  ([object keys update-function] (reduce #(update %1 %2 update-function) object keys)))

@@ -17,7 +17,8 @@
             [common.collection :as coll]
             [clojure.set :as set]
             [common.core :as c]
-            [juku.service.hakemus-core :as hc]))
+            [juku.service.hakemus-core :as hc]
+            [common.map :as map]))
 
 ; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "avustuskohde.sql")
@@ -34,23 +35,38 @@
 
 ; *** Hakemuksen avustuskohteisiin liittyvät palvelut ***
 
-(defn alv
-  "Avustuskohteen arvonlisäveroprosentti"
+(defn alv%
+  "Avustuskohteen arvonlisäveroprosentti."
   [avustuskohde]
   (case (:avustuskohdeluokkatunnus avustuskohde)
     "K" 24
     10))
 
-(defn include-alv
-  "Haetaanko avustuskohteen avustus arvonlisäverollisena."
+(defn include-alv?
+  "Haetaanko ja maksetaanko avustuskohteen avustus arvonlisäverollisena."
   [avustuskohde]
   (case (:avustuskohdeluokkatunnus avustuskohde)
     "HK" true
     false))
 
+(defn round
+  "Rahamäärän pyöristäminen kahteen desimaaliin."
+  [^BigDecimal moneyamount] (.setScale moneyamount 2 BigDecimal/ROUND_HALF_UP))
+
+(defn +alv [hinta-alv0 alv] (* hinta-alv0 (inc (/ alv 100))))
+
+(defn avustus+alv
+  "Avustuskohteen rahamäärien päivitys arvonlisäverollisiksi, jos ko. kohteen avustus pitää hakea arvonlisäverollisena.
+  Muunnos sisältää myös tarvittavat pyöristykset"
+  [avustus-alv0]
+  (if (include-alv? avustus-alv0)
+    (let [+alv #(round (bigdec (+alv % (alv% avustus-alv0))))]
+      (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus] +alv))
+    (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus] round)))
+
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
-  (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv ak)
-                                                   :include-alv (include-alv ak)))
+  (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv% ak)
+                                                   :include-alv (include-alv? ak)))
                                 (select-avustuskohteet {:hakemusid hakemusid}))))
 
 (defn add-avustuskohde! [avustuskohde]
@@ -79,18 +95,23 @@
 
 (defn avustuskohderivit [avustuskohteet avustuskohdelajit]
   (let [avustuskohde-template "\t{avustuskohdenimi}\t\t\t\t\t{haettavaavustus} e"
-        avustuskohteet+nimi (coll/join (map (c/partial-first-arg update-in [:haettavaavustus] pdf/format-number) avustuskohteet)
-                                       (fn [akohde, aklajiseq] (assoc akohde :avustuskohdenimi (:nimi (first aklajiseq))))
-                                       avustuskohdelajit [:avustuskohdeluokkatunnus :avustuskohdelajitunnus])]
+        avustuskohteet+nimi (coll/assoc-join avustuskohteet :avustuskohdenimi avustuskohdelajit
+                                             [:avustuskohdeluokkatunnus :avustuskohdelajitunnus]
+                                             (comp :nimi first coll/children))]
 
-    (str/join "\n" (map (partial xstr/interpolate avustuskohde-template) avustuskohteet+nimi))))
+    (str/join "\n" (map (partial xstr/interpolate avustuskohde-template)
+                        (map (c/partial-first-arg update :haettavaavustus pdf/format-number) avustuskohteet+nimi)))))
 
 (defn avustuskohteet-section [avustuskohteet]
   (let [avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
         avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
         avustuskohdeluokat (m/map-values first (group-by :tunnus (select-avustuskohdeluokat)))
         avustuskohteet-luokittain (partition-by :avustuskohdeluokkatunnus avustuskohteet)
-        avustuskohdeluokka-otsikko (fn [kohde] (:nimi (get avustuskohdeluokat (:avustuskohdeluokkatunnus kohde))))
+        avustuskohdeluokka-otsikko (fn [kohde]
+                                     (str (:nimi (get avustuskohdeluokat (:avustuskohdeluokkatunnus kohde)))
+                                          " " (if (include-alv? kohde)
+                                                (str "(alv "(alv% kohde) "%)")
+                                                "(alv 0%)")))
         avustuskohdeluokka (fn [kohteet] (str "\t*" (avustuskohdeluokka-otsikko (first kohteet)) "\n"
                                               (avustuskohderivit kohteet avustuskohdelajit)))]
 
@@ -101,9 +122,10 @@
 (defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
 
 (defn avustuskohde-template-values [avustuskohteet]
-  {:avustuskohteet (avustuskohteet-section avustuskohteet)
-   :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet))
-   :omarahoitus (pdf/format-number (total-omarahoitus avustuskohteet))})
+  (let [avustuskohteet+alv (map avustus+alv avustuskohteet)]
+    {:avustuskohteet (avustuskohteet-section avustuskohteet+alv)
+     :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet+alv))
+     :omarahoitus (pdf/format-number (total-omarahoitus avustuskohteet+alv))}))
 
 (defn avustuskohde-template-values-by-hakemusid [hakemusid]
   (avustuskohde-template-values (find-avustuskohteet-by-hakemusid hakemusid)))

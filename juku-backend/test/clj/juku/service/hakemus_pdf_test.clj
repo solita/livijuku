@@ -86,14 +86,58 @@
 
       (pdf/assert-otsikko "Valtionavustushakemus" nil)
 
-      (assert-hsl-avustushakemus-teksti 3 3)
+      (assert-hsl-avustushakemus-teksti "3,1" "3,1")
 
       (let [teksti (:teksti pdf/*mock-pdf*)]
-        teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta")
+        teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
         teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1 e")
         teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1 e")
-        teksti => (partial strx/substring? "Hintavelvoitteiden korvaaminen")
-        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1 e"))
+        teksti => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
+        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1,1 e"))
+
+      (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))
+
+(fact "Hakemuksella avustuskohteita - 3 desimaalia ja pyöristmäinen"
+  (test-ctx
+    (let [id (hc/add-hakemus! hsl-ah0-hakemus)]
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "PSA"
+                             :avustuskohdelajitunnus "1"
+                             :haettavaavustus 1.124,
+                             :omarahoitus 1.124})
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "PSA"
+                             :avustuskohdelajitunnus "2"
+                             :haettavaavustus 1.125,
+                             :omarahoitus 1.125})
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "HK"
+                             :avustuskohdelajitunnus "SL"
+                             :haettavaavustus 1.124,
+                             :omarahoitus 1.124})
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "HK"
+                             :avustuskohdelajitunnus "KL"
+                             :haettavaavustus 1.125,
+                             :omarahoitus 1.125})
+
+      (h/find-hakemus-pdf id) => (partial instance? InputStream)
+
+      (pdf/assert-otsikko "Valtionavustushakemus" nil)
+
+      (assert-hsl-avustushakemus-teksti "4,73" "4,73")
+
+      (let [teksti (:teksti pdf/*mock-pdf*)]
+        teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
+        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1,12 e")
+        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1,13 e")
+        teksti => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
+        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1,24 e")
+        teksti => (partial strx/substring? "Kaupunkilippu tai kuntalippu\t\t\t\t\t1,24 e"))
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))
 
