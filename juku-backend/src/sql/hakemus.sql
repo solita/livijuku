@@ -63,7 +63,7 @@ from hakemus_view hakemus left join sisalto on hakemus.id = sisalto.hakemusid
 -- name: select-hakemussuunnitelmat
 select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
   organisaatioid, hakuaika_alkupvm, hakuaika_loppupvm,
-  (select nvl(sum(avustuskohde.haettavaavustus), 0) from avustuskohde
+  (select nvl(sum(alv.avustusrahamaara(avustuskohde.haettavaavustus, avustuskohde.avustuskohdeluokkatunnus)), 0) from avustuskohde
   where hakemusid = hakemus.id) "haettu-avustus",
   nvl(suunniteltuavustus, 0) "myonnettava-avustus"
 from hakemus_view hakemus

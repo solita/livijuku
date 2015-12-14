@@ -112,9 +112,11 @@
 
       ;; hakemus (:id = id) löytyy hakutuloksista
       (dissoc-muokkausaika (coll/find-first (find-by-id id) hakemukset))
-        => (assoc-hakemus-defaults+kasittely hsl-hakemus id)))
+        => (assoc-hakemus-defaults+kasittely hsl-hakemus id)))))
 
-  (fact "Hakemussuunnitelmien haku"
+
+(test/with-user "juku_kasittelija" ["juku_kasittelija"]
+  (fact "Hakemussuunnitelmien haku - ei avustuskohteita"
     (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
           id (h/add-hakemus! hakemus)
           hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
@@ -157,7 +159,25 @@
 
           ;; hakemus (:id = id) löytyy hakutuloksista
           (dissoc-muokkausaika (coll/find-first (find-by-id id2) hakemussuunnitelmat))
-            => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))))
+            => (expected-hakemussuunnitelma id2 (hakemus 2M) 2M 1M))))
+
+  (fact "Hakemussuunnitelmien haku - HK kohde"
+    (let [hakemus {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M}
+          id (h/add-hakemus! hakemus)]
+
+      (ak/add-avustuskohde! {:hakemusid id, :avustuskohdeluokkatunnus "HK", :avustuskohdelajitunnus "SL", :haettavaavustus 1M, :omarahoitus 1M})
+      (ak/add-avustuskohde! {:hakemusid id, :avustuskohdeluokkatunnus "HK", :avustuskohdelajitunnus "KL", :haettavaavustus 1.95M, :omarahoitus 1M})
+
+      (let [hakemussuunnitelmat  (h/find-hakemussuunnitelmat vuosi, "AH0")]
+        ;; kaikki hakemukset ovat samalta vuodelta
+        hakemussuunnitelmat => (partial every? (coll/eq :vuosi vuosi))
+
+        ;; kaikki hakemukset ovat samaa tyyppiä
+        hakemussuunnitelmat => (partial every? (coll/eq :hakemustyyppitunnus "AH0"))
+
+        ;; hakemus (:id = id) löytyy hakutuloksista
+        (dissoc-muokkausaika (coll/find-first (find-by-id id) hakemussuunnitelmat))
+        => (expected-hakemussuunnitelma id hakemus 3.25M 0M)))))
 
 (facts "Ei käynnissä tilan käsittely"
 
