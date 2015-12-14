@@ -53,7 +53,9 @@
   "Rahamäärän pyöristäminen kahteen desimaaliin."
   [^BigDecimal moneyamount] (.setScale moneyamount 2 BigDecimal/ROUND_HALF_UP))
 
-(defn +alv [hinta-alv0 alv] (* hinta-alv0 (inc (/ alv 100))))
+(defn +alv
+  "Arvonlisäveron lisääminen arvonlisäverottomaan hintaan."
+  [hinta-alv0 alv] (* hinta-alv0 (inc (/ alv 100))))
 
 (defn avustus+alv
   "Avustuskohteen rahamäärien päivitys arvonlisäverollisiksi, jos ko. kohteen avustus pitää hakea arvonlisäverollisena.
