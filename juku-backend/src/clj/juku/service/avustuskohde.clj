@@ -33,7 +33,7 @@
    :avustuskohde_hakemus_fk {:http-response r/not-found :message "Avustuskohteen {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} hakemusta (id = {hakemusid}) ei ole olemassa."}
    :avustuskohde_aklaji_fk {:http-response r/not-found :message "Avustuskohdelajia {avustuskohdeluokkatunnus}-{avustuskohdelajitunnus} ei ole olemassa."}})
 
-; *** Hakemuksen avustuskohteisiin liittyvät palvelut ***
+; *** Avustuskohteiden alv käsittely ***
 
 (defn alv%
   "Avustuskohteen arvonlisäveroprosentti."
@@ -65,6 +65,8 @@
     (let [+alv #(round (bigdec (+alv % (alv% avustus-alv0))))]
       (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus] +alv))
     (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus] round)))
+
+; *** Hakemuksen avustuskohteisiin liittyvät palvelut ***
 
 (defn find-avustuskohteet-by-hakemusid [hakemusid]
   (map coerce-avustuskohde (map (fn [ak] (assoc ak :alv (alv% ak)
