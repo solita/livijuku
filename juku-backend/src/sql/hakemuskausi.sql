@@ -33,11 +33,6 @@ from hakuaika
 select hakemustyyppitunnus, alkupvm, loppupvm
 from hakuaika where vuosi = :vuosi
 
--- name: insert-hakemuskausi-if-not-exists!
-insert into hakemuskausi (vuosi)
-select :vuosi from dual 
-where not exists (select 1 from hakemuskausi where vuosi = :vuosi)
-
 -- name: insert-avustuskohteet-for-kausi!
 insert into avustuskohde (hakemusid, avustuskohdeluokkatunnus, avustuskohdelajitunnus)
 select hakemus.id,

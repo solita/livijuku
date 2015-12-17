@@ -126,27 +126,30 @@
     (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
     (:hakemukset  (find-hakemuskausi+ vuosi)) => (partial every? (coll/eq :hakuaika hakuaika))))
 
-(fact "Hakemuskausiyhteenvetohaku - seuraava kausi"
-  (let [hakemuskausi (find-hakemuskausi+ (+ (time/year (time/now)) 1))
-        vuosi (:vuosi hakemuskausi)]
+(fact
+  "Hakemuskausiyhteenvetohaku - seuraava kausi"
+  (with-redefs [hk/select-all-hakemuskaudet (constantly [])
+                hk/select-all-hakuajat (constantly [])]
+    (let [hakemuskausi (find-hakemuskausi+ (+ (time/year (time/now)) 1))
+          vuosi (:vuosi hakemuskausi)]
 
-    hakemuskausi =>
-    {:vuosi      vuosi
-     :tilatunnus "0"
-     :hakuohje_contenttype nil
-     :hakemukset [{:hakemustyyppitunnus "AH0"
-                   :hakemustilat []
-                   :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
-                              :loppupvm (time/local-date (- vuosi 1) 12 15)}}
+      hakemuskausi =>
+      {:vuosi      vuosi
+       :tilatunnus "0"
+       :hakuohje_contenttype nil
+       :hakemukset [{:hakemustyyppitunnus "AH0"
+                     :hakemustilat []
+                     :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
+                                :loppupvm (time/local-date (- vuosi 1) 12 15)}}
 
-                  {:hakuaika {:alkupvm (time/local-date vuosi 7 1)
-                              :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat [], :hakemustyyppitunnus "MH1"}
+                    {:hakuaika {:alkupvm (time/local-date vuosi 7 1)
+                                :loppupvm (time/local-date vuosi 8 31)}, :hakemustilat [], :hakemustyyppitunnus "MH1"}
 
-                  {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
-                              :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}
+                    {:hakuaika {:alkupvm (time/local-date (+ vuosi 1) 1 1)
+                                :loppupvm (time/local-date (+ vuosi 1) 1 31)}, :hakemustilat [], :hakemustyyppitunnus "MH2"}
 
-                  {:hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
-                              :loppupvm (time/local-date (- vuosi 1) 10 31)}, :hakemustilat [], :hakemustyyppitunnus "ELY"}]}))
+                    {:hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
+                                :loppupvm (time/local-date (- vuosi 1) 10 31)}, :hakemustilat [], :hakemustyyppitunnus "ELY"}]})))
 
 (fact "Hakemuskausiyhteenvetohaku"
   (let [hakemuskausi (test/next-hakemuskausi!)

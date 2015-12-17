@@ -133,14 +133,16 @@
     (insert-hakuaika! (assoc-vuosi (oletus-maksatus-hakuaika2 vuosi)))
     (insert-hakuaika! (assoc-vuosi (oletus-ely-hakuaika vuosi)))))
 
-(defn init-hakemuskausi! [vuosi]
-  (when (> vuosi (nextvuosi))
-    (ss/throw+  {:http-response r/bad-request
-                 :message (str "Hakemuskautta " vuosi
-                               " ei ole vielä mahdollista luoda. Uusin sallittu hakemuskausi on " (nextvuosi))}))
-
-  (if (= (insert-hakemuskausi-if-not-exists! {:vuosi vuosi}) 1)
-    (insert-hakemuskauden-oletus-hakuajat! vuosi) 0))
+(defn find-or-create-hakemuskausi! [vuosi]
+  (if-let [hakemuskausi (hakemus/find-hakemuskausi {:vuosi vuosi})]
+    hakemuskausi
+    (if (> vuosi (nextvuosi))
+      (ss/throw+  {:http-response r/bad-request
+                   :message (str "Hakemuskautta " vuosi
+                                 " ei ole vielä mahdollista luoda. Uusin sallittu hakemuskausi on " (nextvuosi))})
+      (with-transaction
+        (dml/insert db "hakemuskausi" {:vuosi vuosi} constraint-errors {:vuosi vuosi})
+        (insert-hakemuskauden-oletus-hakuajat! vuosi)))))
 
 (defn- update-hakuaika! [hakuaika]
   (dml/update-where! db "hakuaika"
@@ -149,14 +151,13 @@
 
 (defn save-hakemuskauden-hakuajat! [vuosi hakuajat]
   (with-transaction
-    (init-hakemuskausi! vuosi)
+    (find-or-create-hakemuskausi! vuosi)
     (doseq [hakuaika hakuajat] (update-hakuaika! (assoc hakuaika :vuosi vuosi)))
     nil))
 
 (defn save-hakuohje [^Integer vuosi nimi content-type ^InputStream hakuohje]
   (with-transaction
-    (init-hakemuskausi! vuosi)
-    (let [hakemuskausi (hakemus/find-hakemuskausi {:vuosi vuosi})]
+    (let [hakemuskausi (find-or-create-hakemuskausi! vuosi)]
       (when (= (:tilatunnus hakemuskausi) "S")
         (ss/throw+  {:http-response r/conflict
                      :message (str "Hakemuskausi " vuosi " on suljettu. Hakuohjetta ei voi enää päivittää.")}))
@@ -190,10 +191,11 @@
 
     (insert-avustuskohteet-for-kausi! {:vuosi vuosi})
 
-    (doseq [organisaatio (filter (col/eq :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
-      (hakemus/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "ELY" :organisaatioid (:id organisaatio)}))
+    (when (> vuosi 2016)
+      (doseq [organisaatio (filter (col/eq :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
+        (hakemus/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "ELY" :organisaatioid (:id organisaatio)}))
 
-    (insert-maararahatarpeet-for-kausi! {:vuosi vuosi})
+      (insert-maararahatarpeet-for-kausi! {:vuosi vuosi}))
 
     ;; -- diaarioi hakemuskauden avaaminen --
     (when (asiahallinta-on?)

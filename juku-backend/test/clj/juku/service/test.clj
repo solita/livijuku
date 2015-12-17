@@ -20,7 +20,7 @@
   (int (+ (:next (first (select-max-vuosi-from-hakemuskausi))) 1)))
 
 (defn init-hakemuskausi! [vuosi]
-  (k/init-hakemuskausi! vuosi)
+  (k/find-or-create-hakemuskausi! vuosi)
   (first (filter (col/eq :vuosi vuosi) (k/find-hakemuskaudet+summary))))
 
 (defn next-hakemuskausi! []

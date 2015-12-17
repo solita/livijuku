@@ -1,6 +1,6 @@
 
 -- name: select-max-vuosi-from-hakemuskausi
-select nvl(max(vuosi), 100) next from hakemuskausi
+select nvl(max(vuosi), 100) next from hakemuskausi where vuosi < 1900
 
 -- name: select-akohde-amounts-broup-by-organisaatiolaji
 select lajitunnus, min(amount) akohdeamount, count(distinct amount) distinctvalues
