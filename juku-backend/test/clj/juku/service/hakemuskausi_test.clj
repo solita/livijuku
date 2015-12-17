@@ -29,10 +29,10 @@
       (get-in stats ["LV" :akohdeamount]) => nil
       distinct => [1M 1M])))
 
-(facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen --"
+(facts "Hakemuskauden hallinta - avaaminen ja sulkeminen"
 
-(test/with-user "juku_kasittelija" ["juku_kasittelija"]
-    (fact "Avaa hakemuskausi"
+  (fact "Avaa hakemuskausi"
+    (test/with-user "juku_kasittelija" ["juku_kasittelija"]
       (asha/with-asha
         (let [vuosi (:vuosi (test/next-hakemuskausi!))]
           (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
@@ -42,9 +42,10 @@
           (:diaarinumero (hc/find-hakemuskausi {:vuosi vuosi})) => "testing"
           (asha/headers :avaus) => asha/valid-headers?
           (:content (first (:multipart (asha/request :avaus)))) =>
-            (str "{\"asianNimi\":\"Hakemuskausi " vuosi "\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"omistavaHenkilo\":\"test\"}"))))
+            (str "{\"asianNimi\":\"Hakemuskausi " vuosi "\",\"omistavaOrganisaatio\":\"Liikennevirasto\",\"omistavaHenkilo\":\"test\"}")))))
 
-    (fact "Sulje hakemuskausi"
+  (fact "Sulje hakemuskausi"
+    (test/with-user "juku_kasittelija" ["juku_kasittelija"]
       (asha/with-asha
         (let [vuosi (:vuosi (test/next-hakemuskausi!))]
           (hk/save-hakuohje vuosi "test" "text/plain" (test/inputstream-from  "test"))
@@ -59,7 +60,7 @@
                (every? (coll/eq (comp count :hakemustilat) 1) hakemustyypit) => true
                (every? (coll/eq (comp :hakemustilatunnus (c/partial-first-arg get 0) :hakemustilat) "S") hakemustyypit)))))))
 
-(facts "-- Hakemuskauden hallinta - avaaminen ja sulkeminen - asiahallinta kytketty pois päältä--"
+(facts "Hakemuskauden hallinta - avaaminen ja sulkeminen - asiahallinta kytketty pois päältä"
 
 (test/with-user "juku_kasittelija" ["juku_kasittelija"]
   (asha/with-asha-off

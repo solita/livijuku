@@ -183,19 +183,12 @@
          {:http-response r/not-found :message (str "Hakemuskautta ei ole olemassa vuodelle: " vuosi) :vuosi vuosi}
          {:http-response r/conflict :message (str "Hakemuskausi on jo avattu vuodelle: " vuosi) :vuosi vuosi}))
 
-    (doseq [organisaatio (filter (col/predicate not= :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
-      (let [hakemus (fn [hakemustyyppitunnus] {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus :organisaatioid (:id organisaatio)})]
-        (hakemus/add-hakemus! (hakemus "AH0"))
-        (hakemus/add-hakemus! (hakemus "MH1"))
-        (hakemus/add-hakemus! (hakemus "MH2"))))
+
+    (insert-hakemukset-for-kausi! {:vuosi vuosi})
 
     (insert-avustuskohteet-for-kausi! {:vuosi vuosi})
 
-    (when (> vuosi 2016)
-      (doseq [organisaatio (filter (col/eq :lajitunnus "ELY") (organisaatio/hakija-organisaatiot))]
-        (hakemus/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "ELY" :organisaatioid (:id organisaatio)}))
-
-      (insert-maararahatarpeet-for-kausi! {:vuosi vuosi}))
+    (insert-maararahatarpeet-for-kausi! {:vuosi vuosi})
 
     ;; -- diaarioi hakemuskauden avaaminen --
     (when (asiahallinta-on?)
