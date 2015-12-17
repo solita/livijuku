@@ -28,10 +28,6 @@
    :connectiontimeout (int (* 1 60000))
    :timeout (int (* 1 60000))})
 
-#_(def server
-  {:host "solita-service-1.solita.fi"
-   :port 25})
-
 (defn send-multipart [to subject & parts]
   (if (and (not= (:email settings) "off")
            (not-empty to))
@@ -86,7 +82,7 @@
        (get-in settings [:web :url])
        (get-in settings [:web :context-path])))
 
-(def messages
+(def hakija-messages
   {:ah0 {:v "Joukkoliikenteen valtionavustushakemuksenne vuodelle {vuosi} on saapunut JUKU-järjestelmään."
          :t0 "Joukkoliikenteen valtionavustushakemuksenne vuodelle {vuosi} on palautettu täydennettäväksi."
          :tv "Joukkoliikenteen valtionavustushakemuksenne täydennys on saapunut JUKU-järjestelmään."
@@ -98,9 +94,13 @@
    :mh2 {:v "Joukkoliikenteen 2. maksatushakemuksenne vuodelle {vuosi} on saapunut JUKU-järjestelmään."
          :t0 "Joukkoliikenteen 2. maksatushakemuksenne vuodelle {vuosi} on palautettu täydennettäväksi."
          :tv "Joukkoliikenteen 2. maksatushakemuksenne täydennys on saapunut JUKU-järjestelmään."
-         :p "Joukkoliikenteen 2. maksatushakemukseenne vuodelle {vuosi} on tehty päätös."}})
+         :p "Joukkoliikenteen 2. maksatushakemukseenne vuodelle {vuosi} on tehty päätös."}
+   :ely {:v "ELY-määrärahatarvehakemuksenne vuodelle {vuosi} on saapunut JUKU-järjestelmään."
+         :t0 "ELY-määrärahatarvehakemuksenne vuodelle {vuosi} on palautettu täydennettäväksi."
+         :tv "ELY-määrärahatarvehakemuksenne täydennys on saapunut JUKU-järjestelmään."
+         :p "ELY-määrärahatarvehakemukseenne vuodelle {vuosi} on tehty päätös."}})
 
-(def subjects
+(def hakija-subjects
   {:ah0 {:v  "Avustushakemus {vuosi} on saapunut"
          :t0 "Avustushakemus {vuosi} täydennyspyyntö"
          :tv "Avustushakemus {vuosi} täydennys"
@@ -112,12 +112,17 @@
    :mh2 {:v  "Maksatushakemus {vuosi}/2 on saapunut"
          :t0 "Maksatushakemus {vuosi}/2 täydennyspyyntö"
          :tv "Maksatushakemus {vuosi}/2 täydennys"
-         :p  "Maksatuspäätös {vuosi}/2"}})
+         :p  "Maksatuspäätös {vuosi}/2"}
+   :ely {:v  "ELY-hakemus {vuosi} on saapunut"
+         :t0 "ELY-hakemus {vuosi} täydennyspyyntö"
+         :tv "ELY-hakemus {vuosi} täydennys"
+         :p  "ELY-päätös {vuosi}"}})
 
 (def asiakirja-nimi
   {:ah0 {:p  "Avustuspaatos-{vuosi}.pdf"}
    :mh1 {:p  "Maksatuspaatos-{vuosi}-1.pdf"}
-   :mh2 {:p  "Maksatuspaatos-{vuosi}-2.pdf"}})
+   :mh2 {:p  "Maksatuspaatos-{vuosi}-2.pdf"}
+   :ely {:p  "ELY-paatos-{vuosi}.pdf"}})
 
 (defn- to-keyword [txt]
   (-> txt str/lower-case keyword))
@@ -132,8 +137,8 @@
   (c/if-let*
     [to (set (filter (comp not str/blank?) (map :sahkoposti (select-organisaatio-emails (select-keys hakemus [:organisaatioid])))))
      template-key (template-key hakemus hakemustilatunnus)
-     subject-template (get-in subjects template-key)
-     body-template (get-in messages template-key)
+     subject-template (get-in hakija-subjects template-key)
+     body-template (get-in hakija-messages template-key)
      subject (strx/interpolate subject-template hakemus)
      message (str (strx/interpolate body-template hakemus) "\n\n"
                   linkki "\n\n"
@@ -151,7 +156,9 @@
    :mh1 {:v "Joukkoliikenteen 1. maksatushakemus vuodelle {vuosi} on saapunut JUKU-järjestelmään."
          :tv "Joukkoliikenteen 1. maksatushakemuksen täydennys on saapunut JUKU-järjestelmään."}
    :mh2 {:v "Joukkoliikenteen 2. maksatushakemus vuodelle {vuosi} on saapunut JUKU-järjestelmään."
-         :tv "Joukkoliikenteen 2. maksatushakemuksen täydennys on saapunut JUKU-järjestelmään."}})
+         :tv "Joukkoliikenteen 2. maksatushakemuksen täydennys on saapunut JUKU-järjestelmään."}
+   :ely {:v "ELY-määrärahatarvehakemus vuodelle {vuosi} on saapunut JUKU-järjestelmään."
+         :tv "ELY-määrärahatarvehakemuksen täydennys on saapunut JUKU-järjestelmään."}})
 
 (def kasittelija-subjects
   {:ah0 {:v  "{organisaatio} - avustushakemus {vuosi} on saapunut"
@@ -159,7 +166,9 @@
    :mh1 {:v  "{organisaatio} - maksatushakemus {vuosi}/1 on saapunut"
          :tv "{organisaatio} - maksatushakemus {vuosi}/1 täydennys"}
    :mh2 {:v  "{organisaatio} - maksatushakemus {vuosi}/2 on saapunut"
-         :tv "{organisaatio} - maksatushakemus {vuosi}/2 täydennys"}})
+         :tv "{organisaatio} - maksatushakemus {vuosi}/2 täydennys"}
+   :ely {:v  "{organisaatio} - ELY-hakemus {vuosi} on saapunut"
+         :tv "{organisaatio} - ELY-hakemus {vuosi} täydennys"}})
 
 (defn send-kasittelija-message [hakemus hakemustilatunnus _]
   (c/if-let*

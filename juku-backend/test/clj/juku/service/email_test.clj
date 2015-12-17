@@ -117,3 +117,9 @@
     (h/laheta-hakemus! id)
     (assert-message (str "Maksatushakemus " vuosi "/2 on saapunut")
                     (str "2. maksatushakemuksenne vuodelle " vuosi " on saapunut"))))
+
+(fact "Hakemuksen lähettäminen  - ELY"
+  (test-ctx "ELY"
+    (h/laheta-hakemus! id)
+    (assert-message (str "ELY-hakemus " vuosi " on saapunut")
+                    (str "ELY-määrärahatarvehakemuksenne vuodelle " vuosi " on saapunut"))))

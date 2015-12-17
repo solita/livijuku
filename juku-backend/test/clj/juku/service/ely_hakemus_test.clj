@@ -1,7 +1,7 @@
 (ns juku.service.ely-hakemus-test
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
-            [common.collection :as c]
+            [common.collection :as coll]
             [juku.db.database :refer [db with-transaction]]
             [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
@@ -9,12 +9,13 @@
             [juku.service.avustuskohde :as ak]
             [juku.service.test :as test]
             [juku.db.sql :as dml]
-            [common.collection :as coll]
             [juku.service.asiahallinta-mock :as asha]
             [juku.service.pdf-mock :as pdf]
             [juku.service.liitteet :as l]
             [juku.headers :as headers]
-            [common.string :as strx]))
+            [common.string :as strx]
+            [juku.service.paatos :as p]
+            [common.core :as c]))
 
 (defn- insert-maararahatarve! [hakemusid maararahatarve]
   (:id (dml/insert db "maararahatarve" (assoc maararahatarve :hakemusid hakemusid) ely/maararahatarve-constraint-errors maararahatarve)))
@@ -218,3 +219,36 @@
         (:diaarinumero (hc/get-hakemus+ id)) => "testing"
 
         (assert-elyhakemus-pdf (pdf/pdf->text (h/find-hakemus-pdf id)))))))
+
+(fact "ELY-päätöksen hyväksyminen"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (asha/with-asha
+      (let [hk (test/next-avattu-empty-hakemuskausi!)
+            vuosi (:vuosi hk)
+            id (hc/add-hakemus! (ely1-hakemus vuosi))
+            paatos {:hakemusid id, :myonnettyavustus 1M :selite "FooBar"}]
+
+        (p/save-paatos! paatos)
+
+        (test/with-user "juku_hakija_ely" ["juku_hakija"] (h/laheta-hakemus! id))
+        (h/tarkasta-hakemus! id)
+        (p/hyvaksy-paatokset! vuosi "ely")
+
+        (let [request (asha/request :paatos)
+              multipart (asha/group-by-multiparts request)
+              paatos-asiakirja (get multipart "paatos-asiakirja")]
+
+          (:uri request) => "/api/hakemus/testing/paatos"
+
+          (get-in multipart ["paatos" :content]) => "{\"paattaja\":\"Katri Käsittelijä\"}"
+
+          (:mime-type paatos-asiakirja) => "application/pdf"
+          (:part-name paatos-asiakirja) => "paatos-asiakirja"
+          (:name paatos-asiakirja) => "paatos.pdf")
+
+        (:hakemustilatunnus (hc/get-hakemus+ id)) => "P"
+
+        (let [hyvaksytty-paatos (p/find-current-paatos id)]
+          (:paattaja hyvaksytty-paatos) => "juku_kasittelija"
+          (:voimaantuloaika hyvaksytty-paatos) => c/not-nil?
+          (:poistoaika hyvaksytty-paatos) => nil)))))
