@@ -21,7 +21,7 @@
 
 (defn init-hakemuskausi! [vuosi]
   (k/find-or-create-hakemuskausi! vuosi)
-  (first (filter (col/eq :vuosi vuosi) (k/find-hakemuskaudet+summary))))
+  (col/find-first (col/eq :vuosi vuosi) (k/find-hakemuskaudet+summary)))
 
 (defn next-hakemuskausi! []
   (let [vuosi (find-next-notcreated-hakemuskausi)] (init-hakemuskausi! vuosi)))
