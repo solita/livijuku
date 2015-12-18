@@ -127,6 +127,18 @@
     (hk/save-hakemuskauden-hakuajat! vuosi hakuajat)
     (:hakemukset  (find-hakemuskausi+ vuosi)) => (partial every? (coll/eq :hakuaika hakuaika))))
 
+(defn from-hel [utc]
+  (time/from-time-zone utc (time/time-zone-for-id "Europe/Helsinki")))
+
+(fact "next vuosi"
+      (hk/nextvuosi (from-hel (time/date-time 2016 1 1))) => 2016
+      (hk/nextvuosi (from-hel (time/date-time 2016 6 1))) => 2016
+      (hk/nextvuosi (from-hel (time/date-time 2016 7 1))) => 2016
+
+      (hk/nextvuosi (time/from-time-zone (time/date-time 2016 7 1 0 0 1) (time/time-zone-for-id "Japan"))) => 2016
+      (hk/nextvuosi (time/date-time 2016 7 1 0 0 1)) => 2017
+      (hk/nextvuosi (from-hel (time/date-time 2016 7 1 0 0 1))) => 2017)
+
 (fact
   "Hakemuskausiyhteenvetohaku - seuraava kausi"
   (with-redefs [hk/select-all-hakemuskaudet (constantly [])

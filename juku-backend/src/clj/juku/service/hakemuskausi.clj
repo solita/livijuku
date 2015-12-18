@@ -40,7 +40,13 @@
 
 (defn- coerce-vuosiluku->int [m] (update-in m [:vuosi] int))
 
-(defn nextvuosi [] (+ (time/year (time/now)) 1))
+(defn nextvuosi
+  ([] (nextvuosi (time/now)))
+  ([now] (let [current-vuosi (time/year now)]
+            (if (time/after? now (time/from-time-zone (time/date-time current-vuosi 7 1)
+                                                      (time/time-zone-for-id "Europe/Helsinki")))
+              (inc current-vuosi)
+              current-vuosi))))
 
 (defn- find-all-hakemuskaudet+seuraava-kausi [new-hakemuskausi]
   (let [hakemuskaudet (map coerce-vuosiluku->int (select-all-hakemuskaudet))
