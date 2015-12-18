@@ -3,8 +3,7 @@ LiviJuku
 
 Liikennevirasto Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä
 
-## Git branching model
-Tarkoituksena on käyttää Branching modelia: [http://nvie.com/posts/a-successful-git-branching-model/](http://nvie.com/posts/a-successful-git-branching-model/)
+Uusin versio dokumentista löytyy develop-haarasta.
 
 ## TODO
-- Valitaan toteutusteknologiat
+- Käyttöönotto
