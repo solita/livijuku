@@ -10,11 +10,18 @@ from maararaha where vuosi = :vuosi and organisaatiolajitunnus = :organisaatiola
 update hakemuskausi set hakuohje_sisalto = :sisalto, hakuohje_nimi = :nimi, hakuohje_contenttype = :contenttype
 where vuosi = :vuosi
 
--- name: update-hakemuskausi-set-diaarinumero!
-update hakemuskausi set diaarinumero = :diaarinumero where vuosi = :vuosi
+-- name: update-hakemuskausi-set-ely-hakuohje!
+update hakemuskausi set elyhakuohje_sisalto = :sisalto, elyhakuohje_nimi = :nimi, elyhakuohje_contenttype = :contenttype
+where vuosi = :vuosi
 
 -- name: select-hakuohje-sisalto
 select hakuohje_contenttype contenttype, hakuohje_sisalto sisalto from hakemuskausi where vuosi = :vuosi and hakuohje_sisalto is not null
+
+-- name: select-ely-hakuohje-sisalto
+select elyhakuohje_contenttype contenttype, elyhakuohje_sisalto sisalto from hakemuskausi where vuosi = :vuosi and elyhakuohje_sisalto is not null
+
+-- name: update-hakemuskausi-set-diaarinumero!
+update hakemuskausi set diaarinumero = :diaarinumero where vuosi = :vuosi
 
 -- name: update-hakemuskausi-set-tila!
 update hakemuskausi set tilatunnus = :newtunnus

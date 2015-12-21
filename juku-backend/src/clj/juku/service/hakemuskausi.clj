@@ -66,9 +66,13 @@
         hakemukset (hakemus/find-kayttajan-hakemukset)]
     (col/assoc-join hakemuskaudet :hakemukset hakemukset [:vuosi])))
 
-(defn find-hakuohje-sisalto [vuosi]
-  (if-let [ohje (first (select-hakuohje-sisalto {:vuosi vuosi}))]
+(defn- find-liite-sisalto [select vuosi]
+  (if-let [ohje (first (select {:vuosi vuosi}))]
     (update-in ohje [:sisalto] #(.getBinaryStream ^Blob %))))
+
+(defn find-hakuohje-sisalto [vuosi] (find-liite-sisalto select-hakuohje-sisalto vuosi))
+
+(defn find-ely-hakuohje-sisalto [vuosi] (find-liite-sisalto select-ely-hakuohje-sisalto vuosi))
 
 (defn find-maararaha [vuosi organisaatiolajitunnus]
   (first (map coerce-maararaha (select-maararaha {:vuosi vuosi :organisaatiolajitunnus organisaatiolajitunnus}))))
@@ -161,12 +165,15 @@
     (doseq [hakuaika hakuajat] (update-hakuaika! (assoc hakuaika :vuosi vuosi)))
     nil))
 
+(defn- assert-hakuohje-editable! [vuosi hakemuskausi]
+  (when (= (:tilatunnus hakemuskausi) "S")
+    (ss/throw+  {:http-response r/conflict
+                 :message (str "Hakemuskausi " vuosi " on suljettu. Hakuohjetta ei voi enää päivittää.")})))
+
 (defn save-hakuohje [^Integer vuosi nimi content-type ^InputStream hakuohje]
   (with-transaction
     (let [hakemuskausi (find-or-create-hakemuskausi! vuosi)]
-      (when (= (:tilatunnus hakemuskausi) "S")
-        (ss/throw+  {:http-response r/conflict
-                     :message (str "Hakemuskausi " vuosi " on suljettu. Hakuohjetta ei voi enää päivittää.")}))
+      (assert-hakuohje-editable! vuosi hakemuskausi)
 
       (update-hakemuskausi-set-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
 
@@ -174,6 +181,14 @@
         (asha/update-hakuohje (:diaarinumero hakemuskausi)
                               {:kasittelija (user/user-fullname user/*current-user*)}
                               (find-hakuohje-sisalto vuosi)))
+      nil)))
+
+(defn save-ely-hakuohje [^Integer vuosi nimi content-type ^InputStream hakuohje]
+  (with-transaction
+    (let [hakemuskausi (find-or-create-hakemuskausi! vuosi)]
+      (assert-hakuohje-editable! vuosi hakemuskausi)
+
+      (update-hakemuskausi-set-ely-hakuohje! {:vuosi vuosi :nimi nimi :contenttype content-type :sisalto hakuohje})
       nil)))
 
 (defn find-hakuajat [vuosi]

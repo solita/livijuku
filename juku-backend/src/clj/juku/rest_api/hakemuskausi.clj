@@ -8,6 +8,11 @@
             [schema.core :as s]
             [clojure.java.io :as io]))
 
+(defn hakuohje-response [vuosi hakuohje]
+  (if hakuohje
+    (content-type (ok (:sisalto hakuohje)) (:contenttype hakuohje))
+    (not-found (str "Hakemuskaudella " vuosi " ei ole ohjetta."))))
+
 (defroutes* hakemuskausi-routes
       (GET* "/hakemuskaudet" []
             :auth [:view-hakemus]
@@ -46,9 +51,13 @@
             :auth [:view-hakemus]
             :path-params [vuosi :- s/Int]
             :summary "Lataa hakuohjeen sisältö."
-            (if-let [hakuohje (service/find-hakuohje-sisalto vuosi)]
-              (content-type (ok (:sisalto hakuohje)) (:contenttype hakuohje))
-              (not-found (str "Hakemuskaudella " vuosi " ei ole ohjetta."))))
+            (hakuohje-response vuosi (service/find-hakuohje-sisalto vuosi)))
+
+      (GET* "/hakemuskausi/:vuosi/elyhakuohje" []
+            :auth [:view-hakemus]
+            :path-params [vuosi :- s/Int]
+            :summary "Lataa ely-hakuohjeen sisältö."
+            (hakuohje-response vuosi (service/find-ely-hakuohje-sisalto vuosi)))
 
       (PUT* "/hakemuskausi/:vuosi/hakuajat" []
             :auth [:modify-hakemuskausi]
@@ -89,6 +98,31 @@
                                 Upload :- s/Any]
              :summary "Päivittää hakemuskauden hakuohjeen. Tämä palvelu on tarkoitettu ie9 flash tiedoston lataukselle."
              (ok (service/save-hakuohje vuosi
+                                        (:filename hakuohje)
+                                        (:content-type hakuohje)
+                                        (io/input-stream (:tempfile hakuohje)))))
+
+      (PUT* "/hakemuskausi/:vuosi/elyhakuohje" []
+            :auth [:modify-hakemuskausi]
+            :audit []
+            :path-params [vuosi :- s/Int]
+            :multipart-params [hakuohje :- upload/TempFileUpload]
+            :summary "Päivittää hakemuskauden ely-hakuohjeen."
+            (ok (service/save-ely-hakuohje vuosi
+                                       (:filename hakuohje)
+                                       (:content-type hakuohje)
+                                       (io/input-stream (:tempfile hakuohje)))))
+
+      ;; this end point is for legacy UAs which does not support put requests
+      (POST* "/hakemuskausi/:vuosi/elyhakuohje" []
+             :auth [:modify-hakemuskausi]
+             :audit []
+             :path-params [vuosi :- s/Int]
+             :multipart-params [hakuohje :- upload/TempFileUpload
+                                Filename :- s/Any
+                                Upload :- s/Any]
+             :summary "Päivittää hakemuskauden ely-hakuohjeen. Tämä palvelu on tarkoitettu ie9 flash tiedoston lataukselle."
+             (ok (service/save-ely-hakuohje vuosi
                                         (:filename hakuohje)
                                         (:content-type hakuohje)
                                         (io/input-stream (:tempfile hakuohje)))))
