@@ -56,6 +56,7 @@
 
 (def app (-> juku-api
              (jm/wrap-double-submit-cookie [#"GET /hakemuskausi/.*/hakuohje"
+                                            #"GET /hakemuskausi/.*/elyhakuohje"
                                             #"GET /hakemus/.*/pdf.*"
                                             #"GET /hakemus/.*/liite/.*"
                                             #"GET /hakemus/.*/paatos/pdf.*"
