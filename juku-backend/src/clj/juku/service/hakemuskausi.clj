@@ -36,7 +36,7 @@
 (def constraint-errors
   {:hakemuskausi_pk {:http-response r/bad-request :message "Hakemuskausi on jo avattu vuodelle: {vuosi}"}})
 
-(defn- oletushakemuskausi [vuosi] {:vuosi vuosi :tilatunnus "0" :hakuohje_contenttype nil})
+(defn- oletushakemuskausi [vuosi] {:vuosi vuosi :tilatunnus "0" :hakuohje_contenttype nil :elyhakuohje_contenttype nil})
 
 (defn- coerce-vuosiluku->int [m] (update-in m [:vuosi] int))
 

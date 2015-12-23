@@ -143,13 +143,14 @@
   "Hakemuskausiyhteenvetohaku - seuraava kausi"
   (with-redefs [hk/select-all-hakemuskaudet (constantly [])
                 hk/select-all-hakuajat (constantly [])]
-    (let [hakemuskausi (find-hakemuskausi+ (+ (time/year (time/now)) 1))
+    (let [hakemuskausi (find-hakemuskausi+ (hk/nextvuosi))
           vuosi (:vuosi hakemuskausi)]
 
       hakemuskausi =>
       {:vuosi      vuosi
        :tilatunnus "0"
        :hakuohje_contenttype nil
+       :elyhakuohje_contenttype nil
        :hakemukset [{:hakemustyyppitunnus "AH0"
                      :hakemustilat []
                      :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
@@ -178,6 +179,7 @@
         {:vuosi      vuosi
          :tilatunnus "A"
          :hakuohje_contenttype nil
+         :elyhakuohje_contenttype nil
          :hakemukset [{:hakemustyyppitunnus "AH0"
                        :hakemustilat #{{:hakemustilatunnus "K" :count 1M}, {:hakemustilatunnus "V" :count 1M}}
                        :hakuaika {:alkupvm (time/local-date (- vuosi 1) 9 1)
@@ -208,6 +210,7 @@
       {:vuosi      vuosi
        :tilatunnus "K"
        :hakuohje_contenttype "text/plain"
+       :elyhakuohje_contenttype nil
        :hakemukset [{:id id
                      :hakemustyyppitunnus "AH0"
                      :diaarinumero nil

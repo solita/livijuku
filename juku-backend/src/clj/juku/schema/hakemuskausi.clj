@@ -4,7 +4,8 @@
 
 (s/defschema Hakemuskausi+ {:vuosi      s/Int
                             :tilatunnus s/Str
-                            :hakuohje_contenttype (s/maybe s/Str)})
+                            :hakuohje_contenttype (s/maybe s/Str)
+                            :elyhakuohje_contenttype (s/maybe s/Str)})
 
 (defn hakemuskausi+hakemukset [hakemusschema] (assoc Hakemuskausi+ :hakemukset [hakemusschema]))
 

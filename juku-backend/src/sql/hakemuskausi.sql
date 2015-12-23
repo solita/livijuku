@@ -1,6 +1,6 @@
 
 -- name: select-all-hakemuskaudet
-select vuosi, tilatunnus, hakuohje_contenttype from hakemuskausi
+select vuosi, tilatunnus, hakuohje_contenttype, elyhakuohje_contenttype from hakemuskausi
 
 -- name: select-maararaha
 select maararaha, ylijaama
