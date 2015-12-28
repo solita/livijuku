@@ -107,7 +107,7 @@
 (defn kehityshankkeet-section [kehityshankkeet]
   (if (empty? kehityshankkeet)
     "\tEi kehityshankkeita"
-    (let [kehityshanke-template "\t{nimi}\t\t\t\t{arvo} e"]
+    (let [kehityshanke-template "\t - {nimi}\t\t\t\t{arvo} e"]
       (str/join "\n" (map (partial xstr/interpolate kehityshanke-template)
                           (map (c/partial-first-arg update :arvo pdf/format-number) kehityshankkeet))))))
 
