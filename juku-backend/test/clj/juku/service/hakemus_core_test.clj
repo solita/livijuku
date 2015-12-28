@@ -35,7 +35,7 @@
   (assoc (assoc-hakemus-defaults+kasittely hakemus id) :contentvisible true
                                                        :luontitunnus "juku_kasittelija",
                                                        :kasittelija nil, :selite selite,
-                                                       :tilinumero nil,
+                                                       :tilinumero "asdf",
                                                        :muokkaaja nil, :lahettaja nil, :lahetysaika nil))
 
 (defn expected-hakemussuunnitelma [id hakemus haettu-avustus myonnettava-avustus]
@@ -55,6 +55,7 @@
     (let [organisaatioid 1M
           id (h/add-hakemus! hsl-hakemus)]
 
+      (test/with-user "juku_hakija" ["juku_hakija"] (h/save-hakemus-tilinumero! id "asdf"))
       (dissoc (h/get-hakemus+ id) :muokkausaika :other-hakemukset) => (assoc-hakemus-defaults+ hsl-hakemus id nil)))
 
   (fact "Uuden hakemuksen luonti - organisaatio ei ole olemassa"
@@ -232,3 +233,15 @@
         (assoc (assoc-hakemus-defaults+ hakemus id nil)
           :tilinumero tilinumero
           :luontitunnus "juku_hakija"))))
+
+(fact
+  "Hakemuksen oletustilinumero"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))
+          hakemus {:vuosi vuosi :hakemustyyppitunnus "MH1" :organisaatioid 1M}
+          id1 (h/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "AH0" :organisaatioid 1M})
+          id2 (h/add-hakemus! hakemus)
+          tilinumero "asdf1234"]
+
+      (h/save-hakemus-tilinumero! id1 tilinumero)
+      (:tilinumero (h/get-hakemus+ id2)) => tilinumero)))

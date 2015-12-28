@@ -101,16 +101,29 @@
     (throw! r/conflict (str "Hakemusta " (:id hakemus) " ei voi muokata, koska se ei ole enää keskeneräinen. "
                             "Hakemus on lähetetty käsiteltäväksi."))))
 
-(defn get-hakemus+ [hakemusid]
-  (let [hakemus (map/dissoc-if (get-any-hakemus hakemusid select-hakemus+) (partial map/every-value? nil?) :ely)]
-    (coerce-hakemus+
-      (assoc
-        (if (= (:hakemustilatunnus hakemus) "T0")
-          (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid hakemusid})))
-          hakemus)
+(defn- assoc-taydennyspyynto [hakemus]
+  (case (:hakemustilatunnus hakemus)
+    "T0" (assoc hakemus :taydennyspyynto (first (select-latest-taydennyspyynto {:hakemusid (:id hakemus)})))
+    hakemus))
 
-        :contentvisible (has-privilege-to-view-hakemus-content* hakemus)
-        :other-hakemukset (select-other-hakemukset {:hakemusid hakemusid})))))
+(defn- update-default-tilinumero [hakemus]
+  (update hakemus :tilinumero (fn [tilinumero]
+    (or tilinumero
+        (-> (select-default-tilinumero (select-keys hakemus [:organisaatioid])) first :tilinumero)))))
+
+(defn- assoc-hakemus+ [hakemus]
+  (assoc hakemus
+    :contentvisible (has-privilege-to-view-hakemus-content* hakemus)
+    :other-hakemukset (select-other-hakemukset {:hakemusid (:id hakemus)})))
+
+(defn get-hakemus+ [hakemusid]
+  (-> (get-any-hakemus hakemusid select-hakemus+)
+
+      (map/dissoc-if (partial map/every-value? nil?) :ely) ;; jos ely-tietoja ei ole niin poistetaan ne
+      assoc-taydennyspyynto
+      assoc-hakemus+
+      update-default-tilinumero
+      coerce-hakemus+))
 
 (defn get-hakemus [hakemusid] (coerce-hakemus (get-any-hakemus hakemusid select-hakemus)))
 

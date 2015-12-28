@@ -159,3 +159,10 @@ where (vuosi, organisaatioid) = (select vuosi, organisaatioid from hakemus where
 -- name: select-hakemukset-from-kausi
 select id from hakemus
 where vuosi = :vuosi and hakemustyyppitunnus = :hakemustyyppitunnus
+
+--name: select-default-tilinumero
+select hakemus.tilinumero from hakemus
+  inner join hakuaika on hakuaika.vuosi = hakemus.vuosi
+where hakemus.organisaatioid = :organisaatioid and
+      hakemus.tilinumero is not null
+order by hakemus.vuosi desc, hakuaika.alkupvm desc
