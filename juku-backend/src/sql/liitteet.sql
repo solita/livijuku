@@ -1,6 +1,6 @@
 
 -- name: select-liitteet
-select hakemusid, liitenumero, nimi, contenttype, dbms_lob.getlength(sisalto) bytesize
+select hakemusid, liitenumero, nimi, contenttype, nvl(dbms_lob.getlength(sisalto), 0) bytesize
 from liite where hakemusid = :hakemusid and poistoaika is null
 
 -- name: select-liite-sisalto
