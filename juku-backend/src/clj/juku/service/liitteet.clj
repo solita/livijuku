@@ -8,8 +8,9 @@
             [clojure.string :as str]
             [slingshot.slingshot :as ss]
             [juku.schema.liitteet :as s]
-            [juku.settings :refer [settings]])
-  (:import (java.io InputStream)))
+            [juku.settings :refer [settings]]
+            [clojure.java.io :as io])
+  (:import (java.io InputStream File)))
 
 (def constraint-errors
   {:liite_pk {:http-response r/conflict :message "Kaksi eri käyttäjää on lisännyt liitteen samanaikaisesti."}
@@ -41,6 +42,12 @@
       (insert-liite! (assoc liite :sisalto sisalto))
       (assert-liite-maxsize! (:hakemusid liite) (:liite-max-size settings))))
   nil)
+
+(defn add-liite-from-file! [liite ^File sisalto]
+  (if (> (.length sisalto) 0)
+    (add-liite! liite (io/input-stream sisalto))
+    (ss/throw+ {:http-response r/bad-request
+                :message "Liitteen sisältö ei saa olla tyhjä. Liitteen koko pitää olla enemmän kuin 0 tavua."})))
 
 (defn delete-liite! [hakemusid liitenumero]
   (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
