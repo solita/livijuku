@@ -52,3 +52,13 @@
     (l/add-liite! {:hakemusid 1234234234 :nimi "test" :contenttype "text/plain"}
                     (test/inputstream-from "test")) =>
         (throws "Hakemusta 1234234234 ei ole olemassa.")))
+
+
+(fact "Uuden liitteen tallentaminen ja hakeminen - liitteen sisältö on tyhjä"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [id (hc/add-hakemus! hsl-hakemus)
+          liite {:hakemusid id :nimi "test" :contenttype "text/plain"}]
+
+      (l/add-liite! liite (test/inputstream-from ""))
+      (count (l/find-liitteet id)) => 1
+      (first (l/find-liitteet id)) => (assoc liite :liitenumero 1 :bytesize 0M))))

@@ -41,10 +41,10 @@
                               {Filename :- s/Any nil}
                               {Upload :- s/Any nil}]
            :summary "Tallenna uusi hakemusliite juku-järjestelmään."
-           (ok (service/add-liite! {:hakemusid hakemusid
-                                    :nimi (:filename liite)
-                                    :contenttype (:content-type liite)}
-                                   (io/input-stream (:tempfile liite)))))
+           (ok (service/add-liite-from-file! {:hakemusid hakemusid
+                                              :nimi (:filename liite)
+                                              :contenttype (:content-type liite)}
+                                             (:tempfile liite))))
 
 
     (PUT* "/hakemus/:hakemusid/liite/:liitenumero" []

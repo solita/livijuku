@@ -64,6 +64,7 @@
                                             #"GET /swagger.json"
 
                                             #"POST /hakemuskausi/.*/hakuohje"
+                                            #"POST /hakemuskausi/.*/elyhakuohje"
                                             #"POST /hakemus/.*/liite"])
             (m/wrap-defaults (assoc-in m/site-defaults [:security :anti-forgery] false))
              jm/wrap-no-cache))
