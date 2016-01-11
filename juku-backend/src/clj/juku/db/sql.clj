@@ -42,7 +42,7 @@
 
 ;; insert statements
 
-(defn insert-statement [table columns values]
+(defn- insert-statement [table columns values]
   {:pre [(isValidDatabaseIdentifier table)
          (every? isValidDatabaseIdentifier columns)]}
   (let [separator ", "]
@@ -82,10 +82,23 @@
 (defn update-where-id [db table obj id]
   (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
 
+(defn- where-clause [where]
+  (str/join " and " (map assignment-expression (keys where))))
+
+(defn- update-statement+where [table obj where]
+  (str (update-statement table obj) " where " (where-clause where)))
+
 (defn update-where! [db table obj where]
-  (let [separator " and "
-        where-clause  (str/join separator (map assignment-expression (keys where)))]
-    (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where " where-clause) (concat (vals obj) (vals where))))))
+  (first (db-do jdbc/db-do-prepared db
+                (update-statement+where table obj where)
+                (concat (vals obj) (vals where)))))
+
+(defn update-batch-where! [db table obj-list where-list]
+  (let [sql (update-statement+where table (first obj-list) (first where-list))
+        param-groups (map concat (map vals obj-list) (map vals where-list))]
+    (with-db-exception-translation
+      (fn [] (apply jdbc/db-do-prepared db sql param-groups))
+      sql {} (constantly nil) {})))
 
 (defmacro assert-update
 
