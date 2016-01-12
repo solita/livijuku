@@ -10,7 +10,7 @@
       (GET* "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
             :auth [:view-hakemus]
             :return [Liikennekuukausi]
-            :path-params [vuosi :- Integer
+            :path-params [vuosi :- Long
                           organisaatioid :- Long
                           sopimustyyppitunnus :- s/Str]
             :summary "Hae organisaation liikenteen markkinatiedot tietylle vuodella ja sopimustyypille."
@@ -18,7 +18,7 @@
       (PUT* "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
             :auth [:view-hakemus]
             :return [Liikennekuukausi]
-            :path-params [vuosi :- Integer
+            :path-params [vuosi :- Long
                           organisaatioid :- Long
                           sopimustyyppitunnus :- s/Str]
             :body [kuukaudet [Liikennekuukausi]]
