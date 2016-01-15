@@ -13,7 +13,7 @@
       :path-params [vuosi :- Long
                     organisaatioid :- Long
                     sopimustyyppitunnus :- s/Str]
-      :summary "Hae organisaation liikenteen markkinatiedot tietylle vuodella ja sopimustyypille."
+      :summary "Hae organisaation liikenteen kysyntä ja tarjontatiedot tietylle vuodella ja sopimustyypille."
     (ok (service/find-liikennevuositilasto vuosi organisaatioid sopimustyyppitunnus)))
   (PUT* "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
       :auth [:view-hakemus]
@@ -22,7 +22,7 @@
                 organisaatioid :- Long
                 sopimustyyppitunnus :- s/Str]
       :body [kuukaudet [Liikennekuukausi]]
-      :summary "Tallenna liikenteen markkinatiedot tietylle vuodella ja sopimustyypille."
+      :summary "Tallenna liikenteen kysyntä ja tarjontatiedot tietylle vuodella ja sopimustyypille."
       (ok (service/save-liikennevuositilasto! vuosi organisaatioid sopimustyyppitunnus kuukaudet)))
 
   (GET* "/liikenneviikko/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
@@ -31,7 +31,7 @@
       :path-params [vuosi :- Long
                     organisaatioid :- Long
                     sopimustyyppitunnus :- s/Str]
-      :summary "Hae organisaation liikenteen talviviikon markkinatiedot tietylle vuodella ja sopimustyypille."
+      :summary "Hae organisaation liikenteen talviviikon kysyntä ja tarjontatiedot tietylle vuodella ja sopimustyypille."
       (ok (service/find-liikenneviikkotilasto vuosi organisaatioid sopimustyyppitunnus)))
   (PUT* "/liikenneviikko/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
       :auth [:view-hakemus]
@@ -40,6 +40,6 @@
               organisaatioid :- Long
               sopimustyyppitunnus :- s/Str]
       :body [viikko [Liikennepaiva]]
-      :summary "Tallenna organisaation talviviikon markkinatiedot tietylle vuodella ja sopimustyypille."
+      :summary "Tallenna organisaation talviviikon kysyntä ja tarjontatiedot tietylle vuodella ja sopimustyypille."
       (ok (service/save-liikenneviikkotilasto! vuosi organisaatioid sopimustyyppitunnus viikko))))
 

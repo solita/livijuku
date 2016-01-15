@@ -38,7 +38,7 @@
         (swagger-ui "/api/ui")
         (swagger-docs :info {
             :title "Liikennevirasto - Juku API"
-            :version "1.2.2"
+            :version "1.4.0"
             :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut"
             :license {
               :name "Euroopan unionin yleinen lisenssi v.1.1"
