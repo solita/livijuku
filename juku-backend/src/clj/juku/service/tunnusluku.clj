@@ -10,6 +10,7 @@
 
 ; *** Seuranta-skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 (def coerce-liikennesuorite (coerce/coercer s/Liikennekuukausi))
+(def coerce-liikennepaiva (coerce/coercer s/Liikennepaiva))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -70,7 +71,7 @@
 ; *** Liikenteen kysyntä ja tarjonta - keskimääräisen talviviikon päivittäinen liikenne ***
 
 (defn find-liikenneviikkotilasto [vuosi organisaatioid sopimustyyppitunnus]
-  (map coerce-liikennesuorite (select-liikennevuositilasto (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus))))
+  (map coerce-liikennepaiva (select-liikenneviikkotilasto (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus))))
 
 (defn init-liikenneviikko! [vuosi organisaatioid sopimustyyppitunnus]
   (ss/try+
