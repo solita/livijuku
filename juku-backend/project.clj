@@ -36,7 +36,7 @@
             :plugins [[test2junit "1.1.0"]
                       [lein-ring "0.8.12"]
                       ;; Library for managing environment settings from a number of different sources
-                      [lein-environ "1.0.0"]]
+                      #_[lein-environ "1.0.0"]]
 
             :ring {:handler      juku.handler/app
                    :uberwar-name "juku.war"}
