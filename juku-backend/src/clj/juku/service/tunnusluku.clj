@@ -6,11 +6,8 @@
             [ring.util.http-response :as r]
             [juku.db.sql :as dml]
             [slingshot.slingshot :as ss]
-            [common.core :as c]))
-
-; *** Seuranta-skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
-(def coerce-liikennesuorite (coerce/coercer s/Liikennekuukausi))
-(def coerce-liikennepaiva (coerce/coercer s/Liikennepaiva))
+            [common.core :as c]
+            [clojure.string :as str]))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -39,53 +36,48 @@
 (sql/defqueries "tunnusluku.sql" {:constraint-errors (merge liikenne-constraint-errors
                                                             liikenneviikko-constraint-errors)})
 
-; *** Tunnuslukujen toiminnot ***
+; *** Tunnuslukujen yleiset funktiot ***
 
 (defn liikennevuosi-id [vuosi organisaatioid sopimustyyppitunnus]
   {:vuosi vuosi
    :organisaatioid organisaatioid
    :sopimustyyppitunnus sopimustyyppitunnus})
 
-; *** Liikenteen kysyntä ja tarjonta - kuukausitilastot ***
+(defmacro create-crud-operations [tunnusluvunnimi schema fact-tablename & extra-dimensions]
+  (let [find (symbol (str "find-" tunnusluvunnimi))
+        coerce (symbol (str "coerce-" (str/lower-case (name (second schema)))))
+        select (symbol (str "select-" tunnusluvunnimi))
+        init (symbol (str "init-" tunnusluvunnimi "!"))
+        insert-default (symbol (str "insert-default-" tunnusluvunnimi "-if-not-exists!"))
+        save (symbol (str "save-" tunnusluvunnimi "!"))]
+    `(do
+        (def ~coerce (coerce/coercer ~(second schema)))
 
-(defn find-liikennevuositilasto [vuosi organisaatioid sopimustyyppitunnus]
-    (map coerce-liikennesuorite (select-liikennevuositilasto (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus))))
+        (defn ~find [~'vuosi ~'organisaatioid ~'sopimustyyppitunnus]
+          (map ~coerce (~select (liikennevuosi-id ~'vuosi ~'organisaatioid ~'sopimustyyppitunnus))))
 
-(defn init-liikennevuosi! [vuosi organisaatioid sopimustyyppitunnus]
-  (ss/try+
-    (insert-default-liikennevuosi-if-not-exists! (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus))
-    (catch [:violated-constraint "FACT_LIIKENNE_PK"] {}))
-  nil)
+        (defn ~init [~'vuosi ~'organisaatioid ~'sopimustyyppitunnus]
+          (ss/try+
+            (~insert-default (liikennevuosi-id ~'vuosi ~'organisaatioid ~'sopimustyyppitunnus))
+            (catch [:violated-constraint (str ~fact-tablename "_PK")] {}))
+          nil)
 
-(defn save-liikennevuositilasto! [vuosi organisaatioid sopimustyyppitunnus liikennekuukaudet]
+        (defn ~save [~'vuosi ~'organisaatioid ~'sopimustyyppitunnus ~'data]
 
-  (with-transaction
-    (init-liikennevuosi! vuosi organisaatioid sopimustyyppitunnus)
-    (let [id (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus)
-          batch (sort-by :kuukausi liikennekuukaudet)]
-      (dml/update-batch-where! db "fact_liikenne"
-                               (map (c/partial-first-arg dissoc :kuukausi) batch)
-                               (map (partial merge id) (map (c/partial-first-arg select-keys [:kuukausi]) batch)))))
-  nil)
+          (with-transaction
+            (~init ~'vuosi ~'organisaatioid ~'sopimustyyppitunnus)
+            (let [id# (liikennevuosi-id ~'vuosi ~'organisaatioid ~'sopimustyyppitunnus)
+                  batch# (sort-by ~(first extra-dimensions) ~'data)]
+              (dml/update-batch-where! db ~fact-tablename
+                                       (map (c/partial-first-arg dissoc ~@extra-dimensions) batch#)
+                                       (map (partial merge id#) (map (c/partial-first-arg select-keys '~extra-dimensions) batch#)))))
+          nil))))
 
-; *** Liikenteen kysyntä ja tarjonta - keskimääräisen talviviikon päivittäinen liikenne ***
+; *** Tunnuslukujen crud-funktioiden generointi ***
 
-(defn find-liikenneviikkotilasto [vuosi organisaatioid sopimustyyppitunnus]
-  (map coerce-liikennepaiva (select-liikenneviikkotilasto (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus))))
-
-(defn init-liikenneviikko! [vuosi organisaatioid sopimustyyppitunnus]
-  (ss/try+
-    (insert-default-liikenneviikko-if-not-exists! (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus))
-    (catch [:violated-constraint "FACT_LIIKENNEVIIKKO_PK"] {}))
-  nil)
-
-(defn save-liikenneviikkotilasto! [vuosi organisaatioid sopimustyyppitunnus liikenneviikko]
-
-  (with-transaction
-    (init-liikenneviikko! vuosi organisaatioid sopimustyyppitunnus)
-    (let [id (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus)
-          batch (sort-by :viikonpaivaluokkatunnus liikenneviikko)]
-      (dml/update-batch-where! db "fact_liikenneviikko"
-                               (map (c/partial-first-arg dissoc :viikonpaivaluokkatunnus) batch)
-                               (map (partial merge id) (map (c/partial-first-arg select-keys [:viikonpaivaluokkatunnus]) batch)))))
-  nil)
+(create-crud-operations "liikennevuositilasto" 's/Liikennekuukausi "fact_liikenne" :kuukausi)
+(create-crud-operations "liikenneviikkotilasto" 's/Liikennepaiva "fact_liikenneviikko" :viikonpaivaluokkatunnus)
+(create-crud-operations "kalusto" 's/Kalusto "fact_kalusto" :paastoluokkatunnus)
+(create-crud-operations "lipputulo" 's/Lipputulo "fact_lipputulo" :kuukausi :lippuluokkatunnus)
+(create-crud-operations "liikennointikorvaus" 's/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
+(create-crud-operations "lippuhinta" 's/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykkelukumaara)

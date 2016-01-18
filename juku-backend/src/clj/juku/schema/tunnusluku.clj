@@ -10,9 +10,37 @@
 
 
 (s/defschema Liikennekuukausi
-  "Tämä skeema sisältää liikenteen yhden kuukausittaiset markkinatiedot kysynnästä ja tarjonnasta."
+  "Liikenteen yhden kuukausittaiset markkinatiedot kysynnästä ja tarjonnasta."
   (assoc Liikennetilasto :kuukausi s/Num))
 
 (s/defschema Liikennepaiva
-  "Tämä skeema sisältää liikenteen keskimääräisen talviviikon päivän markkinatiedot kysynnästä ja tarjonnasta."
+  "Liikenteen keskimääräisen talviviikon päivän markkinatiedot kysynnästä ja tarjonnasta."
   (assoc Liikennetilasto :viikonpaivaluokkatunnus s/Str))
+
+(s/defschema Kalusto
+  "Autojen lukumäärä tietyssä päästöluokassa."
+  {
+   :paastoluokkatunnus s/Str,
+   :lukumaara (s/->Maybe s/Num)})
+
+(s/defschema Lippuhinta
+  "Lipunhinta tietyssä lippuluokassa."
+  {
+   :lippuluokkaluokkatunnus s/Str,
+   :vyohykelukumaara s/Num
+   :hinta (s/->Maybe s/Num)})
+
+(s/defschema Lipputulo
+  "Lipunmyynnin kuukausitulo tietyssä lippuluokassa."
+  {
+   :kuukausi s/Num
+   :lippuluokkaluokkatunnus s/Str,
+
+   :tulo (s/->Maybe s/Num)})
+
+(s/defschema Liikennointikorvaus
+  "Kuukausittainen liikennöintikorvaus."
+  {
+   :kuukausi s/Num
+   :korvaus (s/->Maybe s/Num)
+   :nousukorvaus (s/->Maybe s/Num)})
