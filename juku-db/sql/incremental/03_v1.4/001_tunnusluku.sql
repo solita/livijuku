@@ -87,6 +87,7 @@ create table fact_lippuhinta (
   sopimustyyppitunnus not null references sopimustyyppi (tunnus),
   lippuluokkatunnus not null references lippuluokka (tunnus),
   vyohykelukumaara number(1),
+  
   hinta number(12, 2),
   constraint fact_lippuhinta_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus, lippuluokkatunnus, vyohykelukumaara)
 );
