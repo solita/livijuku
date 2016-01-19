@@ -128,4 +128,5 @@
         (apply insert-operation args)
         (catch [:type ::unique-constraint] {}
           (apply update-operation args)))
+    1 nil
     (ss/throw+ {:message "Unexpected system error - too many rows updated"})))

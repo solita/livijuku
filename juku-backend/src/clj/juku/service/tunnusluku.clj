@@ -95,7 +95,7 @@
 (def coerce-alue (coerce/coercer s/Alue))
 
 (defn find-alue [vuosi organisaatioid]
-  (map (comp coerce-alue coerce/row->object) (select-alue {:vuosi vuosi :organisaatioid organisaatioid})))
+  (first (map (comp coerce-alue coerce/row->object) (select-alue {:vuosi vuosi :organisaatioid organisaatioid}))))
 
 (defn- insert-alue! [vuosi organisaatioid alue]
   (let [data (assoc alue :vuosi vuosi :organisaatioid organisaatioid )]

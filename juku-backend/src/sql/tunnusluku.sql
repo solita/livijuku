@@ -116,4 +116,23 @@ insert into fact_liikennointikorvaus (vuosi, kuukausi, organisaatioid, sopimusty
   order by vuosi, kuukausi, organisaatioid, sopimustyyppitunnus
 
 -- name: select-alue
-select * from fact_alue where vuosi = :vuosi and organisaatioid = :organisaatioid
+select
+  kuntamaara,
+  vyohykemaara,
+  pysakkimaara,
+  maapintaala,
+  asukasmaara,
+  tyopaikkamaara,
+  henkilosto,
+  
+  pendeloivienosuus,
+  henkiloautoliikennesuorite,
+  autoistumisaste,
+  asiakastyytyvaisyys,
+  
+  kustannus_asiakaspalvelu,
+  kustannus_konsulttipalvelu,
+  kustannus_lipunmyyntipalkkio,
+  kustannus_jarjestelmat,
+  kustannus_muutpalvelut
+from fact_alue where vuosi = :vuosi and organisaatioid = :organisaatioid

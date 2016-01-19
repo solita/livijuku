@@ -62,7 +62,7 @@
    :pysakkimaara (s/maybe s/Num),
    :maapintaala (s/maybe s/Num),
    :asukasmaara (s/maybe s/Num),
-   :työpaikkamaara (s/maybe s/Num),
+   :tyopaikkamaara (s/maybe s/Num),
    :henkilosto (s/maybe s/Num),
 
    :kustannus Kustannus
