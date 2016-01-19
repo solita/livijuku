@@ -5,6 +5,7 @@ begin
   model.new_classification('paastoluokka', 'Päästöluokka', 2, 'PLUOKKA');
   model.new_classification('lippuluokka', 'Lippuluokka', 2, 'LLUOKKA');
   model.new_classification('viikonpaivaluokka', 'Viikonpäiväluokka', 2, 'VLUOKKA');
+  model.new_classification('kustannuslaji', 'Kustannuslaji', 2, 'KLAJI');
 end;
 /
 
@@ -30,6 +31,12 @@ insert into lippuluokka (tunnus, nimi) values ('KE', 'Kertalippu');
 insert into lippuluokka (tunnus, nimi) values ('AR', 'Arvolippu');
 insert into lippuluokka (tunnus, nimi) values ('KA', 'Kausilippu');
 insert into lippuluokka (tunnus, nimi) values ('0', 'Mikä tahansa lippu');
+
+insert into kustannuslaji (tunnus, nimi) values ('AP', 'Asiakaspalvelu');
+insert into kustannuslaji (tunnus, nimi) values ('KP', 'Konsulttipalvelu');
+insert into kustannuslaji (tunnus, nimi) values ('LP', 'Lipunmyyntipalkkiot');
+insert into kustannuslaji (tunnus, nimi) values ('TJ', 'Tieto-/maksujärjestelmät');
+insert into kustannuslaji (tunnus, nimi) values ('MP', 'Muut palvelut');
 
 /* Faktataulut */
 
@@ -103,6 +110,38 @@ create table fact_kalusto (
   constraint fact_kalusto_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus,  paastoluokkatunnus)
 );
 
+create table fact_kustannus (
+  vuosi number(4),
+  organisaatioid not null references organisaatio (id),
+  sopimustyyppitunnus not null references sopimustyyppi (tunnus),
+  kustannuslajitunnus not null references paastoluokka (tunnus),
+
+  kustannus number(9),
+
+  constraint fact_kustannus_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus,  kustannuslajitunnus)
+);
+
+create table fact_alue (
+  vuosi number(4),
+  organisaatioid not null references organisaatio (id),
+  sopimustyyppitunnus not null references sopimustyyppi (tunnus),
+
+  kuntamaara number(9),
+  vyohykemaara number(9), 
+  pysakkimaara number(9),
+  maapintaala number(12,2), 
+  asukasmaara number(9), 
+  työpaikkamaara number(9),
+  henkilosto number(9),
+
+  pendeloivienosuus number(5,2),
+  henkiloautoliikennesuorite number(9), 
+  autoistumisaste number(9),
+  asiakastyytyvaisyys number(5,2),
+
+  constraint fact_alue_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus)
+);
+
 begin
   model.define_mutable(model.new_entity('fact_liikenne', 'Liikennevuosi fakta', 'FCTLIKK'));
   model.define_mutable(model.new_entity('fact_liikenneviikko', 'Liikenneviikko fakta', 'FCTLIVIIKKO'));
@@ -111,5 +150,8 @@ begin
   model.define_mutable(model.new_entity('fact_liikennointikorvaus', 'Liikennäintikorvaus fakta', 'FCTLKORVAUS'));
   model.define_mutable(model.new_entity('fact_lippuhinta', 'Lippuhinta fakta', 'FCTLHINTA'));
   model.define_mutable(model.new_entity('fact_kalusto', 'Kalusto fakta', 'FCTKALUSTO'));
+  model.define_mutable(model.new_entity('fact_kustannus', 'Kustannus fakta', 'FCTKU'));
+
+  model.define_mutable(model.new_entity('fact_alue', 'Alue fakta', 'FCTALUE'));
 end;
 /
