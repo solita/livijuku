@@ -107,14 +107,13 @@ create table fact_kalusto (
 create table fact_alue (
   vuosi number(4),
   organisaatioid not null references organisaatio (id),
-  sopimustyyppitunnus not null references sopimustyyppi (tunnus),
 
   kuntamaara number(9),
   vyohykemaara number(9), 
   pysakkimaara number(9),
   maapintaala number(12,2), 
   asukasmaara number(9), 
-  työpaikkamaara number(9),
+  tyopaikkamaara number(9),
   henkilosto number(9),
 
   pendeloivienosuus number(5,2),
@@ -130,7 +129,7 @@ create table fact_alue (
 
   kommentti clob,
 
-  constraint fact_alue_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus)
+  constraint fact_alue_pk primary key (vuosi, organisaatioid)
 );
 
 begin
