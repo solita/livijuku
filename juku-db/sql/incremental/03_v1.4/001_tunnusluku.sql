@@ -32,12 +32,6 @@ insert into lippuluokka (tunnus, nimi) values ('AR', 'Arvolippu');
 insert into lippuluokka (tunnus, nimi) values ('KA', 'Kausilippu');
 insert into lippuluokka (tunnus, nimi) values ('0', 'Mikä tahansa lippu');
 
-insert into kustannuslaji (tunnus, nimi) values ('AP', 'Asiakaspalvelu');
-insert into kustannuslaji (tunnus, nimi) values ('KP', 'Konsulttipalvelu');
-insert into kustannuslaji (tunnus, nimi) values ('LP', 'Lipunmyyntipalkkiot');
-insert into kustannuslaji (tunnus, nimi) values ('TJ', 'Tieto-/maksujärjestelmät');
-insert into kustannuslaji (tunnus, nimi) values ('MP', 'Muut palvelut');
-
 /* Faktataulut */
 
 create table fact_liikenne (
@@ -110,17 +104,6 @@ create table fact_kalusto (
   constraint fact_kalusto_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus,  paastoluokkatunnus)
 );
 
-create table fact_kustannus (
-  vuosi number(4),
-  organisaatioid not null references organisaatio (id),
-  sopimustyyppitunnus not null references sopimustyyppi (tunnus),
-  kustannuslajitunnus not null references paastoluokka (tunnus),
-
-  kustannus number(9),
-
-  constraint fact_kustannus_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus,  kustannuslajitunnus)
-);
-
 create table fact_alue (
   vuosi number(4),
   organisaatioid not null references organisaatio (id),
@@ -139,6 +122,14 @@ create table fact_alue (
   autoistumisaste number(9),
   asiakastyytyvaisyys number(5,2),
 
+  kustannus_asiakaspalvelu number(12,2),
+  kustannus_konsulttipalvelu number(12,2),
+  kustannus_lipunmyyntipalkkio number(12,2),
+  kustannus_jarjestelmat number(12,2),
+  kustannus_muutpalvelut number(12,2),
+
+  kommentti clob,
+
   constraint fact_alue_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus)
 );
 
@@ -150,7 +141,6 @@ begin
   model.define_mutable(model.new_entity('fact_liikennointikorvaus', 'Liikennäintikorvaus fakta', 'FCTLKORVAUS'));
   model.define_mutable(model.new_entity('fact_lippuhinta', 'Lippuhinta fakta', 'FCTLHINTA'));
   model.define_mutable(model.new_entity('fact_kalusto', 'Kalusto fakta', 'FCTKALUSTO'));
-  model.define_mutable(model.new_entity('fact_kustannus', 'Kustannus fakta', 'FCTKU'));
 
   model.define_mutable(model.new_entity('fact_alue', 'Alue fakta', 'FCTALUE'));
 end;
