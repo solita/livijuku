@@ -4,9 +4,9 @@
 (s/defschema Liikennetilasto
   "Tämä skeema sisältää liikenteen markkinatiedot."
   {
-   :nousut (s/->Maybe s/Num),
-   :lahdot (s/->Maybe s/Num),
-   :linjakilometrit (s/->Maybe s/Num)})
+   :nousut (s/maybe s/Num),
+   :lahdot (s/maybe s/Num),
+   :linjakilometrit (s/maybe s/Num)})
 
 
 (s/defschema Liikennekuukausi
@@ -21,14 +21,14 @@
   "Autojen lukumäärä tietyssä päästöluokassa."
   {
    :paastoluokkatunnus s/Str,
-   :lukumaara (s/->Maybe s/Num)})
+   :lukumaara (s/maybe s/Num)})
 
 (s/defschema Lippuhinta
   "Lipunhinta tietyssä lippuluokassa."
   {
    :lippuluokkaluokkatunnus s/Str,
    :vyohykelukumaara s/Num
-   :hinta (s/->Maybe s/Num)})
+   :hinta (s/maybe s/Num)})
 
 (s/defschema Lipputulo
   "Lipunmyynnin kuukausitulo tietyssä lippuluokassa."
@@ -36,11 +36,27 @@
    :kuukausi s/Num
    :lippuluokkaluokkatunnus s/Str,
 
-   :tulo (s/->Maybe s/Num)})
+   :tulo (s/maybe s/Num)})
 
 (s/defschema Liikennointikorvaus
   "Kuukausittainen liikennöintikorvaus."
   {
    :kuukausi s/Num
-   :korvaus (s/->Maybe s/Num)
-   :nousukorvaus (s/->Maybe s/Num)})
+   :korvaus (s/maybe s/Num)
+   :nousukorvaus (s/maybe s/Num)})
+
+(s/defschema Alue
+  "Alueen tiedot"
+  {
+   :kuntamaara (s/maybe s/Num),
+   :vyohykemaara (s/maybe s/Num),
+   :pysakkimaara (s/maybe s/Num),
+   :maapintaala (s/maybe s/Num),
+   :asukasmaara (s/maybe s/Num),
+   :työpaikkamaara (s/maybe s/Num),
+   :henkilosto (s/maybe s/Num),
+
+   :pendeloivienosuus (s/maybe s/Num),
+   :henkiloautoliikennesuorite (s/maybe s/Num),
+   :autoistumisaste (s/maybe s/Num),
+   :asiakastyytyvaisyys (s/maybe s/Num)})

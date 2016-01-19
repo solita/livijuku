@@ -81,3 +81,5 @@
 (create-crud-operations "lipputulo" s/Lipputulo "fact_lipputulo" :kuukausi :lippuluokkatunnus)
 (create-crud-operations "liikennointikorvaus" s/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
 (create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykkelukumaara)
+
+; *** Alueen tiedot ***

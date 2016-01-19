@@ -108,9 +108,9 @@ insert into fact_liikennointikorvaus (vuosi, kuukausi, organisaatioid, sopimusty
          :sopimustyyppitunnus sopimustyyppitunnus
   from table(numbers(1,12))
   where not exists (
-      select 1 from fact_kalusto l
+      select 1 from fact_liikennointikorvaus l
       where l.vuosi = :vuosi and
             l.organisaatioid = :organisaatioid and
             l.sopimustyyppitunnus = :sopimustyyppitunnus
   )
-  order by vuosi, lippuluokkaluokkatunnus, kuukausi, organisaatioid, sopimustyyppitunnus
+  order by vuosi, kuukausi, organisaatioid, sopimustyyppitunnus
