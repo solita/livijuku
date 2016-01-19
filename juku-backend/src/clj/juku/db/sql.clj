@@ -26,10 +26,10 @@
   (ss/try+
     (db-operation)
     (catch Exception e
-      (c/if-let* [violated-constraint (violated-constraint e)
-                  error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
+      (c/if-let* [constraint (violated-constraint e)
+                  error (or (-> constraint :violated-constraint str/lower-case keyword constraint-violation-error) {})
                   message-template (or (:message error) (default-error-message sql params))]
-        (ss/throw+ (merge {:sql sql} violated-constraint error error-parameters)
+        (ss/throw+ (merge {:sql sql} constraint error error-parameters)
                    (strx/interpolate message-template error-parameters))
         (ss/throw+ {:sql sql} (default-error-message sql params)))))))
 
