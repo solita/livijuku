@@ -45,13 +45,13 @@
 
 (defmacro create-crud-operations [tunnusluvunnimi schema fact-tablename & extra-dimensions]
   (let [find (symbol (str "find-" tunnusluvunnimi))
-        coerce (symbol (str "coerce-" (str/lower-case (name (second schema)))))
+        coerce (symbol (str "coerce-" (str/lower-case (name schema))))
         select (symbol (str "select-" tunnusluvunnimi))
         init (symbol (str "init-" tunnusluvunnimi "!"))
         insert-default (symbol (str "insert-default-" tunnusluvunnimi "-if-not-exists!"))
         save (symbol (str "save-" tunnusluvunnimi "!"))]
     `(do
-        (def ~coerce (coerce/coercer ~(second schema)))
+        (def ~coerce (coerce/coercer ~schema))
 
         (defn ~find [~'vuosi ~'organisaatioid ~'sopimustyyppitunnus]
           (map ~coerce (~select (liikennevuosi-id ~'vuosi ~'organisaatioid ~'sopimustyyppitunnus))))
@@ -75,9 +75,9 @@
 
 ; *** Tunnuslukujen crud-funktioiden generointi ***
 
-(create-crud-operations "liikennevuositilasto" 's/Liikennekuukausi "fact_liikenne" :kuukausi)
-(create-crud-operations "liikenneviikkotilasto" 's/Liikennepaiva "fact_liikenneviikko" :viikonpaivaluokkatunnus)
-(create-crud-operations "kalusto" 's/Kalusto "fact_kalusto" :paastoluokkatunnus)
-(create-crud-operations "lipputulo" 's/Lipputulo "fact_lipputulo" :kuukausi :lippuluokkatunnus)
-(create-crud-operations "liikennointikorvaus" 's/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
-(create-crud-operations "lippuhinta" 's/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykkelukumaara)
+(create-crud-operations "liikennevuositilasto" s/Liikennekuukausi "fact_liikenne" :kuukausi)
+(create-crud-operations "liikenneviikkotilasto" s/Liikennepaiva "fact_liikenneviikko" :viikonpaivaluokkatunnus)
+(create-crud-operations "kalusto" s/Kalusto "fact_kalusto" :paastoluokkatunnus)
+(create-crud-operations "lipputulo" s/Lipputulo "fact_lipputulo" :kuukausi :lippuluokkatunnus)
+(create-crud-operations "liikennointikorvaus" s/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
+(create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykkelukumaara)
