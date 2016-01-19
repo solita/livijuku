@@ -32,6 +32,14 @@
      {:http-response r/not-found
       :message       "Sopimustyyppiä {sopimustyyppitunnus} ei ole olemassa."}})
 
+(def alue-constraint-errors
+  {:fact_alue_pk
+   {:http-response r/bad-request
+    :message       "Aluetiedot vuodelle {vuosi} on jo olemassa organisaatiolle: {organisaatioid}."}
+   :fact_alue_organisaatio_fk
+   {:http-response r/not-found
+    :message       "Aluetietoje vuodelle {vuosi} ei voi tallentaa, koska organisaatiota {organisaatioid} ei ole olemassa."}})
+
 ; *** Tunnulukuihin liittyvät kyselyt ***
 (sql/defqueries "tunnusluku.sql" {:constraint-errors (merge liikenne-constraint-errors
                                                             liikenneviikko-constraint-errors)})
@@ -83,3 +91,18 @@
 (create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykkelukumaara)
 
 ; *** Alueen tiedot ***
+
+(def coerce-alue (coerce/coercer s/Alue))
+
+(defn find-alue [vuosi organisaatioid]
+  (map (comp coerce-alue coerce/row->object) (select-alue {:vuosi vuosi :organisaatioid organisaatioid})))
+
+(defn- insert-alue! [vuosi organisaatioid alue]
+  (let [data (assoc alue :vuosi vuosi :organisaatioid organisaatioid )]
+    (dml/insert db "fact_alue" (coerce/object->row data) alue-constraint-errors data)))
+
+(defn- update-alue! [vuosi organisaatioid alue]
+  (dml/update-where! db "fact_alue" (coerce/object->row alue) {:vuosi vuosi :organisaatioid organisaatioid}))
+
+(defn save-alue! [vuosi organisaatioid alue]
+  (dml/upsert update-alue! insert-alue! vuosi organisaatioid alue))

@@ -12,8 +12,10 @@
 (defn- violated-constraint [^Throwable e]
   (if-let [message (.getMessage e)]
     (cond
-      (strx/substring? "ORA-02291" message) (parse-constraint-name message)
-      (strx/substring? "ORA-00001" message) (parse-constraint-name message)
+      (strx/substring? "ORA-02291" message)
+        {:violated-constraint (parse-constraint-name message) :type ::foreign-key-constraint}
+      (strx/substring? "ORA-00001" message)
+        {:violated-constraint (parse-constraint-name message) :type ::unique-constraint}
       :else (c/maybe-nil violated-constraint nil (.getCause e)))))
 
 (defn- default-error-message [sql params]
@@ -27,7 +29,7 @@
       (c/if-let* [violated-constraint (violated-constraint e)
                   error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
                   message-template (or (:message error) (default-error-message sql params))]
-        (ss/throw+ (merge {:sql sql :violated-constraint violated-constraint} error error-parameters)
+        (ss/throw+ (merge {:sql sql} violated-constraint error error-parameters)
                    (strx/interpolate message-template error-parameters))
         (ss/throw+ {:sql sql} (default-error-message sql params)))))))
 
@@ -109,3 +111,21 @@
 
   [updatecount errorform]
     `(if (> ~updatecount 0) nil (let [e# ~errorform] (ss/throw+ e# (:message e#)))))
+
+(defn insert-ignore-unique-constraint-error [insert-operation & args]
+  (ss/try+
+    (apply insert-operation args)
+    (catch [:type ::unique-constraint] {})))
+
+(defn upsert
+  "Update or insert, if not exists a row to the database.
+   DB operations must use db-exception-translation defined in this namespace.
+   Update operation must return the count of rows updated."
+
+  [update-operation insert-operation & args]
+  (case (apply update-operation args)
+    0 (ss/try+
+        (apply insert-operation args)
+        (catch [:type ::unique-constraint] {}
+          (apply update-operation args)))
+    (ss/throw+ {:message "Unexpected system error - too many rows updated"})))

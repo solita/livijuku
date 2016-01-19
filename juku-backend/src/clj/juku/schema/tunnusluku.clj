@@ -45,6 +45,15 @@
    :korvaus (s/maybe s/Num)
    :nousukorvaus (s/maybe s/Num)})
 
+(s/defschema Kustannus
+  "Kuukausittainen liikennöintikorvaus."
+  {
+   :asiakaspalvelu (s/maybe s/Num)
+   :konsulttipalvelu (s/maybe s/Num)
+   :lipunmyyntipalkkio (s/maybe s/Num)
+   :jarjestelmat (s/maybe s/Num)
+   :muutpalvelut(s/maybe s/Num)})
+
 (s/defschema Alue
   "Alueen tiedot"
   {
@@ -55,6 +64,8 @@
    :asukasmaara (s/maybe s/Num),
    :työpaikkamaara (s/maybe s/Num),
    :henkilosto (s/maybe s/Num),
+
+   :kustannus Kustannus
 
    :pendeloivienosuus (s/maybe s/Num),
    :henkiloautoliikennesuorite (s/maybe s/Num),

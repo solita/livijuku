@@ -114,3 +114,6 @@ insert into fact_liikennointikorvaus (vuosi, kuukausi, organisaatioid, sopimusty
             l.sopimustyyppitunnus = :sopimustyyppitunnus
   )
   order by vuosi, kuukausi, organisaatioid, sopimustyyppitunnus
+
+-- name: select-alue
+select * from fact_alue where vuosi = :vuosi and organisaatioid = :organisaatioid
