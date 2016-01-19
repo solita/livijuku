@@ -112,7 +112,7 @@
                       organisaatioid :- Long
                       sopimustyyppitunnus :- s/Str]
         :summary "Hae organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
-        (ok (service/find-lipputulo vuosi organisaatioid sopimustyyppitunnus)))
+        (ok (service/find-liikennointikorvaus vuosi organisaatioid sopimustyyppitunnus)))
   (PUT* "/liikennointikorvaus/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return nil
@@ -121,5 +121,5 @@
                       sopimustyyppitunnus :- s/Str]
         :body [korvaukset [Liikennointikorvaus]]
         :summary "Tallenna organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
-        (ok (service/save-lipputulo! vuosi organisaatioid sopimustyyppitunnus korvaukset))))
+        (ok (service/save-liikennointikorvaus! vuosi organisaatioid sopimustyyppitunnus korvaukset))))
 
