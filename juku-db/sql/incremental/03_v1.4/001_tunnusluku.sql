@@ -65,10 +65,14 @@ create table fact_lipputulo (
   kuukausi number(2),
   organisaatioid not null references organisaatio (id),
   sopimustyyppitunnus not null references sopimustyyppi (tunnus),
-  lippuluokkatunnus not null references lippuluokka (tunnus),
+  --lippuluokkatunnus not null references lippuluokka (tunnus),
 
-  tulo number(12, 2),
-  constraint fact_lipputulo_pk primary key (vuosi, kuukausi, organisaatioid, sopimustyyppitunnus, lippuluokkatunnus)
+  kertalipputulo number(12, 2),
+  arvolipputulo number(12, 2),
+  kausilipputulo number(12, 2),
+  lipputulo number(12, 2),
+
+  constraint fact_lipputulo_pk primary key (vuosi, kuukausi, organisaatioid, sopimustyyppitunnus)
 );
 
 create table fact_liikennointikorvaus (
