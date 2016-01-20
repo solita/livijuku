@@ -88,7 +88,7 @@
 (create-crud-operations "kalusto" s/Kalusto "fact_kalusto" :paastoluokkatunnus)
 (create-crud-operations "lipputulo" s/Lipputulo "fact_lipputulo" :kuukausi)
 (create-crud-operations "liikennointikorvaus" s/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
-(create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykelukumaara)
+(create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :vyohykemaara)
 
 ; *** Alueen tiedot ***
 

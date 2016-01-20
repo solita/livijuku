@@ -34,8 +34,7 @@
 
 (test-tunnuslukuservice
   "lippuhinta" tl/save-lippuhinta! tl/find-lippuhinta
-  (map #(assoc (map/map-values (constantly 1M) tls/Lippuhinta) :vyohykelukumaara (first %) :lippuluokkatunnus (second %))
-       (for [l (range 1M 7M) lippuluokka ["KE" "AR" "KA" "0"]] [l lippuluokka])))
+  (map #(assoc (map/map-values (constantly 1M) tls/Lippuhinta) :vyohykemaara %) (range 1M 7M)))
 
 (fact "Aluetiedon lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]

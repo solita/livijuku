@@ -3,7 +3,7 @@
 begin
   model.new_classification('sopimustyyppi', 'Sopimustyyppi', 3, 'SOTYYPPI');
   model.new_classification('paastoluokka', 'Päästöluokka', 2, 'PLUOKKA');
-  model.new_classification('lippuluokka', 'Lippuluokka', 2, 'LLUOKKA');
+  --model.new_classification('lippuluokka', 'Lippuluokka', 2, 'LLUOKKA');
   model.new_classification('viikonpaivaluokka', 'Viikonpäiväluokka', 2, 'VLUOKKA');
   model.new_classification('kustannuslaji', 'Kustannuslaji', 2, 'KLAJI');
 end;
@@ -26,11 +26,6 @@ insert into paastoluokka (tunnus, nimi) values ('E3', 'Euro 3');
 insert into paastoluokka (tunnus, nimi) values ('E4', 'Euro 4');
 insert into paastoluokka (tunnus, nimi) values ('E5', 'Euro 5');
 insert into paastoluokka (tunnus, nimi) values ('E6', 'Euro 6');
-
-insert into lippuluokka (tunnus, nimi) values ('KE', 'Kertalippu');
-insert into lippuluokka (tunnus, nimi) values ('AR', 'Arvolippu');
-insert into lippuluokka (tunnus, nimi) values ('KA', 'Kausilippu');
-insert into lippuluokka (tunnus, nimi) values ('0', 'Mikä tahansa lippu');
 
 /* Faktataulut */
 
@@ -90,11 +85,13 @@ create table fact_lippuhinta (
   vuosi number(4),
   organisaatioid not null references organisaatio (id),
   sopimustyyppitunnus not null references sopimustyyppi (tunnus),
-  lippuluokkatunnus not null references lippuluokka (tunnus),
-  vyohykelukumaara number(1),
-  
-  hinta number(12, 2),
-  constraint fact_lippuhinta_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus, lippuluokkatunnus, vyohykelukumaara)
+  --lippuluokkatunnus not null references lippuluokka (tunnus),
+  vyohykemaara number(1),
+
+  kertalippuhinta number(12, 2),
+  kausilippuhinta number(12, 2),
+
+  constraint fact_lippuhinta_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus, vyohykemaara)
 );
 
 create table fact_kalusto (

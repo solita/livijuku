@@ -26,9 +26,10 @@
 (s/defschema Lippuhinta
   "Lipunhinta tietyssä lippuluokassa."
   {
-   :lippuluokkatunnus s/Str,
-   :vyohykelukumaara s/Num
-   :hinta (s/maybe s/Num)})
+   :vyohykemaara s/Num
+
+   :kertalippuhinta (s/maybe s/Num)
+   :kausilippuhinta (s/maybe s/Num)})
 
 (s/defschema Lipputulo
   "Lipunmyynnin kuukausitulo tietyssä lippuluokassa."
