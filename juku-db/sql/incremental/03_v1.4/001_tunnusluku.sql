@@ -3,9 +3,7 @@
 begin
   model.new_classification('sopimustyyppi', 'Sopimustyyppi', 3, 'SOTYYPPI');
   model.new_classification('paastoluokka', 'Päästöluokka', 2, 'PLUOKKA');
-  --model.new_classification('lippuluokka', 'Lippuluokka', 2, 'LLUOKKA');
   model.new_classification('viikonpaivaluokka', 'Viikonpäiväluokka', 2, 'VLUOKKA');
-  model.new_classification('kustannuslaji', 'Kustannuslaji', 2, 'KLAJI');
 end;
 /
 
