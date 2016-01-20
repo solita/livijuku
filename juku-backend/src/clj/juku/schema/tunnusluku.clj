@@ -26,7 +26,7 @@
 (s/defschema Lippuhinta
   "Lipunhinta tietyssä lippuluokassa."
   {
-   :lippuluokkaluokkatunnus s/Str,
+   :lippuluokkatunnus s/Str,
    :vyohykelukumaara s/Num
    :hinta (s/maybe s/Num)})
 
@@ -34,7 +34,7 @@
   "Lipunmyynnin kuukausitulo tietyssä lippuluokassa."
   {
    :kuukausi s/Num
-   :lippuluokkaluokkatunnus s/Str,
+   :lippuluokkatunnus s/Str,
 
    :tulo (s/maybe s/Num)})
 

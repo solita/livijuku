@@ -56,39 +56,39 @@ insert into fact_kalusto (vuosi, paastoluokkatunnus, organisaatioid, sopimustyyp
   order by vuosi, paastoluokkatunnus, organisaatioid, sopimustyyppitunnus
 
 -- name: select-lippuhinta
-select lippuluokkaluokkatunnus, vyohykelukumaara, hinta
+select lippuluokkatunnus, vyohykelukumaara, hinta
 from fact_lippuhinta
 where vuosi = :vuosi and organisaatioid = :organisaatioid and sopimustyyppitunnus = :sopimustyyppitunnus
 
 -- name: insert-default-lippuhinta-if-not-exists!
-insert into fact_lippuhinta (vuosi, lippuluokkaluokkatunnus, vyohykelukumaara, organisaatioid, sopimustyyppitunnus)
+insert into fact_lippuhinta (vuosi, lippuluokkatunnus, vyohykelukumaara, organisaatioid, sopimustyyppitunnus)
   select :vuosi vuosi,
-         tunnus lippuluokkaluokkatunnus, column_value vyohykelukumaara,
+         tunnus lippuluokkatunnus, column_value vyohykelukumaara,
          :organisaatioid organisaatioid,
          :sopimustyyppitunnus sopimustyyppitunnus
   from lippuluokka, table(numbers(1,6))
   where not exists (
-      select 1 from fact_kalusto l
+      select 1 from fact_lippuhinta l
       where l.vuosi = :vuosi and
             l.organisaatioid = :organisaatioid and
             l.sopimustyyppitunnus = :sopimustyyppitunnus
   )
-  order by vuosi, lippuluokkaluokkatunnus, vyohykelukumaara, organisaatioid, sopimustyyppitunnus
+  order by vuosi, lippuluokkatunnus, vyohykelukumaara, organisaatioid, sopimustyyppitunnus
 
 -- name: select-lipputulo
-select lippuluokkaluokkatunnus, kuukausi, hinta
-from fact_lippuhinta
+select lippuluokkatunnus, kuukausi, tulo
+from fact_lipputulo
 where vuosi = :vuosi and organisaatioid = :organisaatioid and sopimustyyppitunnus = :sopimustyyppitunnus
 
 -- name: insert-default-lipputulo-if-not-exists!
-insert into fact_lippuhinta (vuosi, lippuluokkaluokkatunnus, kuukausi, organisaatioid, sopimustyyppitunnus)
+insert into fact_lipputulo (vuosi, lippuluokkatunnus, kuukausi, organisaatioid, sopimustyyppitunnus)
   select :vuosi vuosi,
          tunnus lippuluokkaluokkatunnus, column_value kuukausi,
          :organisaatioid organisaatioid,
          :sopimustyyppitunnus sopimustyyppitunnus
   from lippuluokka, table(numbers(1,12))
   where not exists (
-      select 1 from fact_kalusto l
+      select 1 from fact_lipputulo l
       where l.vuosi = :vuosi and
             l.organisaatioid = :organisaatioid and
             l.sopimustyyppitunnus = :sopimustyyppitunnus
