@@ -26,8 +26,7 @@
 
 (test-tunnuslukuservice
   "lipputulo" tl/save-lipputulo! tl/find-lipputulo
-  (map #(assoc (map/map-values (constantly 1M) tls/Lipputulo) :kuukausi (first %) :lippuluokkatunnus (second %))
-       (for [kk (range 1M 13M) lippuluokka ["KE" "AR" "KA" "0"]] [kk lippuluokka])))
+  (map #(assoc (map/map-values (constantly 1M) tls/Lipputulo) :kuukausi %) (range 1M 13M)))
 
 (test-tunnuslukuservice
   "liikennöintikorvaus" tl/save-liikennointikorvaus! tl/find-liikennointikorvaus

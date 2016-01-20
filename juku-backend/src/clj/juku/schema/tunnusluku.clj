@@ -34,9 +34,11 @@
   "Lipunmyynnin kuukausitulo tietyssä lippuluokassa."
   {
    :kuukausi s/Num
-   :lippuluokkatunnus s/Str,
 
-   :tulo (s/maybe s/Num)})
+   :kertalipputulo (s/maybe s/Num)
+   :arvolipputulo (s/maybe s/Num)
+   :kausilipputulo (s/maybe s/Num)
+   :lipputulo (s/maybe s/Num)})
 
 (s/defschema Liikennointikorvaus
   "Kuukausittainen liikennöintikorvaus."

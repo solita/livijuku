@@ -86,7 +86,7 @@
 (create-crud-operations "liikennevuositilasto" s/Liikennekuukausi "fact_liikenne" :kuukausi)
 (create-crud-operations "liikenneviikkotilasto" s/Liikennepaiva "fact_liikenneviikko" :viikonpaivaluokkatunnus)
 (create-crud-operations "kalusto" s/Kalusto "fact_kalusto" :paastoluokkatunnus)
-(create-crud-operations "lipputulo" s/Lipputulo "fact_lipputulo" :kuukausi :lippuluokkatunnus)
+(create-crud-operations "lipputulo" s/Lipputulo "fact_lipputulo" :kuukausi)
 (create-crud-operations "liikennointikorvaus" s/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
 (create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :lippuluokkatunnus :vyohykelukumaara)
 
