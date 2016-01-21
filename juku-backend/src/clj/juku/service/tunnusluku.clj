@@ -88,7 +88,6 @@
 (create-crud-operations "kalusto" s/Kalusto "fact_kalusto" :paastoluokkatunnus)
 (create-crud-operations "lipputulo" s/Lipputulo "fact_lipputulo" :kuukausi)
 (create-crud-operations "liikennointikorvaus" s/Liikennointikorvaus "fact_liikennointikorvaus" :kuukausi)
-(create-crud-operations "lippuhinta" s/Lippuhinta "fact_lippuhinta" :vyohykemaara)
 
 ; *** Alueen tiedot ***
 
@@ -106,3 +105,22 @@
 
 (defn save-alue! [vuosi organisaatioid alue]
   (dml/upsert update-alue! insert-alue! vuosi organisaatioid alue))
+
+; *** Lippuhinta tiedot ***
+
+(def coerce-lippuhinta (coerce/coercer s/Lippuhinta))
+
+(defn find-lippuhinnat [vuosi organisaatioid]
+  (map coerce-lippuhinta (select-lippuhinta {:vuosi vuosi :organisaatioid organisaatioid})))
+
+(defn init-lippuhinta! [vuosi organisaatioid]
+  (dml/insert-ignore-unique-constraint-error insert-default-lippuhinta-if-not-exists!
+                                             {:vuosi vuosi :organisaatioid organisaatioid}))
+(defn save-lippuhinnat! [vuosi organisaatioid data]
+  (with-transaction
+    (init-lippuhinta! vuosi organisaatioid)
+    (let [id {:vuosi vuosi :organisaatioid organisaatioid}
+          batch (sort-by :vyohykemaara data)]
+      (dml/update-batch-where! db "fact_lippuhinta"
+                               (map (c/partial-first-arg dissoc :vyohykemaara) batch)
+                               (map (partial merge id) (map (c/partial-first-arg select-keys [:vyohykemaara]) batch))))))

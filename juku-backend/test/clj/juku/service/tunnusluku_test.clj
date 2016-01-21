@@ -32,9 +32,8 @@
   "liikennöintikorvaus" tl/save-liikennointikorvaus! tl/find-liikennointikorvaus
   (map #(assoc (map/map-values (constantly 1M) tls/Liikennointikorvaus) :kuukausi %) (range 1M 13M)))
 
-(test-tunnuslukuservice
-  "lippuhinta" tl/save-lippuhinta! tl/find-lippuhinta
-  (map #(assoc (map/map-values (constantly 1M) tls/Lippuhinta) :vyohykemaara %) (range 1M 7M)))
+
+; *** testit tunnusluvuille joiden dimensio ei ole muotoa: vuosi, organisaatio, sopimustyyppi [, extra dimensiot]
 
 (fact "Aluetiedon lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
@@ -43,4 +42,11 @@
 
       (tl/save-alue! 2016 1 alue)
       (tl/find-alue 2016 1) => alue)))
+
+(fact "Lippuhinnan lisääminen ja haku"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [lippuhinnat (map #(assoc (map/map-values (constantly 1M) tls/Lippuhinta) :vyohykemaara %) (range 1M 7M))]
+
+      (tl/save-lippuhinnat! 2016 1 lippuhinnat)
+      (tl/find-lippuhinnat 2016 1) => lippuhinnat)))
 

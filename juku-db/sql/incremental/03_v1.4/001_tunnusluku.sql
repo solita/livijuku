@@ -82,7 +82,7 @@ create table fact_liikennointikorvaus (
 create table fact_lippuhinta (
   vuosi number(4),
   organisaatioid not null references organisaatio (id),
-  sopimustyyppitunnus not null references sopimustyyppi (tunnus),
+  --sopimustyyppitunnus not null references sopimustyyppi (tunnus),
   --lippuluokkatunnus not null references lippuluokka (tunnus),
   vyohykemaara number(1),
 

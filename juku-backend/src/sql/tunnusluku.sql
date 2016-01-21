@@ -58,22 +58,20 @@ insert into fact_kalusto (vuosi, paastoluokkatunnus, organisaatioid, sopimustyyp
 -- name: select-lippuhinta
 select vyohykemaara, kertalippuhinta, kausilippuhinta
 from fact_lippuhinta
-where vuosi = :vuosi and organisaatioid = :organisaatioid and sopimustyyppitunnus = :sopimustyyppitunnus
+where vuosi = :vuosi and organisaatioid = :organisaatioid
 
 -- name: insert-default-lippuhinta-if-not-exists!
-insert into fact_lippuhinta (vuosi, vyohykemaara, organisaatioid, sopimustyyppitunnus)
+insert into fact_lippuhinta (vuosi, vyohykemaara, organisaatioid)
   select :vuosi vuosi,
          column_value vyohykelukumaara,
-         :organisaatioid organisaatioid,
-         :sopimustyyppitunnus sopimustyyppitunnus
+         :organisaatioid organisaatioid
   from table(numbers(1,6))
   where not exists (
       select 1 from fact_lippuhinta l
       where l.vuosi = :vuosi and
-            l.organisaatioid = :organisaatioid and
-            l.sopimustyyppitunnus = :sopimustyyppitunnus
+            l.organisaatioid = :organisaatioid
   )
-  order by vuosi, vyohykelukumaara, organisaatioid, sopimustyyppitunnus
+  order by vuosi, vyohykelukumaara, organisaatioid
 
 -- name: select-lipputulo
 select kuukausi, kertalipputulo, arvolipputulo, kausilipputulo, lipputulo

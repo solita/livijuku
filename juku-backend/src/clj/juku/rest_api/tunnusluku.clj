@@ -67,23 +67,21 @@
         (ok (service/save-kalusto! vuosi organisaatioid sopimustyyppitunnus kalusto)))
 
   ;; Lippuhinta
-  (GET* "/lippuhinta/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET* "/lippuhinta/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return [Lippuhinta]
         :path-params [vuosi :- Long
-                      organisaatioid :- Long
-                      sopimustyyppitunnus :- s/Str]
+                      organisaatioid :- Long]
         :summary "Hae organisaation lippujen hinnat tietylle vuodella ja sopimustyypille."
-        (ok (service/find-lippuhinta vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/lippuhinta/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+        (ok (service/find-lippuhinnat vuosi organisaatioid)))
+  (PUT* "/lippuhinta/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
-                      organisaatioid :- Long
-                      sopimustyyppitunnus :- s/Str]
+                      organisaatioid :- Long]
         :body [lippuhinnat [Lippuhinta]]
         :summary "Tallenna organisaation lippujen hinnat tietylle vuodella ja sopimustyypille."
-        (ok (service/save-lippuhinta! vuosi organisaatioid sopimustyyppitunnus lippuhinnat)))
+        (ok (service/save-lippuhinnat! vuosi organisaatioid lippuhinnat)))
 
   ;; Lipputulo
   (GET* "/lipputulo/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
