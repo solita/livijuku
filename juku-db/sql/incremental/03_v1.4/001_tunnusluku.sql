@@ -129,6 +129,16 @@ create table fact_alue (
   constraint fact_alue_pk primary key (vuosi, organisaatioid)
 );
 
+create table tunnuslukukommentti (
+  vuosi number(4),
+  organisaatioid not null references organisaatio (id),
+  sopimustyyppitunnus not null references sopimustyyppi (tunnus),
+
+  kommentti clob,
+
+  constraint tunnuslukukommentti_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus)
+);
+
 begin
   model.define_mutable(model.new_entity('fact_liikenne', 'Liikennevuosi fakta', 'FCTLIKK'));
   model.define_mutable(model.new_entity('fact_liikenneviikko', 'Liikenneviikko fakta', 'FCTLIVIIKKO'));
@@ -139,5 +149,7 @@ begin
   model.define_mutable(model.new_entity('fact_kalusto', 'Kalusto fakta', 'FCTKALUSTO'));
 
   model.define_mutable(model.new_entity('fact_alue', 'Alue fakta', 'FCTALUE'));
+
+  model.define_mutable(model.new_entity('tunnuslukukommentti', 'Tunnuslukukommentti', 'TLKOMMENTTI'));
 end;
 /
