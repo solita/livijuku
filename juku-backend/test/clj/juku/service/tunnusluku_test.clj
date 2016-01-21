@@ -54,7 +54,7 @@
 
 (fact "Kommentin lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
-    (let [kommentti (str/join (repeat 40000 "test"))]
+    (let [kommentti (str/join (repeat 40000 "testäöå"))]
 
       (tl/save-kommentti! 2016 1 "BR" kommentti)
       (tl/find-kommentti 2016 1 "BR") => kommentti)))
