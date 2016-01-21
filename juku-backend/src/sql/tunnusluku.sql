@@ -136,3 +136,7 @@ select
 
   kommentti
 from fact_alue where vuosi = :vuosi and organisaatioid = :organisaatioid
+
+-- name: select-kommentti
+select kommentti from tunnuslukukommentti
+where vuosi = :vuosi and organisaatioid = :organisaatioid and sopimustyyppitunnus = :sopimustyyppitunnus

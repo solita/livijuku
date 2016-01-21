@@ -3,7 +3,8 @@
             [juku.service.test :as test]
             [juku.service.tunnusluku :as tl]
             [juku.schema.tunnusluku :as tls]
-            [common.map :as map]))
+            [common.map :as map]
+            [clojure.string :as str]))
 
 (defn test-tunnuslukuservice [name save find data]
   (fact {:midje/description (str "Tunnuslukupalvelutesti - lisääminen ja haku - " name)}
@@ -51,3 +52,9 @@
       (tl/save-lippuhinnat! 2016 1 lippuhinnat)
       (tl/find-lippuhinnat 2016 1) => lippuhinnat)))
 
+(fact "Kommentin lisääminen ja haku"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [kommentti (str/join (repeat 40000 "test"))]
+
+      (tl/save-kommentti! 2016 1 "BR" kommentti)
+      (tl/find-kommentti 2016 1 "BR") => kommentti)))

@@ -127,3 +127,18 @@
                                (map (partial merge id) (map (c/partial-first-arg select-keys [:vyohykemaara]) batch))))))
 
 ; *** kommentit ***
+
+(defn find-kommentti [vuosi organisaatioid sopimustyyppitunnus]
+  (first (map (comp coerce/clob->string :kommentti)
+              (select-kommentti (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus)))))
+
+(defn- insert-kommentti! [vuosi organisaatioid sopimustyyppitunnus kommentti]
+  (let [data (assoc (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus) :kommentti kommentti)]
+    (dml/insert db "tunnuslukukommentti" data alue-constraint-errors data)))
+
+(defn- update-kommentti! [vuosi organisaatioid sopimustyyppitunnus kommentti]
+  (dml/update-where! db "tunnuslukukommentti" {:kommentti kommentti}
+                     (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus)))
+
+(defn save-kommentti! [vuosi organisaatioid sopimustyyppitunnus kommentti]
+  (dml/upsert update-kommentti! insert-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti))
