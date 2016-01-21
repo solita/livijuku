@@ -122,14 +122,14 @@
         (ok (service/save-liikennointikorvaus! vuosi organisaatioid sopimustyyppitunnus korvaukset)))
 
   ;; Aluetiedot
-  (GET* "/alue/:vuosi/:organisaatioid/" []
+  (GET* "/alue/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return Alue
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
         :summary "Hae organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
         (ok (service/find-alue vuosi organisaatioid)))
-  (PUT* "/alue/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT* "/alue/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
