@@ -116,6 +116,7 @@
 (defn init-lippuhinta! [vuosi organisaatioid]
   (dml/insert-ignore-unique-constraint-error insert-default-lippuhinta-if-not-exists!
                                              {:vuosi vuosi :organisaatioid organisaatioid}))
+
 (defn save-lippuhinnat! [vuosi organisaatioid data]
   (with-transaction
     (init-lippuhinta! vuosi organisaatioid)
@@ -124,3 +125,5 @@
       (dml/update-batch-where! db "fact_lippuhinta"
                                (map (c/partial-first-arg dissoc :vyohykemaara) batch)
                                (map (partial merge id) (map (c/partial-first-arg select-keys [:vyohykemaara]) batch))))))
+
+; *** kommentit ***

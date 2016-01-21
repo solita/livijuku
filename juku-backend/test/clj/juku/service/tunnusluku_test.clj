@@ -38,7 +38,8 @@
 (fact "Aluetiedon lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
     (let [alue (assoc (map/map-values (constantly 1M) tls/Alue)
-                 :kustannus (map/map-values (constantly 1M) tls/Kustannus))]
+                 :kustannus (map/map-values (constantly 1M) tls/Kustannus)
+                 :kommentti "testtest")]
 
       (tl/save-alue! 2016 1 alue)
       (tl/find-alue 2016 1) => alue)))

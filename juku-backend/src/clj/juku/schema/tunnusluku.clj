@@ -73,4 +73,6 @@
    :pendeloivienosuus (s/maybe s/Num),
    :henkiloautoliikennesuorite (s/maybe s/Num),
    :autoistumisaste (s/maybe s/Num),
-   :asiakastyytyvaisyys (s/maybe s/Num)})
+   :asiakastyytyvaisyys (s/maybe s/Num)
+
+   :kommentti (s/maybe s/Str)})

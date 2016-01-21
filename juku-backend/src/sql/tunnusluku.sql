@@ -132,5 +132,7 @@ select
   kustannus_konsulttipalvelu,
   kustannus_lipunmyyntipalkkio,
   kustannus_jarjestelmat,
-  kustannus_muutpalvelut
+  kustannus_muutpalvelut,
+
+  kommentti
 from fact_alue where vuosi = :vuosi and organisaatioid = :organisaatioid
