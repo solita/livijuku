@@ -124,7 +124,7 @@
   ;; Aluetiedot
   (GET* "/alue/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
-        :return Alue
+        :return (s/maybe Alue)
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
         :summary "Hae organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
@@ -136,5 +136,24 @@
                       organisaatioid :- Long]
         :body [alue Alue]
         :summary "Tallenna organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
-        (ok (service/save-alue! vuosi organisaatioid alue))))
+        (ok (service/save-alue! vuosi organisaatioid alue)))
+
+  ;; Kommentit
+  #_(GET* "/kommentti/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+        :auth [:view-tunnusluvut]
+        :return (s/maybe s/Str)
+        :path-params [vuosi :- Long
+                      organisaatioid :- Long
+                      sopimustyyppitunnus :- s/Str]
+        :summary "Hae organisaation tunnuslukukommentit tietylle vuodella ja sopimustyypille."
+        (ok (service/find-liikenneviikkotilasto vuosi organisaatioid sopimustyyppitunnus)))
+  #_(PUT* "/kommentti/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+        :auth [:view-tunnusluvut]
+        :return nil
+        :path-params [vuosi :- Long
+                      organisaatioid :- Long
+                      sopimustyyppitunnus :- s/Str]
+        :body [viikko [Liikennepaiva]]
+        :summary "Tallenna organisaation tunnuslukukommentit tietylle vuodella ja sopimustyypille."
+        (ok (service/save-liikenneviikkotilasto! vuosi organisaatioid sopimustyyppitunnus viikko))))
 
