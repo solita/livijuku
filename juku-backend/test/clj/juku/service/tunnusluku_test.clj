@@ -34,7 +34,7 @@
   (map #(assoc (map/map-values (constantly 1M) tls/Liikennointikorvaus) :kuukausi %) (range 1M 13M)))
 
 
-; *** testit tunnusluvuille joiden dimensio ei ole muotoa: vuosi, organisaatio, sopimustyyppi [, extra dimensiot]
+; *** testit tunnusluvuille joiden dimensio ei ole muotoa: vuosi, organisaatio, sopimustyyppi, extra dimensio
 
 (fact "Aluetiedon lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
