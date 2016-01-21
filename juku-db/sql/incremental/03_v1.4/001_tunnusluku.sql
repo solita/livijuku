@@ -82,14 +82,12 @@ create table fact_liikennointikorvaus (
 create table fact_lippuhinta (
   vuosi number(4),
   organisaatioid not null references organisaatio (id),
-  --sopimustyyppitunnus not null references sopimustyyppi (tunnus),
-  --lippuluokkatunnus not null references lippuluokka (tunnus),
   vyohykemaara number(1),
 
   kertalippuhinta number(12, 2),
   kausilippuhinta number(12, 2),
 
-  constraint fact_lippuhinta_pk primary key (vuosi, organisaatioid, sopimustyyppitunnus, vyohykemaara)
+  constraint fact_lippuhinta_pk primary key (vuosi, organisaatioid, vyohykemaara)
 );
 
 create table fact_kalusto (
