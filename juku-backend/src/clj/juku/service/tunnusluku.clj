@@ -129,7 +129,7 @@
 ; *** kommentit ***
 
 (defn find-kommentti [vuosi organisaatioid sopimustyyppitunnus]
-  (first (map (comp coerce/clob->string :kommentti)
+  (first (map (comp (c/nil-safe coerce/clob->string) :kommentti)
               (select-kommentti (liikennevuosi-id vuosi organisaatioid sopimustyyppitunnus)))))
 
 (defn- insert-kommentti! [vuosi organisaatioid sopimustyyppitunnus kommentti]

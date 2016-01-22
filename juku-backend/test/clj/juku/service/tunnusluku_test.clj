@@ -58,3 +58,9 @@
 
       (tl/save-kommentti! 2016 1 "BR" kommentti)
       (tl/find-kommentti 2016 1 "BR") => kommentti)))
+
+(fact "Kommentin lisääminen ja haku - tyhjä kommentti"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (tl/save-kommentti! 2016 1 "BR" "")
+    (tl/find-kommentti 2016 1 "BR") => nil))
+
