@@ -153,7 +153,7 @@
         :path-params [vuosi :- Long
                       organisaatioid :- Long
                       sopimustyyppitunnus :- s/Str]
-        :body-params [kommentti :- s/Str]
+        :body-params [kommentti :- (s/maybe s/Str)]
         :summary "Tallenna organisaation tunnuslukukommentit tietylle vuodella ja sopimustyypille."
         (ok (service/save-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti))))
 
