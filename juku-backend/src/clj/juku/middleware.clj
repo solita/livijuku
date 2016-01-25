@@ -63,11 +63,11 @@
         (error r/forbidden "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt)
        organisaatio-name (h/parse-header headers :oam-user-organization nil)
         (error r/bad-request "Käyttäjän " uid " organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
-       privileges (c/nil-if empty? (user/find-privileges roles))
-        (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")
        orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :oam-user-department))
         (error r/forbidden "Käyttäjän " uid " organisaatiota: " organisaatio-name
-              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")]
+              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")
+       privileges (c/nil-if empty? (user/find-privileges roles orgnisaatio-id))
+        (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")]
 
       (current-user/with-user-id uid
         (user/with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
