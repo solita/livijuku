@@ -37,7 +37,7 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus, tilinume
        sisalto.muokkaaja,
        case when sisalto.muokkausaika is null then hakemus.muokkausaika else sisalto.muokkausaika end muokkausaika,
        lahetys.*,
-       ely_siirtymaaikasopimukset, ely_joukkoliikennetukikunnat -- ely hakemuksen perustiedot
+       ely_kaupunkilipputuki, ely_seutulipputuki, ely_ostot, ely_kehittaminen -- ely hakemuksen perustiedot
 from hakemus_view hakemus left join sisalto on (1=1) left join lahetys on (1=1)
 where id = :hakemusid
 
@@ -77,7 +77,8 @@ select id, diaarinumero, vuosi, hakemustyyppitunnus, hakemustilatunnus,
   where hakemusid = hakemus.id) +
   (select nvl(sum(kehityshanke.arvo), 0) from kehityshanke
   where hakemusid = hakemus.id) +
-  nvl(hakemus.ely_siirtymaaikasopimukset, 0) + nvl(hakemus.ely_joukkoliikennetukikunnat, 0) "haettu-avustus",
+  nvl(hakemus.ely_kaupunkilipputuki, 0) + nvl(hakemus.ely_seutulipputuki, 0) +
+  nvl(hakemus.ely_ostot, 0) + nvl(hakemus.ely_kehittaminen, 0)"haettu-avustus",
 
   nvl(suunniteltuavustus, 0) "myonnettava-avustus"
 from hakemus_view hakemus

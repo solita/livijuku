@@ -15,7 +15,7 @@ select
     else coalesce(kasittelija.nimi, kasittelija.etunimi || ' ' || kasittelija.sukunimi)
   end kasittelijanimi,
   hakemus.luontitunnus, hakemus.suunniteltuavustus,
-  ely_siirtymaaikasopimukset, ely_joukkoliikennetukikunnat
+  ely_kaupunkilipputuki, ely_seutulipputuki, ely_ostot, ely_kehittaminen
 from hakemus 
 inner join hakuaika 
   on hakemus.vuosi = hakuaika.vuosi and 
