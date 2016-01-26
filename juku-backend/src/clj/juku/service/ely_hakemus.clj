@@ -119,8 +119,7 @@
         haettuavustus
           (+ (reduce (coll/reduce-function + (fn [x] (- (+ (:sidotut x) (:uudet x)) (or (:tulot x) 0)))) 0 maararahatarpeet)
              (reduce (coll/reduce-function + :arvo) 0 kehityshankkeet)
-             (or (:siirtymaaikasopimukset ely-hakemus) 0)
-             (or (:joukkoliikennetukikunnat ely-hakemus) 0))]
+             (reduce + (map #(if (number? %) % 0) (vals ely-hakemus))))]
     (merge ely-hakemus
       {:maararahatarpeet (maarahatarpeet-section maararahatarpeet)
        :kehityshankkeet (kehityshankkeet-section kehityshankkeet)

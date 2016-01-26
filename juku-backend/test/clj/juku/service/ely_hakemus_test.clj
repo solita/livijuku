@@ -6,6 +6,7 @@
             [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [juku.service.ely-hakemus :as ely]
+            [juku.schema.ely-hakemus :as elys]
             [juku.service.avustuskohde :as ak]
             [juku.service.test :as test]
             [juku.db.sql :as dml]
@@ -15,7 +16,8 @@
             [juku.headers :as headers]
             [common.string :as strx]
             [juku.service.paatos :as p]
-            [common.core :as c]))
+            [common.core :as c]
+            [common.map :as m]))
 
 (defn- insert-maararahatarve! [hakemusid maararahatarve]
   (:id (dml/insert db "maararahatarve" (assoc maararahatarve :hakemusid hakemusid) ely/maararahatarve-constraint-errors maararahatarve)))
@@ -37,11 +39,7 @@
 
 (defn maararahatarve-bs [tulot] (assoc (maararahatarve "BS") :tulot tulot))
 
-(def ely-perustiedot
-  {
-    :siirtymaaikasopimukset 1M   ; ELY hakemuksen siirtymäajan sopimukset
-    :joukkoliikennetukikunnat 1M ; ELY hakemuksen joukkoliikennetuki kunnille
-  })
+(def ely-perustiedot (m/map-values (constantly 0.5M) elys/ELY-hakemus))
 
 (fact
   "Määrärahatarpeiden haku"
