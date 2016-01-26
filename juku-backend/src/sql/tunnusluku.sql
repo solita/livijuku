@@ -94,7 +94,7 @@ insert into fact_lipputulo (vuosi, kuukausi, organisaatioid, sopimustyyppitunnus
   order by vuosi, kuukausi, organisaatioid, sopimustyyppitunnus
 
 -- name: select-liikennointikorvaus
-select kuukausi, korvaus, nousukorvaus
+select kuukausi, korvaus, nousukorvaus, nousut
 from fact_liikennointikorvaus
 where vuosi = :vuosi and organisaatioid = :organisaatioid and sopimustyyppitunnus = :sopimustyyppitunnus
 

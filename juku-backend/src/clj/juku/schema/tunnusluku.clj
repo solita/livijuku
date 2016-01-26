@@ -46,7 +46,8 @@
   {
    :kuukausi s/Num
    :korvaus (s/maybe s/Num)
-   :nousukorvaus (s/maybe s/Num)})
+   :nousukorvaus (s/maybe s/Num),
+   :nousut (s/maybe s/Num)})
 
 (s/defschema Kustannus
   "Kuukausittainen liikennöintikorvaus."

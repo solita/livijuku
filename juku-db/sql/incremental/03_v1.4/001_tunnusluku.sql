@@ -76,6 +76,7 @@ create table fact_liikennointikorvaus (
 
   korvaus number(12, 2),
   nousukorvaus number(12, 2),
+  nousut number(9),
   constraint fact_liikennointikorvause_pk primary key (vuosi, kuukausi, organisaatioid, sopimustyyppitunnus)
 );
 
