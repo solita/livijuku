@@ -170,7 +170,7 @@
         content => #"Uudet sopimukset\s+2 e"
         content => #"Kauden tulot\s+1 e"
         content => #"testi1234\s+1 e"
-        content => #"Määrärahatarpeet yhteensä\s+11 e"))
+        content => #"yhteensä\s+11 e"))
 
 (fact "ELY-hakemuksen lähettäminen"
   (test/with-user "juku_hakija_ely" ["juku_hakija"]
