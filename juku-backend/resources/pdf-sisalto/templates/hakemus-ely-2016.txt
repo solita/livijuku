@@ -12,10 +12,10 @@
 	 - Liikenteen ostot				{ostot} e
 	 - Kehittäminen				{kehittaminen} e
 
-	ELY-keskuksen kehityshankkeet:
+	Kehittämishankkeet:
 {kehityshankkeet}
 
-	Määrärahatarpeet yhteensä				{haettuavustus} e
+	Haettava valtionavustus yhteensä				{haettuavustus} e
 
 	Lähettäjä: {lahettaja}
 
