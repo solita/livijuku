@@ -16,6 +16,7 @@
             [juku.rest-api.ely-hakemus :refer [ely-hakemus-routes]]
             [juku.rest-api.tunnusluku :refer [tunnusluku-routes]]
             [juku.rest-api.user :refer [user-routes]]
+            [juku.rest-api.tilastot :refer [tilastot-routes]]
 
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]
@@ -54,6 +55,7 @@
         (context* "" [] :tags ["ELY hakemus API"] ely-hakemus-routes)
         (context* "" [] :tags ["Käyttäjä API"] user-routes)
         (context* "" [] :tags ["Tunnusluku API"] tunnusluku-routes)
+        (context* "" [] :tags ["Tilastot API"] tilastot-routes)
         notfound))
 
 (def app (-> juku-api
