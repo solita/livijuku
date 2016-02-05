@@ -4,13 +4,36 @@
             [juku.schema.tunnusluku :refer :all]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
-            [juku.schema.common :as sc]))
+            [common.core :as c]))
 
-(defroutes* tilastot-routes
+(defroutes*
+  tilastot-routes
 
-  (GET* "/tilastot/nousut" []
-      :auth [:view-tunnusluvut]
-      :return [s/Any]
-      :summary "Testipalvelu käyttöliittymäratkaisun testaukseen."
-    (ok (service/find-nousut))))
+  (GET* "/tilastot/:tunnuslukuid/:organisaatiolajitunnus" []
+        :auth [:view-tunnusluvut]
+        :path-params [tunnuslukuid :- s/Str
+                      organisaatiolajitunnus :- s/Str]
+
+        :query-params [{vuosi :- Long nil}
+                       {kuukausi :- Long nil}
+                       {sopimustyyppitunnus :- s/Str nil}
+                       {paastoluokkatunnus :- s/Str nil}
+                       {viikonpaivaluokkatunnus :- s/Str nil}
+                       {lipputuloluokkatunnus :- s/Str nil}
+                       {lippuhintaluokkatunnus :- s/Str nil}
+                       {kustannuslajitunnus :- s/Str nil}
+                       group-by :- [s/Str]]
+
+        :return [[s/Any]]
+        :summary "Testipalvelu käyttöliittymäratkaisun testaukseen."
+        (ok (service/tunnusluku-tilasto tunnuslukuid organisaatiolajitunnus
+                                        (c/bindings->map vuosi
+                                                         kuukausi
+                                                         sopimustyyppitunnus
+                                                         paastoluokkatunnus
+                                                         viikonpaivaluokkatunnus
+                                                         lipputuloluokkatunnus
+                                                         lippuhintaluokkatunnus
+                                                         kustannuslajitunnus)
+                                        group-by))))
 

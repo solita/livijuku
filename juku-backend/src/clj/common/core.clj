@@ -66,3 +66,13 @@
 
 (defn setup-shutdown-hook! [f]
   (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
+
+(defmacro bindings->map [& bindings]
+    (into {} (map (fn [s] [(keyword (name s)) s]) bindings)))
+
+(defn cartesian-product [colls]
+  (if (empty? colls)
+    '(())
+    (for [x (first colls)
+          more (cartesian-product (rest colls))]
+      (cons x more))))
