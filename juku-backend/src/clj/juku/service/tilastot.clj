@@ -46,34 +46,29 @@
 
 (def join-organisaatio (hsql-h/join :organisaatio [:= :t.organisaatioid :organisaatio.id]))
 
-;; In general select tunnusluku sql-part is a function of group-by and where parameters
-;; this is the default case where it only depends on group-by
-(defn select-tunnusluku [tunnusluku] (fn [_ group-by] {:select (conj group-by tunnusluku)}))
-
-(defn select-pivoted [filter-id value->column-name]
-  (fn [where group-by]
+;; In general tunnusluku field sql-part is a function of group-by and where parameters
+(defn pivoted-fields [filter-id value->column-name]
+  (fn [where _]
     (if-let [filter-value (filter-id where)]
-      {:select (conj group-by (value->column-name filter-value))}
-      {:select (conj group-by [(hsql/raw (str/join " + "(map name (vals value->column-name)))) :tunnusluku])})))
+      (value->column-name filter-value)
+      [(hsql/raw (str/join " + "(map name (vals value->column-name)))) :tunnusluku])))
 
 (def select
-  {:nousut                 (select-tunnusluku :nousut)
-   :lahdot                 (select-tunnusluku :lahdot)
-   :linjakilometrit        (select-tunnusluku :linjakilometrit)
-   :nousut-viikko          (select-tunnusluku :nousut)
-   :lahdot-viikko          (select-tunnusluku :lahdot)
-   :linjakilometrit-viikko (select-tunnusluku :linjakilometrit)
-   :liikennointikorvaus    (select-tunnusluku :korvaus)
-   :lipputulo (select-pivoted :lipputuloluokkatunnus
-                              {"KE" :kertalipputulo "AR" :arvolipputulo "KA" :kausilipputulo "--" :lipputulo})
-   :kalusto   (select-tunnusluku :lukumaara)
+  {:nousut                 (constantly :nousut)
+   :lahdot                 (constantly :lahdot)
+   :linjakilometrit        (constantly :linjakilometrit)
+   :nousut-viikko          (constantly :nousut)
+   :lahdot-viikko          (constantly :lahdot)
+   :linjakilometrit-viikko (constantly :linjakilometrit)
+   :liikennointikorvaus    (constantly :korvaus)
+   :lipputulo              (pivoted-fields
+                             :lipputuloluokkatunnus
+                             {"KE" :kertalipputulo "AR" :arvolipputulo "KA" :kausilipputulo "--" :lipputulo})
+   :kalusto                (constantly :lukumaara)
    :kustannukset
    :lippuhinnat})
 
 (defn tunnusluku-tilasto [tunnusluku organisaatiolajitunnus where group-by]
   )
-
-
-(defn find-nousut [] (select-nousut {} {:as-arrays? true :connection db}))
 
 
