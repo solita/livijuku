@@ -26,8 +26,8 @@
 
         :return [[s/Any]]
         :summary "Testipalvelu käyttöliittymäratkaisun testaukseen."
-        (ok (service/tunnusluku-tilasto tunnuslukuid organisaatiolajitunnus
-                                        (c/bindings->map vuosi
+        (ok (service/tunnusluku-tilasto-demo tunnuslukuid organisaatiolajitunnus
+                                             (c/bindings->map vuosi
                                                          kuukausi
                                                          sopimustyyppitunnus
                                                          paastoluokkatunnus
@@ -35,5 +35,5 @@
                                                          lipputuloluokkatunnus
                                                          lippuhintaluokkatunnus
                                                          kustannuslajitunnus)
-                                        group-by))))
+                                             group-by))))
 

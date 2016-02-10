@@ -27,6 +27,7 @@
                            ;; *** datababse ***
                            [oracle/ojdbc7 "12.1.0.2"]
                            [yesql "0.5.2"]
+                           [honeysql "0.6.2"]
                            [com.zaxxer/HikariCP "2.4.1"]
 
                            ;; *** logging libraries ***
