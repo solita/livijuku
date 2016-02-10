@@ -57,6 +57,30 @@
 
 (defn nil-if [peridicate value] (if (peridicate value) nil value))
 
+(defmacro error-let
+  [bindings body]
+  {:pre [(vector? bindings)
+         (is-divisible-by (count bindings) 4)]}
+  (if (not (empty? bindings))
+    (let [form (bindings 0) value (bindings 1) error? (bindings 2) error (bindings 3)]
+      `(let [temp# ~value]
+         (if (~error? temp#)
+           ~error
+           (let [~form temp#] (error-let ~(vec (drop 4 bindings)) ~body)))))
+    body))
+
+(defmacro error-let!
+  [bindings body]
+  {:pre [(vector? bindings)
+         (is-divisible-by (count bindings) 4)]}
+  (if (not (empty? bindings))
+    (let [form (bindings 0) value (bindings 1) error? (bindings 2) error (bindings 3)]
+      `(let [temp# ~value]
+         (if (~error? temp#)
+           (ss/throw+ ~error)
+           (let [~form temp#] (error-let! ~(vec (drop 4 bindings)) ~body)))))
+    body))
+
 (defn slurp-bytes
   "Slurp the bytes from a slurpable thing"
   [input]

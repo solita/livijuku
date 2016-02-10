@@ -2,7 +2,7 @@
   (:require [juku.db.yesql-patch :as sql]
             [juku.db.coerce :as coerce]
             [juku.schema.tunnusluku :as s]
-            [juku.db.database :refer [db with-transaction]]
+            [juku.db.database :refer [db]]
             [ring.util.http-response :as r]
             [juku.db.sql :as dml]
             [slingshot.slingshot :as ss]
@@ -35,40 +35,63 @@
         next-columns (map (comp demo-data keyword) (rest group-by))]
     (map #(concat % [(rand-int 100)]) (c/cartesian-product (cons column1 next-columns)))))
 
-(def tunnusluvut
-  [:nousut :lahdot :linjakilometrit
-   :nousut-viikko :lahdot-viikko :linjakilometrit-viikko
-   :liikennointikorvaus
-   :lipputulo
-   :kalusto
-   :kustannukset
-   :lippuhinnat])
 
 (def join-organisaatio (hsql-h/join :organisaatio [:= :t.organisaatioid :organisaatio.id]))
 
-;; In general tunnusluku field sql-part is a function of group-by and where parameters
-(defn pivoted-fields [filter-id value->column-name]
-  (fn [where _]
-    (if-let [filter-value (filter-id where)]
-      (value->column-name filter-value)
-      [(hsql/raw (str/join " + "(map name (vals value->column-name)))) :tunnusluku])))
+(def tunnusluku-field
+  {:nousut                 :nousut
+   :lahdot                 :lahdot
+   :linjakilometrit        :linjakilometrit
+   :nousut-viikko          :nousut
+   :lahdot-viikko          :lahdot
+   :linjakilometrit-viikko :linjakilometrit
+   :liikennointikorvaus    :korvaus
+   :lipputulo              :tulo
+   :kalusto                :lukumaara
+   :kustannukset           :kustannus
+   :lippuhinnat            :hinta})
 
-(def select
-  {:nousut                 (constantly :nousut)
-   :lahdot                 (constantly :lahdot)
-   :linjakilometrit        (constantly :linjakilometrit)
-   :nousut-viikko          (constantly :nousut)
-   :lahdot-viikko          (constantly :lahdot)
-   :linjakilometrit-viikko (constantly :linjakilometrit)
-   :liikennointikorvaus    (constantly :korvaus)
-   :lipputulo              (pivoted-fields
-                             :lipputuloluokkatunnus
-                             {"KE" :kertalipputulo "AR" :arvolipputulo "KA" :kausilipputulo "--" :lipputulo})
-   :kalusto                (constantly :lukumaara)
-   :kustannukset
-   :lippuhinnat})
+(def tunnusluku-table
+  {:nousut                 :fact_liikenne
+   :lahdot                 :fact_liikenne
+   :linjakilometrit        :fact_liikenne
+   :nousut-viikko          :fact_liikenneviikko
+   :lahdot-viikko          :fact_liikenneviikko
+   :linjakilometrit-viikko :fact_liikenneviikko
+   :liikennointikorvaus    :fact_liikennointikorvaus
+   :lipputulo              :fact_lipputulo_unpivot_view
+   :kalusto                :fact_kalusto
+   :kustannukset           :fact_kustannus_unpivot_view
+   :lippuhinnat            :fact_lippuhinta_unpivot_view})
+
+(def group-by-field
+  {:organisaatioid :organisaatioid
+   :vuosi :vuosi
+   :kuukausi [(hsql/raw "vuosi || lpad(kuukausi, 2, '0')") :vuosikk]
+   :viikonpaivaluokkatunnus :viikonpaivaluokkatunnus
+   :paastoluokkatunnus :paastoluokkatunnus
+   :kustannuslajitunnus :kustannuslajitunnus
+   :vyohykemaara :vyohykemaara
+   :lippuhintaluokkatunnus :lippuhintaluokkatunnus
+   })
 
 (defn tunnusluku-tilasto [tunnusluku organisaatiolajitunnus where group-by]
-  )
+  (c/error-let!
+    [table (tunnusluku-table tunnusluku) nil?
+      {:http-response r/bad-request :message (str "Tunnuslukua " tunnusluku " ei ole olemassa.")}
+     fact-field (tunnusluku-field tunnusluku) nil?
+      (str "Tunnusluvulle " tunnusluku " ei ole määritetty kenttää.")
+     group-by-fields (vec (map group-by-field group-by)) (partial some nil?)
+      {:http-response r/bad-request :message (str "Tunnusluku " tunnusluku " ei ei tue ryhmittelyä: " group-by)}]
+
+    (let [hsql-where (conj (map #([:= (keyword (str "t." (name (first %)))) (second %)]) where)
+                           [:= :organisaatio.lajitunnus organisaatiolajitunnus])
+          sql {:select (conj group-by-fields (hsql/call :sum fact-field))
+               :from [[table :t]]
+               :join [:organisaatio [:= :t.organisaatioid :organisaatio.id]]
+               :where (cons :and hsql-where)
+               :group-by group-by-fields}]
+
+      (jdbc/query db (hsql/format sql) :as-arrays? true))))
 
 
