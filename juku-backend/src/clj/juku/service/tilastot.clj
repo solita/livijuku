@@ -44,7 +44,7 @@
    :kustannukset
    :lippuhinnat])
 
-(def join-organisaatio (hslq-h/join :organisaatio [:= :t.organisaatioid :organisaatio.id]))
+(def join-organisaatio (hsql-h/join :organisaatio [:= :t.organisaatioid :organisaatio.id]))
 
 ;; In general select tunnusluku sql-part is a function of group-by and where parameters
 ;; this is the default case where it only depends on group-by
