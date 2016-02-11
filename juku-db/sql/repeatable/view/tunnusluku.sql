@@ -21,7 +21,7 @@ unpivot (kustannus for kustannuslajitunnus in (
 ;
 
 create or replace view fact_lippuhinta_unpivot_view as
-select vuosi, organisaatioid, vyohykemaara, hinta
+select vuosi, organisaatioid, vyohykemaara, lippuhintaluokkatunnus, hinta
 from fact_lippuhinta
 unpivot (hinta for lippuhintaluokkatunnus in (
   kertalippuhinta as 'KE',
