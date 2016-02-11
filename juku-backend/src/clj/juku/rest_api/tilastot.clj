@@ -16,6 +16,7 @@
 
         :query-params [{vuosi :- Long nil}
                        {kuukausi :- Long nil}
+                       {vyohykemaara :- Long nil}
                        {sopimustyyppitunnus :- s/Str nil}
                        {paastoluokkatunnus :- s/Str nil}
                        {viikonpaivaluokkatunnus :- s/Str nil}
@@ -27,8 +28,9 @@
         :return [[s/Any]]
         :summary "Testipalvelu käyttöliittymäratkaisun testaukseen."
         (ok (service/tunnusluku-tilasto (keyword tunnuslukuid) organisaatiolajitunnus
-                                             (c/bindings->map vuosi
+                                        (c/bindings->map vuosi
                                                          kuukausi
+                                                         vyohykemaara
                                                          sopimustyyppitunnus
                                                          paastoluokkatunnus
                                                          viikonpaivaluokkatunnus
