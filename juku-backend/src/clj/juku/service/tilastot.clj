@@ -1,6 +1,7 @@
 (ns juku.service.tilastot
   (:require [juku.db.yesql-patch :as sql]
             [juku.db.coerce :as coerce]
+            [juku.db.sql :as jsql]
             [juku.schema.tunnusluku :as s]
             [juku.db.database :refer [db]]
             [ring.util.http-response :as r]
@@ -84,14 +85,14 @@
      group-by-fields (vec (map group-by-field group-by)) (partial some nil?)
       {:http-response r/bad-request :message (str "Tunnusluku " tunnusluku " ei ei tue ryhmittelyä: " group-by)}]
 
-    (let [hsql-where (conj (map #([:= (keyword (str "t." (name (first %)))) (second %)]) where)
+    (let [hsql-where (conj (map (fn [e] [:= (keyword (str "t." (name (first e)))) (second e)]) where)
                            [:= :organisaatio.lajitunnus organisaatiolajitunnus])
-          sql {:select (conj group-by-fields (hsql/call :sum fact-field))
+          sql {:select (conj group-by-fields [(hsql/call :sum fact-field) :tunnusluku])
                :from [[table :t]]
                :join [:organisaatio [:= :t.organisaatioid :organisaatio.id]]
                :where (cons :and hsql-where)
-               :group-by group-by-fields}]
+               :group-by (map #(if (coll? %) (first %) %) group-by-fields)}]
 
-      (jdbc/query db (hsql/format sql) :as-arrays? true))))
+      (jsql/query db (hsql/format sql) {:as-arrays? true}))))
 
 

@@ -130,3 +130,10 @@
           (apply update-operation args)))
     1 nil
     (ss/throw+ {:message "Unexpected system error - too many rows updated"})))
+
+;; *** query ***
+
+(defn query [db sql-and-params options]
+  (with-db-exception-translation
+    (fn [] (apply jdbc/query db sql-and-params (apply concat options)))
+    (first sql-and-params) (rest sql-and-params) (constantly nil) {}))
