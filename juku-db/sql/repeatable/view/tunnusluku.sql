@@ -10,7 +10,7 @@ unpivot (tulo for lipputuloluokkatunnus in (
 ;
 
 create or replace view fact_kustannus_unpivot_view as
-select vuosi, organisaatioid, kustannus
+select vuosi, organisaatioid, kustannuslajitunnus, kustannus
 from fact_alue
 unpivot (kustannus for kustannuslajitunnus in (
   kustannus_asiakaspalvelu as 'AP',
