@@ -85,13 +85,18 @@
      group-by-fields (vec (map group-by-field group-by)) (partial some nil?)
       {:http-response r/bad-request :message (str "Tunnusluku " tunnusluku " ei ei tue ryhmittelyä: " group-by)}]
 
-    (let [hsql-where (conj (map (fn [e] [:= (keyword (str "t." (name (first e)))) (second e)]) where)
-                           [:= :organisaatio.lajitunnus organisaatiolajitunnus])
-          sql {:select (conj group-by-fields [(hsql/call :sum fact-field) :tunnusluku])
-               :from [[table :t]]
-               :join [:organisaatio [:= :t.organisaatioid :organisaatio.id]]
-               :where (cons :and hsql-where)
-               :group-by (map #(if (coll? %) (first %) %) group-by-fields)}]
+    (let [tunnusluku-where (map (fn [e] [:= (keyword (str "t." (name (first e)))) (second e)])
+                                (filter (coll/predicate not= second nil) where))
+          sql-where (if (= organisaatiolajitunnus "ALL")
+                        tunnusluku-where
+                        (conj tunnusluku-where [:= :organisaatio.lajitunnus organisaatiolajitunnus]))
+
+          sql-body {:select (conj group-by-fields [(hsql/call :sum fact-field) :tunnusluku])
+                    :from [[table :t]]
+                    :join [:organisaatio [:= :t.organisaatioid :organisaatio.id]]
+                    :group-by (map #(if (coll? %) (first %) %) group-by-fields)}
+
+          sql (if (empty? sql-where) sql-body (assoc sql-body :where (cons :and sql-where)))]
 
       (jsql/query db (hsql/format sql) {:as-arrays? true}))))
 
