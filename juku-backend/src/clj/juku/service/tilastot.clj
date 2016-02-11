@@ -91,10 +91,13 @@
                         tunnusluku-where
                         (conj tunnusluku-where [:= :organisaatio.lajitunnus organisaatiolajitunnus]))
 
+          sql-group-by (map #(if (coll? %) (first %) %) group-by-fields)
+
           sql-body {:select (conj group-by-fields [(hsql/call :sum fact-field) :tunnusluku])
                     :from [[table :t]]
                     :join [:organisaatio [:= :t.organisaatioid :organisaatio.id]]
-                    :group-by (map #(if (coll? %) (first %) %) group-by-fields)}
+                    :group-by sql-group-by
+                    :order-by sql-group-by}
 
           sql (if (empty? sql-where) sql-body (assoc sql-body :where (cons :and sql-where)))]
 
