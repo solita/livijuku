@@ -50,7 +50,19 @@
    :lipputulo              :tulo
    :kalusto                :lukumaara
    :kustannukset           :kustannus
-   :lippuhinnat            :hinta})
+   :lippuhinnat            :hinta
+
+   :alue-kuntamaara   :kuntamaara
+   :alue-vyohykymaara :vyohykemaara
+   :alue-pysakkimaara :pysakkimaara
+   :alue-maapintaala  :maapintaala
+   :alue-asukasmaara  :asukasmaara
+   :alue-tyopaikkamaara :tyopaikkamaara
+   :alue-henkilosto     :henkilosto
+   :alue-pendeloivienosuus          :pendeloivienosuus
+   :alue-henkiloautoliikennesuorite :henkiloautoliikennesuorite
+   :alue-autoistumisaste            :autoistumisaste
+   :alue-asiakastyytyvaisyys        :asiakastyytyvaisyys })
 
 (def tunnusluku-table
   {:nousut                 :fact_liikenne
@@ -63,7 +75,19 @@
    :lipputulo              :fact_lipputulo_unpivot_view
    :kalusto                :fact_kalusto
    :kustannukset           :fact_kustannus_unpivot_view
-   :lippuhinnat            :fact_lippuhinta_unpivot_view})
+   :lippuhinnat            :fact_lippuhinta_unpivot_view
+
+   :alue-kuntamaara        :fact-alue
+   :alue-vyohykymaara      :fact-alue
+   :alue-pysakkimaara      :fact-alue
+   :alue-maapintaala       :fact-alue
+   :alue-asukasmaara       :fact-alue
+   :alue-tyopaikkamaara    :fact-alue
+   :alue-henkilosto        :fact-alue
+   :alue-pendeloivienosuus :fact-alue
+   :alue-henkiloautoliikennesuorite :fact-alue
+   :alue-autoistumisaste     :fact-alue
+   :alue-asiakastyytyvaisyys :fact-alue})
 
 (def group-by-field
   {:organisaatioid :organisaatioid
