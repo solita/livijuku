@@ -53,7 +53,7 @@
    :lippuhinnat            :hinta
 
    :alue-kuntamaara   :kuntamaara
-   :alue-vyohykymaara :vyohykemaara
+   :alue-vyohykemaara :vyohykemaara
    :alue-pysakkimaara :pysakkimaara
    :alue-maapintaala  :maapintaala
    :alue-asukasmaara  :asukasmaara
@@ -78,7 +78,7 @@
    :lippuhinnat            :fact_lippuhinta_unpivot_view
 
    :alue-kuntamaara        :fact-alue
-   :alue-vyohykymaara      :fact-alue
+   :alue-vyohykemaara      :fact-alue
    :alue-pysakkimaara      :fact-alue
    :alue-maapintaala       :fact-alue
    :alue-asukasmaara       :fact-alue
