@@ -10,3 +10,8 @@
 (facts "Tests for removing nil values from a map"
   (fact (m/dissoc-if-nil {:a 1}) => {:a 1})
   (fact (m/dissoc-if-nil {:a 1 :b nil}) => {:a 1}))
+
+(fact "zip object"
+      (m/zip-object [] []) => {}
+      (m/zip-object [:a] [1]) => {:a 1}
+      (m/zip-object [:a :b] [1 2]) => {:a 1 :b 2})

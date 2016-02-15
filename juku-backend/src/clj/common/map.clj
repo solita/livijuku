@@ -83,3 +83,6 @@
 (defn update-vals
   ([object key-update-function-map] (reduce #(update %1 (first %2) (second %2)) object key-update-function-map))
   ([object keys update-function] (reduce #(update %1 %2 update-function) object keys)))
+
+(defn zip-object [keys values]
+  (into {} (map vector keys values)))
