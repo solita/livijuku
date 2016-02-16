@@ -199,16 +199,16 @@
    #"(\S*): lähdöt (\S*)" [:liikennevuositilasto :lahdot parse-kk]
 
    #"(\S*): (\S*) keskimääräinen nousumäärä.*" [:liikenneviikkotilasto :nousut parse-viikonpaivaluokka]
-   #"(\S*): talviliikenteen keskimääräisen (\S*) tarjonta" [:liikenneviikkotilasto :linjakilometrit parse-viikonpaivaluokka]
-   #"(\S*): talviliikenteen keskimääräisen (\S*) lähtömäärä" [:liikenneviikkotilasto :lahdot parse-viikonpaivaluokka]
+   #"(\S*): talviliikenteen keskimääräisen (\S*) tarjonta.*" [:liikenneviikkotilasto :linjakilometrit parse-viikonpaivaluokka]
+   #"(\S*): talviliikenteen keskimääräisen (\S*) lähtömäärä.*" [:liikenneviikkotilasto :lahdot parse-viikonpaivaluokka]
 
-   #"(\S*): Kertalipuista saadut lipputulot (\S*)" [:lipputulo :kertalipputulo parse-kk]
-   #"(\S*): Arvolipuista saadut lipputulot (\S*)" [:lipputulo :arvolipputulo parse-kk]
-   #"(\S*): Kausilipuista saadut lipputulot (\S*)" [:lipputulo :kausilipputulo parse-kk]
-   #"(\S*): Lipputulot (\S*)" [:lipputulo :lipputulo parse-kk]
+   #"(\S*): kertalipuista saadut lipputulot (\S*)" [:lipputulo :kertalipputulo parse-kk]
+   #"(\S*): arvolipuista saadut lipputulot (\S*)" [:lipputulo :arvolipputulo parse-kk]
+   #"(\S*): kausilipuista saadut lipputulot (\S*)" [:lipputulo :kausilipputulo parse-kk]
+   #"(\S*): lipputulot (\S*)" [:lipputulo :lipputulo parse-kk]
 
-   #"(\S*): Maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
-   #"(\S*): Maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"(\S*): maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"(\S*): maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
    #"maksettu liikennöinnin nousukorvaus (\(kos\)) - (\S*)" [:liikennointikorvaus :nousukorvaus parse-kk]
    #"(me): Asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
 
