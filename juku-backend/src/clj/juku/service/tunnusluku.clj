@@ -253,13 +253,20 @@
       result
       (map (partial apply merge) (vals (group-by pivot result))))))
 
+(defn parse-vuosi [txt]
+  (try (Integer/parseInt txt) (catch Throwable _ nil)))
+
 (defn import-csv [csv]
   (let [data (parse-csv csv)
         headers (map str/lower-case (first data))
         tunnusluvut (->> (rest data)
+                         (map (c/partial-first-arg update 0 parse-vuosi))
+                         (filter (comp c/not-nil? first))
+                         (filter (comp strx/not-blank? second))
                          (mapcat (partial unpivot-organizations headers))
                          (map (partial m/zip-object [:vuosi :tunnusluku :organisaatioid :value]))
                          (map parse-tunnusluku)
+                         (filter (comp c/not-nil? :tunnuslukutyyppi))
                          (group-by (juxt :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)))]
 
     (doseq [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]

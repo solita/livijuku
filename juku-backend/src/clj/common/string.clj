@@ -16,3 +16,5 @@
 
 (defn start-with [^String txt ^String prefix] (.startsWith txt prefix))
 
+(defn not-blank? [txt] (and (c/not-nil? txt) (not (empty? txt))))
+

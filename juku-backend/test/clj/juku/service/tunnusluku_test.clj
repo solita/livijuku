@@ -72,3 +72,10 @@
   (let [text-csv "vuosi;tunnusluku;helsingin seudun liikenne\n2013;Brutto: Nousijat tammikuussa;1\n"]
     (tl/import-csv text-csv)
     (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 1 "BR"))) => 1M))
+
+(fact
+  "CSV lataus - kaksi organisaatiota ja yksi rivi"
+  (let [text-csv "vuosi;tunnusluku;helsingin seudun liikenne;tampere\n2013;Brutto: Nousijat tammikuussa;1;2\n"]
+    (tl/import-csv text-csv)
+    (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 1 "BR"))) => 1M
+    (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 12 "BR"))) => 2M))
