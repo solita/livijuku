@@ -7,7 +7,11 @@
             [juku.db.sql :as dml]
             [slingshot.slingshot :as ss]
             [common.core :as c]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [common.string :as strx]
+            [common.map :as m]
+            [common.collection :as coll]
+            [juku.service.organisaatio :as org]))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -142,3 +146,126 @@
 
 (defn save-kommentti! [vuosi organisaatioid sopimustyyppitunnus kommentti]
   (dml/upsert update-kommentti! insert-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti))
+
+; *** csv lataus (konversiodata excel:stä) ***
+
+(defn parse-csv [csv]
+  (let [lines (str/split csv #"\n")]
+    (map (c/partial-first-arg str/split #";") lines)))
+
+(def kuukaudet
+  (merge
+    (m/zip-object
+      (map (c/partial-first-arg str "kuussa") ["tammi" "helmi" "maalis" "huhti" "touko" "kesä" "heinä" "elo" "syys" "loka" "marras" "joulu"])
+      (range 1 13))
+    (m/zip-object
+      (map (c/partial-first-arg str "kuu") ["tammi" "helmi" "maalis" "huhti" "touko" "kesä" "heinä" "elo" "syys" "loka" "marras" "joulu"])
+      (range 1 13))))
+
+(def sopimustyypit {"brutto" "BR"
+                    "kos" "KOS"
+                    "siirtymäajan liikenne" "SA"
+                    "me" "ME"})
+
+(def viikonpaivaluokat
+  {"arkipäivän" "A"
+   "arkivuorokauden" "A"
+   "lauantain" "LA"
+   "sunnuntain" "SU"})
+
+(defn parse-kk [otsikko]
+  (c/if-let* [sopimustyyppitunnus (sopimustyypit (get otsikko 1))
+              kuukausi (kuukaudet (get otsikko 2))]
+            (c/bindings->map sopimustyyppitunnus kuukausi)
+             nil))
+
+(defn parse-viikonpaivaluokka [otsikko]
+  (c/if-let* [sopimustyyppitunnus (sopimustyypit (get otsikko 1))
+              viikonpaivaluokkatunnus (viikonpaivaluokat (get otsikko 2))]
+             (c/bindings->map sopimustyyppitunnus viikonpaivaluokkatunnus)
+             nil))
+
+(def tunnuslukuotsikot
+  {
+   #"(\S*): nousijat (\S*)" [:liikennevuositilasto :nousut parse-kk]
+   #"(\S*): linja-kilometrit (\S*)" [:liikennevuositilasto :linjakilometrit parse-kk]
+   #"(\S*): lähdöt (\S*)" [:liikennevuositilasto :lahdot parse-kk]
+
+   #"(\S*): (\S*) keskimääräinen nousumäärä.*" [:liikenneviikkotilasto :nousut parse-viikonpaivaluokka]
+   #"(\S*): talviliikenteen keskimääräisen (\S*) tarjonta" [:liikenneviikkotilasto :linjakilometrit parse-viikonpaivaluokka]
+   #"(\S*): talviliikenteen keskimääräisen (\S*) lähtömäärä" [:liikenneviikkotilasto :lahdot parse-viikonpaivaluokka]
+
+   #"(\S*): Kertalipuista saadut lipputulot (\S*)" [:lipputulo :kertalipputulo parse-kk]
+   #"(\S*): Arvolipuista saadut lipputulot (\S*)" [:lipputulo :arvolipputulo parse-kk]
+   #"(\S*): Kausilipuista saadut lipputulot (\S*)" [:lipputulo :kausilipputulo parse-kk]
+   #"(\S*): Lipputulot (\S*)" [:lipputulo :lipputulo parse-kk]
+
+   #"(\S*): Maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"(\S*): Maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"Maksettu liikennöinnin nousukorvaus (\(KOS\)) - (\S*)" [:liikennointikorvaus :nousukorvaus parse-kk]
+   #"(ME): Asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   })
+
+(defn parse-tunnusluku [data]
+  (coll/find-first c/not-nil?
+    (map (fn [[key value]]
+             (c/if-let* [match (re-matches key (str/lower-case (:tunnusluku data)))
+                         tunnusluku ((c/third value) match)]
+                         (assoc tunnusluku
+                           :tunnuslukutyyppi (first value)
+                           :vuosi (:vuosi data)
+                           :organisaatioid (:organisaatioid data)
+                           (second value) (:value data))
+                         nil))
+              tunnuslukuotsikot)))
+
+
+(defn find-organisaatio [nimi]
+  (coll/find-first (coll/eq (comp str/lower-case :nimi) nimi) org/organisaatiot))
+
+(defn unpivot-organizations [headers row]
+  (let [vuosi+tunnusluku (vec (take 2 row))
+        org-names (map str/lower-case (drop 2 headers))
+        org-data (drop 2 row)]
+    (map-indexed (fn [idx value]
+                   (conj vuosi+tunnusluku (:id (find-organisaatio (get org-names idx)))) value)
+                 org-data)))
+
+(def tunnusluku-pivot
+  {
+   :liikennevuositilasto :kuukausi
+   :liikenneviikkotilasto :viikonpaivaluokkatunnus
+   :lipputulo :kuukausi
+   :liikennointikorvaus :kuukausi
+   })
+
+(def tunnusluku-save
+  {
+   :liikennevuositilasto  save-liikennevuositilasto!
+   :liikenneviikkotilasto save-liikenneviikkotilasto!
+   :lipputulo             save-lipputulo!
+   :liikennointikorvaus   save-liikennointikorvaus!
+   })
+
+(defn process-data [pivot data]
+  (let [result (dissoc data :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)]
+    (if (nil? pivot)
+      result
+      (map (partial apply merge) (vals (group-by pivot result))))))
+
+(defn import-csv [csv]
+  (let [data (parse-csv csv)
+        headers (map str/lower-case (first data))
+        tunnusluvut (->> (rest data)
+                         (mapcat (partial unpivot-organizations headers))
+                         (map (c/partial-first-arg m/zip-object [:vuosi :tunnusluku :organisaatioid :value]))
+                         (map parse-tunnusluku)
+                         (group-by (juxt :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)))]
+
+    (doseq [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
+      (let [save (tunnusluku-save tunnuslukutyyppi)
+            pivot (tunnusluku-pivot tunnuslukutyyppi)]
+        (if (nil? sopimustyyppitunnus)
+          (save vuosi organisaatioid (process-data pivot data))
+          (save vuosi organisaatioid sopimustyyppitunnus (process-data pivot data)))))))
+
