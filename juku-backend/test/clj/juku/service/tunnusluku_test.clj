@@ -4,7 +4,8 @@
             [juku.service.tunnusluku :as tl]
             [juku.schema.tunnusluku :as tls]
             [common.map :as map]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [common.collection :as coll]))
 
 (defn test-tunnuslukuservice [name save find data]
   (fact {:midje/description (str "Tunnuslukupalvelutesti - lisääminen ja haku - " name)}
@@ -64,3 +65,10 @@
     (tl/save-kommentti! 2016 1 "BR" "")
     (tl/find-kommentti 2016 1 "BR") => nil))
 
+; *** csv import ***
+
+(fact
+  "CSV lataus - yksi organisaatio ja yksi rivi"
+  (let [text-csv "vuosi;tunnusluku;helsingin seudun liikenne\n2013;Brutto: Nousijat tammikuussa;1\n"]
+    (tl/import-csv text-csv)
+    (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 1 "BR"))) => 1M))

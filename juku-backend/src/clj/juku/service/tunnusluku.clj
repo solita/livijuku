@@ -221,22 +221,22 @@
 
 
 (defn find-organisaatio [nimi]
-  (coll/find-first (coll/eq (comp str/lower-case :nimi) nimi) org/organisaatiot))
+  (coll/find-first (coll/eq (comp str/lower-case :nimi) nimi) (org/organisaatiot)))
 
 (defn unpivot-organizations [headers row]
   (let [vuosi+tunnusluku (vec (take 2 row))
-        org-names (map str/lower-case (drop 2 headers))
+        org-names (map (comp str/trim str/lower-case) (drop 2 headers))
         org-data (drop 2 row)]
     (map-indexed (fn [idx value]
-                   (conj vuosi+tunnusluku (:id (find-organisaatio (get org-names idx)))) value)
+                   (conj vuosi+tunnusluku (:id (find-organisaatio (nth org-names idx))) value))
                  org-data)))
 
 (def tunnusluku-pivot
   {
-   :liikennevuositilasto :kuukausi
+   :liikennevuositilasto  :kuukausi
    :liikenneviikkotilasto :viikonpaivaluokkatunnus
-   :lipputulo :kuukausi
-   :liikennointikorvaus :kuukausi
+   :lipputulo             :kuukausi
+   :liikennointikorvaus   :kuukausi
    })
 
 (def tunnusluku-save
@@ -248,7 +248,7 @@
    })
 
 (defn process-data [pivot data]
-  (let [result (dissoc data :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)]
+  (let [result (map (c/partial-first-arg dissoc :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus) data)]
     (if (nil? pivot)
       result
       (map (partial apply merge) (vals (group-by pivot result))))))
@@ -258,7 +258,7 @@
         headers (map str/lower-case (first data))
         tunnusluvut (->> (rest data)
                          (mapcat (partial unpivot-organizations headers))
-                         (map (c/partial-first-arg m/zip-object [:vuosi :tunnusluku :organisaatioid :value]))
+                         (map (partial m/zip-object [:vuosi :tunnusluku :organisaatioid :value]))
                          (map parse-tunnusluku)
                          (group-by (juxt :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)))]
 
