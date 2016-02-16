@@ -173,6 +173,9 @@
    "lauantain" "LA"
    "sunnuntain" "SU"})
 
+(defn parse-int [txt]
+  (try (Integer/parseInt txt) (catch Throwable _ nil)))
+
 (defn parse-kk [otsikko]
   (c/if-let* [sopimustyyppitunnus (sopimustyypit (get otsikko 1))
               kuukausi (kuukaudet (get otsikko 2))]
@@ -184,6 +187,10 @@
               viikonpaivaluokkatunnus (viikonpaivaluokat (get otsikko 2))]
              (c/bindings->map sopimustyyppitunnus viikonpaivaluokkatunnus)
              nil))
+
+(defn parse-vyohyke [otsikko]
+  (if-let [vyohykemaara (parse-int (get otsikko 1))]
+          (c/bindings->map vyohykemaara)))
 
 (def tunnuslukuotsikot
   {
@@ -202,20 +209,23 @@
 
    #"(\S*): Maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
    #"(\S*): Maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
-   #"Maksettu liikennöinnin nousukorvaus (\(KOS\)) - (\S*)" [:liikennointikorvaus :nousukorvaus parse-kk]
-   #"(ME): Asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"maksettu liikennöinnin nousukorvaus (\(kos\)) - (\S*)" [:liikennointikorvaus :nousukorvaus parse-kk]
+   #"(me): Asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+
+   #"kertalipun hinta, aikuinen, vyöhyke (\d*).*" [:lippuhinta :kertalippuhinta parse-vyohyke]
+   #"kausilipun hinta vyöhyke (\d*).*" [:lippuhinta :kausilippuhinta parse-vyohyke]
    })
 
 (defn parse-tunnusluku [data]
   (coll/find-first c/not-nil?
     (map (fn [[key value]]
-             (c/if-let* [match (re-matches key (str/lower-case (:tunnusluku data)))
+             (c/if-let* [match (re-matches key (str/trim (str/lower-case (:tunnusluku data))))
                          tunnusluku ((c/third value) match)]
                          (assoc tunnusluku
                            :tunnuslukutyyppi (first value)
                            :vuosi (:vuosi data)
                            :organisaatioid (:organisaatioid data)
-                           (second value) (:value data))
+                           (second value) (strx/trim (:value data)))
                          nil))
               tunnuslukuotsikot)))
 
@@ -237,6 +247,7 @@
    :liikenneviikkotilasto :viikonpaivaluokkatunnus
    :lipputulo             :kuukausi
    :liikennointikorvaus   :kuukausi
+   :lippuhinta   :vyohykemaara
    })
 
 (def tunnusluku-save
@@ -245,6 +256,7 @@
    :liikenneviikkotilasto save-liikenneviikkotilasto!
    :lipputulo             save-lipputulo!
    :liikennointikorvaus   save-liikennointikorvaus!
+   :lippuhinta            save-lippuhinnat!
    })
 
 (defn process-data [pivot data]
@@ -253,14 +265,11 @@
       result
       (map (partial apply merge) (vals (group-by pivot result))))))
 
-(defn parse-vuosi [txt]
-  (try (Integer/parseInt txt) (catch Throwable _ nil)))
-
 (defn import-csv [csv]
   (let [data (parse-csv csv)
         headers (map str/lower-case (first data))
         tunnusluvut (->> (rest data)
-                         (map (c/partial-first-arg update 0 parse-vuosi))
+                         (map (c/partial-first-arg update 0 parse-int))
                          (filter (comp c/not-nil? first))
                          (filter (comp strx/not-blank? second))
                          (mapcat (partial unpivot-organizations headers))
