@@ -1,7 +1,11 @@
 (ns juku.service.tunnusluku
   (:require [juku.db.yesql-patch :as sql]
             [juku.db.coerce :as coerce]
+            [ring.swagger.coerce :as sw-coerce]
+            [schema.coerce :as sc-coerce]
+            [schema.utils :as sc-util]
             [juku.schema.tunnusluku :as s]
+            [schema.core :as schema]
             [juku.db.database :refer [db with-transaction]]
             [ring.util.http-response :as r]
             [juku.db.sql :as dml]
@@ -9,9 +13,11 @@
             [common.core :as c]
             [clojure.string :as str]
             [common.string :as strx]
+            [clojure.walk :as walk]
             [common.map :as m]
             [common.collection :as coll]
-            [juku.service.organisaatio :as org]))
+            [juku.service.organisaatio :as org]
+            [common.map :as map]))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -210,10 +216,24 @@
    #"(\S*): maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
    #"(\S*): maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
    #"maksettu liikennöinnin nousukorvaus (\(kos\)) - (\S*)" [:liikennointikorvaus :nousukorvaus parse-kk]
-   #"(me): Asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"(me): asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
 
    #"kertalipun hinta, aikuinen, vyöhyke (\d*).*" [:lippuhinta :kertalippuhinta parse-vyohyke]
    #"kausilipun hinta vyöhyke (\d*).*" [:lippuhinta :kausilippuhinta parse-vyohyke]
+
+   #"alueen kuntien lukumäärä" [:alue :kuntamaara (constantly {})]
+   #"joukkoliikenteen lippujärjestelmän vyöhykkeiden määrä" [:alue :vyohykemaara (constantly {})]
+   #"toimivalta-alueen pysäkkien lukumäärä" [:alue :pysakkimaara (constantly {})]
+   #"maapinta-ala, km2" [:alue :maapintaala (constantly {})]
+   #"asukasmäärä" [:alue :asukasmaara (constantly {})]
+   #"työpaikkamäärä" [:alue :tyopaikkamaara (constantly {})]
+   #"suunnittelun ja organisaation henkilöstö, henkilötyövuotta" [:alue :henkilosto (constantly {})]
+
+   #"suunnittelun ja organisaation henkilöstö, henkilötyövuotta" [:alue :pendeloivienosuus (constantly {})]
+   #"henkilöautoliikenteen suorite.*" [:alue :henkiloautoliikennesuorite (constantly {})]
+   #"autoistumisaste" [:alue :autoistumisaste (constantly {})]
+   #"tyytyväisten käyttäjien osuus (%)" [:alue :asiakastyytyvaisyys (constantly {})]
+
    })
 
 (defn parse-tunnusluku [data]
@@ -225,7 +245,8 @@
                            :tunnuslukutyyppi (first value)
                            :vuosi (:vuosi data)
                            :organisaatioid (:organisaatioid data)
-                           (second value) (strx/trim (:value data)))
+                           (second value) (let [value (strx/trim (:value data))]
+                                            (when-not (empty? value) value)))
                          nil))
               tunnuslukuotsikot)))
 
@@ -247,7 +268,8 @@
    :liikenneviikkotilasto :viikonpaivaluokkatunnus
    :lipputulo             :kuukausi
    :liikennointikorvaus   :kuukausi
-   :lippuhinta   :vyohykemaara
+   :lippuhinta            :vyohykemaara
+   :alue                  :all
    })
 
 (def tunnusluku-save
@@ -257,13 +279,40 @@
    :lipputulo             save-lipputulo!
    :liikennointikorvaus   save-liikennointikorvaus!
    :lippuhinta            save-lippuhinnat!
+   :alue                  save-alue!
    })
 
-(defn process-data [pivot data]
-  (let [result (map (c/partial-first-arg dissoc :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus) data)]
-    (if (nil? pivot)
-      result
-      (map (partial apply merge) (vals (group-by pivot result))))))
+(defn keys->optional [schema]
+  (walk/postwalk #(if (keyword? %) (schema/optional-key %) %) schema))
+
+(defn str->bigdec [^String txt]
+  (BigDecimal. (str/replace (str/replace txt "," ".") " " "")))
+
+(def tunnusluku-coercer
+  (map/map-values
+    (fn [schema] (sc-coerce/coercer
+                   (keys->optional schema)
+                   (coerce/create-matcher
+                     {
+                      schema/Num 'str->bigdec
+                      })))
+  {
+   :liikennevuositilasto  [s/Liikennekuukausi]
+   :liikenneviikkotilasto [s/Liikennepaiva]
+   :lipputulo             [s/Lipputulo]
+   :liikennointikorvaus   [s/Liikennointikorvaus]
+   :lippuhinta            [s/Lippuhinta]
+   :alue                  s/Alue
+   }))
+
+(defn dissoc-id [data]
+  (map (c/partial-first-arg dissoc :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus) data))
+
+(defn pivot-data [pivot data]
+  (cond
+    (nil? pivot) data
+    (= pivot :all) (apply merge data)
+    :else (map (partial apply merge) (vals (group-by pivot data)))))
 
 (defn import-csv [csv]
   (let [data (parse-csv csv)
@@ -280,8 +329,21 @@
 
     (doseq [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
       (let [save (tunnusluku-save tunnuslukutyyppi)
-            pivot (tunnusluku-pivot tunnuslukutyyppi)]
-        (if (nil? sopimustyyppitunnus)
-          (save vuosi organisaatioid (process-data pivot data))
-          (save vuosi organisaatioid sopimustyyppitunnus (process-data pivot data)))))))
+            coercer (tunnusluku-coercer tunnuslukutyyppi)
+            pivoted-data (pivot-data (tunnusluku-pivot tunnuslukutyyppi) (dissoc-id data))
+            coerced-data (coercer pivoted-data)]
+        (when (:error coerced-data)
+          (ss/throw+ (assoc coerced-data :http-response r/bad-request)
+                     (str "Tunnusluvun " tunnuslukutyyppi "-" vuosi "-" organisaatioid
+                          (strx/blank-if-nil "-" sopimustyyppitunnus)
+                          " tiedot eivät ole skeeman mukaisia. Virheen kuvaus: " (sc-util/error-val coerced-data)
+                          ". Data: " pivoted-data)))
+        (ss/try+
+          (if (nil? sopimustyyppitunnus)
+            (save vuosi organisaatioid coerced-data)
+            (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
+          (catch Object _ (ss/throw+ {:http-response r/bad-request}
+                                    (str "Tunnusluvun " tunnuslukutyyppi "-" vuosi "-" organisaatioid
+                                         (strx/blank-if-nil "-" sopimustyyppitunnus)
+                                         " tallennus epäonnistui. Data: " coerced-data))))))))
 
