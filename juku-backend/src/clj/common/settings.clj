@@ -2,7 +2,9 @@
   (:require [clojure.java.io :refer [file]]
             [clojure.tools.logging :as log]
             [common.map :as cm]
-            [schema.coerce :as sc]))
+            [schema.coerce :as sc])
+  (:import (java.util Properties)
+           (java.io FileNotFoundException)))
 
 (defn string->boolean [x]
   (case x
@@ -15,14 +17,14 @@
       ({Boolean string->boolean} schema)))
 
 (defn coerce-settings [settings type]
-  ((sc/coercer type string-coercion-matcher) settings))
+  ((sc/coercer! type string-coercion-matcher) settings))
 
 (defn read-settings-from-file [file]
   (try
     (with-open [reader (clojure.java.io/reader file)]
-      (let [properties (doto (java.util.Properties.) (.load reader))]
+      (let [properties (doto (Properties.) (.load reader))]
         (into {} (for [[k v] properties] [(keyword k) v]))))
-    (catch java.io.FileNotFoundException _
+    (catch FileNotFoundException _
       (log/info "Asetustiedostoa ei löydy. Käytetään oletusasetuksia")
       {})))
 
