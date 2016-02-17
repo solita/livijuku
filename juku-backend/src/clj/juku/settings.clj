@@ -27,8 +27,8 @@
                        :liite-max-size s/Num
                        :web Web
                        :db Db
-                       :email (s/either Email (s/eq "off"))
-                       :asiahallinta (s/either Asiahallinta (s/eq "off"))})
+                       :email (s/conditional map? Email string? (s/eq "off"))
+                       :asiahallinta (s/conditional map? Asiahallinta string? (s/eq "off"))})
 
 (def default-settings {
            :server {:port 8082}
