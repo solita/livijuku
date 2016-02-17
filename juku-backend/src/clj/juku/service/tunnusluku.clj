@@ -1,11 +1,10 @@
 (ns juku.service.tunnusluku
   (:require [juku.db.yesql-patch :as sql]
             [juku.db.coerce :as coerce]
-            [ring.swagger.coerce :as sw-coerce]
             [schema.coerce :as sc-coerce]
             [schema.utils :as sc-util]
             [juku.schema.tunnusluku :as s]
-            [schema.core :as schema]
+            [schema.core :as sc]
             [juku.db.database :refer [db with-transaction]]
             [ring.util.http-response :as r]
             [juku.db.sql :as dml]
@@ -229,10 +228,16 @@
    #"työpaikkamäärä" [:alue :tyopaikkamaara (constantly {})]
    #"suunnittelun ja organisaation henkilöstö, henkilötyövuotta" [:alue :henkilosto (constantly {})]
 
-   #"suunnittelun ja organisaation henkilöstö, henkilötyövuotta" [:alue :pendeloivienosuus (constantly {})]
+   #"pendelöivien osuus alueella (oman kunnan ulkopuolella työssäkäynti)" [:alue :pendeloivienosuus (constantly {})]
    #"henkilöautoliikenteen suorite.*" [:alue :henkiloautoliikennesuorite (constantly {})]
    #"autoistumisaste" [:alue :autoistumisaste (constantly {})]
    #"tyytyväisten käyttäjien osuus (%)" [:alue :asiakastyytyvaisyys (constantly {})]
+
+   #"ulkoistettujen palveluiden kustannukset asiakaspalvelu" [:alue :kustannus_asiakaspalvelu (constantly {})]
+   #"ulkoistettujen palveluiden kustannukset, konsulttipalvelut" [:alue :kustannus_konsulttipalvelu (constantly {})]
+   #"ulkoistettujen palveluiden kustannukset , lipunmyyntipalkkiot" [:alue :kustannus_lipunmyyntipalkkio (constantly {})]
+   #"ulkoistettujen palveluiden kustannukset , tieto-/maksujärjestelmät" [:alue :kustannus_jarjestelmat (constantly {})]
+   #"ulkoistettujen palveluiden kustannukset , muut palvelut" [:alue :kustannus_muutpalvelut (constantly {})]
 
    })
 
@@ -283,7 +288,7 @@
    })
 
 (defn keys->optional [schema]
-  (walk/postwalk #(if (keyword? %) (schema/optional-key %) %) schema))
+  (walk/postwalk #(if (keyword? %) (sc/optional-key %) %) schema))
 
 (defn str->bigdec [^String txt]
   (BigDecimal. (str/replace (str/replace txt "," ".") " " "")))
@@ -292,10 +297,7 @@
   (map/map-values
     (fn [schema] (sc-coerce/coercer
                    (keys->optional schema)
-                   (coerce/create-matcher
-                     {
-                      schema/Num 'str->bigdec
-                      })))
+                   (coerce/create-matcher { sc/Num 'str->bigdec })))
   {
    :liikennevuositilasto  [s/Liikennekuukausi]
    :liikenneviikkotilasto [s/Liikennepaiva]
@@ -311,7 +313,7 @@
 (defn pivot-data [pivot data]
   (cond
     (nil? pivot) data
-    (= pivot :all) (apply merge data)
+    (= pivot :all) (m/flat->tree (apply merge data)  #"_")
     :else (map (partial apply merge) (vals (group-by pivot data)))))
 
 (defn import-csv [csv]
@@ -332,7 +334,7 @@
             coercer (tunnusluku-coercer tunnuslukutyyppi)
             pivoted-data (pivot-data (tunnusluku-pivot tunnuslukutyyppi) (dissoc-id data))
             coerced-data (coercer pivoted-data)]
-        (when (:error coerced-data)
+        (when (sc-util/error? coerced-data)
           (ss/throw+ (assoc coerced-data :http-response r/bad-request)
                      (str "Tunnusluvun " tunnuslukutyyppi "-" vuosi "-" organisaatioid
                           (strx/blank-if-nil "-" sopimustyyppitunnus)
