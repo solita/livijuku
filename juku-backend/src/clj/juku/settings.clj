@@ -53,7 +53,5 @@
 
 (def settings (read-settings (io/file (or (env :properties-file) "./juku.properties")) default-settings Settings))
 
-(print settings)
-
 (defn asiahallinta-on? [] (not= (:asiahallinta settings) "off"))
 
