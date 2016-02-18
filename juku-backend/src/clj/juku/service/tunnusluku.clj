@@ -363,14 +363,16 @@
               (if (nil? sopimustyyppitunnus)
                 (save vuosi organisaatioid coerced-data)
                 (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
-              {:tunnuslukutyyppi tunnuslukutyyppi :tunnusluku tunnusluku-name :status "success"}
+              {:tunnuslukutyyppi tunnuslukutyyppi :vuosi vuosi :tunnusluku tunnusluku-name :status "success"}
               (catch Object t
                 {:tunnusluku tunnusluku-name :status "db-error"
                  :error &throw-context :data coerced-data})))))]
 
       ;; tulosten raportointi
       (str "Tunnuslukuja ladattiin onnistuneesti: \n"
-           (map->bulletpoints (map/map-values count (group-by :tunnuslukutyyppi (filter (coll/eq :status "success") result))))
+           (map->bulletpoints (into (sorted-map)
+                                    (map/map-values count (group-by #(str (:vuosi %) "-" (name (:tunnuslukutyyppi %)))
+                                                                    (filter (coll/eq :status "success") result)))))
            "\n\nLatausvirheet: \n"
            (str/join "\n" (map #(str "- " (:tunnusluku %) " vialliset kentät: " (invalid-fields-bulletpoints (:error %)))
                                (filter (coll/eq :status "syntax-error") result)))
