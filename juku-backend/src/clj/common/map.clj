@@ -1,7 +1,8 @@
 (ns common.map
   (:require [clojure.string :as str]
             [common.collection :as c]
-            [common.core :as core]))
+            [common.core :as core])
+  (:import (clojure.lang MapEntry)))
 
 (defn remove-keys
   "Dissociate keys from a map. Removed keys are given in a sequence."
@@ -19,6 +20,16 @@
   (if (every? map? vs)
     (apply merge-with deep-merge vs)
     (last vs)))
+
+(defn mapentry? [value] (instance? MapEntry value))
+
+(defn deep-reduce [f init coll]
+  (reduce (fn [acc value]
+            (if (or (map? value)
+                    (and (coll? value) (not (mapentry? value))))
+              (deep-reduce f acc value)
+              (f acc value)))
+          init coll))
 
 (defn keypath
   "Split key to a keypath. Keypath item separator is separator regular expression."

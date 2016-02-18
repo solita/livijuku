@@ -293,7 +293,8 @@
   (walk/postwalk #(if (keyword? %) (sc/optional-key %) %) schema))
 
 (defn str->bigdec [^String txt]
-  (BigDecimal. (str/replace (str/replace txt "," ".") " " "")))
+  (try (BigDecimal. (str/replace (str/replace txt "," ".") " " ""))
+       (catch Throwable _ txt)))
 
 (def tunnusluku-coercer
   (map/map-values
@@ -320,6 +321,16 @@
 
 (defn map->bulletpoints [map]
   (str/join "\n" (for [[key value] map] (str "- " key " - " value))))
+
+(defn invalid-fields-bulletpoints [error]
+  (map/deep-reduce
+    (fn [acc v]
+      (if (map/mapentry? v)
+        (let [[key value] v]
+          (str acc "\n-- "  (name key) ": '" (.value value) "'"))
+        acc))
+    ""
+    error))
 
 (defn import-csv [data]
   (let [columns (count (first data))]
@@ -354,10 +365,15 @@
                 (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
               {:tunnuslukutyyppi tunnuslukutyyppi :tunnusluku tunnusluku-name :status "success"}
               (catch Object t
-                {:tunnusluku tunnusluku-name :status "db-error" :error t :data coerced-data})))))]
+                {:tunnusluku tunnusluku-name :status "db-error"
+                 :error &throw-context :data coerced-data})))))]
 
+      ;; tulosten raportointi
       (str "Tunnuslukuja ladattiin onnistuneesti: \n"
            (map->bulletpoints (map/map-values count (group-by :tunnuslukutyyppi (filter (coll/eq :status "success") result))))
-           "\n Virheet: \n"
-           (str/join "\n" (map #(str (:tunnusluku %) " - data: " (:data %))
-              (filter (coll/predicate not= :status "success") result)))))))
+           "\n\nLatausvirheet: \n"
+           (str/join "\n" (map #(str "- " (:tunnusluku %) " vialliset kentät: " (invalid-fields-bulletpoints (:error %)))
+                               (filter (coll/eq :status "syntax-error") result)))
+           "\n\nTietokantavirheet: \n"
+           (str/join "\n" (map #(str "- " (:tunnusluku %) " virhe: " (:error %))
+                               (filter (coll/eq :status "db-error") result)))))))
