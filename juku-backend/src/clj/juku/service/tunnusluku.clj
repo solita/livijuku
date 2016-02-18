@@ -199,21 +199,21 @@
 
 (def tunnuslukuotsikot
   {
-   #"(\S*): nousijat (\S*)" [:liikennevuositilasto :nousut parse-kk]
-   #"(\S*): linja-kilometrit (\S*)" [:liikennevuositilasto :linjakilometrit parse-kk]
-   #"(\S*): lähdöt (\S*)" [:liikennevuositilasto :lahdot parse-kk]
+   #"(.*): nousijat (\S*)" [:liikennevuositilasto :nousut parse-kk]
+   #"(.*): linja-kilometrit (\S*)" [:liikennevuositilasto :linjakilometrit parse-kk]
+   #"(.*): lähdöt (\S*)" [:liikennevuositilasto :lahdot parse-kk]
 
-   #"(\S*): (\S*) keskimääräinen nousumäärä.*" [:liikenneviikkotilasto :nousut parse-viikonpaivaluokka]
-   #"(\S*): talviliikenteen keskimääräisen (\S*) tarjonta.*" [:liikenneviikkotilasto :linjakilometrit parse-viikonpaivaluokka]
-   #"(\S*): talviliikenteen keskimääräisen (\S*) lähtömäärä.*" [:liikenneviikkotilasto :lahdot parse-viikonpaivaluokka]
+   #"(.*): (\S*) keskimääräinen nousumäärä.*" [:liikenneviikkotilasto :nousut parse-viikonpaivaluokka]
+   #"(.*): talviliikenteen keskimääräisen (\S*) tarjonta.*" [:liikenneviikkotilasto :linjakilometrit parse-viikonpaivaluokka]
+   #"(.*): talviliikenteen keskimääräisen (\S*) lähtömäärä.*" [:liikenneviikkotilasto :lahdot parse-viikonpaivaluokka]
 
-   #"(\S*): kertalipuista saadut lipputulot (\S*)" [:lipputulo :kertalipputulo parse-kk]
-   #"(\S*): arvolipuista saadut lipputulot (\S*)" [:lipputulo :arvolipputulo parse-kk]
-   #"(\S*): kausilipuista saadut lipputulot (\S*)" [:lipputulo :kausilipputulo parse-kk]
-   #"(\S*): lipputulot (\S*)" [:lipputulo :lipputulo parse-kk]
+   #"(.*): kertalipuista saadut lipputulot (\S*)" [:lipputulo :kertalipputulo parse-kk]
+   #"(.*): arvolipuista saadut lipputulot (\S*)" [:lipputulo :arvolipputulo parse-kk]
+   #"(.*): kausilipuista saadut lipputulot (\S*)" [:lipputulo :kausilipputulo parse-kk]
+   #"(.*): lipputulot (\S*)" [:lipputulo :lipputulo parse-kk]
 
-   #"(\S*): maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
-   #"(\S*): maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"(.*): maksettu liikennöintikorvaus (\S*)" [:liikennointikorvaus :korvaus parse-kk]
+   #"(.*): maksettu liikennöintikorvaus ja lipputuki (\S*)" [:liikennointikorvaus :korvaus parse-kk]
    #"maksettu liikennöinnin nousukorvaus (\(kos\)) - (\S*)" [:liikennointikorvaus :nousukorvaus parse-kk]
    #"(me): asiakashinnan mukaiset nousukorvaukset (\S*)" [:liikennointikorvaus :korvaus parse-kk]
 
@@ -317,6 +317,9 @@
     (= pivot :all) (m/flat->tree (apply merge data)  #"_")
     :else (map (partial apply merge) (vals (group-by pivot data)))))
 
+(defn map->bulletpoints [map]
+  (str/join "\n" (for [[key value] map] (str "- " key " - " value))))
+
 (defn import-csv [data]
   (let [columns (count (first data))]
     (when-not (every? (coll/eq count columns) data)
@@ -333,19 +336,25 @@
                          (filter (comp c/not-nil? :tunnuslukutyyppi))
                          (group-by (juxt :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)))]
 
-    (for [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
-      (let [tunnusluku-name (str (name tunnuslukutyyppi) "-" vuosi "-" organisaatioid (strx/blank-if-nil "-" sopimustyyppitunnus))
-            save (tunnusluku-save tunnuslukutyyppi)
-            coercer (tunnusluku-coercer tunnuslukutyyppi)
-            pivoted-data (pivot-data (tunnusluku-pivot tunnuslukutyyppi) (dissoc-id data))
-            coerced-data (coercer pivoted-data)]
-        (if (sc-util/error? coerced-data)
-          {:tunnusluku tunnusluku-name :status "syntax-error"
-           :error (sc-util/error-val coerced-data) :data pivoted-data}
-          (ss/try+
-            (if (nil? sopimustyyppitunnus)
-              (save vuosi organisaatioid coerced-data)
-              (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
-            ;;{:tunnusluku tunnusluku-name :status "success"}
-            (catch Object t
-              {:tunnusluku tunnusluku-name :status "db-error" :error t :data coerced-data})))))))
+    (let [result
+      (for [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
+        (let [tunnusluku-name (str (name tunnuslukutyyppi) "-" vuosi "-" organisaatioid (strx/blank-if-nil "-" sopimustyyppitunnus))
+              save (tunnusluku-save tunnuslukutyyppi)
+              coercer (tunnusluku-coercer tunnuslukutyyppi)
+              pivoted-data (pivot-data (tunnusluku-pivot tunnuslukutyyppi) (dissoc-id data))
+              coerced-data (coercer pivoted-data)]
+          (if (sc-util/error? coerced-data)
+            {:tunnusluku tunnusluku-name :status "syntax-error"
+             :error (sc-util/error-val coerced-data) :data pivoted-data}
+            (ss/try+
+              (if (nil? sopimustyyppitunnus)
+                (save vuosi organisaatioid coerced-data)
+                (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
+              {:tunnuslukutyyppi tunnuslukutyyppi :tunnusluku tunnusluku-name :status "success"}
+              (catch Object t
+                {:tunnusluku tunnusluku-name :status "db-error" :error t :data coerced-data})))))]
+      (str "Tunnuslukuja ladattiin onnistuneesti: \n"
+           (map->bulletpoints (map/map-values count (group-by :tunnuslukutyyppi (filter (coll/eq :status "success") result))))
+           "\n Virheet: \n"
+           (str/join "\n" (map #(str (:tunnusluku %) " - data: " (:data %))
+              (filter (coll/predicate not= :status "success") result)))))))
