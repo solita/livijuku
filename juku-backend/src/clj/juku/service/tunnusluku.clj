@@ -318,6 +318,10 @@
     :else (map (partial apply merge) (vals (group-by pivot data)))))
 
 (defn import-csv [data]
+  (let [columns (count (first data))]
+    (when-not (every? (coll/eq count columns) data)
+      (ss/throw+ {:http-response r/bad-request} "Tunnuslukutaulukossa kaikilla riveillä ei ole sama määrä sarakkeita")))
+
   (let [headers (map str/lower-case (first data))
         tunnusluvut (->> (rest data)
                          (map (c/partial-first-arg update 0 parse-int))
