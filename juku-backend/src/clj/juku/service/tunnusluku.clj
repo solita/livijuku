@@ -333,22 +333,19 @@
                          (filter (comp c/not-nil? :tunnuslukutyyppi))
                          (group-by (juxt :tunnuslukutyyppi :vuosi :organisaatioid :sopimustyyppitunnus)))]
 
-    (doseq [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
-      (let [save (tunnusluku-save tunnuslukutyyppi)
+    (for [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
+      (let [tunnusluku-name (str (name tunnuslukutyyppi) "-" vuosi "-" organisaatioid (strx/blank-if-nil "-" sopimustyyppitunnus))
+            save (tunnusluku-save tunnuslukutyyppi)
             coercer (tunnusluku-coercer tunnuslukutyyppi)
             pivoted-data (pivot-data (tunnusluku-pivot tunnuslukutyyppi) (dissoc-id data))
             coerced-data (coercer pivoted-data)]
-        (when (sc-util/error? coerced-data)
-          (ss/throw+ (assoc coerced-data :http-response r/bad-request)
-                     (str "Tunnusluvun " tunnuslukutyyppi "-" vuosi "-" organisaatioid
-                          (strx/blank-if-nil "-" sopimustyyppitunnus)
-                          " tiedot eivät ole skeeman mukaisia. Virheen kuvaus: " (sc-util/error-val coerced-data)
-                          ". Data: " pivoted-data)))
-        (ss/try+
-          (if (nil? sopimustyyppitunnus)
-            (save vuosi organisaatioid coerced-data)
-            (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
-          (catch Object _ (ss/throw+ {:http-response r/bad-request}
-                                    (str "Tunnusluvun " tunnuslukutyyppi "-" vuosi "-" organisaatioid
-                                         (strx/blank-if-nil "-" sopimustyyppitunnus)
-                                         " tallennus epäonnistui. Data: " coerced-data))))))))
+        (if (sc-util/error? coerced-data)
+          {:tunnusluku tunnusluku-name :status "syntax-error"
+           :error (sc-util/error-val coerced-data) :data pivoted-data}
+          (ss/try+
+            (if (nil? sopimustyyppitunnus)
+              (save vuosi organisaatioid coerced-data)
+              (save vuosi organisaatioid sopimustyyppitunnus coerced-data))
+            ;;{:tunnusluku tunnusluku-name :status "success"}
+            (catch Object t
+              {:tunnusluku tunnusluku-name :status "db-error" :error t :data coerced-data})))))))
