@@ -7,12 +7,15 @@
             [compojure.api.meta :as meta]
             [common.collection :as coll]
             [clojure.string :as str]
+            [clojure-csv.core :as csv]
             [common.string :as strx]
             [juku.service.common :as sc]
             [slingshot.slingshot :as ss]
             [clojure.walk :as w]
             [ring.util.http-response :as r]
             [compojure.api.middleware :as cm]
+            [ring.middleware.format-params :as rmf]
+            [ring.middleware.format.impl :as rmf-impl]
             [ring.middleware.anti-forgery :as af]
             [ring.swagger.middleware :as rm]
             [juku.headers :as h]
@@ -159,4 +162,17 @@
         (error r/forbidden (str "Taustapalvelu tunnisti mahdollisesti väärennetyn pyynnön. Keksissä XSRF-TOKEN oleva arvo: "
                                 cookie-token " ei vastaa x-xsrf-token-otsikkotiedossa olevaa arvoa: " header-token))))))
 
+; *** csv support ***
 
+(def csv-request? (rmf/make-type-request-pred #"^text/csv"))
+
+(defn wrap-csv-params
+  "Handles body params in CSV format. See [[rmf/wrap-format-params]] for details."
+  [handler & args]
+  (let [options (rmf-impl/extract-options args)]
+    (rmf/wrap-format-params
+      handler (assoc options
+                :predicate csv-request?
+                :decoder (fn [csv]
+                           (apply csv/parse-csv csv
+                                  (apply concat (-> options :options))))))))

@@ -5,7 +5,8 @@
             [juku.schema.tunnusluku :as tls]
             [common.map :as map]
             [clojure.string :as str]
-            [common.collection :as coll]))
+            [common.collection :as coll]
+            [clojure-csv.core :as csv]))
 
 (defn test-tunnuslukuservice [name save find data]
   (fact {:midje/description (str "Tunnuslukupalvelutesti - lisääminen ja haku - " name)}
@@ -67,21 +68,23 @@
 
 ; *** csv import ***
 
+(defn import-csv [csv] (tl/import-csv (csv/parse-csv csv :delimiter \;)))
+
 (fact
   "CSV lataus - yksi organisaatio ja yksi rivi"
   (let [text-csv "vuosi;tunnusluku;helsingin seudun liikenne\n2013;Brutto: Nousijat tammikuussa;1\n"]
-    (tl/import-csv text-csv)
+    (import-csv text-csv)
     (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 1 "BR"))) => 1M))
 
 (fact
   "CSV lataus - lippuhinta"
   (let [text-csv "vuosi;tunnusluku;helsingin seudun liikenne\n2013;Kertalipun hinta, aikuinen, vyöhyke 1 (€);1"]
-    (tl/import-csv text-csv)
+    (import-csv text-csv)
     (:kertalippuhinta (coll/find-first (coll/eq :vyohykemaara 1M) (tl/find-lippuhinnat 2013 1))) => 1M))
 
 (fact
   "CSV lataus - kaksi organisaatiota ja yksi rivi"
   (let [text-csv "vuosi;tunnusluku;helsingin seudun liikenne;tampere\n2013;Brutto: Nousijat tammikuussa;1;2\n"]
-    (tl/import-csv text-csv)
+    (import-csv text-csv)
     (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 1 "BR"))) => 1M
     (:nousut (coll/find-first (coll/eq :kuukausi 1M) (tl/find-liikennevuositilasto 2013 12 "BR"))) => 2M))

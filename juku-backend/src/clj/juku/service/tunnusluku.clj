@@ -256,15 +256,16 @@
               tunnuslukuotsikot)))
 
 
-(defn find-organisaatio [nimi]
-  (coll/find-first (coll/eq (comp str/lower-case :nimi) nimi) (org/organisaatiot)))
+(defn get-organisaatio [nimi]
+  (coll/get-first! (coll/eq (comp str/lower-case :nimi) nimi) (org/organisaatiot)
+                   {:message (str "Organisaatiota: " nimi " ei löydy.")}))
 
 (defn unpivot-organizations [headers row]
   (let [vuosi+tunnusluku (vec (take 2 row))
         org-names (map (comp str/trim str/lower-case) (drop 2 headers))
         org-data (drop 2 row)]
     (map-indexed (fn [idx value]
-                   (conj vuosi+tunnusluku (:id (find-organisaatio (nth org-names idx))) value))
+                   (conj vuosi+tunnusluku (:id (get-organisaatio (nth org-names idx))) value))
                  org-data)))
 
 (def tunnusluku-pivot
@@ -316,9 +317,8 @@
     (= pivot :all) (m/flat->tree (apply merge data)  #"_")
     :else (map (partial apply merge) (vals (group-by pivot data)))))
 
-(defn import-csv [csv]
-  (let [data (parse-csv csv)
-        headers (map str/lower-case (first data))
+(defn import-csv [data]
+  (let [headers (map str/lower-case (first data))
         tunnusluvut (->> (rest data)
                          (map (c/partial-first-arg update 0 parse-int))
                          (filter (comp c/not-nil? first))
@@ -348,4 +348,3 @@
                                     (str "Tunnusluvun " tunnuslukutyyppi "-" vuosi "-" organisaatioid
                                          (strx/blank-if-nil "-" sopimustyyppitunnus)
                                          " tallennus epäonnistui. Data: " coerced-data))))))))
-

@@ -34,7 +34,10 @@
               (jm/logging-wrapper "400 bad request - validation error:" ex/request-validation-handler)
             :compojure.api.exception/response-validation
               (jm/logging-wrapper "500 system error (bad response) - validation error:" jm/response-validation-handler)
-            :compojure.api.exception/default jm/exception-handler}}}
+            :compojure.api.exception/default jm/exception-handler}}
+         :format
+          {:formats [:json jm/wrap-csv-params]
+           :params-opts {jm/wrap-csv-params {:delimiter \;}}}}
 
         (swagger-ui "/api/ui")
         (swagger-docs :info {

@@ -155,5 +155,13 @@
                       sopimustyyppitunnus :- s/Str]
         :body-params [kommentti :- (s/maybe s/Str)]
         :summary "Tallenna organisaation tunnuslukukommentit tietylle vuodella ja sopimustyypille."
-        (ok (service/save-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti))))
+        (ok (service/save-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti)))
+
+  ;; csv import
+  (PUT* "/tunnusluku/import" []
+        :auth [:modify-kaikki-tunnusluvut]
+        :return nil
+        :body [csv [[s/Str]]]
+        :summary "Lataa tunnusluvut csv-muodossa."
+        (ok (service/import-csv csv))))
 
