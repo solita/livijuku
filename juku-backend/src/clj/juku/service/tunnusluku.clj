@@ -256,16 +256,17 @@
               tunnuslukuotsikot)))
 
 
-(defn get-organisaatio [nimi]
-  (coll/get-first! (coll/eq (comp str/lower-case :nimi) nimi) (org/organisaatiot)
+(defn get-organisaatio [organisaatiot nimi]
+  (coll/get-first! (coll/eq (comp str/lower-case :nimi) nimi) organisaatiot
                    {:message (str "Organisaatiota: " nimi " ei löydy.")}))
 
-(defn unpivot-organizations [headers row]
+(defn unpivot-organizations [organisaatiot headers row]
   (let [vuosi+tunnusluku (vec (take 2 row))
         org-names (map (comp str/trim str/lower-case) (drop 2 headers))
+        org-ids (map (comp :id (partial get-organisaatio organisaatiot)) org-names)
         org-data (drop 2 row)]
     (map-indexed (fn [idx value]
-                   (conj vuosi+tunnusluku (:id (get-organisaatio (nth org-names idx))) value))
+                   (conj vuosi+tunnusluku (nth org-ids idx) value))
                  org-data)))
 
 (def tunnusluku-pivot
@@ -326,11 +327,12 @@
       (ss/throw+ {:http-response r/bad-request} "Tunnuslukutaulukossa kaikilla riveillä ei ole sama määrä sarakkeita")))
 
   (let [headers (map str/lower-case (first data))
+        organisaatiot (org/organisaatiot)
         tunnusluvut (->> (rest data)
                          (map (c/partial-first-arg update 0 parse-int))
                          (filter (comp c/not-nil? first))
                          (filter (comp strx/not-blank? second))
-                         (mapcat (partial unpivot-organizations headers))
+                         (mapcat (partial unpivot-organizations organisaatiot headers))
                          (map (partial m/zip-object [:vuosi :tunnusluku :organisaatioid :value]))
                          (map parse-tunnusluku)
                          (filter (comp c/not-nil? :tunnuslukutyyppi))
@@ -353,6 +355,7 @@
               {:tunnuslukutyyppi tunnuslukutyyppi :tunnusluku tunnusluku-name :status "success"}
               (catch Object t
                 {:tunnusluku tunnusluku-name :status "db-error" :error t :data coerced-data})))))]
+
       (str "Tunnuslukuja ladattiin onnistuneesti: \n"
            (map->bulletpoints (map/map-values count (group-by :tunnuslukutyyppi (filter (coll/eq :status "success") result))))
            "\n Virheet: \n"
