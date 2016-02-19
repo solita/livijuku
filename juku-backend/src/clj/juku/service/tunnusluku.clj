@@ -351,7 +351,9 @@
 
     (let [result
       (for [[[tunnuslukutyyppi vuosi organisaatioid sopimustyyppitunnus] data] tunnusluvut]
-        (let [tunnusluku-name (str (name tunnuslukutyyppi) "-" vuosi "-" organisaatioid (strx/blank-if-nil "-" sopimustyyppitunnus))
+        (let [tunnusluku-name (str vuosi "-" (name tunnuslukutyyppi) "-"
+                                   (-> (org/find-organisaatio organisaatioid organisaatiot) :nimi str/lower-case (str/replace " " "-"))
+                                   (strx/blank-if-nil "-" sopimustyyppitunnus))
               save (tunnusluku-save tunnuslukutyyppi)
               coercer (tunnusluku-coercer tunnuslukutyyppi)
               pivoted-data (pivot-data (tunnusluku-pivot tunnuslukutyyppi) (dissoc-id data))
