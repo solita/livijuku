@@ -14,7 +14,7 @@
 (defn hakija-organisaatiot [] (filter (c/predicate not= :lajitunnus "LV") (select-organisaatiot)))
 
 (defn find-organisaatio
-  ([id] (find-organisaatio (select-organisaatiot)))
+  ([id] (find-organisaatio id (select-organisaatiot)))
   ([id organisaatiot] (c/find-first (c/eq :id id) organisaatiot)))
 
 (defn find-organisaatio-of [user] (find-organisaatio (:organisaatioid user)))
