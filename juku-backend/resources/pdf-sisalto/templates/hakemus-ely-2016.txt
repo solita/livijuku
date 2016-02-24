@@ -1,0 +1,23 @@
+*ELINKEINO-, LIIKENNE- JA YMPÄRISTÖKESKUKSEN MÄÄRÄRAHATARPEET {vuosi}
+
+*Hakemus {vireillepvm}
+
+	*ELY-keskus: {organisaatio-nimi}
+
+{maararahatarpeet}
+
+	Muu PSA:n mukainen liikenne:
+	 - Siirtymäajan sopimusten lipputuki				{siirtymaaikasopimukset} e
+	 - Joukkoliikennetuki kunnille				{joukkoliikennetukikunnat} e
+
+	ELY-keskuksen kehityshankkeet:
+{kehityshankkeet}
+
+	Määrärahatarpeet yhteensä				{haettuavustus} e
+
+	Lähettäjä: {lahettaja}
+
+*Liitteet
+
+{liitteet}
+

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+usage() { echo "Usage: $0 <DB_USER> <DB_PASSWORD>" 1>&2; exit 1; }
+
+DB_USER=$1
+DB_PASSWORD=$2
+
+if [ -z $DB_USER ]; then usage; fi
+if [ -z $DB_PASSWORD ]; then usage; fi
+
+CONNECTION="(DESCRIPTION=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=10.129.46.165)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=10.129.46.167)(PORT=1521))(LOAD_BALANCE=yes)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=JUKUTEST)))"
+
+DB_URL=$CONNECTION DB_USER=$DB_USER DB_PASSWORD=$DB_PASSWORD lein with-profiles +test-data do clear-db, update-db
+echo dbmaintain RETURN VALUE: $?
