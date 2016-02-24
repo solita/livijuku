@@ -67,6 +67,14 @@
     (tl/save-kommentti! 2016 1 "BR" "")
     (tl/find-kommentti 2016 1 "BR") => nil))
 
+(fact "Joukkoliikennetuen lisääminen ja haku"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [tuki (map #(assoc (map/map-values (constantly 1M) tls/Joukkoliikennetuki) :avustuskohdeluokkatunnus %) ["PSA", "HK", "K"])]
+
+      (tl/save-joukkoliikennetuki! 2016 1 tuki)
+      (set (tl/find-joukkoliikennetuki 2016 1)) => (set tuki))))
+
+
 ; *** csv import ***
 
 (defn import-csv [csv] (tl/import-csv (csv/parse-csv csv :delimiter \;)))

@@ -140,3 +140,21 @@ from fact_alue where vuosi = :vuosi and organisaatioid = :organisaatioid
 -- name: select-kommentti
 select kommentti from tunnuslukukommentti
 where vuosi = :vuosi and organisaatioid = :organisaatioid and sopimustyyppitunnus = :sopimustyyppitunnus
+
+-- name: select-joukkoliikennetuki
+select avustuskohdeluokkatunnus, tuki
+from fact_joukkoliikennetuki
+where vuosi = :vuosi and organisaatioid = :organisaatioid
+
+-- name: insert-default-joukkoliikennetuki-if-not-exists!
+insert into fact_joukkoliikennetuki (vuosi, organisaatioid, avustuskohdeluokkatunnus)
+  select :vuosi vuosi,
+         :organisaatioid organisaatioid,
+         tunnus avustuskohdeluokkatunnus
+  from avustuskohdeluokka
+  where not exists (
+      select 1 from fact_joukkoliikennetuki l
+      where l.vuosi = :vuosi and
+            l.organisaatioid = :organisaatioid
+  )
+  order by vuosi, organisaatioid, tunnus

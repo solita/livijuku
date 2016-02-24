@@ -58,6 +58,12 @@
    :jarjestelmat (s/maybe s/Num)
    :muutpalvelut(s/maybe s/Num)})
 
+(s/defschema Joukkoliikennetuki
+  "Tietyn avustuskohdeluokan joukkoliikennetuki."
+  {
+   :avustuskohdeluokkatunnus s/Str,
+   :tuki (s/maybe s/Num)})
+
 (s/defschema Alue
   "Alueen tiedot"
   {

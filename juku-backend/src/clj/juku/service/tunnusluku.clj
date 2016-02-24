@@ -152,6 +152,27 @@
 (defn save-kommentti! [vuosi organisaatioid sopimustyyppitunnus kommentti]
   (dml/upsert update-kommentti! insert-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti))
 
+
+; *** Pienten kaupunkiseutujen joukkoliikennetukitiedot ***
+
+(def coerce-joukkoliikennetuki (coerce/coercer s/Joukkoliikennetuki))
+
+(defn find-joukkoliikennetuki  [vuosi organisaatioid]
+  (map coerce-joukkoliikennetuki (select-joukkoliikennetuki {:vuosi vuosi :organisaatioid organisaatioid})))
+
+(defn init-joukkoliikennetuki! [vuosi organisaatioid]
+  (dml/insert-ignore-unique-constraint-error insert-default-joukkoliikennetuki-if-not-exists!
+                                             {:vuosi vuosi :organisaatioid organisaatioid}))
+
+(defn save-joukkoliikennetuki! [vuosi organisaatioid data]
+  (with-transaction
+    (init-joukkoliikennetuki! vuosi organisaatioid)
+    (let [id {:vuosi vuosi :organisaatioid organisaatioid}
+          batch (sort-by :avustuskohdeluokkatunnus data)]
+      (dml/update-batch-where! db "fact_joukkoliikennetuki"
+                               (map (c/partial-first-arg dissoc :avustuskohdeluokkatunnus) batch)
+                               (map (partial merge id) (map (c/partial-first-arg select-keys [:avustuskohdeluokkatunnus]) batch))))))
+
 ; *** csv lataus (konversiodata excel:stä) ***
 
 (defn parse-csv [csv]
@@ -200,7 +221,7 @@
 (def tunnuslukuotsikot
   {
    #"(.*): nousijat (\S*)" [:liikennevuositilasto :nousut parse-kk]
-   #"(.*): linja-kilometrit (\S*)" [:liikennevuositilasto :linjakilometrit parse-kk]
+   #"(.*): linja-?kilometrit (\S*)" [:liikennevuositilasto :linjakilometrit parse-kk]
    #"(.*): lähdöt (\S*)" [:liikennevuositilasto :lahdot parse-kk]
 
    #"(.*): (\S*) keskimääräinen nousumäärä.*" [:liikenneviikkotilasto :nousut parse-viikonpaivaluokka]
