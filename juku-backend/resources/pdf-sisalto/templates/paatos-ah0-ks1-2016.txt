@@ -12,19 +12,21 @@
 
 *Päätös
 
-	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustuksena enintään {myonnettyavustus} euroa {organisaatiolaji-gen-pl} joukkoliikenteen osoitetusta talousarvion momentin 31.30.63.11 määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.{selite}
+	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustuksena enintään {myonnettyavustus} euroa {organisaatiolaji-gen-pl} joukkoliikenteen osoitetusta talousarvion momentin 31.30.63.09 määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.{selite}
+
+	Avustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.
 
 	Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
 
 *Valtionavustuksen määrä ja saamisen edellytykset
 
-	Valtionavustuksen määrä on päätöskohdan mukainen, mutta kuitenkin siten, että avustus on enintään 50 % hyväksyttävistä kokonaiskustannuksista. Hyväksyttävät kustannukset on yksilöity joukkoliikenteen valtionavustusasetuksen 5 §:ssä. Hintavelvoitteiden korvaamisen osalta kunnan ja valtion subventio yhteensä ei saa ylittää asiakastulojen määrää. Avustukseen sisältyy arvonlisävero.
+	Valtionavustuksen määrä on päätöskohdan mukainen, mutta kuitenkin siten, että avustus on enintään 50 % hyväksyttävistä kokonaiskustannuksista. Hyväksyttävät kustannukset on yksilöity joukkoliikenteen valtionavustusasetuksen 4 §:ssä. Hintavelvoitteiden korvaamisen osalta kunnan ja valtion subventio yhteensä ei saa ylittää asiakastulojen määrää.
 
-	Joukkoliikenteen valtionavustusasetuksen 4 §:n mukaan valtionavustuksen myöntämisen edellytyksenä on, että avustus kytketään maankäyttöä, asumista ja liikennettä koskevassa aiesopimuksessa sovittuihin joukkoliikenteen kehittämistoimiin. Joukkoliikenteen tavoitteista on sovittu valtion ja hakijan kanssa MAL-aiesopimuksessa. Näin ollen hakemus täyttää valtionavustusastuksen mukaiset edellytykset.
+	Joukkoliikenteen valtionavustusasetuksen 4 §:n mukaan valtionavustuksen myöntämisen edellytyksenä on, että avustus kytketään maankäyttöä, asumista ja liikennettä koskevassa aiesopimuksessa sovittuihin joukkoliikenteen kehittämistoimiin. Joukkoliikenteen tavoitteista on sovittu valtion ja hakijan kanssa MAL-aiesopimuksessa. Näin ollen hakemus täyttää valtionavustusasetuksen mukaiset edellytykset.
 
 *Avustuksen käyttö ja hyväksyttävät kustannukset
 
-	Valtionavustusta voidaan myöntää enintään 50 % hyväksyttävistä kustannuksista. Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, hintavelvoitteiden korvaamisesta ja jouk-koliikenteen kehittämisestä aiheutuvia kustannuksia.
+	Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, hintavelvoitteiden korvaamisesta ja joukkoliikenteen kehittämisestä aiheutuvia kustannuksia. PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen. Avustuksen tavoitteena on turvata joukkoliikenteen palvelutasoa. Hintavelvoitteiden korvaamiseen myönnettyä avustusta saa käyttää seutu- ja kaupunkilippujen kustannuksiin. Avustuksen tavoitteena on nostaa seutujen joukkoliikenteen palvelutasoa ja lisätä joukkoliikenteen käyttöjä ja markkinaosuutta sekä parantaa sen kilpailukykyä.
 
 	Mikäli hakija saa valtionavustusta suurten kaupunkiseutujen joukkoliikennetuen lisäksi muun lainsäädännön perusteella hakemuksessa esitettyihin tarkoituksiin, tulee sen ilmoittaa näistä ja osoittaa, ettei yhteenlaskettu valtionavustuksen määrä ylitä 50 % hyväksyttävistä kustannuksista. Valtionavustusta saa käyttää tämän päätöksen perusteella vuoden {vuosi} aikana syntyneiden kustannusten kattamiseen.
 
@@ -46,12 +48,12 @@
 
 *Seuranta ja vaadittavat selvitykset
 
-	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää hakijan ja Liikenneviraston yhteisen seurantapalaverin vuoden {vuosi} syyskuussa.  Palaverissa laaditaan yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
+	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää hakijan ja Liikenneviraston yhteisen seurantapalaverin vuoden {vuosi} syksyllä.  Palaverissa laaditaan yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
 
 *Sovellettava lainsäädäntö
 
 	Joukkoliikennelaki (869/2009)
-	Valtioneuvoston asetus joukkoliikenteen valtionavustuksista (1273/2013)
+	Valtioneuvoston asetus joukkoliikenteen valtionavustuksista (1273/2013, 1318/2015)
 	Valtionavustuslaki (688/2001)
 
 *Muutoksenhaku ja oikaisuvaatimus
