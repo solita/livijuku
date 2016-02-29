@@ -8,5 +8,7 @@ insert into hakuaika (vuosi,hakemustyyppitunnus,alkupvm,loppupvm) values (2017, 
 
 
 
-
-
+-- ui test fix - käyttöliittymätestit ei mene läpi jos 2016 kauden avustushakemuksen hakuaika on käynnisssä
+-- siirretään hakuaikaa testidatassa eteenpäin tulevaisuuteen
+update hakuaika set alkupvm = to_date('01.07.2016','DD.MM.YYYY'), loppupvm = to_date('31.08.2016','DD.MM.YYYY')
+where vuosi = 2016 and hakemustyyppitunnus = 'AH0';
