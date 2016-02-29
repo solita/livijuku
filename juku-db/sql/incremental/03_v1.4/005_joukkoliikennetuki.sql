@@ -4,7 +4,7 @@ create table fact_joukkoliikennetuki (
   organisaatioid not null references organisaatio (id),
   avustuskohdeluokkatunnus not null references avustuskohdeluokka (tunnus),
 
-  tuki number(9),
+  tuki number(12, 2),
 
   constraint fact_joukkoliikennetuki_pk primary key (vuosi, organisaatioid, avustuskohdeluokkatunnus)
 );
