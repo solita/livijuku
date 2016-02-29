@@ -165,14 +165,15 @@
                                              {:vuosi vuosi :organisaatioid organisaatioid}))
 
 (defn save-joukkoliikennetuki! [vuosi organisaatioid data]
-  (with-transaction
-    (init-joukkoliikennetuki! vuosi organisaatioid)
-    (let [id {:vuosi vuosi :organisaatioid organisaatioid}
-          batch (sort-by :avustuskohdeluokkatunnus data)]
-      (dml/update-batch-where! db "fact_joukkoliikennetuki"
-                               (map (c/partial-first-arg dissoc :avustuskohdeluokkatunnus) batch)
-                               (map (partial merge id) (map (c/partial-first-arg select-keys [:avustuskohdeluokkatunnus]) batch))))
-    nil))
+  (if (not-empty data)
+    (with-transaction
+      (init-joukkoliikennetuki! vuosi organisaatioid)
+      (let [id {:vuosi vuosi :organisaatioid organisaatioid}
+            batch (sort-by :avustuskohdeluokkatunnus data)]
+        (dml/update-batch-where! db "fact_joukkoliikennetuki"
+                                 (map (c/partial-first-arg dissoc :avustuskohdeluokkatunnus) batch)
+                                 (map (partial merge id) (map (c/partial-first-arg select-keys [:avustuskohdeluokkatunnus]) batch))))
+      nil)))
 
 ; *** csv lataus (konversiodata excel:stä) ***
 
