@@ -127,7 +127,7 @@
         :return (s/maybe Alue)
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
-        :summary "Hae organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
+        :summary "Hae organisaation tietyn vuoden aluetiedot."
         (ok (service/find-alue vuosi organisaatioid)))
   (PUT* "/alue/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
@@ -135,7 +135,7 @@
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
         :body [alue Alue]
-        :summary "Tallenna organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
+        :summary "Tallenna organisaation tietyn vuoden aluetiedot."
         (ok (service/save-alue! vuosi organisaatioid alue)))
 
   ;; Kommentit
@@ -156,6 +156,23 @@
         :body-params [kommentti :- (s/maybe s/Str)]
         :summary "Tallenna organisaation tunnuslukukommentit tietylle vuodella ja sopimustyypille."
         (ok (service/save-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti)))
+
+  ;; Joukkoliikennetuki
+  (GET* "/joukkoliikennetuki/:vuosi/:organisaatioid" []
+        :auth [:view-tunnusluvut]
+        :return [Joukkoliikennetuki]
+        :path-params [vuosi :- Long
+                      organisaatioid :- Long]
+        :summary "Hae pienten kaupunkiseutujen joukkoliikennetuki tietylle vuodella ja sopimustyypille."
+        (ok (service/find-joukkoliikennetuki vuosi organisaatioid)))
+  (PUT* "/joukkoliikennetuki/:vuosi/:organisaatioid" []
+        :auth [:view-tunnusluvut]
+        :return nil
+        :path-params [vuosi :- Long
+                      organisaatioid :- Long]
+        :body [joukkoliikennetuki Joukkoliikennetuki]
+        :summary "Tallenna pienten kaupunkiseutujen joukkoliikennetuki tietylle vuodella ja sopimustyypille."
+        (ok (service/save-joukkoliikennetuki! vuosi organisaatioid joukkoliikennetuki)))
 
   ;; csv import
   (PUT* "/tunnusluku/import" []
