@@ -170,7 +170,7 @@
         :return nil
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
-        :body [joukkoliikennetuki Joukkoliikennetuki]
+        :body [joukkoliikennetuki [Joukkoliikennetuki]]
         :summary "Tallenna pienten kaupunkiseutujen joukkoliikennetuki tietylle vuodella ja sopimustyypille."
         (ok (service/save-joukkoliikennetuki! vuosi organisaatioid joukkoliikennetuki)))
 
