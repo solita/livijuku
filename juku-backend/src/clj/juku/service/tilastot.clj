@@ -18,7 +18,7 @@
 
 
 ; *** Tilastoihin liittyvät kyselyt ***
-(sql/defqueries "tilastot.sql")
+(sql/defqueries "tilastot.sql" {:as-arrays? true})
 
 (def demo-data {
   :kuukausi (map str/join (c/cartesian-product [(range 2013 2016) (map (partial format "%02d") (range 1 13))]))
@@ -126,5 +126,9 @@
           sql (if (empty? sql-where) sql-body (assoc sql-body :where (cons :and sql-where)))]
 
       (jsql/query db (hsql/format sql) {:as-arrays? true}))))
+
+(defn avustus-tilasto [organisaatiolajitunnus]
+  (select-avustus-ah0-group-by-vuosi (c/bindings->map organisaatiolajitunnus)
+                                     {:as-arrays? true :connection db}))
 
 

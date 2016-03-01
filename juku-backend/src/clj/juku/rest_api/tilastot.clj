@@ -43,15 +43,15 @@
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 
-        :return [[s/Num]]
+        :return [[s/Any]]
         :summary "Valtion avustus ryhmiteltynä haettuun ja myönnettyyn avustukseen."
-        (ok (service/select-avustus-ah0-group-by-vuosi (c/bindings->map organisaatiolajitunnus))))
+        (ok (service/avustus-tilasto organisaatiolajitunnus)))
 
   (GET* "/myonnettyavustus/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 
-        :return [[s/Num]]
+        :return [[s/Any]]
         :summary "Valtion avustus ryhmiteltynä haettuun ja myönnettyyn avustukseen."
         (ok (service/select-myonnettyavustus-ah0 (c/bindings->map organisaatiolajitunnus)))))
 
