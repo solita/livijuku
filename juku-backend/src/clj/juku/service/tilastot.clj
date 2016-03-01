@@ -135,4 +135,8 @@
   (select-avustus-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
                                                   {:as-arrays? true :connection db}))
 
+(defn avustus-asukastakohti-group-by-organisaatio [organisaatiolajitunnus]
+  (select-avustus-asukastakohti-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
+                                                                {:as-arrays? true :connection db}))
+
 
