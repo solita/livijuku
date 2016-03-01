@@ -26,7 +26,7 @@
                        group-by :- [s/Str]]
 
         :return [[s/Any]]
-        :summary "Testipalvelu käyttöliittymäratkaisun testaukseen."
+        :summary "Tunnuslukujen hakupalvelu."
         (ok (service/tunnusluku-tilasto (keyword tunnuslukuid) organisaatiolajitunnus
                                         (c/bindings->map vuosi
                                                          kuukausi
@@ -37,5 +37,13 @@
                                                          lipputuloluokkatunnus
                                                          lippuhintaluokkatunnus
                                                          kustannuslajitunnus)
-                                        (map keyword group-by)))))
+                                        (map keyword group-by))))
+
+  (GET* "/avustus/:organisaatiolajitunnus" []
+        :auth [:view-tunnusluvut]
+        :path-params [organisaatiolajitunnus :- s/Str]
+
+        :return [[s/Num]]
+        :summary "Valtion avustus ryhmiteltynä haettuun ja myönnettyyn avustukseen."
+        (ok (service/select-avustus-ah0-group-by-vuosi (c/bindings->map organisaatiolajitunnus)))))
 
