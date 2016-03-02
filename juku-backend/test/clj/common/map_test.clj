@@ -19,5 +19,5 @@
 (fact "deep reduce"
       (m/deep-reduce conj [] {:a 1}) => [[:a 1]]
       (m/deep-reduce conj [] {:a 1 :b 1}) => [[:a 1] [:b 1]])
-
-;; TODO: (m/deep-reduce conj [] {:a {:c 1 :d 1} :b 1}) => [[:a 1] [:b 1]]
+;; TODO: pitää miettiä tarvitaanko tätä mihinkään - tällä hetkellä järjestelmässä ei käytetä
+;; miten pitäisi käsitellä (m/deep-reduce conj [] {:a {:c 1 :d 1} :b 1}) => ?
