@@ -128,7 +128,7 @@
 
       (jsql/query db (hsql/format sql) {:as-arrays? true}))))
 
-(def old-avustus-data {
+(def avustus-data-2010-2015 {
   "KS1" {
   ;; Oulu, HSL, Tampere, Turku
          :organisaatiot [10, 1, 12, 13],
@@ -181,7 +181,7 @@
                          2014 [3879000, 6695000, 2586000, 5095000, 3192000, 3065000, 1684000, 3138000, 1985000]}}})
 
 (def avustus-data+all
-  (assoc old-avustus-data "ALL" (apply m/deep-merge-with #(apply concat %) (vals old-avustus-data))))
+  (assoc avustus-data-2010-2015 "ALL" (apply m/deep-merge-with #(apply concat %) (vals avustus-data-2010-2015))))
 
 (def sum (partial reduce +))
 
@@ -193,7 +193,7 @@
   (m/map-values data->avustus-tilasto avustus-data+all))
 
 (defn data->avustus-tilasto-organisaatio [data]
-  (mapcat #(map list
+  (mapcat #(map vector
              (:organisaatiot data)
              (repeat %)
              (get (:haetut data) %)
@@ -202,6 +202,17 @@
 
 (def old-avustus-tilasto-organisaatio
   (m/map-values data->avustus-tilasto-organisaatio avustus-data+all))
+
+(defn data->avustus-asukastakohti [data]
+  (mapcat #(map vector
+                (:organisaatiot data)
+                (repeat %)
+                (map (fn [myonnetty asukasmaara] (/ myonnetty asukasmaara))
+                     (get (:myonnetyt data) %) (:asukasmaara data)))
+          (range 2010 2015)))
+
+(def old-avustus-asukastakohti
+  (m/map-values data->avustus-asukastakohti avustus-data+all))
 
 (defn include-old-data [old-data new-data]
   (cons (first new-data) ;; header
@@ -220,5 +231,7 @@
                                                     {:as-arrays? true :connection db})))
 
 (defn avustus-asukastakohti-group-by-organisaatio [organisaatiolajitunnus]
-  (select-avustus-asukastakohti-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
-                                                                {:as-arrays? true :connection db}))
+  (include-old-data
+    (get old-avustus-asukastakohti organisaatiolajitunnus)
+    (select-avustus-asukastakohti-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
+                                                                  {:as-arrays? true :connection db})))
