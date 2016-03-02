@@ -189,7 +189,7 @@
   (concat (map #(cons "H" %) (m/map-values sum (:haetut data)))
           (map #(cons "M" %) (m/map-values sum (:myonnetyt data)))))
 
-(def old-avustus-tilasto
+(def avustus-tilasto-2010-2015
   (m/map-values data->avustus-tilasto avustus-data+all))
 
 (defn data->avustus-tilasto-organisaatio [data]
@@ -200,7 +200,7 @@
              (get (:myonnetyt data) %))
        (range 2010 2015)))
 
-(def old-avustus-tilasto-organisaatio
+(def avustus-tilasto-organisaatio-2010-2015
   (m/map-values data->avustus-tilasto-organisaatio avustus-data+all))
 
 (defn data->avustus-asukastakohti [data]
@@ -211,7 +211,7 @@
                      (get (:myonnetyt data) %) (:asukasmaara data)))
           (range 2010 2015)))
 
-(def old-avustus-asukastakohti
+(def avustus-asukastakohti-2010-2015
   (m/map-values data->avustus-asukastakohti avustus-data+all))
 
 (defn include-old-data [old-data new-data]
@@ -220,18 +220,18 @@
 
 (defn avustus-tilasto [organisaatiolajitunnus]
   (include-old-data
-    (get old-avustus-tilasto organisaatiolajitunnus)
+    (get avustus-tilasto-2010-2015 organisaatiolajitunnus)
     (select-avustus-ah0-group-by-vuosi (c/bindings->map organisaatiolajitunnus)
                                        {:as-arrays? true :connection db})))
 
 (defn avustus-tilasto-group-by-organisaatio [organisaatiolajitunnus]
   (include-old-data
-    (get old-avustus-tilasto-organisaatio organisaatiolajitunnus)
+    (get avustus-tilasto-organisaatio-2010-2015 organisaatiolajitunnus)
     (select-avustus-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
                                                     {:as-arrays? true :connection db})))
 
 (defn avustus-asukastakohti-group-by-organisaatio [organisaatiolajitunnus]
   (include-old-data
-    (get old-avustus-asukastakohti organisaatiolajitunnus)
+    (get avustus-asukastakohti-2010-2015 organisaatiolajitunnus)
     (select-avustus-asukastakohti-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
                                                                   {:as-arrays? true :connection db})))
