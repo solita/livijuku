@@ -316,7 +316,7 @@
   (walk/postwalk #(if (keyword? %) (sc/optional-key %) %) schema))
 
 (defn str->bigdec [^String txt]
-  (try (BigDecimal. (str/replace (str/replace txt "," ".") " " ""))
+  (try (BigDecimal. (str/replace (str/replace txt "," ".") #"\h" ""))
        (catch Throwable _ txt)))
 
 (def tunnusluku-coercer
@@ -346,14 +346,14 @@
   (str/join "\n" (for [[key value] map] (str "- " key " - " value))))
 
 (defn invalid-fields-bulletpoints [error]
-  (map/deep-reduce
+  (reduce
     (fn [acc v]
       (if (map/mapentry? v)
         (let [[key value] v]
           (str acc "\n-- "  (name key) ": '" (.value value) "'"))
         acc))
     ""
-    error))
+    (m/tree->flat error "-")))
 
 (defn import-csv [data]
   (let [columns (count (first data))]

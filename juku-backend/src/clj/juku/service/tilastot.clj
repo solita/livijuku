@@ -128,6 +128,8 @@
 
       (jsql/query db (hsql/format sql) {:as-arrays? true}))))
 
+;; *** Avustustiedot avustuskuvaajia varten ***
+
 (def avustus-data-2010-2015 {
   "KS1" {
   ;; Oulu, HSL, Tampere, Turku
