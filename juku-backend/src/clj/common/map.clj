@@ -14,12 +14,20 @@
   [m key-path f & args]
   (if (get-in m key-path) (apply update-in m key-path f args) m))
 
-(defn deep-merge
-  "Deeply merges maps"
-  [& vs]
+(defn deep-merge-with
+  "Deeply merges maps. If a key occurs in more than one map and
+  any of the values is not a map then the mapping(s)
+  from the latter (left-to-right) will be combined
+  by calling (f val-in-result val-in-latter)."
+  [f & vs]
   (if (every? map? vs)
-    (apply merge-with deep-merge vs)
-    (last vs)))
+    (apply merge-with (partial deep-merge-with f) vs)
+    (f vs)))
+
+(defn deep-merge
+  "Deeply merges maps. Same as deep-merge-with where merge function is last."
+  [& vs]
+  (apply deep-merge-with last vs))
 
 (defn mapentry? [value] (instance? MapEntry value))
 
