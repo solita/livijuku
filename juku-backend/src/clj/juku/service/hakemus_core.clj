@@ -134,7 +134,10 @@
     (map (comp coerce-hakemus-suunnitelma coerce/row->object)
          (select {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus}))))
 
-(defn add-hakemus! [hakemus]
+(defn add-hakemus!
+  "Luo uuden hakemuksen järjetelmään. Huom! tätä palvelua käytetään vain testeissä.
+  Hakemus objekti voi sisältää mitä tahansa hakemus-taulun tietoa ja täytyy sisältää vähintään pakolliset tiedot."
+  [hakemus]
   (:id (dml/insert-with-id db "hakemus"
                            (-> hakemus
                                coerce/object->row)

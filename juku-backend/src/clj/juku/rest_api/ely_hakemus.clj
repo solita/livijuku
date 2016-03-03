@@ -46,11 +46,11 @@
       (PUT* "/hakemus/:hakemusid/ely" []
             :auth [:modify-oma-hakemus]
             :audit []
-            :return   nil
+            :return nil
             :path-params [hakemusid :- Long]
-            :body     [elyhakemus ELY-hakemus]
-            :summary  "Päivittää ely-hakemuksen perustiedot."
-            (ok (service/save-elyhakemus hakemusid elyhakemus)))
+            :body [elyhakemus ELY-hakemus]
+            :summary "Päivittää ely-hakemuksen perustiedot."
+            (ok (service/save-elyhakemus! hakemusid elyhakemus)))
 
       (GET* "/hakemuskausi/:vuosi/ely-paatos" []
             :auth [:view-hakemus]

@@ -17,10 +17,23 @@
             [common.string :as strx]
             [juku.service.paatos :as p]
             [common.core :as c]
-            [common.map :as m]))
+            [common.map :as m]
+            [slingshot.slingshot :as ss]
+            [ring.util.http-response :as r]
+            [juku.db.coerce :as coerce]))
 
-(defn- insert-maararahatarve! [hakemusid maararahatarve]
+;; *** ely-hakemuksen muokkaus ilman tarkistuksia ***
+(defn insert-maararahatarve! [hakemusid maararahatarve]
   (:id (dml/insert db "maararahatarve" (assoc maararahatarve :hakemusid hakemusid) ely/maararahatarve-constraint-errors maararahatarve)))
+
+(defn insert-kehityshanke! [hakemusid kehityshanke]
+  (:id (dml/insert db "kehityshanke" (assoc kehityshanke :hakemusid hakemusid) ely/kehityshanke-constraint-errors kehityshanke)))
+
+(defn update-elyhakemus! [hakemusid elyhakemus]
+  (dml/assert-update
+    (dml/update-where! db "hakemus" (coerce/object->row {:ely elyhakemus}) {:id hakemusid})
+    (ss/throw+ {:http-response r/not-found
+                :message       (str "Hakemusta " hakemusid " ei ole olemassa.")})))
 
 (def hakemuskausi (test/next-avattu-empty-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))
@@ -108,7 +121,7 @@
           id (hc/add-hakemus! h)]
 
 
-      (ely/save-elyhakemus id ely-perustiedot)
+      (ely/save-elyhakemus! id ely-perustiedot)
       (dissoc (hc/get-hakemus+ id) :muokkausaika)
         => (assoc h :ely ely-perustiedot
                     :selite nil
@@ -149,7 +162,7 @@
     (let [h (ely1-hakemus)
           id (hc/add-hakemus! h)]
 
-      (ely/save-elyhakemus id ely-perustiedot)
+      (ely/save-elyhakemus! id ely-perustiedot)
       (insert-maararahatarve! id (assoc (maararahatarve "BS") :tulot 2))
       (insert-maararahatarve! id (maararahatarve "KK1"))
 
@@ -186,7 +199,7 @@
 
         (ely/save-kehityshankkeet! id [{:numero 1M :nimi "testi1234" :arvo 1M :kuvaus "asdf"}])
 
-        (ely/save-elyhakemus id ely-perustiedot)
+        (ely/save-elyhakemus! id ely-perustiedot)
 
         (l/add-liite! liite1 (test/inputstream-from "test"))
 

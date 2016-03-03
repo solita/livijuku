@@ -65,7 +65,7 @@
 (defn find-maararahatarvetyypit [] (select-maararahatarvetyypit))
 
 ; *** Kehityshankkeiden toiminnot ***
-(defn- insert-kehityshanke [kehityshanke]
+(defn- insert-kehityshanke! [kehityshanke]
   (:id (dml/insert db "kehityshanke" kehityshanke kehityshanke-constraint-errors kehityshanke)))
 
 (defn save-kehityshankkeet! [hakemusid kehityshankkeet]
@@ -74,7 +74,7 @@
   (with-transaction
     (delete-hakemus-kehityshanke! {:hakemusid hakemusid})
     (doseq [kehityshanke kehityshankkeet]
-      (insert-kehityshanke (assoc kehityshanke :hakemusid hakemusid))))
+      (insert-kehityshanke! (assoc kehityshanke :hakemusid hakemusid))))
   nil)
 
 (defn find-hakemus-kehityshankkeet [hakemusid]
@@ -142,7 +142,7 @@
      :maararahakiintiot (maararahakiintiot-section paatokset)}))
 
 ; *** Perustiedot ***
-(defn save-elyhakemus [hakemusid elyhakemus]
+(defn save-elyhakemus! [hakemusid elyhakemus]
   (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
 
   (dml/assert-update
