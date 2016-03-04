@@ -53,7 +53,7 @@
 
         :return [[s/Any]]
         :summary "Valtion avustus ryhmiteltynä organisaation ja vuoden perusteella."
-        (ok (service/avustus-tilasto-group-by-organisaatio organisaatiolajitunnus)))
+        (ok (service/avustus-organisaatio-tilasto organisaatiolajitunnus)))
 
   (GET* "/avustus-asukas/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
@@ -61,5 +61,5 @@
 
         :return [[s/Any]]
         :summary "Myönnetty valtion avustus asukastakohti ryhmiteltynä organisaation ja vuoden perusteella."
-        (ok (service/avustus-asukastakohti-group-by-organisaatio organisaatiolajitunnus))))
+        (ok (service/avustus-asukastakohti-tilasto organisaatiolajitunnus))))
 

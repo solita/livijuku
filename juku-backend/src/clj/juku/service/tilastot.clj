@@ -223,17 +223,17 @@
 (defn avustus-tilasto [organisaatiolajitunnus]
   (include-old-data
     (get avustus-tilasto-2010-2015 organisaatiolajitunnus)
-    (select-avustus-ah0-group-by-vuosi (c/bindings->map organisaatiolajitunnus)
-                                       {:as-arrays? true :connection db})))
+    (select-avustus-group-by-vuosi (c/bindings->map organisaatiolajitunnus)
+                                   {:as-arrays? true :connection db})))
 
-(defn avustus-tilasto-group-by-organisaatio [organisaatiolajitunnus]
+(defn avustus-organisaatio-tilasto [organisaatiolajitunnus]
   (include-old-data
     (get avustus-tilasto-organisaatio-2010-2015 organisaatiolajitunnus)
-    (select-avustus-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
-                                                    {:as-arrays? true :connection db})))
+    (select-avustus-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
+                                                {:as-arrays? true :connection db})))
 
-(defn avustus-asukastakohti-group-by-organisaatio [organisaatiolajitunnus]
+(defn avustus-asukastakohti-tilasto [organisaatiolajitunnus]
   (include-old-data
     (get avustus-asukastakohti-2010-2015 organisaatiolajitunnus)
-    (select-avustus-asukastakohti-ah0-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
-                                                                  {:as-arrays? true :connection db})))
+    (select-avustus-asukastakohti-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
+                                                              {:as-arrays? true :connection db})))
