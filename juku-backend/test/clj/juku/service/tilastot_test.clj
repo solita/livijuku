@@ -2,6 +2,7 @@
   (:require [midje.sweet :refer :all]
             [juku.service.test :as test]
             [juku.service.tunnusluku :as tl]
+            [juku.service.tunnusluku-test :as tl-test]
             [juku.service.tilastot :as t]
             [juku.schema.tunnusluku :as tls]
             [common.map :as map]
@@ -15,6 +16,8 @@
             [juku.service.hakemus :as h]
             [common.core :as c]
             [juku.service.ely-hakemus :as ely]))
+
+; *** Tunnuslukutilastojen testit ***
 
 (def test-liikennevuositilasto
   (map (fn [kk] (assoc (map/map-values (constantly 1M) tls/Liikennetilasto) :kuukausi kk)) (range 1M 13M)))
@@ -74,7 +77,7 @@
               (t/tunnusluku-tilasto :kustannukset "ALL" {:vuosi 2013} [:organisaatioid :vuosi]))
         => [[1M 2013M 5M]])))
 
-; *** avustustilatot ***
+; *** Avustustilasto testit ***
 
 (defn create-test-hakemus [vuosi hakija hakemustyyppitunnus organisaatioid myonnettyavustus]
   (asha/with-asha
@@ -153,7 +156,7 @@
   (ely-test/update-elyhakemus! hakemusid ely-test/ely-perustiedot))
 
 (fact
-  "Avustus yhteenveto tilasto - 1 ely-hakemus"
+  "Avustustilastot - 1 ely-hakemus"
   (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
         id (create-test-hakemus vuosi "juku_hakija_ely" "ELY" 16 10)]
 
@@ -170,7 +173,7 @@
       => [[16M vuosi 0.1M]]))
 
 (fact
-  "Avustus yhteenveto tilasto - 2 ely-hakemusta"
+  "Avustustilastot - 2 ely-hakemusta"
   (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
         id1 (create-test-hakemus vuosi "juku_hakija_ely" "ELY" 16 10)
         id2 (create-test-hakemus vuosi "juku_hakija_lappi" "ELY" 24 11)]
@@ -190,7 +193,7 @@
       => [[16M vuosi 0.1M] [24M vuosi 0.11M]]))
 
 (fact
-  "Avustus yhteenveto tilasto - ely-hakemus + avustushakmeus"
+  "Avustustilastot - ely-hakemus + avustushakmeus"
   (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
         id1 (create-test-hakemus vuosi "juku_hakija" "AH0" 1 30)
         id2 (create-test-hakemus vuosi "juku_hakija_ely" "ELY" 16 10)]
@@ -217,3 +220,39 @@
 
     (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "ALL"))
       => [[1M vuosi 0.3M] [16M vuosi 0.1M]]))
+
+(fact
+  "Avustustilastot - ks3"
+  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
+        tuki (tl-test/test-joukkoliikennetuki 1M)]
+
+    (tl/save-joukkoliikennetuki! vuosi 33 tuki)
+    (tl/save-alue! vuosi 33 {:asukasmaara 10})
+
+    (find-by-vuosi vuosi (t/avustus-tilasto "ALL")) => []
+    (find-by-vuosi vuosi (t/avustus-tilasto "KS3")) => [["M" vuosi 3M]]
+
+    (find-by-vuosi vuosi (t/avustus-organisaatio-tilasto "ALL")) => []
+    (find-by-vuosi vuosi (t/avustus-organisaatio-tilasto "KS3")) => [[33M vuosi nil 3M]]
+
+    (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "ALL")) => []
+    (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "KS3")) => [[33M vuosi 0.3M]]))
+
+(fact
+  "Avustustilastot - 2 x ks3"
+  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)]
+
+    (tl/save-joukkoliikennetuki! vuosi 33 (tl-test/test-joukkoliikennetuki 1M))
+    (tl/save-alue! vuosi 33 {:asukasmaara 10})
+
+    (tl/save-joukkoliikennetuki! vuosi 25 (tl-test/test-joukkoliikennetuki 2M))
+    (tl/save-alue! vuosi 25 {:asukasmaara 20})
+
+    (find-by-vuosi vuosi (t/avustus-tilasto "ALL")) => []
+    (find-by-vuosi vuosi (t/avustus-tilasto "KS3")) => [["M" vuosi 9M]]
+
+    (find-by-vuosi vuosi (t/avustus-organisaatio-tilasto "ALL")) => []
+    (find-by-vuosi vuosi (t/avustus-organisaatio-tilasto "KS3")) => [[25M vuosi nil 6M] [33M vuosi nil 3M]]
+
+    (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "ALL")) => []
+    (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "KS3")) => [[25M vuosi 0.3M] [33M vuosi 0.3M]]))

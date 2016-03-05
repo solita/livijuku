@@ -223,17 +223,23 @@
 (defn avustus-tilasto [organisaatiolajitunnus]
   (include-old-data
     (get avustus-tilasto-2010-2015 organisaatiolajitunnus)
-    (select-avustus-group-by-vuosi (c/bindings->map organisaatiolajitunnus)
-                                   {:as-arrays? true :connection db})))
+    (if (= organisaatiolajitunnus "KS3")
+      (select-avustus-ks3-group-by-vuosi {} {:as-arrays? true :connection db})
+      (select-avustus-group-by-vuosi (c/bindings->map organisaatiolajitunnus)
+                                     {:as-arrays? true :connection db}))))
 
 (defn avustus-organisaatio-tilasto [organisaatiolajitunnus]
   (include-old-data
     (get avustus-tilasto-organisaatio-2010-2015 organisaatiolajitunnus)
-    (select-avustus-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
-                                                {:as-arrays? true :connection db})))
+    (if (= organisaatiolajitunnus "KS3")
+      (select-avustus-ks3-group-by-organisaatio-vuosi {} {:as-arrays? true :connection db})
+      (select-avustus-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
+                                                  {:as-arrays? true :connection db}))))
 
 (defn avustus-asukastakohti-tilasto [organisaatiolajitunnus]
   (include-old-data
     (get avustus-asukastakohti-2010-2015 organisaatiolajitunnus)
-    (select-avustus-asukastakohti-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
-                                                              {:as-arrays? true :connection db})))
+    (if (= organisaatiolajitunnus "KS3")
+      (select-avustus-asukastakohti-ks3-group-by-organisaatio-vuosi {} {:as-arrays? true :connection db})
+      (select-avustus-asukastakohti-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
+                                                                {:as-arrays? true :connection db}))))

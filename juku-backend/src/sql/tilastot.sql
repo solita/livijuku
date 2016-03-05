@@ -71,13 +71,39 @@ order by vuosi asc, organisaatioid asc
 
 -- name: select-avustus-asukastakohti-group-by-organisaatio-vuosi
 select organisaatio.id organisaatioid,
-  hakemus.vuosi,
+       hakemus.vuosi,
        paatos.myonnettyavustus / alue.asukasmaara myonnettyavustus_asukastakohti
 from hakemus
   inner join organisaatio on organisaatio.id = hakemus.organisaatioid
   left join paatos on hakemus.id = paatos.hakemusid and voimaantuloaika is not null and poistoaika is null
   left join fact_alue alue on
-                             alue.organisaatioid = hakemus.organisaatioid and
-                             alue.vuosi = hakemus.vuosi
+    alue.organisaatioid = hakemus.organisaatioid and
+    alue.vuosi = hakemus.vuosi
 where hakemus.hakemustyyppitunnus in ('AH0', 'ELY') and
       (organisaatio.lajitunnus = :organisaatiolajitunnus or :organisaatiolajitunnus = 'ALL')
+order by vuosi asc, organisaatioid asc
+
+-- name: select-avustus-ks3-group-by-vuosi
+select 'M' avustustyyppi, vuosi, sum(tuki)
+from fact_joukkoliikennetuki
+group by vuosi
+
+-- name: select-avustus-ks3-group-by-organisaatio-vuosi
+select organisaatioid, vuosi, null haettavaavustus, sum(tuki) myonnettyavustus
+from fact_joukkoliikennetuki
+group by vuosi, organisaatioid
+
+-- name: select-avustus-asukastakohti-ks3-group-by-organisaatio-vuosi
+with tuki as (
+    select organisaatioid, vuosi, sum(tuki) myonnettyavustus
+    from fact_joukkoliikennetuki
+    group by organisaatioid, vuosi
+)
+select
+  tuki.organisaatioid,
+  tuki.vuosi,
+  tuki.myonnettyavustus / alue.asukasmaara myonnettyavustus_asukastakohti
+from tuki
+  inner join fact_alue alue on
+    alue.organisaatioid = tuki.organisaatioid and
+    alue.vuosi = tuki.vuosi
