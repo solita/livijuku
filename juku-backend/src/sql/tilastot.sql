@@ -87,11 +87,13 @@ order by vuosi asc, organisaatioid asc
 select 'M' avustustyyppi, vuosi, sum(tuki)
 from fact_joukkoliikennetuki
 group by vuosi
+order by vuosi
 
 -- name: select-avustus-ks3-group-by-organisaatio-vuosi
 select organisaatioid, vuosi, null haettavaavustus, sum(tuki) myonnettyavustus
 from fact_joukkoliikennetuki
 group by vuosi, organisaatioid
+order by vuosi asc, organisaatioid asc
 
 -- name: select-avustus-asukastakohti-ks3-group-by-organisaatio-vuosi
 with tuki as (
@@ -107,3 +109,4 @@ from tuki
   inner join fact_alue alue on
     alue.organisaatioid = tuki.organisaatioid and
     alue.vuosi = tuki.vuosi
+order by vuosi asc, organisaatioid asc
