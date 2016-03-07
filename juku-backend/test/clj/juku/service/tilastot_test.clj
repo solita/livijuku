@@ -271,3 +271,4 @@
 
   (find-by-vuosi 2010M (t/avustus-asukastakohti-tilasto "KS1"))
     => [[1M 2010M 5213309M] [10M 2010M 320500M] [12M 2010M 998530M] [13M 2010M 831311M]])
+
