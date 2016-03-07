@@ -258,7 +258,7 @@
     (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "KS3")) => [[25M vuosi 0.3M] [33M vuosi 0.3M]]))
 
 (fact
-  "Vakiodata 2010 - 2015"
+  "Vakiodata 2010"
   (tl/save-alue! 2010 1 {:asukasmaara 1})
   (tl/save-alue! 2010 10 {:asukasmaara 1})
   (tl/save-alue! 2010 12 {:asukasmaara 1})
@@ -270,5 +270,8 @@
     [[10 2010 320500 320500] [1 2010 5213000 5213309] [12 2010 998530 998530] [13 2010 831311 831311]]
 
   (find-by-vuosi 2010M (t/avustus-asukastakohti-tilasto "KS1"))
+    => [[1M 2010M 5213309M] [10M 2010M 320500M] [12M 2010M 998530M] [13M 2010M 831311M]]
+
+  (filter (comp #{1M 10M 12M 13M} #(nth % 0)) (find-by-vuosi 2010M (t/avustus-asukastakohti-tilasto "ALL")))
     => [[1M 2010M 5213309M] [10M 2010M 320500M] [12M 2010M 998530M] [13M 2010M 831311M]])
 
