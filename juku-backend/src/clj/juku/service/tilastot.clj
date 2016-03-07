@@ -19,7 +19,7 @@
 
 
 ; *** Tilastoihin liittyvät kyselyt ***
-(sql/defqueries "tilastot.sql" {:as-arrays? true})
+(sql/defqueries "tilastot.sql")
 
 (def demo-data {
   :kuukausi (map str/join (c/cartesian-product [(range 2013 2016) (map (partial format "%02d") (range 1 13))]))
@@ -132,26 +132,25 @@
 
 (def avustus-data-2010-2015 {
   "KS1" {
-  ;; Oulu, HSL, Tampere, Turku
-         :organisaatiot [10, 1, 12, 13],
-         :asukasmaara   [150000, 1100000, 275000, 180000],
+  ;; HSL, Oulu, Tampere, Turku
+         :organisaatiot [1, 10, 12, 13],
          :haetut {
-                         2010 [320500, 5213000, 998530, 831311],
-                         2011 [790000, 6230000, 1990872, 989371],
-                         2012 [988990, 5553495, 2265000, 1457016],
-                         2013 [2653000, 8000000, 3355000, 3357290],
-                         2014 [3649759, 8015000, 3430000, 4400000]}
+                         2010 [5213000 320500  998530  831311],
+                         2011 [6230000 790000  1990872 989371],
+                         2012 [5553495 988990  2265000 1457016],
+                         2013 [8000000 2653000 3355000 3357290],
+                         2014 [8015000 3649759 3430000 4400000]
+                         2015 [5540000 5600000 3358000 6875000]}
          :myonnetyt {
-                         2010 [320500, 5213309, 998530, 831311],
-                         2011 [790000, 6229319, 1990872, 989371],
-                         2012 [913990, 5553495, 1751951, 1457016],
-                         2013 [1314775, 5821548, 2538098, 2377717],
-                         2014 [1751255, 6096802, 2805226, 2069717]}},
+                         2010 [5213309, 320500,  998530,  831311],
+                         2011 [6229319, 790000,  1990872, 989371],
+                         2012 [5553495, 913990,  1751951, 1457016],
+                         2013 [5821548, 1314775, 2538098, 2377717],
+                         2014 [6096802, 1751255, 2805226, 2069717]}},
 
   "KS2" {
   ;; Hämeenlinna, Joensuu, Jyväskylä, Kotka, Kouvola, Kuopio, Lahti, Lappeenranta, Pori, Vaasa
          :organisaatiot [2, 3, 4, 5, 6, 7, 8, 9, 11, 14],
-         :asukasmaara   [70000, 55000, 65000, 480000, 35000, 40000, 69000, 42000, 35000, 37000],
          :haetut {
                          2010 [1359492, 363542, 1990000, 1180000, 646800, 823313, 2187624, 700000, 1180419, 732526],
                          2011 [1477181, 437110, 1965000, 1111000, 966500, 1135340, 2389200, 754330, 1323489, 839377],
@@ -168,7 +167,6 @@
   "ELY" {
   ;; Pohjois-Pohjanmaa, Pohjois-Savo, Varsinais-Suomi, Uudenmaa, Etelä-Pohjanmaa, Kaakkois-Suomi, Keski-Suomi, Lappi, Pirkanmaa
          :organisaatiot [23, 20, 17, 16, 22, 18, 21, 24, 19],
-         :asukasmaara   [120000, 100000, 150000, 320000, 1535000, 150000, 230000, 234666, 200000],
          :haetut {
                          2010 [4726300, 8946000, 5044972, 5949922, 3589635, 3940058, 3425700, 3416000, 2988258],
                          2011 [6190000, 10225000, 5885000, 8301474, 4308816, 4419818, 4405000, 3980000, 4392405],
@@ -205,17 +203,6 @@
 (def avustus-tilasto-organisaatio-2010-2015
   (m/map-values data->avustus-tilasto-organisaatio avustus-data+all))
 
-(defn data->avustus-asukastakohti [data]
-  (mapcat #(map vector
-                (:organisaatiot data)
-                (repeat %)
-                (map (fn [myonnetty asukasmaara] (/ myonnetty asukasmaara))
-                     (get (:myonnetyt data) %) (:asukasmaara data)))
-          (range 2010 2015)))
-
-(def avustus-asukastakohti-2010-2015
-  (m/map-values data->avustus-asukastakohti avustus-data+all))
-
 (defn include-old-data [old-data new-data]
   (cons (first new-data) ;; header
     (concat old-data (rest new-data))))
@@ -236,9 +223,22 @@
       (select-avustus-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
                                                   {:as-arrays? true :connection db}))))
 
+(defn avustus-asukastakohti-tilasto-2010-2015 [organisaatiolajitunnus]
+  (let [asukasmaarat (or (select-asukasmaara-2010-2015 (c/bindings->map organisaatiolajitunnus)) [])
+        avustustilasto (or (get avustus-tilasto-organisaatio-2010-2015 organisaatiolajitunnus) [])
+        nth* (fn [idx] (fn [coll] (-> coll (nth idx) bigdec)))]
+    (coll/join asukasmaarat
+               (fn [asukasmaara avustus]
+                 [(:organisaatioid asukasmaara)
+                  (:vuosi asukasmaara)
+                  (with-precision
+                    10 :rounding HALF_UP
+                      ((c/nil-safe /) (nth (first avustus) 3) (:asukasmaara asukasmaara)))])
+               avustustilasto {:organisaatioid (nth* 0) :vuosi (nth* 1)})))
+
 (defn avustus-asukastakohti-tilasto [organisaatiolajitunnus]
   (include-old-data
-    (get avustus-asukastakohti-2010-2015 organisaatiolajitunnus)
+    (avustus-asukastakohti-tilasto-2010-2015 organisaatiolajitunnus)
     (if (= organisaatiolajitunnus "KS3")
       (select-avustus-asukastakohti-ks3-group-by-organisaatio-vuosi {} {:as-arrays? true :connection db})
       (select-avustus-asukastakohti-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)

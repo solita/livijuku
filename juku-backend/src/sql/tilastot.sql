@@ -110,3 +110,8 @@ from tuki
     alue.organisaatioid = tuki.organisaatioid and
     alue.vuosi = tuki.vuosi
 order by vuosi asc, organisaatioid asc
+
+-- name: select-asukasmaara-2010-2015
+select alue.organisaatioid, alue.vuosi, alue.asukasmaara from fact_alue alue
+  inner join organisaatio on organisaatio.id = alue.organisaatioid
+where alue.vuosi > 2009 and alue.vuosi < 2016 and organisaatio.lajitunnus = :organisaatiolajitunnus
