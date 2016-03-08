@@ -110,7 +110,7 @@ create table fact_alue (
   vyohykemaara number(9), 
   pysakkimaara number(9),
   maapintaala number(12,2), 
-  asukasmaara number(9), 
+  asukasmaara number(9) constraint fact_alue_asukasmaara_cc check (asukasmaara > 0),
   tyopaikkamaara number(9),
   henkilosto number(9),
 
