@@ -1,7 +1,19 @@
 (ns juku.service.avustushistoria
   (:require [common.map :as m]))
 
-(def avustus-data-2010-2015 {
+(def avustus-data-2010-2015
+  "Avustushistoria sisältää aikaisempien vuosien avustustiedon vuositasolla.
+  Avustushistoriassa on vuosien 2010 - 2015 haetut ja myönnetyt avustukset organisaatiolajeille: KS1, KS2 ja
+  ELY:jen tapauksessa on myös mukana vuosi 2016.
+
+  Haetut ja myönnetyt rahamäärät ovat omissa taulukoissa, jossa yksi rivi kuvaa tietyn organisaation vuosittaisia
+  haettuja tai myönnettyjä rahamääriä. Sarake sisältää siis tiedot ko. lajin organisaatioista tietyltä vuodelta.
+
+  Taulukot on lisäksi ryhmitelty organisaatiolajeittain.
+  Organisaatiot tieto kuvaa mitä organisaatioita on tietyssä lajissa ja lisäksi se kuvaa rivien järjestyksen,
+  jossa organisaatiokohtaiset rivit ovat taulukoissa."
+
+  {
   "KS1" {
       ;; Oulu, HSL, Tampere, Turku
       :organisaatiot
