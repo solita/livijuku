@@ -116,3 +116,22 @@ select alue.organisaatioid, alue.vuosi, alue.asukasmaara from fact_alue alue
   inner join organisaatio on organisaatio.id = alue.organisaatioid
 where alue.vuosi > 2009 and alue.vuosi < 2016 and
       (organisaatio.lajitunnus = :organisaatiolajitunnus or :organisaatiolajitunnus = 'ALL')
+
+-- name: select-omarahoitus-asukastakohti-group-by-organisaatio-vuosi
+with omarahoitus as (
+  select hakemus.organisaatioid, hakemus.vuosi, sum(omarahoitus) rahamaara
+  from hakemus
+    inner join organisaatio on organisaatio.id = hakemus.organisaatioid
+    left join avustuskohde on hakemus.id = avustuskohde.hakemusid
+  where hakemus.hakemustyyppitunnus = 'AH0' and
+        (organisaatio.lajitunnus = :organisaatiolajitunnus or :organisaatiolajitunnus = 'ALL')
+  group by organisaatioid, vuosi
+)
+select omarahoitus.organisaatioid,
+       omarahoitus.vuosi,
+       omarahoitus.rahamaara / alue.asukasmaara omarahoitus_asukastakohti
+from omarahoitus
+  left join fact_alue alue on
+   alue.organisaatioid = omarahoitus.organisaatioid and
+   alue.vuosi = omarahoitus.vuosi
+order by vuosi asc, organisaatioid asc

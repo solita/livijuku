@@ -206,3 +206,7 @@
       (select-avustus-asukastakohti-ks3-group-by-organisaatio-vuosi {} {:as-arrays? true :connection db})
       (select-avustus-asukastakohti-group-by-organisaatio-vuosi (c/bindings->map organisaatiolajitunnus)
                                                                 {:as-arrays? true :connection db}))))
+
+(defn omarahoitus-asukastakohti-tilasto [organisaatiolajitunnus]
+  (select-omarahoitus-asukastakohti-group-by-organisaatio-vuosi
+    (c/bindings->map organisaatiolajitunnus) {:as-arrays? true :connection db}))
