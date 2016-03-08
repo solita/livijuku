@@ -135,8 +135,8 @@
 
 (defn data->avustus-tilasto [data]
   (concat
-    (map vector (repeat "H") vuodet (apply mapv (comp sum vector) (:haetut data)))
-    (map vector (repeat "M") vuodet (apply mapv (comp sum vector) (:myonnetyt data)))))
+    (map vector (repeat "H") ah/vuodet (apply mapv (comp sum vector) (:haetut data)))
+    (map vector (repeat "M") ah/vuodet (apply mapv (comp sum vector) (:myonnetyt data)))))
 
 (def avustus-tilasto-2010-2015
   (m/map-values data->avustus-tilasto ah/avustus-data+all))
