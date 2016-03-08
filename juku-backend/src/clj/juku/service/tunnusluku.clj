@@ -16,7 +16,8 @@
             [common.map :as m]
             [common.collection :as coll]
             [juku.service.organisaatio :as org]
-            [common.map :as map]))
+            [common.map :as map])
+  (:import [schema.core Maybe]))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -312,18 +313,31 @@
    :alue                  save-alue!
    })
 
+(defn maybe? [type]
+  (instance? Maybe type))
+
 (defn keys->optional [schema]
-  (walk/postwalk #(if (keyword? %) (sc/optional-key %) %) schema))
+  (walk/postwalk
+    (fn [x] (if (and (vector? x)
+                     (= (count x) 2)
+                     (keyword? (first x))
+                     (maybe? (second x)))
+              [(sc/optional-key (first x)) (second x)] x))
+    schema))
 
 (defn str->bigdec [^String txt]
   (try (BigDecimal. (str/replace (str/replace txt "," ".") #"\h" ""))
     (catch Throwable _ txt)))
 
+(defn str->bigdec-maybe [^String txt]
+  (let [num (str->bigdec txt)] (if (= num 0M) nil num)))
+
 (def tunnusluku-coercer
   (map/map-values
     (fn [schema] (sc-coerce/coercer
                    (keys->optional schema)
-                   (coerce/create-matcher { sc/Num 'str->bigdec })))
+                   (coerce/create-matcher {(sc/maybe sc/Num) 'str->bigdec-maybe
+                                           sc/Num 'str->bigdec })))
   {
    :liikennevuositilasto  [s/Liikennekuukausi]
    :liikenneviikkotilasto [s/Liikennepaiva]
