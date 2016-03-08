@@ -317,7 +317,7 @@
 
 (defn str->bigdec [^String txt]
   (try (BigDecimal. (str/replace (str/replace txt "," ".") #"\h" ""))
-       (catch Throwable _ txt)))
+    (catch Throwable _ txt)))
 
 (def tunnusluku-coercer
   (map/map-values
@@ -348,12 +348,14 @@
 (defn invalid-fields-bulletpoints [error]
   (reduce
     (fn [acc v]
-      (if (map/mapentry? v)
-        (let [[key value] v]
-          (str acc "\n-- "  (name key) ": '" (.value value) "'"))
-        acc))
+      (cond
+        (map? v) (str acc (invalid-fields-bulletpoints v))
+        (map/mapentry? v)
+          (let [[key value] v]
+            (str acc "\n-- "  (name key) ": '" (.value value) "'"))
+        :else acc))
     ""
-    (m/tree->flat error "-")))
+    (if (map? error) (m/tree->flat error "-") error)))
 
 (defn import-csv [data]
   (let [columns (count (first data))]
