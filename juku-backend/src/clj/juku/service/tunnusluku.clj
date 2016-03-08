@@ -255,7 +255,7 @@
    #"pendelöivien osuus alueella (oman kunnan ulkopuolella työssäkäynti)" [:alue :pendeloivienosuus (constantly {})]
    #"henkilöautoliikenteen suorite.*" [:alue :henkiloautoliikennesuorite (constantly {})]
    #"autoistumisaste" [:alue :autoistumisaste (constantly {})]
-   #"tyytyväisten käyttäjien osuus (%)" [:alue :asiakastyytyvaisyys (constantly {})]
+   #"tyytyväisten käyttäjien osuus \(%\)" [:alue :asiakastyytyvaisyys (constantly {})]
 
    #"ulkoistettujen palveluiden kustannukset asiakaspalvelu" [:alue :kustannus_asiakaspalvelu (constantly {})]
    #"ulkoistettujen palveluiden kustannukset, konsulttipalvelut" [:alue :kustannus_konsulttipalvelu (constantly {})]
