@@ -17,7 +17,8 @@
             [common.collection :as coll]
             [juku.service.organisaatio :as org]
             [common.map :as map])
-  (:import [schema.core Maybe]))
+  (:import [schema.core Maybe]
+           [schema.utils ValidationError]))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -332,6 +333,9 @@
 (defn str->bigdec-maybe [^String txt]
   (let [num (str->bigdec txt)] (if (= num 0M) nil num)))
 
+(defn to-optional-key [schema key]
+  (let [v (schema key)] (-> schema (dissoc key) (assoc (sc/optional-key key) v))))
+
 (def tunnusluku-coercer
   (map/map-values
     (fn [schema] (sc-coerce/coercer
@@ -344,7 +348,7 @@
    :lipputulo             [s/Lipputulo]
    :liikennointikorvaus   [s/Liikennointikorvaus]
    :lippuhinta            [s/Lippuhinta]
-   :alue                  s/Alue
+   :alue                  (to-optional-key s/Alue :kustannus)
    }))
 
 (defn dissoc-id [data]
@@ -359,6 +363,9 @@
 (defn map->bulletpoints [map]
   (str/join "\n" (for [[key value] map] (str "- " key " - " value))))
 
+(defn validation-error? [v]
+  (instance? ValidationError v))
+
 (defn invalid-fields-bulletpoints [error]
   (reduce
     (fn [acc v]
@@ -366,7 +373,9 @@
         (map? v) (str acc (invalid-fields-bulletpoints v))
         (map/mapentry? v)
           (let [[key value] v]
-            (str acc "\n-- "  (name key) ": '" (.value value) "'"))
+            (if (validation-error? value)
+              (str acc "\n-- "  (name key) ": '" (.value value) "'")
+              (str acc "\n-- "  (name key) ": " value )))
         :else acc))
     ""
     (if (map? error) (m/tree->flat error "-") error)))
