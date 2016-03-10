@@ -109,7 +109,7 @@
      fact-field (tunnusluku-field tunnusluku) nil?
       (str "Tunnusluvulle " tunnusluku " ei ole määritetty kenttää.")
      group-by-fields (vec (map group-by-field group-by)) (partial some nil?)
-      {:http-response r/bad-request :message (str "Tunnusluku " tunnusluku " ei ei tue ryhmittelyä: " group-by)}]
+      {:http-response r/bad-request :message (str "Tunnusluku " tunnusluku " ei tue ryhmittelyä: " group-by)}]
 
     (let [tunnusluku-where (map (fn [e] [:= (keyword (str "t." (name (first e)))) (second e)])
                                 (filter (coll/predicate not= second nil) where))
