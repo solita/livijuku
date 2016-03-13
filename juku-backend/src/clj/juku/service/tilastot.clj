@@ -123,7 +123,7 @@
                     :from [[table :t]]
                     :join [:organisaatio [:= :t.organisaatioid :organisaatio.id]]
                     :group-by sql-group-by
-                    :order-by sql-group-by}
+                    :order-by (reverse sql-group-by)}
 
           sql (if (empty? sql-where) sql-body (assoc sql-body :where (cons :and sql-where)))]
 
