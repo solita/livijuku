@@ -2,7 +2,7 @@
 create or replace view fact_lipputulo_unpivot_view as
 select vuosi, kuukausi, organisaatioid, sopimustyyppitunnus, lipputuloluokkatunnus, tulo
 from fact_lipputulo
-unpivot (tulo for lipputuloluokkatunnus in (
+unpivot include nulls (tulo for lipputuloluokkatunnus in (
   kertalipputulo as 'KE',
   arvolipputulo as 'AR',
   kausilipputulo as 'KA',
@@ -12,7 +12,7 @@ unpivot (tulo for lipputuloluokkatunnus in (
 create or replace view fact_kustannus_unpivot_view as
 select vuosi, organisaatioid, kustannuslajitunnus, kustannus
 from fact_alue
-unpivot (kustannus for kustannuslajitunnus in (
+unpivot include nulls (kustannus for kustannuslajitunnus in (
   kustannus_asiakaspalvelu as 'AP',
   kustannus_konsulttipalvelu as 'KP',
   kustannus_lipunmyyntipalkkio as 'LP',
@@ -23,7 +23,7 @@ unpivot (kustannus for kustannuslajitunnus in (
 create or replace view fact_lippuhinta_unpivot_view as
 select vuosi, organisaatioid, vyohykemaara, lippuhintaluokkatunnus, hinta
 from fact_lippuhinta
-unpivot (hinta for lippuhintaluokkatunnus in (
+unpivot include nulls (hinta for lippuhintaluokkatunnus in (
   kertalippuhinta as 'KE',
   kausilippuhinta as 'KA'))
 ;
