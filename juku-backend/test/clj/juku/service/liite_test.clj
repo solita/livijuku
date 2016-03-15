@@ -62,3 +62,22 @@
       (l/add-liite! liite (test/inputstream-from ""))
       (count (l/find-liitteet id)) => 1
       (first (l/find-liitteet id)) => (assoc liite :liitenumero 1 :bytesize 0M))))
+
+(fact "Liitteen sisällön hakeminen - toisen organisaation hakija"
+  (let [id (hc/add-hakemus! hsl-hakemus)
+        liite {:hakemusid id :nimi "test" :contenttype "text/plain"}]
+
+    (test/with-user "juku_hakija" ["juku_hakija"] (l/add-liite! liite (test/inputstream-from "asdf")))
+
+    (test/with-user "juku_hakija_tampere" ["juku_hakija"]
+      (count (l/find-liitteet id)) => 1
+      (first (l/find-liitteet id)) => (assoc liite :liitenumero 1 :bytesize 4M)
+      (l/find-liite-sisalto id 1) =>
+        (throws (str "Käyttäjällä juku_hakija_tampere ei ole oikeutta nähdä hakemuksen: " id
+                     " sisältöä. Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole "
+                     "oikeutta nähdä keskeneräisiä hakemuksia.")))
+
+    (test/with-user
+      "juku_paatoksentekija" ["juku_paatoksentekija"]
+      (slurp (:sisalto (l/find-liite-sisalto id 1))) => "asdf")))
+
