@@ -104,10 +104,34 @@
                              #(juku-pdf/format-number (+ (:nettohinta %) (:lipputulo %))))]
 
       (->> (map suorite->str suoritteet)
-          (cons {:header header
-                 :widths [15 15 10 10 10 10 10 10 10]})
+          (cons {:header header})
           (cons :table)
           vec))))
+
+(defn lippusuorite-table [kaupunki? suoritteet lipputyypit]
+  (if (empty? suoritteet)
+    [:paragraph "Ei tietoja"]
+    (let [header [{:backdrop-color [200 200 200]}
+                  (if kaupunki? "Kaupunkilippu" "Seutulippu")
+                  "Myynti (kpl)"
+                  "Matkat (kpl)"
+                  "Asiakashinta"
+                  "Lipuilla tehtyjen matkojen keskipituus"
+                  "Lipputulot yhteensä"
+                  "Valtion ja kuntien rahoitus yhteensä"]
+          suorite->str (juxt (if kaupunki? (comp lipputyypit :lipputyyppitunnus)
+                                           :seutulippualue)
+                             (comp juku-pdf/format-number :myynti)
+                             (comp juku-pdf/format-number :matkat)
+                             (comp juku-pdf/format-number :asiakashinta)
+                             (comp juku-pdf/format-number :keskipituus)
+                             (comp juku-pdf/format-number :lipputulo)
+                             (comp juku-pdf/format-number :julkinenrahoitus))]
+
+      (->> (map suorite->str suoritteet)
+           (cons {:header header})
+           (cons :table)
+           vec))))
 
 (defn pdf-template [psa-table pal-table kaupunki-table seutu-table]
   [pdf-metadata
@@ -126,11 +150,15 @@
 
 (defn seurantatieto-pdf [hakemusid output]
   (let [suoritetyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-suoritetyypit)))
-        suoritteet (find-hakemus-liikennesuoritteet hakemusid)
-        psa-suoriteet (filter (coll/eq :liikennetyyppitunnus "PSA") suoritteet)
-        pal-suoriteet (filter (coll/eq :liikennetyyppitunnus "PAL") suoritteet)]
+        liikennesuoritteet (find-hakemus-liikennesuoritteet hakemusid)
+        psa-suoriteet (filter (coll/eq :liikennetyyppitunnus "PSA") liikennesuoritteet)
+        pal-suoriteet (filter (coll/eq :liikennetyyppitunnus "PAL") liikennesuoritteet)
+        lipputyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-lipputyypit)))
+        lippusuoritteet (find-hakemus-lippusuoritteet hakemusid)
+        kaupunki-suoritteet (filter (coll/predicate not= :lipputyyppitunnus "SE") lippusuoritteet)
+        seutu-suoritteet (filter (coll/eq :lipputyyppitunnus "SE") lippusuoritteet)]
     (pdf/pdf (pdf-template
                (liikennesuorite-table psa-suoriteet suoritetyypit)
                (liikennesuorite-table pal-suoriteet suoritetyypit)
-               [:paragraph "TODO"]
-               [:paragraph "TODO"]) output)))
+               (lippusuorite-table true kaupunki-suoritteet lipputyypit)
+               (lippusuorite-table false seutu-suoritteet lipputyypit)) output)))
