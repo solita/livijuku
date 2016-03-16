@@ -4,11 +4,14 @@
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [common.collection :as coll]
+            [clj-pdf.core :as pdf]
+            [juku.service.pdf :as juku-pdf]
             [juku.service.hakemus-core :as hc]
             [juku.schema.seuranta :as s]
             [ring.util.http-response :as r]
             [slingshot.slingshot :as ss]
-            [common.collection :as coll]))
+            [common.collection :as coll]
+            [common.map :as m]))
 
 ; *** Seurantatietoihin liittyvät kyselyt ***
 (sql/defqueries "seuranta.sql")
@@ -75,3 +78,59 @@
   (map coerce-lippusuorite (select-hakemus-lippusuorite {:hakemusid hakemusid})))
 
 (defn find-lipputyypit [] (select-lipputyypit))
+
+(def pdf-metadata
+  {:title  "Joukkoliikenteen valtionavun maksatushakemus"
+   :subject "Seurantatiedot"
+   :author "Liikennevirasto"
+   :header "Joukkoliikenteen valtionavun maksatushakemuksen seurantatiedot"
+   :orientation   :landscape
+   :size :a4})
+
+(defn liikennesuorite-table [suoritteet suoritetyypit]
+  (if (empty? suoritteet)
+    [:paragraph "Ei tietoja"]
+    (let [header [{:backdrop-color [200 200 200]}
+                  "Suoritetyyppi" "Suoritteen nimi" "Linja-autot" "Taksit"
+                  "Ajokilometrit" "Matkustajat" "Lipputulo €" "Netto €" "Brutto €"]
+          suorite->str (juxt (comp suoritetyypit :suoritetyyppitunnus)
+                             :nimi
+                             (comp juku-pdf/format-number :linjaautot)
+                             (comp juku-pdf/format-number :taksit)
+                             (comp juku-pdf/format-number :ajokilometrit)
+                             (comp juku-pdf/format-number :matkustajamaara)
+                             (comp juku-pdf/format-number :lipputulo)
+                             (comp juku-pdf/format-number :nettohinta)
+                             #(juku-pdf/format-number (+ (:nettohinta %) (:lipputulo %))))]
+
+      (->> (map suorite->str suoritteet)
+          (cons {:header header
+                 :widths [15 15 10 10 10 10 10 10 10]})
+          (cons :table)
+          vec))))
+
+(defn pdf-template [psa-table pal-table kaupunki-table seutu-table]
+  [pdf-metadata
+   [:spacer ]
+   [:heading "Paikallisliikenne tai muu PSA:n mukainen liikenne"]
+   psa-table
+   [:spacer ]
+   [:heading "Palveluliikenne"]
+   pal-table
+   [:spacer ]
+   [:heading "Kaupunkiliput"]
+   kaupunki-table
+   [:spacer ]
+   [:heading "Seutuliput"]
+   seutu-table])
+
+(defn seurantatieto-pdf [hakemusid output]
+  (let [suoritetyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-suoritetyypit)))
+        suoritteet (find-hakemus-liikennesuoritteet hakemusid)
+        psa-suoriteet (filter (coll/eq :liikennetyyppitunnus "PSA") suoritteet)
+        pal-suoriteet (filter (coll/eq :liikennetyyppitunnus "PAL") suoritteet)]
+    (pdf/pdf (pdf-template
+               (liikennesuorite-table psa-suoriteet suoritetyypit)
+               (liikennesuorite-table pal-suoriteet suoritetyypit)
+               [:paragraph "TODO"]
+               [:paragraph "TODO"]) output)))

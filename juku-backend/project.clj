@@ -11,6 +11,7 @@
                            [com.google.guava/guava "19.0"]
                            [org.apache.pdfbox/pdfbox "1.8.11"]
                            [clojure-csv/clojure-csv "2.0.1"]
+                           [clj-pdf "2.2.0"]
 
                            [clj-http "2.0.1"]
                            [com.draines/postal "1.11.4"]
