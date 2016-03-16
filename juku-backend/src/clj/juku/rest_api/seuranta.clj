@@ -3,6 +3,7 @@
             [juku.service.seuranta :as service]
             [juku.schema.seuranta :refer :all]
             [ring.util.http-response :refer :all]
+            [ring.util.io :as ring-io]
             [schema.core :as s]
             [juku.schema.common :as sc]))
 
@@ -43,5 +44,12 @@
       (GET* "/lipputyypit" []
             :return [sc/Luokka]
             :summary "Hae lipputyypit."
-            (ok (service/find-lipputyypit))))
+            (ok (service/find-lipputyypit)))
+
+      (GET* "/hakemus/:hakemusid/seuranta/pdf*" []
+            :auth [:view-hakemus]
+            :path-params [hakemusid :- Long]
+            :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."
+            (content-type (ok (ring-io/piped-input-stream (partial service/seurantatieto-pdf hakemusid)))
+                          "application/pdf")))
 

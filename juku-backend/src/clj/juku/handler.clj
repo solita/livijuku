@@ -67,6 +67,7 @@
                                             #"GET /hakemus/.*/pdf.*"
                                             #"GET /hakemus/.*/liite/.*"
                                             #"GET /hakemus/.*/paatos/pdf.*"
+                                            #"GET /hakemus/.*/seuranta/pdf.*"
                                             #"GET /api/ui/.*"
                                             #"GET /swagger.json"
 

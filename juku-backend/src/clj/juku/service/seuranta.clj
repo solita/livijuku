@@ -92,7 +92,7 @@
     [:paragraph "Ei tietoja"]
     (let [header [{:backdrop-color [200 200 200]}
                   "Suoritetyyppi" "Suoritteen nimi" "Linja-autot" "Taksit"
-                  "Ajokilometrit" "Matkustajat" "Lipputulo €" "Netto €" "Brutto €"]
+                  "Ajokilometrit" "Matkustajat" "Lipputulo (€)" "Netto (€)" "Brutto (€)"]
           suorite->str (juxt (comp suoritetyypit :suoritetyyppitunnus)
                              :nimi
                              (comp juku-pdf/format-number :linjaautot)
