@@ -116,9 +116,9 @@
                   "Myynti (kpl)"
                   "Matkat (kpl)"
                   "Asiakashinta"
-                  "Lipuilla tehtyjen matkojen keskipituus"
-                  "Lipputulot yhteensä"
-                  "Valtion ja kuntien rahoitus yhteensä"]
+                  "Keskipituus (km)"
+                  "Lipputulot (€)"
+                  "Julkinen rahoitus (€)"]
           suorite->str (juxt (if kaupunki? (comp lipputyypit :lipputyyppitunnus)
                                            :seutulippualue)
                              (comp juku-pdf/format-number :myynti)
