@@ -1,7 +1,8 @@
 
 -- name: select-avustus-group-by-vuosi
 select avustustyyppi, vuosi, sum(rahamaara) from (
-  select 'H' as avustustyyppi, hakemus.vuosi, haettavaavustus as rahamaara
+  select 'H' as avustustyyppi, hakemus.vuosi,
+         alv.avustusrahamaara(avustuskohde.haettavaavustus, avustuskohde.avustuskohdeluokkatunnus) as rahamaara
   from hakemus
     inner join organisaatio on organisaatio.id = hakemus.organisaatioid
     left join avustuskohde on hakemus.id = avustuskohde.hakemusid
@@ -41,7 +42,8 @@ with myonnetty_avustus as (
 ),
 haettuavustus as (
   select organisaatioid, vuosi, sum(haettavaavustus) haettavaavustus from (
-    select hakemus.organisaatioid, hakemus.vuosi, haettavaavustus
+    select hakemus.organisaatioid, hakemus.vuosi,
+           alv.avustusrahamaara(avustuskohde.haettavaavustus, avustuskohde.avustuskohdeluokkatunnus) haettavaavustus
     from hakemus
       inner join organisaatio on organisaatio.id = hakemus.organisaatioid
       left join avustuskohde on hakemus.id = avustuskohde.hakemusid
@@ -120,7 +122,7 @@ order by vuosi asc, organisaatioid asc
 
 -- name: select-omarahoitus-asukastakohti-group-by-organisaatio-vuosi
 with omarahoitus as (
-  select hakemus.organisaatioid, hakemus.vuosi, sum(omarahoitus) rahamaara
+  select hakemus.organisaatioid, hakemus.vuosi, sum(alv.avustusrahamaara(avustuskohde.omarahoitus, avustuskohde.avustuskohdeluokkatunnus)) rahamaara
   from hakemus
     inner join organisaatio on organisaatio.id = hakemus.organisaatioid
     left join avustuskohde on hakemus.id = avustuskohde.hakemusid

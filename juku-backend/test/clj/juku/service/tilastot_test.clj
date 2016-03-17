@@ -108,14 +108,8 @@
                          :haettavaavustus 20,
                          :omarahoitus 20}))
 
-(fact
-  "Avustustilastot - 1 avustushakemus"
-  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
-        id (create-test-hakemus vuosi "juku_hakija" "AH0" 1 30)]
-
-    (insert-test-ah0-hakemus-content id)
-    (tl/save-alue! vuosi 1 {:asukasmaara 100})
-
+(defn assert-ks1-1-test-hakemus [vuosi]
+  (fact "Tarkasta KS1 - 1 testihakemus"
     (find-by-vuosi vuosi (t/avustus-tilasto "KS1"))
       => [["H" vuosi 40M] ["M" vuosi 30M]]
 
@@ -124,6 +118,16 @@
 
     (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "KS1"))
       => [[1M vuosi 0.3M]]))
+
+(fact
+  "Avustustilastot - 1 avustushakemus"
+  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
+        id (create-test-hakemus vuosi "juku_hakija" "AH0" 1 30)]
+
+    (insert-test-ah0-hakemus-content id)
+    (tl/save-alue! vuosi 1 {:asukasmaara 100})
+
+    (assert-ks1-1-test-hakemus vuosi)))
 
 (fact
   "Avustustilastot - 2 avustushakemusta"
@@ -136,6 +140,8 @@
     (tl/save-alue! vuosi 1 {:asukasmaara 100})
     (tl/save-alue! vuosi 5 {:asukasmaara 100})
 
+    (assert-ks1-1-test-hakemus vuosi)
+
     (find-by-vuosi vuosi (t/avustus-tilasto "ALL"))
     => [["H" vuosi 80M] ["M" vuosi 55M]]
 
@@ -144,6 +150,28 @@
 
     (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "ALL"))
     => [[1M vuosi 0.3M] [5M vuosi 0.25M]]))
+
+(fact
+  "Avustustilastot - 1 avustushakemus ja avustuskohteissa on alv-kohteita"
+  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
+        id (create-test-hakemus vuosi "juku_hakija" "AH0" 1 30)]
+
+    (insert-test-ah0-hakemus-content id)
+    (ak/add-avustuskohde! {:hakemusid id
+                           :avustuskohdeluokkatunnus "HK"
+                           :avustuskohdelajitunnus "SL"
+                           :haettavaavustus 15,
+                           :omarahoitus 15})
+    (tl/save-alue! vuosi 1 {:asukasmaara 100})
+
+    (find-by-vuosi vuosi (t/avustus-tilasto "KS1"))
+    => [["H" vuosi 56.5M] ["M" vuosi 30M]]
+
+    (find-by-vuosi vuosi (t/avustus-organisaatio-tilasto "KS1"))
+    => [[1M vuosi 56.5M 30M]]
+
+    (find-by-vuosi vuosi (t/avustus-asukastakohti-tilasto "KS1"))
+    => [[1M vuosi 0.3M]]))
 
 (defn insert-test-ely-hakemus-content [hakemusid]
   (ely-test/insert-maararahatarve! hakemusid (ely-test/maararahatarve-bs 1))
