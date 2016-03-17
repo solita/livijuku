@@ -126,7 +126,7 @@ with omarahoitus as (
   from hakemus
     inner join organisaatio on organisaatio.id = hakemus.organisaatioid
     left join avustuskohde on hakemus.id = avustuskohde.hakemusid
-  where hakemus.hakemustyyppitunnus = 'AH0' and
+  where hakemus.hakemustyyppitunnus in ('MH1', 'MH2') and
         (organisaatio.lajitunnus = :organisaatiolajitunnus or :organisaatiolajitunnus = 'ALL')
   group by organisaatioid, vuosi
 )

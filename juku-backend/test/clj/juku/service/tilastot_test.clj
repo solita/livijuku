@@ -303,3 +303,45 @@
   (filter (comp #{1M 10M 12M 13M} #(nth % 0)) (find-by-vuosi 2010M (t/avustus-asukastakohti-tilasto "ALL")))
     => [[1M 2010M 5213309M] [10M 2010M 320500M] [12M 2010M 998530M] [13M 2010M 831311M]])
 
+(fact
+  "Omarahoitus - 1. maksatushakemus"
+  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
+        id (create-test-hakemus vuosi "juku_hakija" "MH1" 1 30)]
+
+    (insert-test-ah0-hakemus-content id)
+    (ak/add-avustuskohde! {:hakemusid id
+                           :avustuskohdeluokkatunnus "HK"
+                           :avustuskohdelajitunnus "SL"
+                           :haettavaavustus 15,
+                           :omarahoitus 15})
+
+    (tl/save-alue! vuosi 1 {:asukasmaara 100})
+
+    (find-by-vuosi vuosi (t/omarahoitus-asukastakohti-tilasto "KS1"))
+      => [[1M vuosi 0.565M]]))
+
+(fact
+  "Omarahoitus - molemmat maksatushakemukset"
+  (let [vuosi (-> (test/next-avattu-empty-hakemuskausi!) :vuosi bigdec)
+        id1 (create-test-hakemus vuosi "juku_hakija" "MH1" 1 30)
+        id2 (create-test-hakemus vuosi "juku_hakija" "MH1" 1 30)]
+
+    (insert-test-ah0-hakemus-content id1)
+    (ak/add-avustuskohde! {:hakemusid id1
+                           :avustuskohdeluokkatunnus "HK"
+                           :avustuskohdelajitunnus "SL"
+                           :haettavaavustus 15,
+                           :omarahoitus 15})
+
+    (insert-test-ah0-hakemus-content id2)
+    (ak/add-avustuskohde! {:hakemusid id2
+                           :avustuskohdeluokkatunnus "HK"
+                           :avustuskohdelajitunnus "SL"
+                           :haettavaavustus 25,
+                           :omarahoitus 25})
+
+    (tl/save-alue! vuosi 1 {:asukasmaara 100})
+
+    (find-by-vuosi vuosi (t/omarahoitus-asukastakohti-tilasto "KS1"))
+    => [[1M vuosi 1.24M]]))
+
