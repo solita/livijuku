@@ -1,7 +1,7 @@
 (ns common.core
   (:require [slingshot.slingshot :as ss]
             [clojure.java.io :as io])
-  (:import (java.io ByteArrayOutputStream)))
+  (:import (java.io ByteArrayOutputStream ByteArrayInputStream)))
 
 (defn is-divisible-by [num divisor]
   (zero? (mod num divisor)))
@@ -87,6 +87,11 @@
   (with-open [^ByteArrayOutputStream out (ByteArrayOutputStream.)]
     (io/copy (io/input-stream input) out)
     (.toByteArray out)))
+
+(defn output->input-stream [f]
+  (with-open [output (ByteArrayOutputStream.)]
+    (f output)
+    (ByteArrayInputStream. (.toByteArray output))))
 
 (defn setup-shutdown-hook! [f]
   (.addShutdownHook (Runtime/getRuntime) (Thread. f)))

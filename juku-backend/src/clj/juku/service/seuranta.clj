@@ -85,7 +85,8 @@
    :author "Liikennevirasto"
    :header "Joukkoliikenteen valtionavun maksatushakemuksen seurantatiedot"
    :orientation   :landscape
-   :size :a4})
+   :size :a4
+   :font  {:size 11}})
 
 (defn liikennesuorite-table [suoritteet suoritetyypit]
   (if (empty? suoritteet)

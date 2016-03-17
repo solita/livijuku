@@ -6,7 +6,12 @@
             [juku.service.hakemus :as h]
             [juku.service.seuranta :as s]
             [juku.service.avustuskohde :as ak]
-            [juku.service.test :as test]))
+            [juku.service.test :as test]
+            [juku.service.asiahallinta-mock :as asha]
+            [juku.service.pdf-mock :as pdf]
+            [juku.service.hakemus-pdf-test :as hakemus-pdf]
+            [juku.service.liitteet :as l]
+            [common.string :as strx]))
 
 (defn find-by-id [id] (fn [m] (= (:id m) id)))
 
@@ -128,6 +133,45 @@
             (s/save-lippusuoritteet! id [l1])
 
             (s/find-hakemus-lippusuoritteet id) => [l1]))))
+
+(fact
+  "Hakemuksen lähettäminen - seurantatietoliite"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (asha/with-asha
+      (let [ah0 (hc/add-hakemus! hsl-ah0-hakemus)
+            id (hc/add-hakemus! {:vuosi vuosi :hakemustyyppitunnus "MH1" :organisaatioid 1M})
+            liite1 {:hakemusid id :nimi "test" :contenttype "text/plain"}]
+
+        (h/laheta-hakemus! ah0)
+        (test/with-user "juku_kasittelija" ["juku_kasittelija"] (do (h/get-hakemus-by-id! ah0)))
+
+        (:muokkaaja (hc/get-hakemus+ id)) => nil
+        (l/add-liite! liite1 (test/inputstream-from "test"))
+        (s/save-liikennesuoritteet! id [(liikennesuorite 1M) (liikennesuorite 2M)])
+        (s/save-lippusuoritteet! id [(lippusuorite 1M) (lippusuorite 2M)])
+        (:muokkaaja (hc/get-hakemus+ id)) => "Harri Helsinki"
+
+        (h/laheta-hakemus! id)
+        (asha/headers :vireille) => asha/valid-headers?
+        (asha/headers :maksatushakemus) => asha/valid-headers?
+
+        (let [request (asha/request :maksatushakemus)
+              multipart (asha/group-by-multiparts request)
+              hakemus-asiakirja (get multipart "hakemus-asiakirja")]
+
+          (get-in multipart ["maksatushakemus" :content]) =>
+          (str "{\"kasittelija\":\"Katri Käsittelijä\",\"lahettaja\":\"Helsingin seudun liikenne\"}")
+
+          (:mime-type hakemus-asiakirja) => "application/pdf"
+          (:part-name hakemus-asiakirja) => "hakemus-asiakirja"
+          (:name hakemus-asiakirja) => "hakemus.pdf"
+
+          (slurp (get-in multipart ["test" :content])) => "test"
+          (let [seuranta-pdf (pdf/pdf->text (get-in multipart ["seurantatieto.pdf" :content]))]
+            seuranta-pdf => (partial strx/substring? "Linjasuorite testilinja 1 1 1 1 1 1 2")
+            seuranta-pdf => (partial strx/substring? "Vuosilippu 1 1 1 1 1 1")))
+
+        (:diaarinumero (hc/get-hakemus+ id)) => "testing"))))
 
 
 

@@ -58,6 +58,8 @@
 (defn is-hakemus-owner?* [hakemus]
   (= (:organisaatioid user/*current-user*) (:organisaatioid hakemus)))
 
+(defn maksatushakemus? [hakemus] (#{"MH1" "MH2"} (:hakemustyyppitunnus hakemus)))
+
 (defn has-privilege-to-view-hakemus-content* [hakemus]
   (or (user/has-privilege* :view-kaikki-hakemukset)
       (and (is-hakemus-owner?* hakemus) (user/has-privilege* :view-oma-hakemus))

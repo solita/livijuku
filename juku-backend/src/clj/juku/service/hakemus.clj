@@ -11,6 +11,7 @@
             [juku.service.email :as email]
             [slingshot.slingshot :as ss]
             [juku.service.liitteet :as l]
+            [juku.service.seuranta :as s]
             [common.string :as xstr]
             [clojure.string :as str]
             [clj-time.core :as time]
@@ -93,6 +94,15 @@
   {"AH0" "AH"
    "ELY" "ELY"})
 
+(defn find-liitteet[hakemus]
+  (let [hakemusid (:id hakemus)
+        liitteet (l/find-liitteet+sisalto hakemusid)]
+    (if (hc/maksatushakemus? hakemus)
+      (conj liitteet {:nimi "seurantatieto.pdf"
+                      :contenttype "application/pdf"
+                      :sisalto (c/output->input-stream (partial s/seurantatieto-pdf hakemusid))})
+      liitteet)))
+
 (defn laheta-hakemus! [hakemusid]
   (with-transaction
     (let [hakemus (h/get-hakemus+ hakemusid)
@@ -100,7 +110,7 @@
           hakemus-asiakirja (hakemus-pdf hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
 
-          liitteet (l/find-liitteet+sisalto hakemusid)]
+          liitteet (find-liitteet hakemus)]
 
       (assert-oma-hakemus*! hakemus)
       (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto")
@@ -172,7 +182,7 @@
           hakemus-asiakirja-bytes (c/slurp-bytes (hakemus-pdf hakemus))
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           kasittelija (user/find-user (or (:kasittelija hakemus) (:luontitunnus hakemus)))
-          liitteet (l/find-liitteet+sisalto hakemusid)]
+          liitteet (find-liitteet hakemus)]
 
       (assert-oma-hakemus*! hakemus)
       (h/change-hakemustila+log! hakemus "TV" ["T0"] "täydentäminen" (io/input-stream hakemus-asiakirja-bytes))

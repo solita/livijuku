@@ -170,6 +170,9 @@
           (:headers request) => asha/valid-headers?
           (:uri request) => "/api/hakemus/testing/maksatushakemus"
 
+          (hakemus-pdf/assert-hsl-maksatushakemus-teksti
+            (pdf/pdf->text (:content hakemus-asiakirja)) vuosi 0 0)
+
           (get-in multipart ["maksatushakemus" :content]) =>
             (str "{\"kasittelija\":\"Katri Käsittelijä\",\"lahettaja\":\"Helsingin seudun liikenne\"}")
 
