@@ -437,3 +437,8 @@
         pisteet (-> (select-tayttoaste-pisteet (c/bindings->map vuosi organisaatioid)) first :pisteet)
         max-pisteet (if (= (:lajitunnus organisaatio) "KS3") 328 325)]
     (with-precision 3 :rounding HALF_UP (/ pisteet max-pisteet))))
+
+(defn tayttoasteet [vuodet]
+  (for [vuosi vuodet
+        organisaatio (org/organisaatiot)]
+    [vuosi (:nimi organisaatio) (* (tayttoaste vuosi (:id organisaatio)) 100)]))
