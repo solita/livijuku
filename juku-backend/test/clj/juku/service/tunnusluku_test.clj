@@ -39,14 +39,15 @@
 
 ; *** testit tunnusluvuille joiden dimensio ei ole muotoa: vuosi, organisaatio, sopimustyyppi, extra dimensio
 
+(def test-alue
+  (assoc (map/map-values (constantly 1M) tls/Alue)
+    :kustannus (map/map-values (constantly 1M) tls/Kustannus)
+    :kommentti "testtest"))
+
 (fact "Aluetiedon lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
-    (let [alue (assoc (map/map-values (constantly 1M) tls/Alue)
-                 :kustannus (map/map-values (constantly 1M) tls/Kustannus)
-                 :kommentti "testtest")]
-
-      (tl/save-alue! 2016 1 alue)
-      (tl/find-alue 2016 1) => alue)))
+    (tl/save-alue! 2016 1 test-alue)
+    (tl/find-alue 2016 1) => test-alue))
 
 (fact "Lippuhinnan lisääminen ja haku"
   (test/with-user "juku_hakija" ["juku_hakija"]
@@ -110,3 +111,13 @@
 
     (:henkiloautoliikennesuorite (tl/find-alue 2013 14)) => 360000000M
     (:henkiloautoliikennesuorite (tl/find-alue 2013 1)) => nil))
+
+; *** Täyttöaste ***
+
+(fact
+  "Aluetiedon 100% täyttöaste"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+
+      (tl/save-alue! vuosi 1 test-alue)
+      (tl/tayttoaste vuosi 1) => 0.0492M)))
