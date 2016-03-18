@@ -180,5 +180,14 @@
         :return nil
         :body [csv [[s/Str]]]
         :summary "Lataa tunnusluvut csv-muodossa."
-        (ok (service/import-csv csv))))
+        (ok (service/import-csv csv)))
+
+  ;; Täyttöaste
+  (GET* "/tunnusluku/tayttoaste/:vuosi/:organisaatioid" []
+        :auth [:view-tunnusluvut]
+        :return s/Num
+        :path-params [vuosi :- Long
+                      organisaatioid :- Long]
+        :summary "Hae organisaation tunnuslukujen täyttöaste tietylle vuodelle."
+        (ok (service/tayttoaste vuosi organisaatioid))))
 
