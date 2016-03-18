@@ -121,3 +121,31 @@
 
       (tl/save-alue! vuosi 1 test-alue)
       (tl/tayttoaste vuosi 1) => 0.0492M)))
+
+(fact
+  "Täyttöaste - tyhjä kausi"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))]
+      (tl/tayttoaste vuosi 1) => 0M)))
+
+(fact
+  "Täyttöaste - lippuhinta"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))
+          lippuhinnat (map #(assoc (map/map-values (constantly 1M) tls/Lippuhinta) :vyohykemaara %) (range 1M 7M))]
+
+      (tl/save-lippuhinnat! vuosi 1 lippuhinnat)
+      (tl/tayttoaste vuosi 1) => (with-precision 3 :rounding HALF_UP (bigdec (/ 1 325))))))
+
+(fact
+  "Täyttöaste - kalusto"
+  (test/with-user "juku_hakija" ["juku_hakija"]
+    (let [vuosi (:vuosi (test/next-hakemuskausi!))
+          kalusto (map #(assoc (map/map-values (constantly 1M) tls/Kalusto) :paastoluokkatunnus %)
+                           (map #(str "E" %) (range 0M 7M)))]
+
+      (tl/save-kalusto! vuosi 1 "BR" kalusto)
+      (tl/tayttoaste vuosi 1) => (with-precision 3 :rounding HALF_UP (bigdec (/ 1 325)))
+
+      (tl/save-kalusto! vuosi 1 "KOS" kalusto)
+      (tl/tayttoaste vuosi 1) => (with-precision 3 :rounding HALF_UP (bigdec (/ 2 325))))))
