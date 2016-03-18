@@ -345,3 +345,22 @@
     (find-by-vuosi vuosi (t/omarahoitus-asukastakohti-tilasto "KS1"))
     => [[1M vuosi 1.24M]]))
 
+(fact
+  "PSA liikenteen nettokorvaus"
+  (test/with-user
+    "juku_hakija" ["juku_hakija"]
+    (let [vuosi (bigdec (:vuosi (test/next-hakemuskausi!)))]
+
+      (tl/save-liikennointikorvaus! vuosi 1 "BR" [{:kuukausi 1 :korvaus 6}])
+      (tl/save-lipputulo! vuosi 1 "BR" [{:kuukausi 1
+                                         :kertalipputulo 1
+                                         :arvolipputulo 1
+                                         :kausilipputulo 1}])
+
+      (tl/save-liikennointikorvaus! vuosi 1 "KOS" [{:kuukausi 1 :korvaus 6}])
+      (tl/save-lipputulo! vuosi 1 "KOS" [{:kuukausi 1
+                                         :kertalipputulo 1
+                                         :arvolipputulo 1
+                                         :kausilipputulo 1}])
+
+      (find-by-vuosi vuosi (t/psa-nettokustannus "KS1")) => [[1M vuosi 9M]])))
