@@ -138,3 +138,29 @@ from omarahoitus
    alue.organisaatioid = omarahoitus.organisaatioid and
    alue.vuosi = omarahoitus.vuosi
 order by vuosi asc, organisaatioid asc
+
+-- name: select-psa-nettokustannus
+with liikennointikorvaus as (
+    select organisaatioid, vuosi,
+      sum(korvaus) + nvl(sum(nousukorvaus), 0) korvaus
+    from fact_liikennointikorvaus
+    where sopimustyyppitunnus in ('BR', 'KOS')
+    group by organisaatioid, vuosi
+    order by vuosi, organisaatioid
+), lipputulo as (
+    select organisaatioid, vuosi,
+      sum(kertalipputulo) + sum(arvolipputulo) + sum(kausilipputulo) total
+    from fact_lipputulo
+    where sopimustyyppitunnus = 'BR'
+    group by organisaatioid, vuosi
+    order by vuosi, organisaatioid
+)
+select liikennointikorvaus.organisaatioid,
+  liikennointikorvaus.vuosi,
+  liikennointikorvaus.korvaus - lipputulo.total
+from liikennointikorvaus
+  inner join organisaatio on organisaatio.id = liikennointikorvaus.organisaatioid
+  left join lipputulo
+    on liikennointikorvaus.organisaatioid = lipputulo.organisaatioid and
+       liikennointikorvaus.vuosi = lipputulo.vuosi
+where organisaatio.lajitunnus = :organisaatiolajitunnus or :organisaatiolajitunnus = 'ALL'

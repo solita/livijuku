@@ -69,5 +69,13 @@
 
         :return [[s/Any]]
         :summary "Organisaation omarahoitus asukastakohti ryhmiteltynä organisaation ja vuoden perusteella."
-        (ok (service/omarahoitus-asukastakohti-tilasto organisaatiolajitunnus))))
+        (ok (service/omarahoitus-asukastakohti-tilasto organisaatiolajitunnus)))
+
+  (GET* "/psa-nettokustannus/:organisaatiolajitunnus" []
+        :auth [:view-tunnusluvut]
+        :path-params [organisaatiolajitunnus :- s/Str]
+
+        :return [[s/Any]]
+        :summary "Organisaation omarahoitus asukastakohti ryhmiteltynä organisaation ja vuoden perusteella."
+        (ok (service/psa-nettokustannus organisaatiolajitunnus))))
 

@@ -210,3 +210,8 @@
 (defn omarahoitus-asukastakohti-tilasto [organisaatiolajitunnus]
   (select-omarahoitus-asukastakohti-group-by-organisaatio-vuosi
     (c/bindings->map organisaatiolajitunnus) {:as-arrays? true :connection db}))
+
+;; *** PSA-liikenteen nettokustannukset ***
+(defn psa-nettokustannus [organisaatiolajitunnus]
+  (select-psa-nettokustannus
+    (c/bindings->map organisaatiolajitunnus) {:as-arrays? true :connection db}))
