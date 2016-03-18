@@ -105,3 +105,8 @@
     (for [x (first colls)
           more (cartesian-product (rest colls))]
       (cons x more))))
+
+(defn assert-not-nil! [value error]
+  (if (nil? value)
+    (ss/throw+ error)
+    value))

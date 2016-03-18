@@ -158,3 +158,28 @@ insert into fact_joukkoliikennetuki (vuosi, organisaatioid, avustuskohdeluokkatu
             l.organisaatioid = :organisaatioid
   )
   order by vuosi, organisaatioid, tunnus
+
+-- name: select-tayttoaste-pisteet
+select
+  (select count(nousut) + count(lahdot) + count(linjakilometrit) from fact_liikenne
+  where organisaatioid = :organisaatioid and vuosi = :vuosi) +
+  (select count(nousut) + count(lahdot) + count(linjakilometrit) from fact_liikenneviikko
+  where organisaatioid = :organisaatioid and vuosi = :vuosi) +
+  (select count(korvaus) + count(nousukorvaus) + count(nousut) from fact_liikennointikorvaus
+  where organisaatioid = :organisaatioid and vuosi = :vuosi) +
+  (select count(kertalipputulo) + count(arvolipputulo) + count(kausilipputulo) + count(lipputulo) from fact_lipputulo
+  where organisaatioid = :organisaatioid and vuosi = :vuosi) +
+  (select count(tuki) from fact_joukkoliikennetuki
+  where organisaatioid = :organisaatioid and vuosi = :vuosi) +
+  case when exists (select 1 from fact_lippuhinta where organisaatioid = :organisaatioid and vuosi = :vuosi) then 1 else 0 end +
+  (select count(distinct sopimustyyppitunnus) from fact_kalusto
+  where organisaatioid = :organisaatioid and vuosi = :vuosi) +
+  (select count(kuntamaara) + count(vyohykemaara) + count(pysakkimaara) +
+          count(maapintaala) + count(asukasmaara) + count(tyopaikkamaara) +
+          count(henkilosto) + count(pendeloivienosuus) + count(henkiloautoliikennesuorite) +
+          count(autoistumisaste) + count(asiakastyytyvaisyys) +
+          count(kustannus_asiakaspalvelu) + count(kustannus_konsulttipalvelu) + count(kustannus_lipunmyyntipalkkio) +
+          count(kustannus_jarjestelmat) + count(kustannus_muutpalvelut) from fact_alue
+   where organisaatioid = :organisaatioid and vuosi = :vuosi)
+    as pisteet
+from dual

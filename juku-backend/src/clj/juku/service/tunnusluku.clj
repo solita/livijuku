@@ -429,3 +429,11 @@
            "\n\nTietokantavirheet: \n"
            (str/join "\n" (map #(str "- " (:tunnusluku %) " virhe: " (:error %))
                                (filter (coll/eq :status "db-error") result)))))))
+
+; *** Tunnuslukujen täyttöaste ***
+
+(defn tayttoaste [vuosi organisaatioid]
+  (let [organisaatio (org/get-organisaatio! (bigdec organisaatioid))
+        pisteet (-> (select-tayttoaste-pisteet (c/bindings->map vuosi organisaatioid)) first :pisteet)
+        max-pisteet (if (= (:lajitunnus organisaatio) "KS3") 328 325)]
+    (with-precision 3 :rounding HALF_UP (/ pisteet max-pisteet))))
