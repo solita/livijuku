@@ -11,7 +11,8 @@
             [ring.util.http-response :as r]
             [slingshot.slingshot :as ss]
             [common.collection :as coll]
-            [common.map :as m]))
+            [common.map :as m]
+            [juku.service.organisaatio :as org]))
 
 ; *** Seurantatietoihin liittyvät kyselyt ***
 (sql/defqueries "seuranta.sql")
@@ -134,8 +135,8 @@
            (cons :table)
            vec))))
 
-(defn pdf-template [psa-table pal-table kaupunki-table seutu-table]
-  [pdf-metadata
+(defn pdf-template [header psa-table pal-table kaupunki-table seutu-table]
+  [(assoc pdf-metadata :header header)
    [:spacer ]
    [:heading "Paikallisliikenne tai muu PSA:n mukainen liikenne"]
    psa-table
@@ -149,8 +150,18 @@
    [:heading "Seutuliput"]
    seutu-table])
 
+(def hakemustyyppi-teksti
+  {"MH1" "1. maksatushakemuksen"
+   "MH2" "2. maksatushakemuksen"})
+
 (defn seurantatieto-pdf [hakemusid output]
-  (let [suoritetyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-suoritetyypit)))
+  (let [hakemus (hc/get-hakemus hakemusid)
+        organisaatio (org/find-organisaatio (:organisaatioid hakemus))
+        header (str "Joukkoliikenteen " (:vuosi hakemus) " valtionavun "
+                    (hakemustyyppi-teksti (:hakemustyyppitunnus hakemus))
+                    " seurantatiedot - " (:nimi organisaatio))
+
+        suoritetyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-suoritetyypit)))
         liikennesuoritteet (find-hakemus-liikennesuoritteet hakemusid)
         psa-suoriteet (filter (coll/eq :liikennetyyppitunnus "PSA") liikennesuoritteet)
         pal-suoriteet (filter (coll/eq :liikennetyyppitunnus "PAL") liikennesuoritteet)
@@ -158,7 +169,7 @@
         lippusuoritteet (find-hakemus-lippusuoritteet hakemusid)
         kaupunki-suoritteet (filter (coll/predicate not= :lipputyyppitunnus "SE") lippusuoritteet)
         seutu-suoritteet (filter (coll/eq :lipputyyppitunnus "SE") lippusuoritteet)]
-    (pdf/pdf (pdf-template
+    (pdf/pdf (pdf-template header
                (liikennesuorite-table psa-suoriteet suoritetyypit)
                (liikennesuorite-table pal-suoriteet suoritetyypit)
                (lippusuorite-table true kaupunki-suoritteet lipputyypit)
