@@ -215,7 +215,7 @@
           (get-in multipart ["hakemus" :content]) =>
           (str "{\"kausi\":\"test/" vuosi "\","
                 "\"tyyppi\":\"ELY\","
-                "\"hakija\":\"Uusimaa\","
+                "\"hakija\":\"Uusimaa ELY\","
                 "\"omistavaOrganisaatio\":\"Liikennevirasto\","
                 "\"omistavaHenkilo\":\"test\"}")
 
