@@ -104,7 +104,7 @@
 
 (fact
   "CSV lataus - henkiloautoliikennesuoritteen lataamisongelma"
-  (let [header "Vuosi;Tunnusluku;Helsingin seudun liikenne;Hämeenlinna;Lahti;Riihimäki;Hyvinkää;Lappeenranta;Imatra;Kotka;Kouvola;Mikkeli;Savonlinna;Joensuu;Kuopio;Kokkola;Seinäjoki;Vaasa;Jyväskylä;Tampere;Turku;Pori;Rauma;Salo;Oulu;Kajaani;Kemi;Rovaniemi;Uusimaa;Kaakkois-Suomi;Pohjois-Savo;Etelä-Pohjanmaa;Keski-Suomi;Pirkanmaa;Varsinais-Suomi;Pohjois-Pohjanmaa;Lappi"
+  (let [header "Vuosi;Tunnusluku;Helsingin seudun liikenne;Hämeenlinna;Lahti;Riihimäki;Hyvinkää;Lappeenranta;Imatra;Kotka;Kouvola;Mikkeli;Savonlinna;Joensuu;Kuopio;Kokkola;Seinäjoki;Vaasa;Jyväskylä;Tampere;Turku;Pori;Rauma;Salo;Oulu;Kajaani;Kemi;Rovaniemi;Uusimaa ELY;Kaakkois-Suomi ELY;Pohjois-Savo ELY;Etelä-Pohjanmaa ELY;Keski-Suomi ELY;Pirkanmaa ELY;Varsinais-Suomi ELY;Pohjois-Pohjanmaa ELY;Lappi ELY"
         text-csv "2013;Henkilöautoliikenteen suorite  (jos tiedossa);0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;360000000;0;0;937;0;0;0;0;0;0;0;0;0;1988218327;0;0;1370;0;0;0"]
     (import-csv (str header "\n" text-csv)) => (partial strx/substring?  "Tietokantavirheet: \n- 2013-alue-pohjois-savo")
     (tl/find-alue 2013 20) => nil
