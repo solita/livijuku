@@ -155,9 +155,9 @@
         (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu")))))
 
 (fact "Avustushakemuksen päätös - päätöksen lisätiedot"
-      (test-ah0-paatos-selite nil "kohteisiin.\n\n\tLopullisessa")
-      (test-ah0-paatos-selite "" "kohteisiin.\n\n\tLopullisessa")
-      (test-ah0-paatos-selite " " "kohteisiin.\n\n\tLopullisessa")
+      (test-ah0-paatos-selite nil "kohteisiin.\n\n\tAvustukseen")
+      (test-ah0-paatos-selite "" "kohteisiin.\n\n\tAvustukseen")
+      (test-ah0-paatos-selite " " "kohteisiin.\n\n\tAvustukseen")
       (test-ah0-paatos-selite "FooBar" "\n\n\tFooBar")
       (test-ah0-paatos-selite "Foo\nBar" "\n\n\tFoo\n\n\tBar")
       (test-ah0-paatos-selite "Foo\n\n\r\rBar" "\n\n\tFoo\n\n\tBar"))
