@@ -1,4 +1,11 @@
 
+create sequence kilpailutus_seq
+  increment by 1
+  maxvalue 999999999999999999999999999
+  minvalue 1
+  cache 20
+;
+
 create table kilpailutus (
   id number(19) constraint kilpailutus_pk primary key,
   organisaatioid not null references organisaatio (id),
@@ -14,6 +21,8 @@ create table kilpailutus (
   liikennointipaattymispvm date,
   hankittuoptiopaattymispvm date,
   optiopaattymispvm date,
+
+  optioselite varchar2(1000 char),
 
   liikennoitsijanimi varchar2(200 char),
   tarjousmaara number(6),
