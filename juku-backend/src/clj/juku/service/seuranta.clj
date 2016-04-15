@@ -42,7 +42,7 @@
 
 ; *** Liikennesuoritteiden toiminnot ***
 (defn- insert-liikennesuorite [suorite]
-  (:id (dml/insert db "liikennesuorite" suorite liikennesuorite-constraint-errors suorite)))
+  (dml/insert db "liikennesuorite" suorite liikennesuorite-constraint-errors suorite))
 
 (defn save-liikennesuoritteet! [hakemusid suoritteet]
   (hc/assert-edit-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
