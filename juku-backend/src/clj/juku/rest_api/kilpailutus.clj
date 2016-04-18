@@ -15,22 +15,22 @@
         :return Kilpailutus
         :path-params [kilpailutusid :- Long]
         :summary "Hae kilapilutuksen tiedot. Haettava kilpailutus yksilöidään kilpailutusid-polkuparametrilla."
-        (ok (service/find-kilpailutus kilpailutusid)))
+        (ok (service/get-kilpailutus! kilpailutusid)))
 
   (PUT* "/kilpailutus/:kilpailutusid" []
         :audit []
-        :return   nil
+        :return nil
         :path-params [kilpailutusid :- Long]
-        :body     [kilpailutus EditKilpailutus]
-        :summary  "Päivittää kilpailutuksen tiedot."
-        (ok (service/edit-kilpailutus kilpailutusid kilpailutus)))
+        :body [kilpailutus EditKilpailutus]
+        :summary "Päivittää kilpailutuksen tiedot."
+        (ok (service/edit-kilpailutus! kilpailutusid kilpailutus)))
 
   (POST* "/kilpailutus" []
-        :audit []
-        :return   s/Num
-        :body     [kilpailutus EditKilpailutus]
-        :summary  "Lisää uuden kilpailutuksen järjestelmään."
-        (ok (service/add-kilpailutus kilpailutus)))
+         :audit []
+         :return s/Num
+         :body [kilpailutus EditKilpailutus]
+         :summary "Lisää uuden kilpailutuksen järjestelmään."
+         (ok (service/add-kilpailutus! kilpailutus)))
 
   (GET* "/kilpailutukset" []
         :auth [:view-hakemus]

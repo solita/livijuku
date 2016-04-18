@@ -7,7 +7,8 @@
             [juku.db.sql :as dml]
             [common.core :as c]
             [honeysql.core :as hsql]
-            [juku.db.sql :as jsql]))
+            [juku.db.sql :as jsql]
+            [common.collection :as coll]))
 
 ; *** Kilpailutuksiin liittyvät kyselyt ***
 (sql/defqueries "kilpailutus.sql")
@@ -19,13 +20,21 @@
 (def constraint-errors {
    :kilpailutus_organisaatio_fk {:http-response r/not-found :message "Kilpailutuksen organisaatiota {organisaatioid} ei ole olemassa."}})
 
+(derive ::kilpailutus-not-found ::coll/not-found)
+
 (defn find-kilpailutus [kilpailutusid]
   (first (map coerce-kilpailutus (select-kilpailutus (c/bindings->map kilpailutusid)))))
 
-(defn add-kilpailutus [kilpailutus]
+(defn get-kilpailutus! [kilpailutusid]
+  (c/assert-not-nil! (find-kilpailutus kilpailutusid)
+                     {:type ::kilpailutus-not-found
+                      :message (str "Kilpailutusta " kilpailutusid " ei ole olemassa. ")
+                      :kilpailutusid kilpailutusid}))
+
+(defn add-kilpailutus! [kilpailutus]
   (:id (dml/insert-with-id db "kilpailutus" kilpailutus constraint-errors kilpailutus)))
 
-(defn edit-kilpailutus [kilpailutusid kilpailutus]
+(defn edit-kilpailutus! [kilpailutusid kilpailutus]
   (dml/update-where-id db "kilpailutus" kilpailutus kilpailutusid)
   nil)
 
