@@ -17,6 +17,7 @@
             [juku.rest-api.tunnusluku :refer [tunnusluku-routes]]
             [juku.rest-api.user :refer [user-routes]]
             [juku.rest-api.tilastot :refer [tilastot-routes]]
+            [juku.rest-api.kilpailutus :refer [kilpailutus-routes]]
 
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]
@@ -59,6 +60,7 @@
         (context* "" [] :tags ["Käyttäjä API"] user-routes)
         (context* "" [] :tags ["Tunnusluku API"] tunnusluku-routes)
         (context* "" [] :tags ["Tilastot API"] tilastot-routes)
+        (context* "" [] :tags ["Kilpailutus API"] kilpailutus-routes)
         notfound))
 
 (def app (-> juku-api

@@ -40,7 +40,7 @@
   ([operation db sql params] (db-do operation db sql params (constantly nil) {}) ))
 
 (defn isValidDatabaseIdentifier [identifier]
-  (c/not-nil? (re-matches #"\p{Lower}+[\p{Lower}_]*" (str/lower-case identifier))))
+  (c/not-nil? (re-matches #"\p{Lower}+[\p{Lower}_\d]*" (str/lower-case identifier))))
 
 ;; insert statements
 
