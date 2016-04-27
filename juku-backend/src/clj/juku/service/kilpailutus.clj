@@ -42,3 +42,7 @@
   (let [sql-body {:select (keys s/Kilpailutus)
                   :from [:kilpailutus]}]
     (map coerce-kilpailutus (jsql/query db (hsql/format sql-body) {}))))
+
+(defn delete-kilpailutus! [kilpailutusid]
+  (delete-kilpailutus-where-id! (c/bindings->map kilpailutusid))
+  nil)

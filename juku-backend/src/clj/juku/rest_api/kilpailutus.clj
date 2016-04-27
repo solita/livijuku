@@ -32,6 +32,13 @@
          :summary "Lisää uuden kilpailutuksen järjestelmään."
          (ok (service/add-kilpailutus! kilpailutus)))
 
+  (DELETE* "/kilpailutus/:kilpailutusid" []
+           :audit []
+           :return nil
+           :path-params [kilpailutusid :- Long]
+           :summary "Poistaa kilpailutuksen järjestelmäästä."
+          (ok (service/delete-kilpailutus! kilpailutusid)))
+
   (GET* "/kilpailutukset" []
         :auth [:view-hakemus]
         :query-params [{organisaatioid :- [Long] nil}]

@@ -26,3 +26,6 @@ select
   tarjoushinta1,
   tarjoushinta2
 from kilpailutus where id = :kilpailutusid
+
+-- name: delete-kilpailutus-where-id!
+delete kilpailutus where id = :kilpailutusid
