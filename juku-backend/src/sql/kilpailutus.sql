@@ -18,6 +18,9 @@ select
 
   optioselite,
 
+  hilmalinkki,
+  asiakirjalinkki,
+
   liikennoitsijanimi,
   tarjousmaara,
   tarjoushinta1,

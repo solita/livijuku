@@ -20,6 +20,9 @@
 
     :optioselite (s/maybe s/Str)
 
+    :hilmalinkki (s/maybe s/Str)
+    :asiakirjalinkki (s/maybe s/Str)
+
     :liikennoitsijanimi (s/maybe s/Str)
     :tarjousmaara  (s/maybe s/Num)
     :tarjoushinta1 (s/maybe s/Num)
