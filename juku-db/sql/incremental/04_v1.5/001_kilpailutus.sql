@@ -24,6 +24,9 @@ create table kilpailutus (
 
   optioselite varchar2(1000 char),
 
+  hilmalinkki varchar2(200 char),
+  asiakirjalinkki varchar2(200 char),
+
   liikennoitsijanimi varchar2(200 char),
   tarjousmaara number(6),
   tarjoushinta1 number(12,2),
