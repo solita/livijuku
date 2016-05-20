@@ -13,8 +13,8 @@
     :julkaisupvm               (s/maybe LocalDate)
     :tarjouspaattymispvm       (s/maybe LocalDate)
     :hankintapaatospvm         (s/maybe LocalDate)
-    :liikennointialoituspvm    (s/maybe LocalDate)
-    :liikennointipaattymispvm  (s/maybe LocalDate)
+    :liikennointialoituspvm    LocalDate
+    :liikennointipaattymispvm  LocalDate
     :hankittuoptiopaattymispvm (s/maybe LocalDate)
     :optiopaattymispvm         (s/maybe LocalDate)
 

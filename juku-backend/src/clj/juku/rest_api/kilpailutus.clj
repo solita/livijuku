@@ -40,9 +40,14 @@
           (ok (service/delete-kilpailutus! kilpailutusid)))
 
   (GET* "/kilpailutukset" []
-        :auth [:view-hakemus]
         :query-params [{organisaatioid :- [Long] nil}]
 
         :summary "Hae kilpailutuksia annettujen rajoitusehtojen mukaisesti."
-        (ok (service/find-kilpailutukset (c/bindings->map organisaatioid)))))
+        (ok (service/find-kilpailutukset (c/bindings->map organisaatioid))))
+
+  (PUT* "/kilpailutukset/import" []
+        :return s/Num
+        :body [csv [[s/Str]]]
+        :summary "Lataa tunnusluvut csv-muodossa."
+        (ok (service/import-kilpailutukset! csv))))
 

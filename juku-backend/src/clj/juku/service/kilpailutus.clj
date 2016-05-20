@@ -8,7 +8,13 @@
             [common.core :as c]
             [honeysql.core :as hsql]
             [juku.db.sql :as jsql]
-            [common.collection :as coll]))
+            [common.collection :as coll]
+            [clojure.string :as str]
+            [clj-time.format :as f]
+            [schema.core :as sc]
+            [schema.coerce :as sc-coerce]
+            [common.map :as m])
+  (:import (org.joda.time LocalDate)))
 
 ; *** Kilpailutuksiin liittyvät kyselyt ***
 (sql/defqueries "kilpailutus.sql")
@@ -46,3 +52,19 @@
 (defn delete-kilpailutus! [kilpailutusid]
   (delete-kilpailutus-where-id! (c/bindings->map kilpailutusid))
   nil)
+
+(defn str->bigdec [^String txt]
+  (try (BigDecimal. (str/replace (str/replace txt "," ".") #"\h" ""))
+       (catch Throwable _ txt)))
+
+(defn str->localdate [^String txt]
+  (f/parse-local-date (f/formatter "dd.MM.yyyy") txt))
+
+(defn import-kilpailutukset! [data]
+  (let [header (map keyword (first data))
+        default-values (m/map-values (constantly nil) s/EditKilpailutus)
+        row->kilpailutus (fn [row] (into {} (map vector header row)))
+        coercer (sc-coerce/coercer! s/EditKilpailutus (coerce/create-matcher {LocalDate #'str->localdate
+                                                                              sc/Num #'str->bigdec}))]
+    (doseq [row (rest data)]
+      (add-kilpailutus! (coercer (merge default-values (row->kilpailutus row)))))))
