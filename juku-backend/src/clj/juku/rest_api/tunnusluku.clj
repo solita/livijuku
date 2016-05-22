@@ -6,11 +6,11 @@
             [schema.core :as s]
             [juku.schema.common :as sc]))
 
-(defroutes*
+(defroutes
   tunnusluku-routes
 
   ;; Vuoden liikennetilastot kuukausitasolla
-  (GET* "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
       :auth [:view-tunnusluvut]
       :return [Liikennekuukausi]
       :path-params [vuosi :- Long
@@ -18,7 +18,7 @@
                     sopimustyyppitunnus :- s/Str]
       :summary "Hae organisaation liikenteen kysyntä ja tarjontatiedot tietylle vuodella ja sopimustyypille."
     (ok (service/find-liikennevuositilasto vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT "/liikennetilastot/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
       :auth [:view-tunnusluvut]
       :return nil
       :path-params [vuosi :- Long
@@ -29,7 +29,7 @@
       (ok (service/save-liikennevuositilasto! vuosi organisaatioid sopimustyyppitunnus kuukaudet)))
 
   ;; Liikenneviikko
-  (GET* "/liikenneviikko/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET "/liikenneviikko/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
       :auth [:view-tunnusluvut]
       :return [Liikennepaiva]
       :path-params [vuosi :- Long
@@ -37,7 +37,7 @@
                     sopimustyyppitunnus :- s/Str]
       :summary "Hae organisaation liikenteen talviviikon kysyntä ja tarjontatiedot tietylle vuodella ja sopimustyypille."
       (ok (service/find-liikenneviikkotilasto vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/liikenneviikko/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT "/liikenneviikko/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
       :auth [:view-tunnusluvut]
       :return nil
       :path-params [vuosi :- Long
@@ -48,7 +48,7 @@
       (ok (service/save-liikenneviikkotilasto! vuosi organisaatioid sopimustyyppitunnus viikko)))
 
   ;; Kalusto
-  (GET* "/kalusto/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET "/kalusto/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return [Kalusto]
         :path-params [vuosi :- Long
@@ -56,7 +56,7 @@
                       sopimustyyppitunnus :- s/Str]
         :summary "Hae organisaation kalusto tietylle vuodella ja sopimustyypille."
         (ok (service/find-kalusto vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/kalusto/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT "/kalusto/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -67,14 +67,14 @@
         (ok (service/save-kalusto! vuosi organisaatioid sopimustyyppitunnus kalusto)))
 
   ;; Lippuhinta
-  (GET* "/lippuhinta/:vuosi/:organisaatioid" []
+  (GET "/lippuhinta/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return [Lippuhinta]
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
         :summary "Hae organisaation lippujen hinnat tietylle vuodella ja sopimustyypille."
         (ok (service/find-lippuhinnat vuosi organisaatioid)))
-  (PUT* "/lippuhinta/:vuosi/:organisaatioid" []
+  (PUT "/lippuhinta/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -84,7 +84,7 @@
         (ok (service/save-lippuhinnat! vuosi organisaatioid lippuhinnat)))
 
   ;; Lipputulo
-  (GET* "/lipputulo/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET "/lipputulo/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return [Lipputulo]
         :path-params [vuosi :- Long
@@ -92,7 +92,7 @@
                       sopimustyyppitunnus :- s/Str]
         :summary "Hae organisaation lippujen hinnat tietylle vuodella ja sopimustyypille."
         (ok (service/find-lipputulo vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/lipputulo/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT "/lipputulo/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -103,7 +103,7 @@
         (ok (service/save-lipputulo! vuosi organisaatioid sopimustyyppitunnus lipputulot)))
 
   ;; Liikennöintikorvaus
-  (GET* "/liikennointikorvaus/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET "/liikennointikorvaus/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return [Liikennointikorvaus]
         :path-params [vuosi :- Long
@@ -111,7 +111,7 @@
                       sopimustyyppitunnus :- s/Str]
         :summary "Hae organisaation liikennöintikorvaus tietylle vuodella ja sopimustyypille."
         (ok (service/find-liikennointikorvaus vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/liikennointikorvaus/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT "/liikennointikorvaus/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -122,14 +122,14 @@
         (ok (service/save-liikennointikorvaus! vuosi organisaatioid sopimustyyppitunnus korvaukset)))
 
   ;; Aluetiedot
-  (GET* "/alue/:vuosi/:organisaatioid" []
+  (GET "/alue/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return (s/maybe Alue)
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
         :summary "Hae organisaation tietyn vuoden aluetiedot."
         (ok (service/find-alue vuosi organisaatioid)))
-  (PUT* "/alue/:vuosi/:organisaatioid" []
+  (PUT "/alue/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -139,7 +139,7 @@
         (ok (service/save-alue! vuosi organisaatioid alue)))
 
   ;; Kommentit
-  (GET* "/kommentti/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (GET "/kommentti/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return (s/maybe s/Str)
         :path-params [vuosi :- Long
@@ -147,7 +147,7 @@
                       sopimustyyppitunnus :- s/Str]
         :summary "Hae organisaation tunnuslukukommentit tietylle vuodella ja sopimustyypille."
         (ok (service/find-kommentti vuosi organisaatioid sopimustyyppitunnus)))
-  (PUT* "/kommentti/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
+  (PUT "/kommentti/:vuosi/:organisaatioid/:sopimustyyppitunnus" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -158,14 +158,14 @@
         (ok (service/save-kommentti! vuosi organisaatioid sopimustyyppitunnus kommentti)))
 
   ;; Joukkoliikennetuki
-  (GET* "/joukkoliikennetuki/:vuosi/:organisaatioid" []
+  (GET "/joukkoliikennetuki/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return [Joukkoliikennetuki]
         :path-params [vuosi :- Long
                       organisaatioid :- Long]
         :summary "Hae pienten kaupunkiseutujen joukkoliikennetuki tietylle vuodella ja sopimustyypille."
         (ok (service/find-joukkoliikennetuki vuosi organisaatioid)))
-  (PUT* "/joukkoliikennetuki/:vuosi/:organisaatioid" []
+  (PUT "/joukkoliikennetuki/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return nil
         :path-params [vuosi :- Long
@@ -175,7 +175,7 @@
         (ok (service/save-joukkoliikennetuki! vuosi organisaatioid joukkoliikennetuki)))
 
   ;; csv import
-  (PUT* "/tunnusluku/import" []
+  (PUT "/tunnusluku/import" []
         :auth [:modify-kaikki-tunnusluvut]
         :return nil
         :body [csv [[s/Str]]]
@@ -183,7 +183,7 @@
         (ok (service/import-csv csv)))
 
   ;; Täyttöaste
-  (GET* "/tunnusluku/tayttoaste/:vuosi/:organisaatioid" []
+  (GET "/tunnusluku/tayttoaste/:vuosi/:organisaatioid" []
         :auth [:view-tunnusluvut]
         :return s/Num
         :path-params [vuosi :- Long

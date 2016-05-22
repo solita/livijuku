@@ -23,7 +23,7 @@
                            [ring "1.4.0"]
                            [ring/ring-defaults "0.1.5"]
 
-                           [metosin/compojure-api "0.24.5"]
+                           [metosin/compojure-api "1.1.2"]
                            [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***

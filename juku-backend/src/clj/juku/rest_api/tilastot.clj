@@ -6,10 +6,10 @@
             [schema.core :as s]
             [common.core :as c]))
 
-(defroutes*
+(defroutes
   tilastot-routes
 
-  (GET* "/tilastot/:tunnuslukuid/:organisaatiolajitunnus" []
+  (GET "/tilastot/:tunnuslukuid/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [tunnuslukuid :- s/Str
                       organisaatiolajitunnus :- s/Str]
@@ -39,7 +39,7 @@
                                                          kustannuslajitunnus)
                                         (map keyword group-by))))
 
-  (GET* "/avustus/:organisaatiolajitunnus" []
+  (GET "/avustus/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 
@@ -47,7 +47,7 @@
         :summary "Valtion avustus ryhmiteltynä haettuun ja myönnettyyn avustukseen sekä vuoden perusteella."
         (ok (service/avustus-tilasto organisaatiolajitunnus)))
 
-  (GET* "/avustus-details/:organisaatiolajitunnus" []
+  (GET "/avustus-details/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 
@@ -55,7 +55,7 @@
         :summary "Valtion avustus ryhmiteltynä organisaation ja vuoden perusteella."
         (ok (service/avustus-organisaatio-tilasto organisaatiolajitunnus)))
 
-  (GET* "/avustus-asukas/:organisaatiolajitunnus" []
+  (GET "/avustus-asukas/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 
@@ -63,7 +63,7 @@
         :summary "Myönnetty valtion avustus asukastakohti ryhmiteltynä organisaation ja vuoden perusteella."
         (ok (service/avustus-asukastakohti-tilasto organisaatiolajitunnus)))
 
-  (GET* "/omarahoitus-asukas/:organisaatiolajitunnus" []
+  (GET "/omarahoitus-asukas/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 
@@ -71,7 +71,7 @@
         :summary "Organisaation omarahoitus asukastakohti ryhmiteltynä organisaation ja vuoden perusteella."
         (ok (service/omarahoitus-asukastakohti-tilasto organisaatiolajitunnus)))
 
-  (GET* "/psa-nettokustannus/:organisaatiolajitunnus" []
+  (GET "/psa-nettokustannus/:organisaatiolajitunnus" []
         :auth [:view-tunnusluvut]
         :path-params [organisaatiolajitunnus :- s/Str]
 

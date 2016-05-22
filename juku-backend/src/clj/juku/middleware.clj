@@ -76,6 +76,13 @@
         (user/with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
                           :privileges privileges) (handler request))))))
 
+(defn wrap-public-user [handler]
+  (fn [request]
+    (let [uid "guest"]
+      (current-user/with-user-id
+        uid (user/with-user {:tunnus uid
+                             :privileges [:view-tunnusluvut :view-kilpailutus]} (handler request))))))
+
 (defn ^String message [^Throwable t] (.getMessage t))
 
 (defn ^Throwable cause [^Throwable t] (.getCause t))
