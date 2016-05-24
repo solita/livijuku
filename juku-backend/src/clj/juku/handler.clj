@@ -71,7 +71,7 @@
 
 
     (middleware [jm/wrap-public-user]
-      (context "/public" [] :tags ["Julkinen API"] tilastot-routes kilpailutus-public-routes))
+      (context "/public" [] :tags ["Julkinen API"] tilastot-routes kilpailutus-public-routes organisaatio-routes))
 
     (middleware [jm/wrap-user wrap-double-submit-cookie+whitelist]
       (context "" [] :tags ["Hakemuskausi API"] hakemuskausi-routes)
