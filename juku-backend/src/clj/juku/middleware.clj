@@ -23,10 +23,14 @@
             [crypto.random :as random]
             [compojure.api.exception :as ex]))
 
-(defn find-matching-organisaatio [organisaatio-name department]
-  (c/if-let* [normalized-org-name (-> organisaatio-name str/trim str/lower-case (str/replace #"(\s)+" "-"))
+(defn normalize-name [name]
+  (-> name str/trim str/lower-case (str/replace #"(\s)+" "-")))
 
-              organisaatio (org/find-unique-organisaatio-ext-tunnus-like (str normalized-org-name "/" (or department "-")))]
+(defn find-matching-organisaatio [organisaatio-name department-name]
+  (c/if-let* [normalized-org-name (normalize-name organisaatio-name)
+              normalized-dep-name (normalize-name department-name)
+
+              organisaatio (org/find-unique-organisaatio-ext-tunnus-like (str normalized-org-name "/" (or normalized-dep-name "-")))]
            (:id organisaatio) nil))
 
 (defn- headers->user-data [orgnisaatio-id headers]
