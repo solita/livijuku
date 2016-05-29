@@ -54,7 +54,7 @@
           (ok (service/delete-kilpailutus! kilpailutusid)))
 
   (PUT "/kilpailutukset/import" []
-        :return s/Num
+        :return nil
         :body [csv [[s/Str]]]
         :summary "Lataa tunnusluvut csv-muodossa."
         (ok (service/import-kilpailutukset! csv))))

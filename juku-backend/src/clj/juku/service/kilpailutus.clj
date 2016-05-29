@@ -14,7 +14,8 @@
             [clj-time.format :as f]
             [schema.core :as sc]
             [schema.coerce :as sc-coerce]
-            [common.map :as m])
+            [common.map :as m]
+            [common.string :as strx])
   (:import (org.joda.time LocalDate)))
 
 ; *** Kilpailutuksiin liittyvät kyselyt ***
@@ -64,10 +65,14 @@
 (defn str->localdate [^String txt]
   (f/parse-local-date (f/formatter "dd.MM.yyyy") txt))
 
+(defn str->nil [^String txt]
+  (let [content (strx/trim txt)]
+    (if (strx/not-blank? content) content nil)))
+
 (defn import-kilpailutukset! [data]
-  (let [header (map keyword (first data))
+  (let [header (map (comp keyword str/trim) (first data))
         default-values (m/map-values (constantly nil) s/EditKilpailutus)
-        row->kilpailutus (fn [row] (into {} (map vector header row)))
+        row->kilpailutus (fn [row] (into {} (map vector header (map str->nil row))))
         coercer (sc-coerce/coercer! s/EditKilpailutus (coerce/create-matcher {LocalDate #'str->localdate
                                                                               sc/Num #'str->bigdec}))]
     (doseq [row (rest data)]
