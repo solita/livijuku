@@ -6,6 +6,7 @@
   {
     :organisaatioid s/Num
     :kohdenimi s/Str
+    :sopimusmallitunnus (s/maybe s/Str)
     :kohdearvo (s/maybe s/Num)
     :kalusto   (s/maybe s/Num)
     :selite    (s/maybe s/Str)

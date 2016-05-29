@@ -4,6 +4,7 @@ select
   id,
   organisaatioid,
   kohdenimi,
+  sopimusmallitunnus,
   kohdearvo,
   kalusto,
   selite,
@@ -29,3 +30,6 @@ from kilpailutus where id = :kilpailutusid
 
 -- name: delete-kilpailutus-where-id!
 delete kilpailutus where id = :kilpailutusid
+
+-- name: select-sopimusmallit
+select tunnus, nimi, jarjestys from sopimusmalli order by jarjestys

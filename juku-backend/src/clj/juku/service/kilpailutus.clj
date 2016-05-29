@@ -2,6 +2,7 @@
   (:require [juku.db.yesql-patch :as sql]
             [juku.db.database :refer [db with-transaction]]
             [juku.db.coerce :as coerce]
+            [juku.schema.common :as js]
             [juku.schema.kilpailutus :as s]
             [ring.util.http-response :as r]
             [juku.db.sql :as dml]
@@ -21,12 +22,15 @@
 
 ; *** Kilpailutus-skeemaan liittyvät konversiot tietokannan tietotyypeistä ***
 (def coerce-kilpailutus (coerce/coercer s/Kilpailutus))
+(def coerce-luokka (coerce/coercer js/Luokka))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def constraint-errors {
    :kilpailutus_organisaatio_fk {:http-response r/not-found :message "Kilpailutuksen organisaatiota {organisaatioid} ei ole olemassa."}})
 
 (derive ::kilpailutus-not-found ::coll/not-found)
+
+(defn find-sopimusmallit [] (map coerce-luokka (select-sopimusmallit)))
 
 (defn find-kilpailutus [kilpailutusid]
   (first (map coerce-kilpailutus (select-kilpailutus (c/bindings->map kilpailutusid)))))

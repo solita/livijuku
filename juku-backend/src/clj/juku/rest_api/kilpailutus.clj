@@ -11,10 +11,15 @@
 (defroutes
   kilpailutus-public-routes
 
+  (GET "/kilpailutus/sopimusmallit" []
+    :return [sc/Luokka]
+    :summary "Hae kilpailutusten sopimusmallit."
+    (ok (service/find-sopimusmallit)))
+
   (GET "/kilpailutus/:kilpailutusid" []
     :return Kilpailutus
     :path-params [kilpailutusid :- Long]
-    :summary "Hae kilapilutuksen tiedot. Haettava kilpailutus yksilöidään kilpailutusid-polkuparametrilla."
+    :summary "Hae kilpailutuksen tiedot. Haettava kilpailutus yksilöidään kilpailutusid-polkuparametrilla."
     (ok (service/get-kilpailutus! kilpailutusid)))
 
   (GET "/kilpailutukset" []
