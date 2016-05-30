@@ -51,24 +51,20 @@
    - käyttäjällä on oikeus muokata kaikkia kilpailutuksia tai
    - käyttäjä on kilpailutuksen omistaja ja käyttäjällä on omien kilpailutusten hallintaoikeus"
 
-  [kilpailutus]
+  [kilpailutus errormsg]
   (when-not (or (user/has-privilege* :modify-kaikki-kilpailutukset)
                 (and (user/has-privilege* :modify-omat-kilpailutukset)
-                     (= (:organisaatioid user/*current-user*) (:organisaatioid kilpailutus))))
-    (if-let [id (:id kilpailutus)]
-      (forbidden!
-        (str "Käyttäjällä " (:tunnus user/*current-user*)
-             " ei ole oikeutta muokata tai poistaa kilpailutusta: " id "."))
-      (forbidden!
-        (str "Käyttäjällä " (:tunnus user/*current-user*)
-             " ei ole oikeutta lisätä kilpailutuksia.")))))
+                     (== (:organisaatioid user/*current-user*) (:organisaatioid kilpailutus))))
+    (forbidden! errormsg)))
 
 (defn add-kilpailutus! [kilpailutus]
-  (assert-modify-kilpailutus-allowed*! kilpailutus)
+  (assert-modify-kilpailutus-allowed*! kilpailutus
+    (str "Käyttäjällä " (:tunnus user/*current-user*) " ei ole oikeutta lisätä kilpailutuksia."))
   (:id (dml/insert-with-id db "kilpailutus" kilpailutus constraint-errors kilpailutus)))
 
 (defn edit-kilpailutus! [kilpailutusid kilpailutus]
-  (assert-modify-kilpailutus-allowed*! kilpailutus)
+  (assert-modify-kilpailutus-allowed*! kilpailutus
+    (str "Käyttäjällä " (:tunnus user/*current-user*) " ei ole oikeutta muokata kilpailutusta: " kilpailutusid "."))
   (dml/update-where-id db "kilpailutus" kilpailutus kilpailutusid)
   nil)
 
@@ -78,7 +74,8 @@
     (map coerce-kilpailutus (jsql/query db (hsql/format sql-body) {}))))
 
 (defn delete-kilpailutus! [kilpailutusid]
-  (assert-modify-kilpailutus-allowed*! (get-kilpailutus! kilpailutusid))
+  (assert-modify-kilpailutus-allowed*! (get-kilpailutus! kilpailutusid)
+    (str "Käyttäjällä " (:tunnus user/*current-user*) " ei ole oikeutta poistaa kilpailutusta: " kilpailutusid "."))
   (delete-kilpailutus-where-id! (c/bindings->map kilpailutusid))
   nil)
 
