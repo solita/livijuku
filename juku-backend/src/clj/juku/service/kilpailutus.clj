@@ -65,9 +65,11 @@
 (defn str->localdate [^String txt]
   (f/parse-local-date (f/formatter "dd.MM.yyyy") txt))
 
-(defn str->nil [^String txt]
-  (let [content (strx/trim txt)]
-    (if (strx/not-blank? content) content nil)))
+(defn str->nil [txt]
+  (if (string? txt)
+    (let [content (strx/trim txt)]
+      (if (strx/not-blank? content) content nil))
+    txt))
 
 (defn import-kilpailutukset! [data]
   (let [header (map (comp keyword str/trim) (first data))
