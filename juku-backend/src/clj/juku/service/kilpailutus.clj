@@ -15,7 +15,9 @@
             [schema.core :as sc]
             [schema.coerce :as sc-coerce]
             [common.map :as m]
-            [common.string :as strx])
+            [common.string :as strx]
+            [juku.service.user :as user]
+            [slingshot.slingshot :as ss])
   (:import (org.joda.time LocalDate)))
 
 ; *** Kilpailutuksiin liittyvät kyselyt ***
@@ -42,10 +44,31 @@
                       :message (str "Kilpailutusta " kilpailutusid " ei ole olemassa. ")
                       :kilpailutusid kilpailutusid}))
 
+(defn forbidden! [msg] (ss/throw+ {:http-response r/forbidden :message msg} msg))
+
+(defn assert-modify-kilpailutus-allowed*!
+  "Kilpailutusta voi muokata vain jos:
+   - käyttäjällä on oikeus muokata kaikkia kilpailutuksia tai
+   - käyttäjä on kilpailutuksen omistaja ja käyttäjällä on omien kilpailutusten hallintaoikeus"
+
+  [kilpailutus]
+  (when-not (or (user/has-privilege* :modify-kaikki-kilpailutukset)
+                (and (user/has-privilege* :modify-omat-kilpailutukset)
+                     (= (:organisaatioid user/*current-user*) (:organisaatioid kilpailutus))))
+    (if-let [id (:id kilpailutus)]
+      (forbidden!
+        (str "Käyttäjällä " (:tunnus user/*current-user*)
+             " ei ole oikeutta muokata tai poistaa kilpailutusta: " id "."))
+      (forbidden!
+        (str "Käyttäjällä " (:tunnus user/*current-user*)
+             " ei ole oikeutta lisätä kilpailutuksia.")))))
+
 (defn add-kilpailutus! [kilpailutus]
+  (assert-modify-kilpailutus-allowed*! kilpailutus)
   (:id (dml/insert-with-id db "kilpailutus" kilpailutus constraint-errors kilpailutus)))
 
 (defn edit-kilpailutus! [kilpailutusid kilpailutus]
+  (assert-modify-kilpailutus-allowed*! kilpailutus)
   (dml/update-where-id db "kilpailutus" kilpailutus kilpailutusid)
   nil)
 
@@ -55,6 +78,7 @@
     (map coerce-kilpailutus (jsql/query db (hsql/format sql-body) {}))))
 
 (defn delete-kilpailutus! [kilpailutusid]
+  (assert-modify-kilpailutus-allowed*! (get-kilpailutus! kilpailutusid))
   (delete-kilpailutus-where-id! (c/bindings->map kilpailutusid))
   nil)
 

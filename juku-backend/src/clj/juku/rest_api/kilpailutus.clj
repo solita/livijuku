@@ -12,17 +12,20 @@
   kilpailutus-public-routes
 
   (GET "/kilpailutus/sopimusmallit" []
+    :auth [:view-kilpailutus]
     :return [sc/Luokka]
     :summary "Hae kilpailutusten sopimusmallit."
     (ok (service/find-sopimusmallit)))
 
   (GET "/kilpailutus/:kilpailutusid" []
+    :auth [:view-kilpailutus]
     :return Kilpailutus
     :path-params [kilpailutusid :- Long]
     :summary "Hae kilpailutuksen tiedot. Haettava kilpailutus yksilöidään kilpailutusid-polkuparametrilla."
     (ok (service/get-kilpailutus! kilpailutusid)))
 
   (GET "/kilpailutukset" []
+    :auth [:view-kilpailutus]
     :query-params [{organisaatioid :- [Long] nil}]
 
     :summary "Hae kilpailutuksia annettujen rajoitusehtojen mukaisesti."
@@ -32,7 +35,6 @@
   kilpailutus-routes
 
   (PUT "/kilpailutus/:kilpailutusid" []
-        :audit []
         :return nil
         :path-params [kilpailutusid :- Long]
         :body [kilpailutus EditKilpailutus]
@@ -40,22 +42,21 @@
         (ok (service/edit-kilpailutus! kilpailutusid kilpailutus)))
 
   (POST "/kilpailutus" []
-         :audit []
          :return s/Num
          :body [kilpailutus EditKilpailutus]
          :summary "Lisää uuden kilpailutuksen järjestelmään."
          (ok (service/add-kilpailutus! kilpailutus)))
 
   (DELETE "/kilpailutus/:kilpailutusid" []
-           :audit []
            :return nil
            :path-params [kilpailutusid :- Long]
            :summary "Poistaa kilpailutuksen järjestelmäästä."
           (ok (service/delete-kilpailutus! kilpailutusid)))
 
   (PUT "/kilpailutukset/import" []
-        :return nil
-        :body [csv [[s/Str]]]
-        :summary "Lataa tunnusluvut csv-muodossa."
-        (ok (service/import-kilpailutukset! csv))))
+    :audit [:modify-kaikki-kilpailutukset]
+    :return nil
+    :body [csv [[s/Str]]]
+    :summary "Lataa tunnusluvut csv-muodossa."
+    (ok (service/import-kilpailutukset! csv))))
 
