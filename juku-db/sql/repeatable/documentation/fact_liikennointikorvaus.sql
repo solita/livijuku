@@ -7,7 +7,7 @@ comment on column fact_liikennointikorvaus.korvaus is
 Korvauksen tarkempi merkitys riippuu sopimustyypistä ja tämä tieto merkitään kaikille sopimustyypeille.';
 
 comment on column fact_liikennointikorvaus.nousukorvaus is
-  'Käyttöoikeussopimusliikenteen tapauksessa TVV:n liikennöintikorvauksen lisäksi maksama tietyn kuukauden nousukorvaus.';
+  'Käyttöoikeussopimusliikenteen tapauksessa TVV:n liikennöintikorvauksen lisäksi maksama tietyn kuukauden nousukorvaus liikennöitsijälle.';
 
 comment on column fact_liikennointikorvaus.nousut is
   'Markkinaehtoisen liikenteen tapuksessa liikennöintikorvauksen lisäksi merkitään korvauksen piirissä olevat nousut kuukausittain.';
