@@ -98,9 +98,14 @@
   (if t
     (let [error (or (ss/get-thrown-object t) (ex-data t))]
       (if (map? error)
-        (assoc error
-          :message (or (:message error) (message t))
-          :cause (throwable->http-error (cause t)))
+        (if (= (:type error) :schema.core/error)
+          {:message (message t)
+           :type :schema.core/error
+           :value (:value error)
+           :cause (throwable->http-error (cause t))}
+          (assoc error
+            :message (or (:message error) (message t))
+            :cause (throwable->http-error (cause t))))
         {:message (message t)
          :type (.getName ^Class (.getClass t))
          :cause (throwable->http-error (cause t))}))))
