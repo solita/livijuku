@@ -16,9 +16,13 @@
             [common.map :as m]
             [common.collection :as coll]
             [juku.service.organisaatio :as org]
-            [common.map :as map])
+            [common.map :as map]
+            [clojure.java.io :as io]
+            [clojure-csv.core :as csv]
+            [juku.service.pdf :as pdf])
   (:import [schema.core Maybe]
-           [schema.utils ValidationError]))
+           [schema.utils ValidationError]
+           (java.io Writer)))
 
 ; *** Virheviestit tietokannan rajoitteista ***
 (def liikenne-constraint-errors
@@ -442,3 +446,26 @@
   (for [vuosi vuodet
         organisaatio (org/organisaatiot)]
     [vuosi (:nimi organisaatio) (* (tayttoaste vuosi (:id organisaatio)) 100)]))
+
+; *** Tunnuslukujen export ***
+
+(defn format-number [number]
+  (str/replace (pdf/format-number number) "\u00A0" " "))
+
+(defn resultset->out-as-csv [output resultset]
+  (let [header (first resultset)
+        ^Writer w (io/writer output)]
+
+    ; UTF-8 Byte-order marker will clue Excel 2007+ in to the fact that you're using UTF-8
+    ; see http://stackoverflow.com/questions/6002256/is-it-possible-to-force-excel-recognize-utf-8-csv-files-automatically
+    (.write w "\uFEFF")
+
+    (.write w (csv/write-csv [(map name header)] :delimiter ";"))
+    (.flush w)
+    (doseq [row (rest resultset)]
+      (.write w (csv/write-csv [(map str (update row 7 format-number))] :delimiter ";"))
+      (.flush w))))
+
+(defn export-tunnusluvut-csv [output]
+  (select-all-tunnusluvut {} {:connection db :as-arrays? true
+                              :result-set-fn (partial resultset->out-as-csv output)}))

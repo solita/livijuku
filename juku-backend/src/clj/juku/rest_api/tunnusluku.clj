@@ -4,7 +4,8 @@
             [juku.schema.tunnusluku :refer :all]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
-            [juku.schema.common :as sc]))
+            [juku.schema.common :as sc]
+            [ring.util.io :as ring-io]))
 
 (defroutes
   tunnusluku-routes
@@ -181,6 +182,13 @@
         :body [csv [[s/Str]]]
         :summary "Lataa tunnusluvut csv-muodossa."
         (ok (service/import-csv csv)))
+
+  ;; csv export
+  (GET "/tunnusluku/csv*" []
+    :auth [:view-tunnusluvut]
+    :summary "Lataa kaikkien tunnuslukujen tiedot csv-muodossa."
+    (content-type (ok (ring-io/piped-input-stream service/export-tunnusluvut-csv))
+                  "text/csv"))
 
   ;; Täyttöaste
   (GET "/tunnusluku/tayttoaste/:vuosi/:organisaatioid" []

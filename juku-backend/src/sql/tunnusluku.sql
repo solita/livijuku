@@ -184,3 +184,60 @@ select
    where organisaatioid = :organisaatioid and vuosi = :vuosi)
     as pisteet
 from dual
+
+-- name: select-all-tunnusluvut
+select 
+  tunnusluku.tunnus, 
+  tunnusluku.organisaatioid, organisaatio.nimi organisaationimi,
+  tunnusluku.vuosi, tunnusluku.kuukausi, 
+  tunnusluku.tyyppi1, tunnusluku.tyyppi2, tunnusluku.arvo
+from (
+select 'nousut' tunnus, organisaatioid, vuosi, kuukausi, sopimustyyppitunnus tyyppi1, null tyyppi2, nousut arvo from fact_liikenne
+union all
+select 'lahdot', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, null, lahdot from fact_liikenne
+union all
+select 'linjakilometrit', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, null, linjakilometrit from fact_liikenne
+union all
+select 'nousut-viikko', organisaatioid, vuosi, null, sopimustyyppitunnus, viikonpaivaluokkatunnus, nousut from fact_liikenneviikko
+union all
+select 'lahdot-viikko', organisaatioid, vuosi, null, sopimustyyppitunnus, viikonpaivaluokkatunnus, lahdot from fact_liikenneviikko
+union all
+select 'linjakilometrit-viikko', organisaatioid, vuosi, null, sopimustyyppitunnus, viikonpaivaluokkatunnus, linjakilometrit from fact_liikenneviikko
+union all
+select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, 'K', korvaus from fact_liikennointikorvaus
+union all
+select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, 'NK', nousukorvaus from fact_liikennointikorvaus
+union all
+select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, 'KK', kuntakorvaus from fact_liikennointikorvaus
+union all
+select 'lipputulo', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, lipputuloluokkatunnus, tulo from fact_lipputulo_unpivot_view
+union all
+select 'kalusto', organisaatioid, vuosi, null, sopimustyyppitunnus, paastoluokkatunnus, lukumaara from fact_kalusto
+union all
+select 'kustannukset', organisaatioid, vuosi, null, kustannuslajitunnus, null, kustannus from fact_kustannus_unpivot_view
+union all
+select 'lippuhinnat', organisaatioid, vuosi, null, to_char(vyohykemaara), lippuhintaluokkatunnus, hinta from fact_lippuhinta_unpivot_view
+union all
+select 'alue-kuntamaara', organisaatioid, vuosi, null, null, null, kuntamaara from fact_alue
+union all
+select 'alue-vyohykemaara', organisaatioid, vuosi, null, null, null, vyohykemaara from fact_alue
+union all
+select 'alue-pysakkimaara', organisaatioid, vuosi, null, null, null, pysakkimaara from fact_alue
+union all
+select 'alue-maapintaala', organisaatioid, vuosi, null, null, null, maapintaala from fact_alue
+union all
+select 'alue-asukasmaara', organisaatioid, vuosi, null, null, null, asukasmaara from fact_alue
+union all
+select 'alue-henkilosto', organisaatioid, vuosi, null, null, null, henkilosto from fact_alue
+union all
+select 'alue-pendeloivienosuus', organisaatioid, vuosi, null, null, null, pendeloivienosuus from fact_alue
+union all
+select 'alue-henkiloautoliikennesuorite', organisaatioid, vuosi, null, null, null, henkiloautoliikennesuorite from fact_alue
+union all
+select 'alue-autoistumisaste', organisaatioid, vuosi, null, null, null, autoistumisaste from fact_alue
+union all
+select 'alue-asiakastyytyvaisyys', organisaatioid, vuosi, null, null, null, asiakastyytyvaisyys from fact_alue
+) tunnusluku inner join organisaatio on organisaatio.id = tunnusluku.organisaatioid
+where arvo is not null
+
+
