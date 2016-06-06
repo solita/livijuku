@@ -35,6 +35,7 @@
                                   #"GET /hakemus/.*/liite/.*"
                                   #"GET /hakemus/.*/paatos/pdf.*"
                                   #"GET /hakemus/.*/seuranta/pdf.*"
+                                  #"GET /kilpailutukset/csv.*"
                                   #"GET /api/ui/.*"
                                   #"GET /swagger.json"
 

@@ -17,8 +17,12 @@
             [common.map :as m]
             [common.string :as strx]
             [juku.service.user :as user]
-            [slingshot.slingshot :as ss])
-  (:import (org.joda.time LocalDate)))
+            [clojure-csv.core :as csv]
+            [slingshot.slingshot :as ss]
+            [clojure.java.io :as io]
+            [juku.service.pdf :as pdf])
+  (:import (org.joda.time LocalDate)
+           (java.io Writer)))
 
 ; *** Kilpailutuksiin liittyvät kyselyt ***
 (sql/defqueries "kilpailutus.sql")
@@ -83,8 +87,10 @@
   (try (BigDecimal. (str/replace (str/replace txt "," ".") #"\h" ""))
        (catch Throwable _ txt)))
 
+(def default-localdate-formatter (f/formatter "dd.MM.yyyy"))
+
 (defn str->localdate [^String txt]
-  (f/parse-local-date (f/formatter "dd.MM.yyyy") txt))
+  (f/parse-local-date default-localdate-formatter txt))
 
 (defn str->nil [txt]
   (if (string? txt)
@@ -100,3 +106,34 @@
                                                                               sc/Num #'str->bigdec}))]
     (doseq [row (rest data)]
       (add-kilpailutus! (coercer (merge default-values (row->kilpailutus row)))))))
+
+(defn date->str [date]
+  (f/unparse-local-date default-localdate-formatter (coerce/date->localdate date)))
+
+(def kilpailutus-formatters
+  (m/map-values #(partial c/maybe-nil % "")
+                {:selite                    coerce/clob->string
+                 :julkaisupvm               date->str
+                 :tarjouspaattymispvm       date->str
+                 :hankintapaatospvm         date->str
+                 :liikennointialoituspvm    date->str
+                 :liikennointipaattymispvm  date->str
+                 :hankittuoptiopaattymispvm date->str
+                 :optiopaattymispvm         date->str
+                 :kohdearvo                 pdf/format-number
+                 :tarjoushinta1             pdf/format-number
+                 :tarjoushinta2             pdf/format-number}))
+
+(defn resultset->out-as-csv [output resultset]
+  (let [header (first resultset)
+        formatter (map #(or (kilpailutus-formatters %) str) header)
+        ^Writer w (io/writer output)]
+    (.write w (csv/write-csv [(map name header)] :delimiter ";"))
+    (.flush w)
+    (doseq [row (rest resultset)]
+      (.write w (csv/write-csv [(map #(%1 %2) formatter row)] :delimiter ";"))
+      (.flush w))))
+
+(defn export-kilpailutukset-csv [output]
+  (select-all-kilpailutukset {} {:connection db :as-arrays? true
+                                 :result-set-fn (partial resultset->out-as-csv output)}))

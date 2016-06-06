@@ -58,5 +58,11 @@
     :return nil
     :body [csv [[s/Str]]]
     :summary "Lataa tunnusluvut csv-muodossa."
-    (ok (service/import-kilpailutukset! csv))))
+    (ok (service/import-kilpailutukset! csv)))
+
+  (GET "/kilpailutukset/csv*" []
+    :auth [:view-kilpailutus]
+    :summary "Lataa kaikkien kilpailutuksien tiedot csv-muodossa."
+    (content-type (ok (ring-io/piped-input-stream service/export-kilpailutukset-csv))
+                  "text/csv")))
 
