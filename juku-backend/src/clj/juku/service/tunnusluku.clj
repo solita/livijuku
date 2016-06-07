@@ -19,7 +19,7 @@
             [common.map :as map]
             [clojure.java.io :as io]
             [clojure-csv.core :as csv]
-            [juku.service.pdf :as pdf])
+            [juku.service.common :as common])
   (:import [schema.core Maybe]
            [schema.utils ValidationError]
            (java.io Writer)))
@@ -449,9 +449,6 @@
 
 ; *** Tunnuslukujen export ***
 
-(defn format-number [number]
-  (str/replace (pdf/format-number number) "\u00A0" " "))
-
 (defn resultset->out-as-csv [output resultset]
   (let [header (first resultset)
         ^Writer w (io/writer output)]
@@ -463,7 +460,7 @@
     (.write w (csv/write-csv [(map name header)] :delimiter ";"))
     (.flush w)
     (doseq [row (rest resultset)]
-      (.write w (csv/write-csv [(map str (update row 7 format-number))] :delimiter ";"))
+      (.write w (csv/write-csv [(map str (update row 7 common/format-number))] :delimiter ";"))
       (.flush w))))
 
 (defn export-tunnusluvut-csv [output]

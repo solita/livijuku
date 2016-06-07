@@ -20,7 +20,7 @@
             [clojure-csv.core :as csv]
             [slingshot.slingshot :as ss]
             [clojure.java.io :as io]
-            [juku.service.pdf :as pdf])
+            [juku.service.common :as common])
   (:import (org.joda.time LocalDate)
            (java.io Writer)))
 
@@ -120,14 +120,19 @@
                  :liikennointipaattymispvm  date->str
                  :hankittuoptiopaattymispvm date->str
                  :optiopaattymispvm         date->str
-                 :kohdearvo                 pdf/format-number
-                 :tarjoushinta1             pdf/format-number
-                 :tarjoushinta2             pdf/format-number}))
+                 :kohdearvo                 common/format-number
+                 :tarjoushinta1             common/format-number
+                 :tarjoushinta2             common/format-number}))
 
 (defn resultset->out-as-csv [output resultset]
   (let [header (first resultset)
         formatter (map #(or (kilpailutus-formatters %) str) header)
         ^Writer w (io/writer output)]
+
+    ; UTF-8 Byte-order marker will clue Excel 2007+ in to the fact that you're using UTF-8
+    ; see http://stackoverflow.com/questions/6002256/is-it-possible-to-force-excel-recognize-utf-8-csv-files-automatically
+    (.write w "\uFEFF")
+
     (.write w (csv/write-csv [(map name header)] :delimiter ";"))
     (.flush w)
     (doseq [row (rest resultset)]
