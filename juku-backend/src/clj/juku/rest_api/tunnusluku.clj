@@ -185,7 +185,7 @@
 
   ;; csv export
   (GET "/tunnusluku/csv*" []
-    :auth [:view-tunnusluvut]
+    :auth [:view-kaikki-tunnusluvut]
     :summary "Lataa kaikkien tunnuslukujen tiedot csv-muodossa."
     (content-type (ok (ring-io/piped-input-stream service/export-tunnusluvut-csv))
                   "text/csv"))
