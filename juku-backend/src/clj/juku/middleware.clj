@@ -55,6 +55,11 @@
   (log/error (str/join msg))
   (h/content-type-text-plain (type (str/join msg))))
 
+(defn with-user* [user fn]
+  (current-user/with-user-id (:tunnus user) (user/with-user* user fn)))
+
+(defmacro with-user [user & body] `(with-user* ~user (fn [] ~@body)))
+
 (defn wrap-user [handler]
   (fn [request]
     (c/if-let3
@@ -76,16 +81,14 @@
        privileges (c/nil-if empty? (user/find-privileges roles orgnisaatio-id))
         (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")]
 
-      (current-user/with-user-id uid
-        (user/with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
-                          :privileges privileges) (handler request))))))
+      (with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
+                        :privileges privileges) (handler request)))))
+
+(def guest-user {:tunnus "guest"
+                 :privileges [:view-tunnusluvut :view-kilpailutus]})
 
 (defn wrap-public-user [handler]
-  (fn [request]
-    (let [uid "guest"]
-      (current-user/with-user-id
-        uid (user/with-user {:tunnus uid
-                             :privileges [:view-tunnusluvut :view-kilpailutus]} (handler request))))))
+  (fn [request] (with-user guest-user (handler request))))
 
 (defn ^String message [^Throwable t] (.getMessage t))
 
