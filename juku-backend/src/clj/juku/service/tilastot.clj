@@ -5,6 +5,7 @@
             [juku.schema.tunnusluku :as s]
             [juku.db.database :refer [db]]
             [juku.service.avustushistoria :as ah]
+            [juku.service.user :as u]
             [ring.util.http-response :as r]
             [juku.db.sql :as dml]
             [slingshot.slingshot :as ss]
@@ -103,6 +104,11 @@
    })
 
 (defn tunnusluku-tilasto [tunnusluku organisaatiolajitunnus where group-by]
+  (when (= tunnusluku :kustannukset)
+    (u/assert-has-privilege*!
+      :view-tunnusluku-kustannus
+      (str "Käyttäjällä " (:tunnus u/*current-user*) " ei ole oikeutta nähdä kustannustietoja.")))
+
   (c/error-let!
     [table (tunnusluku-table tunnusluku) nil?
       {:http-response r/bad-request :message (str "Tunnuslukua " tunnusluku " ei ole olemassa.")}
