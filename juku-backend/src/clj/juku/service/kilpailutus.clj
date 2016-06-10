@@ -31,6 +31,14 @@
 (def coerce-kilpailutus (coerce/coercer s/Kilpailutus))
 (def coerce-luokka (coerce/coercer js/Luokka))
 
+(defn create-kilpailutus-coercer+authorization []
+  (if (user/has-privilege* :view-kilpailutus-tarjoustieto)
+    coerce-kilpailutus
+    (fn [row] (assoc (coerce-kilpailutus row)
+                :tarjousmaara  nil
+                :tarjoushinta1 nil
+                :tarjoushinta2 nil))))
+
 ; *** Virheviestit tietokannan rajoitteista ***
 (def constraint-errors {
    :kilpailutus_organisaatio_fk {:http-response r/not-found :message "Kilpailutuksen organisaatiota {organisaatioid} ei ole olemassa."}})
@@ -40,7 +48,7 @@
 (defn find-sopimusmallit [] (map coerce-luokka (select-sopimusmallit)))
 
 (defn find-kilpailutus [kilpailutusid]
-  (first (map coerce-kilpailutus (select-kilpailutus (c/bindings->map kilpailutusid)))))
+  (first (map (create-kilpailutus-coercer+authorization) (select-kilpailutus (c/bindings->map kilpailutusid)))))
 
 (defn get-kilpailutus! [kilpailutusid]
   (c/assert-not-nil! (find-kilpailutus kilpailutusid)
@@ -75,7 +83,7 @@
 (defn find-kilpailutukset [filter]
   (let [sql-body {:select (keys s/Kilpailutus)
                   :from [:kilpailutus]}]
-    (map coerce-kilpailutus (jsql/query db (hsql/format sql-body) {}))))
+    (map (create-kilpailutus-coercer+authorization) (jsql/query db (hsql/format sql-body) {}))))
 
 (defn delete-kilpailutus! [kilpailutusid]
   (assert-modify-kilpailutus-allowed*! (get-kilpailutus! kilpailutusid)

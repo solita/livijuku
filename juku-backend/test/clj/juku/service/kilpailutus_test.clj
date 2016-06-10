@@ -16,6 +16,26 @@
 (defn import-csv [csv] (k/import-kilpailutukset! (csv/parse-csv csv :delimiter \;)))
 
 (fact
+  "Kilpailutuksen tallennus ja yksittäisen kilapilutuksen haku"
+  (test/with-hakija
+    (let [kilpailutus {:organisaatioid 1M
+                       :kohdenimi "test"
+                       :liikennointialoituspvm    (t/local-date 2016 1 1)
+                       :liikennointipaattymispvm  (t/local-date 2016 2 1)
+                       :tarjousmaara  1M
+                       :tarjoushinta1 1M
+                       :tarjoushinta2 1M}
+          id (k/add-kilpailutus! kilpailutus)]
+      (k/get-kilpailutus! id) => (merge (map/map-values (constantly nil) ks/Kilpailutus)
+                                        (assoc kilpailutus :id id))
+      (test/with-public-user
+        (k/get-kilpailutus! id) => (merge (map/map-values (constantly nil) ks/Kilpailutus)
+                                          (assoc kilpailutus :id id
+                                                             :tarjousmaara  nil
+                                                             :tarjoushinta1 nil
+                                                             :tarjoushinta2 nil))))))
+
+(fact
   "CSV lataus - yksi kilpailutus"
   (test/with-hakija
     (let [nimi (str "nimi" (rand-int 10000))

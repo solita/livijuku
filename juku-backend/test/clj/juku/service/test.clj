@@ -63,6 +63,12 @@
 
 (defmacro with-hakija [& test] `(with-user "juku_hakija" ["juku_hakija"] ~@test))
 
+(defmacro with-public-user [& test]
+  `(let [uid# "guest"]
+    (u/with-user-id
+      uid# (user/with-user {:tunnus uid#
+                           :privileges [:view-tunnusluvut :view-kilpailutus]} ~@test))))
+
 (defn before-now? [time]
   (time/before? time (time/now)))
 
