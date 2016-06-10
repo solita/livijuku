@@ -11,12 +11,8 @@
             [clj-time.core :as t]
             [common.core :as c]))
 
-; *** csv import ***
-
-(defn import-csv [csv] (k/import-kilpailutukset! (csv/parse-csv csv :delimiter \;)))
-
 (fact
-  "Kilpailutuksen tallennus ja yksittäisen kilapilutuksen haku"
+  "Kilpailutuksen tallennus ja yksittäisen kilpailutuksen haku"
   (test/with-hakija
     (let [kilpailutus {:organisaatioid 1M
                        :kohdenimi "test"
@@ -36,6 +32,31 @@
                                                              :tarjoushinta2 nil))))))
 
 (fact
+  "Kilpailutuksen tallennus ja kaikkien kilpailutusten haku"
+  (test/with-hakija
+    (let [kilpailutus {:organisaatioid 1M
+                       :kohdenimi "test"
+                       :liikennointialoituspvm    (t/local-date 2016 1 1)
+                       :liikennointipaattymispvm  (t/local-date 2016 2 1)
+                       :tarjousmaara  1M
+                       :tarjoushinta1 1M
+                       :tarjoushinta2 1M}
+          id (k/add-kilpailutus! kilpailutus)
+          find-kilpailutus (fn [] (coll/find-first (coll/eq :id id) (k/find-kilpailutukset {})))]
+      (find-kilpailutus) => (merge (map/map-values (constantly nil) ks/Kilpailutus)
+                                   (assoc kilpailutus :id id))
+      (test/with-public-user
+        (find-kilpailutus) => (merge (map/map-values (constantly nil) ks/Kilpailutus)
+                                     (assoc kilpailutus :id id
+                                                        :tarjousmaara  nil
+                                                        :tarjoushinta1 nil
+                                                        :tarjoushinta2 nil))))))
+
+; *** csv import ***
+
+(defn import-csv [csv] (k/import-kilpailutukset! (csv/parse-csv csv :delimiter \;)))
+
+(fact
   "CSV lataus - yksi kilpailutus"
   (test/with-hakija
     (let [nimi (str "nimi" (rand-int 10000))
@@ -46,7 +67,7 @@
         (:liikennointialoituspvm kilpailutus) => (t/local-date 1970 1 1)
         (:liikennointipaattymispvm kilpailutus) => (t/local-date 1970 2 1)))))
 
-; *** loading 10000 kilpailutusta ***
+; *** loading 875 kilpailutusta ***
 
 (fact
   "CSV lataus - 875 kilpailutusta"
