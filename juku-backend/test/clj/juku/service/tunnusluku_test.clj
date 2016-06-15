@@ -7,7 +7,8 @@
             [clojure.string :as str]
             [common.collection :as coll]
             [clojure-csv.core :as csv]
-            [common.string :as strx]))
+            [common.string :as strx])
+  (:import (java.io ByteArrayOutputStream)))
 
 (defn test-tunnuslukuservice [name save find data]
   (fact {:midje/description (str "Tunnuslukupalvelutesti - lisääminen ja haku - " name)}
@@ -149,3 +150,31 @@
 
       (tl/save-kalusto! vuosi 1 "KOS" kalusto)
       (tl/tayttoaste vuosi 1) => (with-precision 3 :rounding HALF_UP (bigdec (/ 2 325))))))
+
+; *** csv export ***
+
+(fact
+  "Tunnusluku csv export"
+
+  (test/with-user
+    "juku_hakija" ["juku_hakija"]
+    (tl/save-liikenneviikkotilasto! 2010 1 "BR" [{:nousut 1
+                                                  :lahdot 2
+                                                  :linjakilometrit 3
+                                                  :viikonpaivaluokkatunnus "A"}])
+
+    (tl/save-lipputulo! 2010 1 "BR" [{:kuukausi 1M,
+                                      :kertalipputulo 1M,
+                                      :arvolipputulo 2M,
+                                      :kausilipputulo 3M,
+                                      :lipputulo 4M}]))
+  (with-open [output (ByteArrayOutputStream.)]
+    (tl/export-tunnusluvut-csv output)
+    (let [csv (.toString output "utf-8")]
+      csv => (partial strx/substring? "nousut-viikko;1;Helsingin seudun liikenne;2010;;sopimustyyppi/BR;PSA brutto;viikonpaivaluokka/A;Arkiviikonpäivä;1")
+      csv => (partial strx/substring? "lahdot-viikko;1;Helsingin seudun liikenne;2010;;sopimustyyppi/BR;PSA brutto;viikonpaivaluokka/A;Arkiviikonpäivä;2")
+      csv => (partial strx/substring? "linjakilometrit-viikko;1;Helsingin seudun liikenne;2010;;sopimustyyppi/BR;PSA brutto;viikonpaivaluokka/A;Arkiviikonpäivä;3")
+      csv => (partial strx/substring?"lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/KE;Kertalippu;1")
+      csv => (partial strx/substring?"lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/AR;Arvolippu;2")
+      csv => (partial strx/substring?"lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/KA;Kausilippu;3")
+      csv => (partial strx/substring?"lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/ALL;;4"))))

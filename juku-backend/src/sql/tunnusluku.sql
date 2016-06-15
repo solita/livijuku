@@ -186,37 +186,48 @@ select
 from dual
 
 -- name: select-all-tunnusluvut
+with tyyppi as (
+  select 'sopimustyyppi/' || tunnus tunnus, nimi from sopimustyyppi union all
+  select 'viikonpaivaluokka/' || tunnus, nimi from viikonpaivaluokka union all
+  select 'paastoluokka/' || tunnus, nimi from paastoluokka union all
+  select 'kustannuslaji/' || tunnus, nimi from kustannuslaji union all
+  select 'korvauslaji/' || tunnus, nimi from korvauslaji union all
+  select 'lippuhintaluokka/' || tunnus, nimi from lippuhintaluokka union all
+  select 'lipputuloluokka/' || tunnus, nimi from lipputuloluokka 
+)
 select 
   tunnusluku.tunnus, 
   tunnusluku.organisaatioid, organisaatio.nimi organisaationimi,
   tunnusluku.vuosi, tunnusluku.kuukausi, 
-  tunnusluku.tyyppi1, tunnusluku.tyyppi2, tunnusluku.arvo
+  tunnusluku.tyyppi1, tyyppi1.nimi tyyppi1nimi,
+  tunnusluku.tyyppi2, tyyppi2.nimi tyyppi2nimi,
+  tunnusluku.arvo
 from (
-select 'nousut' tunnus, organisaatioid, vuosi, kuukausi, sopimustyyppitunnus tyyppi1, null tyyppi2, nousut arvo from fact_liikenne
+select 'nousut' tunnus, organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus tyyppi1, null tyyppi2, nousut arvo from fact_liikenne
 union all
-select 'lahdot', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, null, lahdot from fact_liikenne
+select 'lahdot', organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus, null, lahdot from fact_liikenne
 union all
-select 'linjakilometrit', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, null, linjakilometrit from fact_liikenne
+select 'linjakilometrit', organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus, null, linjakilometrit from fact_liikenne
 union all
-select 'nousut-viikko', organisaatioid, vuosi, null, sopimustyyppitunnus, viikonpaivaluokkatunnus, nousut from fact_liikenneviikko
+select 'nousut-viikko', organisaatioid, vuosi, null, 'sopimustyyppi/' || sopimustyyppitunnus, 'viikonpaivaluokka/' || viikonpaivaluokkatunnus, nousut from fact_liikenneviikko
 union all
-select 'lahdot-viikko', organisaatioid, vuosi, null, sopimustyyppitunnus, viikonpaivaluokkatunnus, lahdot from fact_liikenneviikko
+select 'lahdot-viikko', organisaatioid, vuosi, null, 'sopimustyyppi/' || sopimustyyppitunnus, 'viikonpaivaluokka/' || viikonpaivaluokkatunnus, lahdot from fact_liikenneviikko
 union all
-select 'linjakilometrit-viikko', organisaatioid, vuosi, null, sopimustyyppitunnus, viikonpaivaluokkatunnus, linjakilometrit from fact_liikenneviikko
+select 'linjakilometrit-viikko', organisaatioid, vuosi, null, 'sopimustyyppi/' || sopimustyyppitunnus, 'viikonpaivaluokka/' || viikonpaivaluokkatunnus, linjakilometrit from fact_liikenneviikko
 union all
-select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, 'K', korvaus from fact_liikennointikorvaus
+select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus, 'korvauslaji/K', korvaus from fact_liikennointikorvaus
 union all
-select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, 'NK', nousukorvaus from fact_liikennointikorvaus
+select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus, 'korvauslaji/NK', nousukorvaus from fact_liikennointikorvaus
 union all
-select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, 'KK', kuntakorvaus from fact_liikennointikorvaus
+select 'liikennointikorvaus', organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus, 'korvauslaji/KK', kuntakorvaus from fact_liikennointikorvaus
 union all
-select 'lipputulo', organisaatioid, vuosi, kuukausi, sopimustyyppitunnus, lipputuloluokkatunnus, tulo from fact_lipputulo_unpivot_view
+select 'lipputulo', organisaatioid, vuosi, kuukausi, 'sopimustyyppi/' || sopimustyyppitunnus, 'lipputuloluokka/' || lipputuloluokkatunnus, tulo from fact_lipputulo_unpivot_view
 union all
-select 'kalusto', organisaatioid, vuosi, null, sopimustyyppitunnus, paastoluokkatunnus, lukumaara from fact_kalusto
+select 'kalusto', organisaatioid, vuosi, null, 'sopimustyyppi/' || sopimustyyppitunnus, 'paastoluokka/' || paastoluokkatunnus, lukumaara from fact_kalusto
 union all
-select 'kustannukset', organisaatioid, vuosi, null, kustannuslajitunnus, null, kustannus from fact_kustannus_unpivot_view
+select 'kustannukset', organisaatioid, vuosi, null, 'kustannuslaji/' || kustannuslajitunnus, null, kustannus from fact_kustannus_unpivot_view
 union all
-select 'lippuhinnat', organisaatioid, vuosi, null, to_char(vyohykemaara), lippuhintaluokkatunnus, hinta from fact_lippuhinta_unpivot_view
+select 'lippuhinnat', organisaatioid, vuosi, null, to_char(vyohykemaara), 'lippuhintaluokka/' || lippuhintaluokkatunnus, hinta from fact_lippuhinta_unpivot_view
 union all
 select 'alue-kuntamaara', organisaatioid, vuosi, null, null, null, kuntamaara from fact_alue
 union all
@@ -237,7 +248,10 @@ union all
 select 'alue-autoistumisaste', organisaatioid, vuosi, null, null, null, autoistumisaste from fact_alue
 union all
 select 'alue-asiakastyytyvaisyys', organisaatioid, vuosi, null, null, null, asiakastyytyvaisyys from fact_alue
-) tunnusluku inner join organisaatio on organisaatio.id = tunnusluku.organisaatioid
+) tunnusluku 
+  inner join organisaatio on organisaatio.id = tunnusluku.organisaatioid
+  left join tyyppi tyyppi1 on tyyppi1.tunnus = tunnusluku.tyyppi1
+  left join tyyppi tyyppi2 on tyyppi2.tunnus = tunnusluku.tyyppi2
 where arvo is not null
 
 
