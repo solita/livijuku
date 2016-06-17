@@ -35,7 +35,7 @@
 
 (defn- db-do
   ([operation db sql params constraint-violation-error error-parameters]
-    (with-db-exception-translation (fn [] (operation db sql params)) sql params constraint-violation-error error-parameters))
+    (with-db-exception-translation (fn [] (operation db (cons sql params))) sql params constraint-violation-error error-parameters))
 
   ([operation db sql params] (db-do operation db sql params (constantly nil) {}) ))
 
@@ -99,7 +99,7 @@
   (let [sql (update-statement+where table (first obj-list) (first where-list))
         param-groups (map concat (map vals obj-list) (map vals where-list))]
     (with-db-exception-translation
-      (fn [] (apply jdbc/db-do-prepared db sql param-groups))
+      (fn [] (jdbc/execute! db (cons sql param-groups) {:multi? true}))
       sql {} (constantly nil) {})))
 
 (defmacro assert-update
@@ -135,5 +135,5 @@
 
 (defn query [db sql-and-params options]
   (with-db-exception-translation
-    (fn [] (apply jdbc/query db sql-and-params (apply concat options)))
+    (fn [] (jdbc/query db sql-and-params options))
     (first sql-and-params) (rest sql-and-params) (constantly nil) {}))

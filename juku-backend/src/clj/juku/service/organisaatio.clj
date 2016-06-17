@@ -1,6 +1,5 @@
 (ns juku.service.organisaatio
   (:require [juku.db.yesql-patch :as sql]
-            [clojure.java.jdbc :as jdbc]
             [juku.db.database :refer [db]]
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
