@@ -30,7 +30,7 @@
                            [org.clojure/java.jdbc "0.6.1"]
                            [yesql "0.5.3"]
                            [honeysql "0.7.0"]
-                           [com.zaxxer/HikariCP "2.4.3"]
+                           [com.zaxxer/HikariCP "2.4.6"]
 
                            ;; *** logging libraries ***
                            [org.clojure/tools.logging "0.3.1"]
