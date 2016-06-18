@@ -6,7 +6,7 @@
 
             :dependencies [[org.clojure/clojure "1.7.0"]
                            [slingshot "0.12.2"]
-                           [clj-time "0.11.0"]
+                           [clj-time "0.12.0"]
                            [com.google.guava/guava "19.0"]
                            [org.apache.pdfbox/pdfbox "1.8.11"]
                            [clojure-csv/clojure-csv "2.0.2"]
@@ -19,8 +19,8 @@
 
                            ;; *** web application ***
                            [http-kit "2.1.19"] ;; http server
-                           [ring "1.4.0"]
-                           [ring/ring-defaults "0.1.5"]
+                           [ring "1.5.0"]
+                           [ring/ring-defaults "0.2.1"]
 
                            [metosin/compojure-api "1.1.3"]
                            [metosin/ring-swagger-ui "2.1.5-M2"]
