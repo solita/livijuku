@@ -13,7 +13,7 @@
                            [clj-pdf "2.2.1"]
 
                            [clj-http "2.0.1"]
-                           [com.draines/postal "1.11.4"]
+                           [com.draines/postal "2.0.0"]
 
                            [environ "1.0.3"] ;; Library for managing environment variables in Clojure.
 
