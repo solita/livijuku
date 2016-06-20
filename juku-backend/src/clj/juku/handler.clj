@@ -4,6 +4,8 @@
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [compojure.api.exception :as ex]
+            [compojure.api.middleware :as capi-mw]
+            [ring.swagger.json-schema :as swagger-json]
 
             [juku.rest-api.authorization]
             [juku.rest-api.hakemus :refer [hakemus-routes]]
@@ -23,7 +25,10 @@
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]
             [common.collection :as f]
-            [juku.db.oracle-metrics :as metrics]))
+            [juku.db.oracle-metrics :as metrics]
+            [common.core :as core]
+            [schema.core :as s])
+  (:import (schema.core AnythingSchema)))
 
 (c/defroutes notfound (r/not-found "Not Found"))
 
@@ -43,6 +48,22 @@
                                   #"POST /hakemuskausi/.*/hakuohje"
                                   #"POST /hakemuskausi/.*/elyhakuohje"
                                   #"POST /hakemus/.*/liite"]))
+
+;; Compojure API swagger format fix - remove nil formats
+(defonce ->mime-types-original capi-mw/->mime-types)
+(alter-var-root #'capi-mw/->mime-types (constantly (fn [formats] (filter core/not-nil? (->mime-types-original formats)))))
+
+;;
+;; Swagger specification fix for s/Any type
+;; see
+;; - https://github.com/metosin/ring-swagger/issues/91
+;; - http://stackoverflow.com/questions/16826128/why-is-this-json-schema-invalid-using-any-type
+(extend-protocol swagger-json/JsonSchema
+  AnythingSchema
+  (convert [_ {:keys [in] :as opts}]
+    (if (and in (not= :body in))
+      (swagger-json/->swagger (s/maybe s/Str) opts)
+      {})))
 
 (def juku-api
   (api
