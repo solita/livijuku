@@ -4,11 +4,15 @@
             [juku.db.coerce :as coerce]
             [juku.db.sql :as dml]
             [common.collection :as coll]
+            [clj-pdf.core :as pdf]
+            [juku.service.pdf :as juku-pdf]
             [juku.service.hakemus-core :as hc]
             [juku.schema.seuranta :as s]
             [ring.util.http-response :as r]
             [slingshot.slingshot :as ss]
-            [common.collection :as coll]))
+            [common.collection :as coll]
+            [common.map :as m]
+            [juku.service.organisaatio :as org]))
 
 ; *** Seurantatietoihin liittyvät kyselyt ***
 (sql/defqueries "seuranta.sql")
@@ -75,3 +79,98 @@
   (map coerce-lippusuorite (select-hakemus-lippusuorite {:hakemusid hakemusid})))
 
 (defn find-lipputyypit [] (select-lipputyypit))
+
+(def pdf-metadata
+  {:title  "Joukkoliikenteen valtionavun maksatushakemus"
+   :subject "Seurantatiedot"
+   :author "Liikennevirasto"
+   :header "Joukkoliikenteen valtionavun maksatushakemuksen seurantatiedot"
+   :orientation   :landscape
+   :size :a4
+   :font  {:size 11}})
+
+(defn liikennesuorite-table [suoritteet suoritetyypit]
+  (if (empty? suoritteet)
+    [:paragraph "Ei tietoja"]
+    (let [header [{:backdrop-color [200 200 200]}
+                  "Suoritetyyppi" "Suoritteen nimi" "Linja-autot" "Taksit"
+                  "Ajokilometrit" "Matkustajat" "Lipputulo (€)" "Netto (€)" "Brutto (€)"]
+          suorite->str (juxt (comp suoritetyypit :suoritetyyppitunnus)
+                             :nimi
+                             (comp juku-pdf/format-number :linjaautot)
+                             (comp juku-pdf/format-number :taksit)
+                             (comp juku-pdf/format-number :ajokilometrit)
+                             (comp juku-pdf/format-number :matkustajamaara)
+                             (comp juku-pdf/format-number :lipputulo)
+                             (comp juku-pdf/format-number :nettohinta)
+                             #(juku-pdf/format-number (+ (:nettohinta %) (:lipputulo %))))]
+
+      (->> (map suorite->str suoritteet)
+          (cons {:header header})
+          (cons :table)
+          vec))))
+
+(defn lippusuorite-table [kaupunki? suoritteet lipputyypit]
+  (if (empty? suoritteet)
+    [:paragraph "Ei tietoja"]
+    (let [header [{:backdrop-color [200 200 200]}
+                  (if kaupunki? "Kaupunkilippu" "Seutulippu")
+                  "Myynti (kpl)"
+                  "Matkat (kpl)"
+                  "Asiakashinta"
+                  "Keskipituus (km)"
+                  "Lipputulot (€)"
+                  "Julkinen rahoitus (€)"]
+          suorite->str (juxt (if kaupunki? (comp lipputyypit :lipputyyppitunnus)
+                                           :seutulippualue)
+                             (comp juku-pdf/format-number :myynti)
+                             (comp juku-pdf/format-number :matkat)
+                             (comp juku-pdf/format-number :asiakashinta)
+                             (comp juku-pdf/format-number :keskipituus)
+                             (comp juku-pdf/format-number :lipputulo)
+                             (comp juku-pdf/format-number :julkinenrahoitus))]
+
+      (->> (map suorite->str suoritteet)
+           (cons {:header header})
+           (cons :table)
+           vec))))
+
+(defn pdf-template [header psa-table pal-table kaupunki-table seutu-table]
+  [(assoc pdf-metadata :header header)
+   [:spacer ]
+   [:heading "Paikallisliikenne tai muu PSA:n mukainen liikenne"]
+   psa-table
+   [:spacer ]
+   [:heading "Palveluliikenne"]
+   pal-table
+   [:spacer ]
+   [:heading "Kaupunkiliput"]
+   kaupunki-table
+   [:spacer ]
+   [:heading "Seutuliput"]
+   seutu-table])
+
+(def hakemustyyppi-teksti
+  {"MH1" "1. maksatushakemuksen"
+   "MH2" "2. maksatushakemuksen"})
+
+(defn seurantatieto-pdf [hakemusid output]
+  (let [hakemus (hc/get-hakemus hakemusid)
+        organisaatio (org/find-organisaatio (:organisaatioid hakemus))
+        header (str "Joukkoliikenteen " (:vuosi hakemus) " valtionavun "
+                    (hakemustyyppi-teksti (:hakemustyyppitunnus hakemus))
+                    " seurantatiedot - " (:nimi organisaatio))
+
+        suoritetyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-suoritetyypit)))
+        liikennesuoritteet (find-hakemus-liikennesuoritteet hakemusid)
+        psa-suoriteet (filter (coll/eq :liikennetyyppitunnus "PSA") liikennesuoritteet)
+        pal-suoriteet (filter (coll/eq :liikennetyyppitunnus "PAL") liikennesuoritteet)
+        lipputyypit (m/map-values (comp :nimi first) (group-by :tunnus (find-lipputyypit)))
+        lippusuoritteet (find-hakemus-lippusuoritteet hakemusid)
+        kaupunki-suoritteet (filter (coll/predicate not= :lipputyyppitunnus "SE") lippusuoritteet)
+        seutu-suoritteet (filter (coll/eq :lipputyyppitunnus "SE") lippusuoritteet)]
+    (pdf/pdf (pdf-template header
+               (liikennesuorite-table psa-suoriteet suoritetyypit)
+               (liikennesuorite-table pal-suoriteet suoritetyypit)
+               (lippusuorite-table true kaupunki-suoritteet lipputyypit)
+               (lippusuorite-table false seutu-suoritteet lipputyypit)) output)))

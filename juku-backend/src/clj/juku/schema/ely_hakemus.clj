@@ -23,6 +23,8 @@
 (s/defschema ELY-hakemus
   "Tämä skeema määrittää ely-hakemuksen perustiedot."
   {
-   :siirtymaaikasopimukset s/Num   ; ELY hakemuksen siirtymäajan sopimukset
-   :joukkoliikennetukikunnat s/Num ; ELY hakemuksen joukkoliikennetuki kunnille
+   :kaupunkilipputuki s/Num
+   :seutulipputuki s/Num
+   :ostot s/Num
+   :kehittaminen s/Num
   })

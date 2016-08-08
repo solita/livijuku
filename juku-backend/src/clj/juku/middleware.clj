@@ -7,12 +7,15 @@
             [compojure.api.meta :as meta]
             [common.collection :as coll]
             [clojure.string :as str]
+            [clojure-csv.core :as csv]
             [common.string :as strx]
             [juku.service.common :as sc]
             [slingshot.slingshot :as ss]
             [clojure.walk :as w]
             [ring.util.http-response :as r]
             [compojure.api.middleware :as cm]
+            [ring.middleware.format-params :as rmf]
+            [ring.middleware.format.impl :as rmf-impl]
             [ring.middleware.anti-forgery :as af]
             [ring.swagger.middleware :as rm]
             [juku.headers :as h]
@@ -63,11 +66,11 @@
         (error r/forbidden "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt)
        organisaatio-name (h/parse-header headers :oam-user-organization nil)
         (error r/bad-request "Käyttäjän " uid " organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
-       privileges (c/nil-if empty? (user/find-privileges roles))
-        (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")
        orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :oam-user-department))
         (error r/forbidden "Käyttäjän " uid " organisaatiota: " organisaatio-name
-              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")]
+              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")
+       privileges (c/nil-if empty? (user/find-privileges roles orgnisaatio-id))
+        (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")]
 
       (current-user/with-user-id uid
         (user/with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
@@ -159,4 +162,17 @@
         (error r/forbidden (str "Taustapalvelu tunnisti mahdollisesti väärennetyn pyynnön. Keksissä XSRF-TOKEN oleva arvo: "
                                 cookie-token " ei vastaa x-xsrf-token-otsikkotiedossa olevaa arvoa: " header-token))))))
 
+; *** csv support ***
 
+(def csv-request? (rmf/make-type-request-pred #"^text/csv"))
+
+(defn wrap-csv-params
+  "Handles body params in CSV format. See [[rmf/wrap-format-params]] for details."
+  [handler & args]
+  (let [options (rmf-impl/extract-options args)]
+    (rmf/wrap-format-params
+      handler (assoc options
+                :predicate csv-request?
+                :decoder (fn [csv]
+                           (apply csv/parse-csv csv
+                                  (apply concat (-> options :options))))))))

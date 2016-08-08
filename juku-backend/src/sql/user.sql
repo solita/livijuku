@@ -24,6 +24,9 @@ where kayttaja.organisaatioid <> (select id from organisaatio where organisaatio
 select distinct kayttooikeus.tunnus from kayttooikeus 
   inner join kayttajaroolioikeus on kayttooikeus.tunnus = kayttajaroolioikeus.kayttooikeustunnus
 where kayttajaroolioikeus.kayttajaroolitunnus in (:roolit)
+minus
+select column_value from table(sys.odcivarchar2list('view-oma-hakemus', 'modify-oma-hakemus', 'allekirjoita-oma-hakemus'))
+where (select lajitunnus from organisaatio where id = :organisaatioid) not in ('KS1', 'KS2', 'ELY')
 
 -- name: select-roolitunnukset
 select tunnus from kayttajarooli where ssonimi in (:ssogroup)

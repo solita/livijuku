@@ -28,14 +28,14 @@ values ('juku_hakija_kotka', 'Kalle', 'Kotka', 'petri.sirkkala@solita.fi', (sele
 
 -- Uusimaa, ELY
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
-values ('juku_hakija_ely', 'Elli', 'Ely', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Uusimaa'), 0);
+values ('juku_hakija_ely', 'Elli', 'Ely', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi like 'Uusimaa%'), 0);
 
 -- Etelä-Pohjanmaa, ELY
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
-values ('juku_hakija_epo', 'Ellu', 'Etelä-Pohjanmaa', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Etelä-Pohjanmaa'), 0);
+values ('juku_hakija_epo', 'Ellu', 'Etelä-Pohjanmaa', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi like 'Etelä-Pohjanmaa%'), 0);
 -- Lappi, ELY
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
-values ('juku_hakija_lappi', 'Liisa', 'Lappi', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Lappi'), 0);
+values ('juku_hakija_lappi', 'Liisa', 'Lappi', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi like 'Lappi%'), 0);
 
 
 -- käsittelijäroolit: juku_kasittelija, juku_paatoksentekija, LV

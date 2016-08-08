@@ -20,14 +20,14 @@
 
 (def db-settings (:db settings))
 
-(defn data-source [settings]
-  (log/info "Starting database connection pool: " (:url settings) (:user settings) "****")
+(defn data-source [config]
+  (log/info "Starting database connection pool: " (:url config) (:user config) "****")
   (HikariDataSource. (doto (HikariConfig.)
                        (.setMaximumPoolSize 20)
                        (.setDriverClassName "oracle.jdbc.OracleDriver")
-                       (.setJdbcUrl (:url settings))
-                       (.setUsername (:user settings))
-                       (.setPassword (:password settings))
+                       (.setJdbcUrl (:url config))
+                       (.setUsername (:user config))
+                       (.setPassword (:password config))
                        (.setAutoCommit false))))
 
 (defonce ^:dynamic db {:datasource (data-source db-settings)})

@@ -32,6 +32,11 @@
 (defn find-first [predicate collection]
   (first (filter predicate collection)))
 
+(defn get-first! [predicate collection error]
+  (if-let [result (find-first predicate collection)]
+    result
+    (not-found! error)))
+
 (defn predicate [operator getter value]
   (fn [obj] (operator (getter obj) value)))
 

@@ -9,7 +9,8 @@
             [slingshot.slingshot :as ss]
             [juku.schema.liitteet :as s]
             [juku.settings :refer [settings]]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [juku.service.user :as user])
   (:import (java.io InputStream File)))
 
 (def constraint-errors
@@ -59,8 +60,18 @@
   (update-liite-set-nimi! {:hakemusid hakemusid :liitenumero liitenumero :nimi nimi})
   nil)
 
+(defn assert-view-liite-content-allowed*! [hakemus]
+  (when-not (or (user/has-privilege* :view-kaikki-liitteet)
+                (and (hc/is-hakemus-owner?* hakemus) (user/has-privilege* :view-omat-liitteet)))
+    (hc/throw! r/forbidden
+            (str "Käyttäjällä " (:tunnus user/*current-user*)
+                 " ei ole oikeutta nähdä hakemuksen liitteiden: " (:id hakemus) " sisältöä. "
+                 "Käyttäjä ei ole hakemuksen omistaja ja käyttäjällä ei ole oikeutta muiden organisaatioiden liitteitä."))))
+
 (defn find-liite-sisalto [hakemusid liitenumero]
-  (hc/assert-view-hakemus-content-allowed*! (hc/get-hakemus hakemusid))
+  (let [hakemus (hc/get-hakemus hakemusid)]
+    (hc/assert-view-hakemus-content-allowed*! hakemus)
+    (assert-view-liite-content-allowed*! hakemus))
   (if-let [liite (first (select-liite-sisalto {:hakemusid hakemusid :liitenumero liitenumero}))]
     (update-in liite [:sisalto] coerce/inputstream)))
 

@@ -12,8 +12,10 @@
 (defn- violated-constraint [^Throwable e]
   (if-let [message (.getMessage e)]
     (cond
-      (strx/substring? "ORA-02291" message) (parse-constraint-name message)
-      (strx/substring? "ORA-00001" message) (parse-constraint-name message)
+      (strx/substring? "ORA-02291" message)
+        {:violated-constraint (parse-constraint-name message) :type ::foreign-key-constraint}
+      (strx/substring? "ORA-00001" message)
+        {:violated-constraint (parse-constraint-name message) :type ::unique-constraint}
       :else (c/maybe-nil violated-constraint nil (.getCause e)))))
 
 (defn- default-error-message [sql params]
@@ -24,10 +26,10 @@
   (ss/try+
     (db-operation)
     (catch Exception e
-      (c/if-let* [violated-constraint (violated-constraint e)
-                  error (or (-> violated-constraint str/lower-case keyword constraint-violation-error) {})
+      (c/if-let* [constraint (violated-constraint e)
+                  error (or (-> constraint :violated-constraint str/lower-case keyword constraint-violation-error) {})
                   message-template (or (:message error) (default-error-message sql params))]
-        (ss/throw+ (merge {:sql sql :violated-constraint violated-constraint} error error-parameters)
+        (ss/throw+ (merge {:sql sql} constraint error error-parameters)
                    (strx/interpolate message-template error-parameters))
         (ss/throw+ {:sql sql} (default-error-message sql params)))))))
 
@@ -42,7 +44,7 @@
 
 ;; insert statements
 
-(defn insert-statement [table columns values]
+(defn- insert-statement [table columns values]
   {:pre [(isValidDatabaseIdentifier table)
          (every? isValidDatabaseIdentifier columns)]}
   (let [separator ", "]
@@ -82,10 +84,23 @@
 (defn update-where-id [db table obj id]
   (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
 
+(defn- where-clause [where]
+  (str/join " and " (map assignment-expression (keys where))))
+
+(defn- update-statement+where [table obj where]
+  (str (update-statement table obj) " where " (where-clause where)))
+
 (defn update-where! [db table obj where]
-  (let [separator " and "
-        where-clause  (str/join separator (map assignment-expression (keys where)))]
-    (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where " where-clause) (concat (vals obj) (vals where))))))
+  (first (db-do jdbc/db-do-prepared db
+                (update-statement+where table obj where)
+                (concat (vals obj) (vals where)))))
+
+(defn update-batch-where! [db table obj-list where-list]
+  (let [sql (update-statement+where table (first obj-list) (first where-list))
+        param-groups (map concat (map vals obj-list) (map vals where-list))]
+    (with-db-exception-translation
+      (fn [] (apply jdbc/db-do-prepared db sql param-groups))
+      sql {} (constantly nil) {})))
 
 (defmacro assert-update
 
@@ -96,3 +111,29 @@
 
   [updatecount errorform]
     `(if (> ~updatecount 0) nil (let [e# ~errorform] (ss/throw+ e# (:message e#)))))
+
+(defn insert-ignore-unique-constraint-error [insert-operation & args]
+  (ss/try+
+    (apply insert-operation args)
+    (catch [:type ::unique-constraint] {})))
+
+(defn upsert
+  "Update or insert, if not exists a row to the database.
+   DB operations must use db-exception-translation defined in this namespace.
+   Update operation must return the count of rows updated."
+
+  [update-operation insert-operation & args]
+  (case (apply update-operation args)
+    0 (ss/try+
+        (apply insert-operation args)
+        (catch [:type ::unique-constraint] {}
+          (apply update-operation args)))
+    1 nil
+    (ss/throw+ {:message "Unexpected system error - too many rows updated"})))
+
+;; *** query ***
+
+(defn query [db sql-and-params options]
+  (with-db-exception-translation
+    (fn [] (apply jdbc/query db sql-and-params (apply concat options)))
+    (first sql-and-params) (rest sql-and-params) (constantly nil) {}))

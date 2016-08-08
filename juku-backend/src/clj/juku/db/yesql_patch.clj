@@ -3,7 +3,25 @@
             [yesql.core :as yesql]
             [juku.db.sql :as sql]
             [juku.db.database :refer [db]]
-            [common.map :as m]))
+            [common.map :as m]
+            [clojure.string :as str]
+            [clojure.java.jdbc :as jdbc]))
+
+(defn query-handler
+  [db sql-and-params
+   {:keys [row-fn result-set-fn identifiers as-arrays?]
+    :or   {identifiers   str/lower-case
+           row-fn        identity
+           result-set-fn doall
+           as-arrays?    false}
+    :as   call-options}]
+  (jdbc/query db sql-and-params
+              :identifiers identifiers
+              :row-fn row-fn
+              :result-set-fn result-set-fn
+              :as-arrays? as-arrays?))
+
+(alter-var-root #'generate/query-handler (constantly query-handler))
 
 (defn set-connection [args]
   (case (count args)
@@ -11,7 +29,7 @@
     1 (concat args [{:connection db}])
     args))
 
-(def original-generate-query-fn generate/generate-query-fn)
+(defonce original-generate-query-fn generate/generate-query-fn)
 
 (defn generate-query-fn [this options]
   (let [original (original-generate-query-fn this options)
@@ -28,4 +46,5 @@
 (defn defqueries
   ([filename] (yesql/defqueries filename {}))
   ([filename options] (yesql/defqueries filename options)))
+
 

@@ -6,14 +6,16 @@
 
 {maararahatarpeet}
 
-	Muu PSA:n mukainen liikenne:
-	 - Siirtymäajan sopimusten lipputuki				{siirtymaaikasopimukset} e
-	 - Joukkoliikennetuki kunnille				{joukkoliikennetukikunnat} e
+	Joukkoliikennetuki kunnille:
+	 - Lipputuki - kaupunkilippu				{kaupunkilipputuki} e
+	 - Lipputuki - seutulippu				{seutulipputuki} e
+	 - Liikenteen ostot				{ostot} e
+	 - Kehittäminen				{kehittaminen} e
 
-	ELY-keskuksen kehityshankkeet:
+	Kehittämishankkeet:
 {kehityshankkeet}
 
-	Määrärahatarpeet yhteensä				{haettuavustus} e
+	Haettava valtionavustus yhteensä				{haettuavustus} e
 
 	Lähettäjä: {lahettaja}
 

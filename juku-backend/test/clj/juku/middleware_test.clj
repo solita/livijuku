@@ -33,13 +33,14 @@
 (facts "User middleware"
   (fact "Uusi käyttäjä"
     (let [uid (str "tst" (rand-int 999999))
+          organisaatioid (m/find-matching-organisaatio "liikennevirasto" nil)
           user {:tunnus uid
-                :organisaatioid (m/find-matching-organisaatio "liikennevirasto" nil)
+                :organisaatioid organisaatioid
                 :etunimi "Päkä"
                 :sukunimi "Pääkäyttäjä"
                 :sahkoposti nil
                 :sahkopostiviestit true
-                :privileges (user/find-privileges ["PK"])
+                :privileges (user/find-privileges ["PK"] organisaatioid)
                 :jarjestelma false}
 
           request {:headers {"oam-remote-user"        uid

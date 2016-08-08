@@ -54,8 +54,8 @@
 
 (defmacro with-user [uid rolenames & test]
   `(c/if-let* [roles# (user/find-roleids ~rolenames)
-               privileges# (user/find-privileges roles#)
-               user# (user/find-user ~uid)]
+               user# (user/find-user ~uid)
+               privileges# (user/find-privileges roles# (:organisaatioid user#))]
        (do
           (user/update-roles! ~uid roles#)
           (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test)))

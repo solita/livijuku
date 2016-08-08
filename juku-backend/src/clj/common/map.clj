@@ -1,7 +1,8 @@
 (ns common.map
   (:require [clojure.string :as str]
             [common.collection :as c]
-            [common.core :as core]))
+            [common.core :as core])
+  (:import (clojure.lang MapEntry)))
 
 (defn remove-keys
   "Dissociate keys from a map. Removed keys are given in a sequence."
@@ -13,12 +14,30 @@
   [m key-path f & args]
   (if (get-in m key-path) (apply update-in m key-path f args) m))
 
-(defn deep-merge
-  "Deeply merges maps"
-  [& vs]
+(defn deep-merge-with
+  "Deeply merges maps. If a key occurs in more than one map and
+  any of the values is not a map then the mapping(s)
+  from the latter (left-to-right) will be combined
+  by calling (f val-in-result val-in-latter)."
+  [f & vs]
   (if (every? map? vs)
-    (apply merge-with deep-merge vs)
-    (last vs)))
+    (apply merge-with (partial deep-merge-with f) vs)
+    (f vs)))
+
+(defn deep-merge
+  "Deeply merges maps. Same as deep-merge-with where merge function is last."
+  [& vs]
+  (apply deep-merge-with last vs))
+
+(defn mapentry? [value] (instance? MapEntry value))
+
+(defn deep-reduce [f init coll]
+  (reduce (fn [acc value]
+            (if (or (map? value)
+                    (and (coll? value) (not (mapentry? value))))
+              (deep-reduce f acc value)
+              (f acc value)))
+          init coll))
 
 (defn keypath
   "Split key to a keypath. Keypath item separator is separator regular expression."
@@ -83,3 +102,6 @@
 (defn update-vals
   ([object key-update-function-map] (reduce #(update %1 (first %2) (second %2)) object key-update-function-map))
   ([object keys update-function] (reduce #(update %1 %2 update-function) object keys)))
+
+(defn zip-object [keys values]
+  (into {} (map vector keys values)))

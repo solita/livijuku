@@ -46,6 +46,17 @@
       teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä "
                                               omarahoitus " euroa.")))))
 
+
+(defn assert-hsl-maksatushakemus-teksti
+  ([haettuavustus omarahoitus] (assert-hsl-maksatushakemus-teksti (:teksti pdf/*mock-pdf*) vuosi haettuavustus omarahoitus))
+  ([teksti vuosi haettuavustus omarahoitus]
+    (fact "HSL maksatushakemusdokumentin yleisen sisällön tarkastaminen"
+      teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
+      teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi
+                                              " suurten kaupunkiseutujen joukkoliikenteen valtionavustuksen maksatusta " haettuavustus " euroa ajalta 1.1.- 30.6."
+                                              vuosi))
+      teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä " omarahoitus " euroa.")))))
+
 (fact "Keskeneräinen avustushakemus"
 
 (fact "Ei avustuskohteita"
@@ -227,11 +238,6 @@
 
       (pdf/assert-otsikko "Valtionavustushakemus" nil)
 
-      (let [teksti (:teksti pdf/*mock-pdf*)]
-        teksti => (partial strx/substring? "Hakija: Helsingin seudun liikenne")
-        teksti => (partial strx/substring? (str "Hakija hakee vuonna " vuosi
-                                                " suurten kaupunkiseutujen joukkoliikenteen valtionavustuksen maksatusta 0 euroa ajalta 1.1.- 30.6."
-                                                vuosi))
-        teksti => (partial strx/substring? (str "Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä 0 euroa.")))
+      (assert-hsl-maksatushakemus-teksti 0 0)
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))

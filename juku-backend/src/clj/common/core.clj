@@ -1,7 +1,7 @@
 (ns common.core
   (:require [slingshot.slingshot :as ss]
             [clojure.java.io :as io])
-  (:import (java.io ByteArrayOutputStream)))
+  (:import (java.io ByteArrayOutputStream ByteArrayInputStream)))
 
 (defn is-divisible-by [num divisor]
   (zero? (mod num divisor)))
@@ -57,6 +57,30 @@
 
 (defn nil-if [peridicate value] (if (peridicate value) nil value))
 
+(defmacro error-let
+  [bindings body]
+  {:pre [(vector? bindings)
+         (is-divisible-by (count bindings) 4)]}
+  (if (not (empty? bindings))
+    (let [form (bindings 0) value (bindings 1) error? (bindings 2) error (bindings 3)]
+      `(let [temp# ~value]
+         (if (~error? temp#)
+           ~error
+           (let [~form temp#] (error-let ~(vec (drop 4 bindings)) ~body)))))
+    body))
+
+(defmacro error-let!
+  [bindings body]
+  {:pre [(vector? bindings)
+         (is-divisible-by (count bindings) 4)]}
+  (if (not (empty? bindings))
+    (let [form (bindings 0) value (bindings 1) error? (bindings 2) error (bindings 3)]
+      `(let [temp# ~value]
+         (if (~error? temp#)
+           (ss/throw+ ~error)
+           (let [~form temp#] (error-let! ~(vec (drop 4 bindings)) ~body)))))
+    body))
+
 (defn slurp-bytes
   "Slurp the bytes from a slurpable thing"
   [input]
@@ -64,5 +88,25 @@
     (io/copy (io/input-stream input) out)
     (.toByteArray out)))
 
+(defn output->input-stream [f]
+  (with-open [output (ByteArrayOutputStream.)]
+    (f output)
+    (ByteArrayInputStream. (.toByteArray output))))
+
 (defn setup-shutdown-hook! [f]
   (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
+
+(defmacro bindings->map [& bindings]
+    (into {} (map (fn [s] [(keyword (name s)) s]) bindings)))
+
+(defn cartesian-product [colls]
+  (if (empty? colls)
+    '(())
+    (for [x (first colls)
+          more (cartesian-product (rest colls))]
+      (cons x more))))
+
+(defn assert-not-nil! [value error]
+  (if (nil? value)
+    (ss/throw+ error)
+    value))

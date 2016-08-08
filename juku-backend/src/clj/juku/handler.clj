@@ -14,7 +14,9 @@
             [juku.rest-api.organisaatio :refer [organisaatio-routes]]
             [juku.rest-api.seuranta :refer [seuranta-routes]]
             [juku.rest-api.ely-hakemus :refer [ely-hakemus-routes]]
+            [juku.rest-api.tunnusluku :refer [tunnusluku-routes]]
             [juku.rest-api.user :refer [user-routes]]
+            [juku.rest-api.tilastot :refer [tilastot-routes]]
 
             [ring.middleware.defaults :as m]
             [juku.middleware :as jm]
@@ -32,12 +34,15 @@
               (jm/logging-wrapper "400 bad request - validation error:" ex/request-validation-handler)
             :compojure.api.exception/response-validation
               (jm/logging-wrapper "500 system error (bad response) - validation error:" jm/response-validation-handler)
-            :compojure.api.exception/default jm/exception-handler}}}
+            :compojure.api.exception/default jm/exception-handler}}
+         :format
+          {:formats [:json jm/wrap-csv-params]
+           :params-opts {jm/wrap-csv-params {:delimiter \;}}}}
 
         (swagger-ui "/api/ui")
         (swagger-docs :info {
             :title "Liikennevirasto - Juku API"
-            :version "1.2.2"
+            :version "1.4.0"
             :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut"
             :license {
               :name "Euroopan unionin yleinen lisenssi v.1.1"
@@ -52,6 +57,8 @@
         (context* "" [] :tags ["Seuranta API"] seuranta-routes)
         (context* "" [] :tags ["ELY hakemus API"] ely-hakemus-routes)
         (context* "" [] :tags ["Käyttäjä API"] user-routes)
+        (context* "" [] :tags ["Tunnusluku API"] tunnusluku-routes)
+        (context* "" [] :tags ["Tilastot API"] tilastot-routes)
         notfound))
 
 (def app (-> juku-api
@@ -60,6 +67,7 @@
                                             #"GET /hakemus/.*/pdf.*"
                                             #"GET /hakemus/.*/liite/.*"
                                             #"GET /hakemus/.*/paatos/pdf.*"
+                                            #"GET /hakemus/.*/seuranta/pdf.*"
                                             #"GET /api/ui/.*"
                                             #"GET /swagger.json"
 

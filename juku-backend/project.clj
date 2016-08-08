@@ -1,4 +1,4 @@
-(defproject juku-backend "1.3.2"
+(defproject juku-backend "1.4.0"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
@@ -8,35 +8,38 @@
                            [org.clojure/java.jdbc "0.4.2"]
                            [slingshot "0.12.2"]
                            [clj-time "0.11.0"]
-                           [com.google.guava/guava "18.0"]
-                           [org.apache.pdfbox/pdfbox "1.8.10"]
+                           [com.google.guava/guava "19.0"]
+                           [org.apache.pdfbox/pdfbox "1.8.11"]
+                           [clojure-csv/clojure-csv "2.0.1"]
+                           [clj-pdf "2.2.0"]
 
-                           [clj-http "2.0.0"]
+                           [clj-http "2.0.1"]
                            [com.draines/postal "1.11.4"]
 
-                           [environ "1.0.1"] ;; Library for managing environment variables in Clojure.
+                           [environ "1.0.2"] ;; Library for managing environment variables in Clojure.
 
                            ;; *** web application ***
                            [http-kit "2.1.19"] ;; http server
                            [ring "1.4.0"]
                            [ring/ring-defaults "0.1.5"]
 
-                           [metosin/compojure-api "0.23.1"]
+                           [metosin/compojure-api "0.24.5"]
                            [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***
                            [oracle/ojdbc7 "12.1.0.2"]
-                           [yesql "0.5.1"]
-                           [com.zaxxer/HikariCP "2.4.1"]
+                           [yesql "0.5.2"]
+                           [honeysql "0.6.3"]
+                           [com.zaxxer/HikariCP "2.4.3"]
 
                            ;; *** logging libraries ***
                            [org.clojure/tools.logging "0.3.1"]
-                           [ch.qos.logback/logback-classic "1.1.3"]]
+                           [ch.qos.logback/logback-classic "1.1.5"]]
 
             :plugins [[test2junit "1.1.0"]
                       [lein-ring "0.8.12"]
                       ;; Library for managing environment settings from a number of different sources
-                      [lein-environ "1.0.0"]]
+                      #_[lein-environ "1.0.0"]]
 
             :ring {:handler      juku.handler/app
                    :uberwar-name "juku.war"}
@@ -44,9 +47,9 @@
             :profiles {:dev     {:dependencies [[javax.servlet/servlet-api "2.5"]
                                                 [ring-mock "0.1.5"]
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
-                                                [midje "1.7.0"]
+                                                [midje "1.8.3"]
                                                 ;;[midje-junit-formatter "0.1.0-SNAPSHOT"]
-                                                [clj-http-fake "1.0.1"]
+                                                [clj-http-fake "1.0.2"]
                                                 [metosin/scjsv "0.2.0"]]
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.

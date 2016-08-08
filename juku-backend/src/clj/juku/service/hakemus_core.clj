@@ -58,6 +58,8 @@
 (defn is-hakemus-owner?* [hakemus]
   (= (:organisaatioid user/*current-user*) (:organisaatioid hakemus)))
 
+(defn maksatushakemus? [hakemus] (#{"MH1" "MH2"} (:hakemustyyppitunnus hakemus)))
+
 (defn has-privilege-to-view-hakemus-content* [hakemus]
   (or (user/has-privilege* :view-kaikki-hakemukset)
       (and (is-hakemus-owner?* hakemus) (user/has-privilege* :view-oma-hakemus))
@@ -134,7 +136,10 @@
     (map (comp coerce-hakemus-suunnitelma coerce/row->object)
          (select {:vuosi vuosi :hakemustyyppitunnus hakemustyyppitunnus}))))
 
-(defn add-hakemus! [hakemus]
+(defn add-hakemus!
+  "Luo uuden hakemuksen järjetelmään. Huom! tätä palvelua käytetään vain testeissä.
+  Hakemus objekti voi sisältää mitä tahansa hakemus-taulun tietoa ja täytyy sisältää vähintään pakolliset tiedot."
+  [hakemus]
   (:id (dml/insert-with-id db "hakemus"
                            (-> hakemus
                                coerce/object->row)

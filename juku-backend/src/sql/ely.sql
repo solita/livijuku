@@ -16,7 +16,7 @@ from kehityshanke where hakemusid = :hakemusid
 delete from kehityshanke where hakemusid = :hakemusid
 
 -- name: select-ely-hakemus
-select ely_siirtymaaikasopimukset, ely_joukkoliikennetukikunnat from hakemus where id = :hakemusid
+select ely_kaupunkilipputuki, ely_seutulipputuki, ely_ostot, ely_kehittaminen from hakemus where id = :hakemusid
 
 -- name: select-ely-paatokset
 select paatos.myonnettyavustus, organisaatio.nimi
