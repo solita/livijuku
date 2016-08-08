@@ -42,7 +42,10 @@
      sc/Bool     'number->boolean
      sc/Str      'clob->string}))
 
-(defn coercer [schema] (scoerce/coercer schema db-coercion-matcher))
+(defn coercer
+  "Produce a coercion function that simultaneously coerces and validates data obtained from database.
+  This uses a coercion matcher which is suitable for the data from jdbc-layer."
+  [schema] (scoerce/coercer schema db-coercion-matcher))
 
 (defn- convert-instances-of [c f m]
   (clojure.walk/postwalk #(if (instance? c %) (f %) %) m))

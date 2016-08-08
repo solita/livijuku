@@ -7,14 +7,14 @@
             [schema.core :as s]
             [juku.schema.common :as sc]))
 
-(defroutes* seuranta-routes
-      (GET* "/hakemus/:hakemusid/liikennesuoritteet" []
+(defroutes seuranta-routes
+      (GET "/hakemus/:hakemusid/liikennesuoritteet" []
             :auth [:view-hakemus]
             :return [Liikennesuorite]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen liikennesuoritteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/find-hakemus-liikennesuoritteet hakemusid)))
-      (PUT* "/hakemus/:hakemusid/liikennesuoritteet" []
+      (PUT "/hakemus/:hakemusid/liikennesuoritteet" []
             :auth [:modify-oma-hakemus]
             :audit []
             :return   nil
@@ -22,18 +22,18 @@
             :body     [suoritteet [Liikennesuorite]]
             :summary  "Päivittää hakemuksen liikennesuoritteet."
             (ok (service/save-liikennesuoritteet! hakemusid suoritteet)))
-      (GET* "/suoritetyypit" []
+      (GET "/suoritetyypit" []
              :return [sc/Luokka]
              :summary "Hae liikennesuoritteen suoritetyypit."
             (ok (service/find-suoritetyypit)))
 
-      (GET* "/hakemus/:hakemusid/lippusuoritteet" []
+      (GET "/hakemus/:hakemusid/lippusuoritteet" []
             :auth [:view-hakemus]
             :return [Lippusuorite]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen lippusuoritteet. Haettava hakemus yksilöidään hakemusid-polkuparametrilla."
             (ok (service/find-hakemus-lippusuoritteet hakemusid)))
-      (PUT* "/hakemus/:hakemusid/lippusuoritteet" []
+      (PUT "/hakemus/:hakemusid/lippusuoritteet" []
             :auth [:modify-oma-hakemus]
             :audit []
             :return   nil
@@ -41,12 +41,12 @@
             :body     [suoritteet [Lippusuorite]]
             :summary  "Päivittää hakemuksen lippusuoritteet."
             (ok (service/save-lippusuoritteet! hakemusid suoritteet)))
-      (GET* "/lipputyypit" []
+      (GET "/lipputyypit" []
             :return [sc/Luokka]
             :summary "Hae lipputyypit."
             (ok (service/find-lipputyypit)))
 
-      (GET* "/hakemus/:hakemusid/seuranta/pdf*" []
+      (GET "/hakemus/:hakemusid/seuranta/pdf*" []
             :auth [:view-hakemus]
             :path-params [hakemusid :- Long]
             :summary "Hae hakemuksen (hakemusid) hakemusasiakirja."

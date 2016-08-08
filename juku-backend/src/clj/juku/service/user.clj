@@ -9,7 +9,8 @@
             [clojure.string :as str]
             [ring.util.http-response :as r]
             [common.map :as m]
-            [common.core :as c]))
+            [common.core :as c]
+            [slingshot.slingshot :as ss]))
 
 (sql/defqueries "user.sql")
 
@@ -66,6 +67,10 @@
 
 (defn has-privilege* [privilege]
   (has-privilege privilege *current-user*))
+
+(defn assert-has-privilege*! [privilege msg]
+  (when-not (has-privilege* privilege)
+    (ss/throw+ {:http-response r/forbidden :message msg} msg)))
 
 (defn find-roleids [ssogroups]
   (map :tunnus (select-roolitunnukset {:ssogroup ssogroups})))

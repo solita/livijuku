@@ -46,6 +46,7 @@
   {
    :kuukausi s/Num
    :korvaus (s/maybe s/Num)
+   :kuntakorvaus (s/maybe s/Num)
    :nousukorvaus (s/maybe s/Num),
    :nousut (s/maybe s/Num)})
 

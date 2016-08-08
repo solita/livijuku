@@ -23,10 +23,14 @@
             [crypto.random :as random]
             [compojure.api.exception :as ex]))
 
-(defn find-matching-organisaatio [organisaatio-name department]
-  (c/if-let* [normalized-org-name (-> organisaatio-name str/trim str/lower-case (str/replace #"(\s)+" "-"))
+(defn normalize-name [name]
+  (-> name str/trim str/lower-case (str/replace #"(\s)+" "-")))
 
-              organisaatio (org/find-unique-organisaatio-ext-tunnus-like (str normalized-org-name "/" (or department "-")))]
+(defn find-matching-organisaatio [organisaatio-name department-name]
+  (c/if-let* [normalized-org-name (normalize-name organisaatio-name)
+              normalized-dep-name (c/maybe-nil normalize-name "-" department-name)
+
+              organisaatio (org/find-unique-organisaatio-ext-tunnus-like (str normalized-org-name "/" normalized-dep-name))]
            (:id organisaatio) nil))
 
 (defn- headers->user-data [orgnisaatio-id headers]
@@ -51,6 +55,11 @@
   (log/error (str/join msg))
   (h/content-type-text-plain (type (str/join msg))))
 
+(defn with-user* [user fn]
+  (current-user/with-user-id (:tunnus user) (user/with-user* user fn)))
+
+(defmacro with-user [user & body] `(with-user* ~user (fn [] ~@body)))
+
 (defn wrap-user [handler]
   (fn [request]
     (c/if-let3
@@ -72,9 +81,14 @@
        privileges (c/nil-if empty? (user/find-privileges roles orgnisaatio-id))
         (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")]
 
-      (current-user/with-user-id uid
-        (user/with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
-                          :privileges privileges) (handler request))))))
+      (with-user (assoc (sc/retry 2 save-user uid orgnisaatio-id roles headers)
+                        :privileges privileges) (handler request)))))
+
+(def guest-user {:tunnus "guest"
+                 :privileges [:view-tunnusluvut :view-kilpailutus]})
+
+(defn wrap-public-user [handler]
+  (fn [request] (with-user guest-user (handler request))))
 
 (defn ^String message [^Throwable t] (.getMessage t))
 
@@ -87,9 +101,14 @@
   (if t
     (let [error (or (ss/get-thrown-object t) (ex-data t))]
       (if (map? error)
-        (assoc error
-          :message (or (:message error) (message t))
-          :cause (throwable->http-error (cause t)))
+        (if (= (:type error) :schema.core/error)
+          {:message (message t)
+           :type :schema.core/error
+           :value (:value error)
+           :cause (throwable->http-error (cause t))}
+          (assoc error
+            :message (or (:message error) (message t))
+            :cause (throwable->http-error (cause t))))
         {:message (message t)
          :type (.getName ^Class (.getClass t))
          :cause (throwable->http-error (cause t))}))))

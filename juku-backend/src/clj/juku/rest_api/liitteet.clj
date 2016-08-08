@@ -1,6 +1,5 @@
 (ns juku.rest-api.liitteet
   (:require [compojure.api.sweet :refer :all]
-            [compojure.api.legacy :refer :all]
             [compojure.api.upload :as upload]
             [juku.service.liitteet :as service]
             [juku.rest-api.response :as response]
@@ -9,15 +8,15 @@
             [schema.core :as s]
             [clojure.java.io :as io]))
 
-(defroutes* liitteet-routes
-    (GET* "/hakemus/:hakemusid/liitteet" []
+(defroutes liitteet-routes
+    (GET "/hakemus/:hakemusid/liitteet" []
           :auth [:view-hakemus]
           :return [Liite+Size]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen liitteet."
           (ok (service/find-liitteet hakemusid)))
 
-    (GET* "/hakemus/:hakemusid/liite/:liitenumero" []
+    (GET "/hakemus/:hakemusid/liite/:liitenumero" []
           :auth [:view-hakemus]
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö."
@@ -25,7 +24,7 @@
             (response/content-disposition-inline (:nimi liite) (content-type (ok (:sisalto liite)) (:contenttype liite)))
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
-    (GET* "/hakemus/:hakemusid/liite/:liitenumero/*" []
+    (GET "/hakemus/:hakemusid/liite/:liitenumero/*" []
           :auth [:view-hakemus]
           :path-params [hakemusid :- Long, liitenumero :- Long]
           :summary "Lataa liitteen sisältö - liitenumeron jälkeen annetaan haluttu tiedostonimi selaimelle, joka ei tue rfc6266 ja rfc5987."
@@ -33,7 +32,7 @@
             (content-type (ok (:sisalto liite)) (:contenttype liite))
             (not-found (str "Hakemuksella " hakemusid " ei ole liitettä: " liitenumero))))
 
-    (POST* "/hakemus/:hakemusid/liite" []
+    (POST "/hakemus/:hakemusid/liite" []
            :auth [:modify-oma-hakemus]
            :audit []
            :path-params [hakemusid :- Long]
@@ -47,7 +46,7 @@
                                              (:tempfile liite))))
 
 
-    (PUT* "/hakemus/:hakemusid/liite/:liitenumero" []
+    (PUT "/hakemus/:hakemusid/liite/:liitenumero" []
           :auth [:modify-oma-hakemus]
           :audit [:body-params]
           :return nil
@@ -56,7 +55,7 @@
           :summary "Päivitä liitteen nimi"
           (ok (service/update-liite-nimi! hakemusid liitenumero nimi)))
 
-    (DELETE* "/hakemus/:hakemusid/liite/:liitenumero" []
+    (DELETE "/hakemus/:hakemusid/liite/:liitenumero" []
          :auth [:modify-oma-hakemus]
          :audit []
          :return nil

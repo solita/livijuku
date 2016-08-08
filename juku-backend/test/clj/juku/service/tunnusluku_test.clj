@@ -7,7 +7,8 @@
             [clojure.string :as str]
             [common.collection :as coll]
             [clojure-csv.core :as csv]
-            [common.string :as strx]))
+            [common.string :as strx])
+  (:import (java.io ByteArrayOutputStream)))
 
 (defn test-tunnuslukuservice [name save find data]
   (fact {:midje/description (str "Tunnuslukupalvelutesti - lisääminen ja haku - " name)}
@@ -104,7 +105,7 @@
 
 (fact
   "CSV lataus - henkiloautoliikennesuoritteen lataamisongelma"
-  (let [header "Vuosi;Tunnusluku;Helsingin seudun liikenne;Hämeenlinna;Lahti;Riihimäki;Hyvinkää;Lappeenranta;Imatra;Kotka;Kouvola;Mikkeli;Savonlinna;Joensuu;Kuopio;Kokkola;Seinäjoki;Vaasa;Jyväskylä;Tampere;Turku;Pori;Rauma;Salo;Oulu;Kajaani;Kemi;Rovaniemi;Uusimaa ELY;Kaakkois-Suomi ELY;Pohjois-Savo ELY;Etelä-Pohjanmaa ELY;Keski-Suomi ELY;Pirkanmaa ELY;Varsinais-Suomi ELY;Pohjois-Pohjanmaa ELY;Lappi ELY"
+  (let [header "Vuosi;Tunnusluku;Helsingin seudun liikenne;Hämeenlinna;Lahti;Riihimäki;Hyvinkää;Lappeenranta;Imatra;Kotka;Kouvola;Mikkeli;Savonlinna;Joensuu;Kuopio;Kokkola;Seinäjoki;Vaasa;Jyväskylä;Tampere;Turku;Pori;Rauma;Salo;Oulu;Kajaani;Meri-Lappi;Rovaniemi;Uusimaa ELY;Kaakkois-Suomi ELY;Pohjois-Savo ELY;Etelä-Pohjanmaa ELY;Keski-Suomi ELY;Pirkanmaa ELY;Varsinais-Suomi ELY;Pohjois-Pohjanmaa ELY;Lappi ELY"
         text-csv "2013;Henkilöautoliikenteen suorite  (jos tiedossa);0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;360000000;0;0;937;0;0;0;0;0;0;0;0;0;1988218327;0;0;1370;0;0;0"]
     (import-csv (str header "\n" text-csv)) => (partial strx/substring?  "Tietokantavirheet: \n- 2013-alue-pohjois-savo")
     (tl/find-alue 2013 20) => nil
@@ -149,3 +150,38 @@
 
       (tl/save-kalusto! vuosi 1 "KOS" kalusto)
       (tl/tayttoaste vuosi 1) => (with-precision 3 :rounding HALF_UP (bigdec (/ 2 325))))))
+
+; *** csv export ***
+
+(fact
+  "Tunnusluku csv export"
+
+  (test/with-user
+    "juku_hakija" ["juku_hakija"]
+    (tl/save-liikenneviikkotilasto! 2010 1 "BR" [{:nousut 1
+                                                  :lahdot 2
+                                                  :linjakilometrit 3
+                                                  :viikonpaivaluokkatunnus "A"}])
+
+    (tl/save-lipputulo! 2010 1 "BR" [{:kuukausi 1M,
+                                      :kertalipputulo 1M,
+                                      :arvolipputulo 2M,
+                                      :kausilipputulo 3M}])
+
+    (tl/save-lipputulo! 2010 1 "SA" [{:kuukausi 1M,
+                                      :lipputulo 4M}])
+
+    (tl/save-lippuhinnat! 2016 1 [{:vyohykemaara 1M, :kertalippuhinta 1M, :kausilippuhinta 2M}]))
+
+  (with-open [output (ByteArrayOutputStream.)]
+    (tl/export-tunnusluvut-csv output)
+    (let [csv (.toString output "utf-8")]
+      csv => (partial strx/substring? "nousut-viikko;1;Helsingin seudun liikenne;2010;;sopimustyyppi/BR;PSA brutto;viikonpaivaluokka/A;Arkiviikonpäivä;1")
+      csv => (partial strx/substring? "lahdot-viikko;1;Helsingin seudun liikenne;2010;;sopimustyyppi/BR;PSA brutto;viikonpaivaluokka/A;Arkiviikonpäivä;2")
+      csv => (partial strx/substring? "linjakilometrit-viikko;1;Helsingin seudun liikenne;2010;;sopimustyyppi/BR;PSA brutto;viikonpaivaluokka/A;Arkiviikonpäivä;3")
+      csv => (partial strx/substring? "lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/KE;Kertalippu;1")
+      csv => (partial strx/substring? "lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/AR;Arvolippu;2")
+      csv => (partial strx/substring? "lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/BR;PSA brutto;lipputuloluokka/KA;Kausilippu;3")
+      csv => (partial strx/substring? "lipputulo;1;Helsingin seudun liikenne;2010;1;sopimustyyppi/SA;Siirtymäajan liikenne;lipputuloluokka/ALL;Lipputulo;4")
+      csv => (partial strx/substring? "lippuhinnat;1;Helsingin seudun liikenne;2016;;1;;lippuhintaluokka/KE;Kertalippu;1")
+      csv => (partial strx/substring? "lippuhinnat;1;Helsingin seudun liikenne;2016;;1;;lippuhintaluokka/KA;Kausilippu;2"))))

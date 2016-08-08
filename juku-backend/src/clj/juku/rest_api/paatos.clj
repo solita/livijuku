@@ -5,22 +5,22 @@
             [ring.util.http-response :refer :all]
             [schema.core :as s]))
 
-(defroutes* paatos-routes
-    (GET* "/hakemus/:hakemusid/paatos" []
+(defroutes paatos-routes
+    (GET "/hakemus/:hakemusid/paatos" []
           :auth [:view-hakemus]
           :return (s/maybe Paatos)
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen nykyinen päätös."
           (ok (service/find-current-paatos hakemusid)))
 
-    (GET* "/hakemus/:hakemusid/paatos/pdf*" []
+    (GET "/hakemus/:hakemusid/paatos/pdf*" []
           :auth [:view-hakemus]
           :path-params [hakemusid :- Long]
           :summary "Hae hakemuksen (hakemusid) nykyisen ratkaisun päätösasiakirja."
           (content-type (ok (service/find-paatos-pdf hakemusid))
                         "application/pdf"))
 
-    (PUT* "/hakemus/:hakemusid/paatos" []
+    (PUT "/hakemus/:hakemusid/paatos" []
           :auth [:kasittely-hakemus]
           :audit [:body-params]
           :return  nil
@@ -29,7 +29,7 @@
           :summary "Tallenna hakemuksen nykyisen päätöksen tiedot."
           (ok (service/save-paatos! (assoc paatos :hakemusid hakemusid))))
 
-    (POST* "/hakemus/:hakemusid/hyvaksy-paatos" []
+    (POST "/hakemus/:hakemusid/hyvaksy-paatos" []
            :auth [:hyvaksy-paatos]
            :audit []
            :return  nil
@@ -37,7 +37,7 @@
            :summary "Hyväksy hakemuksen avoinna oleva päätös."
            (ok (service/hyvaksy-paatos! hakemusid)))
 
-    (POST* "/hakemus/:hakemusid/peruuta-paatos" []
+    (POST "/hakemus/:hakemusid/peruuta-paatos" []
            :auth [:hyvaksy-paatos]
            :audit []
            :return  nil
@@ -45,7 +45,7 @@
            :summary "Peruuta hakemuksen hyväksytty päätös."
            (ok (service/peruuta-paatos! hakemusid)))
 
-    (PUT* "/paatokset" []
+    (PUT "/paatokset" []
           :auth [:kasittely-hakemus]
           :audit []
           :return   nil
@@ -53,7 +53,7 @@
           :summary  "Päivittää kaikkien annettujen päätösten perustiedot."
           (ok (service/save-paatokset! paatokset)))
 
-    (POST* "/hakemuskausi/:vuosi/:hakemustyyppitunnus/hyvaksy-paatokset" []
+    (POST "/hakemuskausi/:vuosi/:hakemustyyppitunnus/hyvaksy-paatokset" []
            :auth [:hyvaksy-paatos]
            :audit []
            :return  nil

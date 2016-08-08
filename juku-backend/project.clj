@@ -1,45 +1,43 @@
-(defproject juku-backend "1.4.0"
+(defproject juku-backend "1.5.0"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
             :repositories [["solita" {:url "http://mvn.solita.fi/repository/solita"}]]
 
             :dependencies [[org.clojure/clojure "1.7.0"]
-                           [org.clojure/java.jdbc "0.4.2"]
                            [slingshot "0.12.2"]
-                           [clj-time "0.11.0"]
+                           [clj-time "0.12.0"]
                            [com.google.guava/guava "19.0"]
                            [org.apache.pdfbox/pdfbox "1.8.11"]
-                           [clojure-csv/clojure-csv "2.0.1"]
-                           [clj-pdf "2.2.0"]
+                           [clojure-csv/clojure-csv "2.0.2"]
+                           [clj-pdf "2.2.1"]
 
                            [clj-http "2.0.1"]
-                           [com.draines/postal "1.11.4"]
+                           [com.draines/postal "2.0.0"]
 
-                           [environ "1.0.2"] ;; Library for managing environment variables in Clojure.
+                           [environ "1.0.3"] ;; Library for managing environment variables in Clojure.
 
                            ;; *** web application ***
                            [http-kit "2.1.19"] ;; http server
-                           [ring "1.4.0"]
-                           [ring/ring-defaults "0.1.5"]
+                           [ring "1.5.0"]
+                           [ring/ring-defaults "0.2.1"]
 
-                           [metosin/compojure-api "0.24.5"]
+                           [metosin/compojure-api "1.1.3"]
                            [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***
                            [oracle/ojdbc7 "12.1.0.2"]
-                           [yesql "0.5.2"]
-                           [honeysql "0.6.3"]
-                           [com.zaxxer/HikariCP "2.4.3"]
+                           [org.clojure/java.jdbc "0.6.1"]
+                           [yesql "0.5.3"]
+                           [honeysql "0.7.0"]
+                           [com.zaxxer/HikariCP "2.4.6"]
 
                            ;; *** logging libraries ***
                            [org.clojure/tools.logging "0.3.1"]
-                           [ch.qos.logback/logback-classic "1.1.5"]]
+                           [ch.qos.logback/logback-classic "1.1.7"]]
 
             :plugins [[test2junit "1.1.0"]
-                      [lein-ring "0.8.12"]
-                      ;; Library for managing environment settings from a number of different sources
-                      #_[lein-environ "1.0.0"]]
+                      [lein-ring "0.8.12"]]
 
             :ring {:handler      juku.handler/app
                    :uberwar-name "juku.war"}

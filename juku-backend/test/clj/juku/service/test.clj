@@ -5,7 +5,7 @@
             [juku.service.hakemuskausi :as k]
             [juku.service.hakemus :as h]
             [juku.service.user :as user]
-            [juku.user :as u]
+            [juku.middleware :as mw]
             [juku.db.database :refer [db with-transaction]]
             [juku.service.asiahallinta-mock :as asha]
             [yesql.core :as sql]
@@ -58,10 +58,12 @@
                privileges# (user/find-privileges roles# (:organisaatioid user#))]
        (do
           (user/update-roles! ~uid roles#)
-          (u/with-user-id ~uid (user/with-user (assoc user# :privileges privileges#) ~@test)))
+          (mw/with-user (assoc user# :privileges privileges#) ~@test))
        (ss/throw+ (str "Käyttäjällä " ~uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään."))))
 
 (defmacro with-hakija [& test] `(with-user "juku_hakija" ["juku_hakija"] ~@test))
+
+(defmacro with-public-user [& test] `(mw/with-user mw/guest-user ~@test))
 
 (defn before-now? [time]
   (time/before? time (time/now)))
