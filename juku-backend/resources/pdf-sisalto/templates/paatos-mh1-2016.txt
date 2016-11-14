@@ -13,7 +13,9 @@
 
 *Päätös
 
-	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa.
+	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa. Maksettava valtionavustus jakautuu seuraavasti:
+
+{avustuskohteet-summary}
 
 *Päätöksen perustelut
 

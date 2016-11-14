@@ -252,6 +252,10 @@
       ;; Huom! luvuissa oleva välilyönti on nbsp (00A0) ei siis normaali välilyönti (0020)
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." "16 000" pdf/today "33 000")
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) 48 "16 000")
+
+      ;; Huom! luvuissa oleva välilyönti on nbsp (00A0) ei siis normaali välilyönti (0020)
+      (:teksti pdf/*mock-pdf*) => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta 16 000 e (alv 0%)")
+
       (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
 
 (fact "Maksatushakemuksessa (mh1) osuusavustuksesta on 50%"

@@ -1,7 +1,7 @@
 (ns juku.service.avustuskohde-test
   (:require [midje.sweet :refer :all]
             [clojure.string :as str]
-            [common.collection :as c]
+            [common.core :as c]
             [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [juku.service.avustuskohde :as ak]
@@ -153,3 +153,62 @@
 
        (ak/add-avustuskohde! avustuskohde)
        (ak/find-avustuskohteet id) => [(assoc-10alv avustuskohde)]))))
+
+(defn avustuskohdeluokka
+  ([avustuskohdeluokkatunnus haettavaavustus] (c/bindings->map avustuskohdeluokkatunnus haettavaavustus))
+  ([avustuskohdeluokkatunnus avustuskohdelajitunnus haettavaavustus]
+   (c/bindings->map avustuskohdeluokkatunnus avustuskohdelajitunnus haettavaavustus)))
+
+(fact
+  "Avustuskohteiden yhteenveto luokittain"
+
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1M)])
+    => "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)"
+
+  (ak/avustuskohteet-summary (repeat 2 (avustuskohdeluokka "PSA" 1M)))
+    => "\tPSA:n mukaisen liikenteen hankinta 2 e (alv 0%)"
+
+  (ak/avustuskohteet-summary (repeat 3 (avustuskohdeluokka "PSA" 1M)))
+    => "\tPSA:n mukaisen liikenteen hankinta 3 e (alv 0%)"
+
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1M)
+                              (avustuskohdeluokka "HK" 1M)])
+    => (str "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)\n\n"
+            "\tHintavelvoitteiden korvaaminen 1,1 e (alv 10%) sisältäen arvonlisäveron osuuden 0,1 e.")
+
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1M)
+                              (avustuskohdeluokka "HK" 2.2M)
+                              (avustuskohdeluokka "HK" 1.1M)])
+  => (str "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)\n\n"
+          "\tHintavelvoitteiden korvaaminen 3,63 e (alv 10%) sisältäen arvonlisäveron osuuden 0,33 e.")
+
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 0M)])
+    => ""
+
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 0M)
+                              (avustuskohdeluokka "K" 2M)])
+    => "\tLiikenteen suunnittelu ja kehittämishankkeet 2 e (alv 0%)")
+
+(fact
+  "Avustuskohdelistaus asiakirjoissa"
+
+  (ak/avustuskohteet-section [(avustuskohdeluokka "PSA" "1" 1M)])
+    => "\t*PSA:n mukaisen liikenteen hankinta (alv 0%)\n\tPaikallisliikenne\t\t\t\t\t1 e"
+
+  (ak/avustuskohteet-section [(avustuskohdeluokka "HK" "SL" 1M)])
+    => "\t*Hintavelvoitteiden korvaaminen (alv 10%)\n\tSeutulippu\t\t\t\t\t1 e"
+
+  (ak/avustuskohteet-section [(avustuskohdeluokka "PSA" "1" 1M) (avustuskohdeluokka "HK" "SL" 1M)])
+    => (str/join "\n"
+                 ["\t*PSA:n mukaisen liikenteen hankinta (alv 0%)"
+                  "\tPaikallisliikenne\t\t\t\t\t1 e"
+                  "\n\t*Hintavelvoitteiden korvaaminen (alv 10%)"
+                  "\tSeutulippu\t\t\t\t\t1 e"])
+
+  ;; Huom! luvuissa oleva välilyönti on nbsp (00A0) ei siis normaali välilyönti (0020)
+  (ak/avustuskohteet-section [(avustuskohdeluokka "PSA" "1" 1000M) (avustuskohdeluokka "HK" "SL" 1000M)])
+    => (str/join "\n"
+                 ["\t*PSA:n mukaisen liikenteen hankinta (alv 0%)"
+                  "\tPaikallisliikenne\t\t\t\t\t1 000 e"
+                  "\n\t*Hintavelvoitteiden korvaaminen (alv 10%)"
+                  "\tSeutulippu\t\t\t\t\t1 000 e"]))
