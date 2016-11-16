@@ -1,4 +1,4 @@
-*Valtionavustustuksen maksatuspäätös 1.7.-31.12.{vuosi}
+*Valtionavustuksen maksatuspäätös 1.7.-31.12.{vuosi}
 
 *Hakemus {lahetyspvm}
 
