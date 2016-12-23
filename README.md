@@ -9,7 +9,9 @@ Versiontikäytännöt perustuvat malliin: [http://nvie.com/posts/a-successful-gi
 
 Jukun käyttöliittymät
 ----------------------
+
 Viranomaiskäyttöliittymä: https://github.com/solita/livijuku-front
+
 Julkinen käyttöliittymä: https://github.com/solita/livijuku-public-front
 
 Kehitysympäristön käynnistäminen
