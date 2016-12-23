@@ -7,6 +7,11 @@ Liikennevirasto Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräy
 
 Versiontikäytännöt perustuvat malliin: [http://nvie.com/posts/a-successful-git-branching-model/](http://nvie.com/posts/a-successful-git-branching-model/)
 
+Jukun käyttöliittymät
+----------------------
+Viranomaiskäyttöliittymä: https://github.com/solita/livijuku-front
+Julkinen käyttöliittymä: https://github.com/solita/livijuku-public-front
+
 Kehitysympäristön käynnistäminen
 --------------------------------
 
@@ -26,5 +31,6 @@ Käynnistä [backend-palvelu](/juku-backend)
 
     cd juku-backend
     lein ring server-headless
+
 
 
