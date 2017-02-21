@@ -30,7 +30,7 @@
             [schema.core :as s])
   (:import (schema.core AnythingSchema)))
 
-(c/defroutes notfound (r/not-found "Not Found"))
+(c/defroutes notfound (r/not-found "The requested service does not exists."))
 
 (def wrap-double-submit-cookie+whitelist
   (jc/partial-first-arg
@@ -92,9 +92,11 @@
                            :name "Euroopan unionin yleinen lisenssi v.1.1"
                            :url "http://ec.europa.eu/idabc/servlets/Doc7ace.pdf?id=31982"}}}}}
 
-
-    (middleware [jm/wrap-public-user]
-      (context "/public" [] :tags ["Julkinen API"] tilastot-routes kilpailutus-public-routes organisaatio-routes))
+    ; invalid public route must return not found otherwise private route middleware is executed
+    ; see LIVIJUKU-1001
+    (context "/public" [] :tags ["Julkinen API"]
+      (middleware [jm/wrap-public-user] tilastot-routes kilpailutus-public-routes organisaatio-routes)
+      (undocumented notfound))
 
     (middleware [jm/wrap-user wrap-double-submit-cookie+whitelist]
       (context "" [] :tags ["Hakemuskausi API"] hakemuskausi-routes)

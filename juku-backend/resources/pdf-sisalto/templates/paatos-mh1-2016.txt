@@ -1,5 +1,4 @@
-
-*Valtionavustustuksen maksatuspäätös 1.1.-30.6.{vuosi}
+*Valtionavustuksen maksatuspäätös 1.1.-30.6.{vuosi}
 
 *Hakemus {lahetyspvm}
 
@@ -13,7 +12,9 @@
 
 *Päätös
 
-	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa.
+	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa. Maksettava valtionavustus jakautuu seuraavasti:
+
+{avustuskohteet-summary}
 
 *Päätöksen perustelut
 
