@@ -62,10 +62,11 @@
     nil))
 
 (defn paatos-template [hakemus organisaatio]
-  (if (= (:hakemustyyppitunnus hakemus) "AH0")
-    (str "paatos-"
-         (str/lower-case (:hakemustyyppitunnus hakemus)) "-"
-         (str/lower-case (:lajitunnus organisaatio)) "-2016.txt")
+  (case (:hakemustyyppitunnus hakemus)
+    "AH0" (str "paatos-ah0-" (str/lower-case (:lajitunnus organisaatio)) "-2016.txt")
+    "ELY" (if (= (:vuosi hakemus) 2017)
+            "paatos-ely-2017.txt"
+            "paatos-ely-2016.txt")
     (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt")))
 
 (def maararahamomentti
