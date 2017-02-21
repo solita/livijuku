@@ -1,12 +1,12 @@
 (defproject juku-db "1.5.2"
 	:min-lein-version "2.5.1"
-	:repositories [["solita" {:url "http://mvn.solita.fi/repository/solita" :snapshots true}]]
+	:repositories [["oracle" {:url "oam11g://maven.oracle.com"}]]
 
-	:dependencies [[oracle/ojdbc7 "12.1.0.2"]
+	:dependencies [[com.oracle.jdbc/ojdbc7 "12.1.0.2"]
                  [org.dbmaintain/dbmaintain "2.4"]
                  [org.clojure/clojure "1.6.0"]]
 	
-	:plugins [[lein-dbmaintain "0.1.3"] [oracle/ojdbc7 "12.1.0.2"] [lein-pprint "1.1.1"]]
+	:plugins [[lein-oracle-repository "0.1.0-SNAPSHOT"] [lein-dbmaintain "0.1.3"] [lein-pprint "1.1.1"]]
 
 	:dbmaintain {
 			 :driver "oracle.jdbc.OracleDriver"
@@ -17,7 +17,8 @@
 			 :scripts "sql"
 			 :dialect "oracle"}
 
-	:profiles {:test-data {:dbmaintain {:scripts "sql, test/sql"} :resource-paths ["test/sql"]}}
+	:profiles {:dev {:plugins [[com.oracle.jdbc/ojdbc7 "12.1.0.2"]]}
+						 :test-data {:dbmaintain {:scripts "sql, test/sql"} :resource-paths ["test/sql"]}}
 
   :main juku.dbmaintain
   :uberjar-name "juku-db.jar"
