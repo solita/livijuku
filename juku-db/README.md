@@ -5,7 +5,7 @@ Tämä projekti sisältää tietokantapäivitykset Oracle Juku-tietokannan skeem
 
 Päivitysten hallintaan käytetään dbmaintain työkalua: http://www.dbmaintain.org/overview.html
 
-Tätä työkalua käytetään (leiningen asennustyökalulla): http://leiningen.org
+Tätä työkalua käytetään leiningen asennustyökalulla: http://leiningen.org
 
 Oletukset
 ---------
@@ -21,6 +21,16 @@ Indeksitaulualue valitaan siten että sen nimi on juku%_indx, johon juku käytt�
 Tarvittavien taulualueiden luontiin löytyy esimerkit: users/tablespace.sql
 
 Tarvittavien käyttäjien luontiin löytyy esimerkit: users/users.sql
+
+JDBC-ajurit
+-----------
+Oracle JDBC-ajurit ladataan oraclen [maven-varastosta](maven-repository). 
+Tänne pääsy edellyttää Oracle Technology Network (OTN) tunnukset. 
+Ohjeet OTN tunnusten saamiseen löytyy [täältä](maven-repository).
+
+Tunnukset tallennetaan tiedostoon: `~/.lein/profiles.clj` esim.
+ 
+ `{:auth {:repository-auth {#"oracle" {:username "scott" :password "tiger"}}}}`
 
 Kehityskäyttö
 -------------
@@ -77,3 +87,6 @@ Tämä paketti sisältää kaiken tarvittavan tietokannan päivittämiseen.
 Tuotantoasennuksessa tuotantokannan osoite ja salasana annetaan ympäristömuuttujina esim.
 
     DB_URL=oracle.livi.fi:1521/juku.livi.fi DB_PASSWORD=trustno1 java -jar juku-db.jar update-db
+
+
+[maven-repository]: https://maven.oracle.com`
