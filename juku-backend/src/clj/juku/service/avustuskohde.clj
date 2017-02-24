@@ -156,7 +156,9 @@
   (let [avustuskohteet+alv (map avustus+alv avustuskohteet)]
     {:avustuskohteet (avustuskohteet-section avustuskohteet+alv)
      :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet+alv))
-     :omarahoitus (pdf/format-number (total-omarahoitus avustuskohteet+alv))
+     :omarahoitus (pdf/format-number (total-omarahoitus (filter (coll/predicate > :haettavaavustus 0)
+                                                                avustuskohteet+alv)))
+     :omarahoitus-all (pdf/format-number (total-omarahoitus avustuskohteet+alv))
      :avustuskohteet-summary (avustuskohteet-summary avustuskohteet)}))
 
 (defn avustuskohde-template-values-by-hakemusid [hakemusid]
