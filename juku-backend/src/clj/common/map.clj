@@ -2,7 +2,8 @@
   (:require [clojure.string :as str]
             [common.collection :as c]
             [common.core :as core])
-  (:import (clojure.lang MapEntry)))
+  (:import (clojure.lang MapEntry)
+           (java.util Properties)))
 
 (defn remove-keys
   "Dissociate keys from a map. Removed keys are given in a sequence."
@@ -105,3 +106,9 @@
 
 (defn zip-object [keys values]
   (into {} (map vector keys values)))
+
+(defn ->properties [object]
+  (reduce (fn [^Properties result property]
+            (.setProperty result (str (first property)) (str (second property)))
+            result)
+          (Properties.) object))
