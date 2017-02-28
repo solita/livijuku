@@ -33,7 +33,6 @@
                        (.setPassword (:password config))
                        (.setAutoCommit false)
 
-                       (.setRegisterMbeans true)
                        (.addDataSourceProperty "ImplicitCachingEnabled" true)
                        (.addDataSourceProperty
                          "connectionProperties"
