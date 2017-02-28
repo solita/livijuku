@@ -7,7 +7,8 @@
             [clojure.tools.logging :as log]
             [common.core :as c]
             [juku.settings :refer [settings]]
-            [juku.db.coerce :as coerce])
+            [juku.db.coerce :as coerce]
+            [common.map :as m])
   (:import [com.zaxxer.hikari HikariConfig HikariDataSource]
            (java.io InputStream)
            (java.sql PreparedStatement Array Date)
@@ -24,11 +25,20 @@
   (log/info "Starting database connection pool: " (:url config) (:user config) "****")
   (HikariDataSource. (doto (HikariConfig.)
                        (.setMaximumPoolSize 20)
-                       (.setDriverClassName "oracle.jdbc.OracleDriver")
-                       (.setJdbcUrl (:url config))
+
+                       (.setDataSourceClassName "oracle.jdbc.pool.OracleDataSource")
+                       (.addDataSourceProperty "URL" (:url config))
+
                        (.setUsername (:user config))
                        (.setPassword (:password config))
-                       (.setAutoCommit false))))
+                       (.setAutoCommit false)
+
+                       (.setRegisterMbeans true)
+                       (.addDataSourceProperty "ImplicitCachingEnabled" true)
+                       (.addDataSourceProperty
+                         "connectionProperties"
+                         (m/->properties {"oracle.jdbc.ReadTimeout" "60000"
+                                          "oracle.jdbc.implicitStatementCacheSize" "25"})))))
 
 (defonce ^:dynamic db {:datasource (data-source db-settings)})
 
