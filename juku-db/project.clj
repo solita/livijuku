@@ -17,7 +17,7 @@
 			 :scripts "sql"
 			 :dialect "oracle"}
 
-	:profiles {:dev {:plugins [[com.oracle.jdbc/ojdbc7 "12.1.0.2"]]}
+	:profiles {:dev {:plugins [[com.oracle.jdbc/ojdbc7 "12.1.0.2" :exclusions [com.oracle.jdbc/xmlparserv2]]]}
 						 :test-data {:dbmaintain {:scripts "sql, test/sql"} :resource-paths ["test/sql"]}}
 
   :main juku.dbmaintain
