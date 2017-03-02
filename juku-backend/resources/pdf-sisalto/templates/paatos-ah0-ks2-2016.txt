@@ -12,9 +12,7 @@
 
 *Päätös
 
-	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustuksena enintään {myonnettyavustus} euroa {organisaatiolaji-gen-pl} joukkoliikenteen osoitetusta talousarvion momentin 31.30.63.11 määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.{selite}
-
-	Avustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.
+	Liikennevirasto on hakemuksen perusteella päättänyt myöntää hakijalle toimivaltaisena viranomaisena valtionavustusta enintään {myonnettyavustus} euroa talousarvion momentin 31.30.63.11 (keskisuurten kaupunkiseutujen joukkoliikennetuki) määrärahasta käytettäväksi hakemuksessa esitettyihin kohteisiin.{selite}{alv-selite}
 
 	Lopullisessa maksatuksessa valtionavustus maksetaan myönnetyn suuruisena, mikäli valtionavustuksen määrä ja avustuksen käyttö -kohtien ehdot täyttyvät.
 
@@ -26,7 +24,7 @@
 
 *Avustuksen käyttö ja hyväksyttävät kustannukset
 
-	Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, hintavelvoitteiden korvaamisesta ja joukkoliikenteen kehittämisestä aiheutuvia kustannuksia. PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen. Hintavelvoitteiden korvaamiseen myönnettyä avustusta saa käyttää seutu- ja kaupunkilippujen kustannuksiin. Avustuksen tavoitteena on lisätä joukkoliikenteen käyttöä. Joukkoliikenteen kehittämisohjelman toteuttamisen rahoittamiseen myönnettävän valtionavustuksen tavoitteena on tukea valtakunnallisia ja hakijan joukkoliikenteen kehittämistoimia aiesopimuksessa sovitulla tavalla.
+	Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, hintavelvoitteiden korvaamisesta ja joukkoliikenteen kehittämisestä aiheutuvia kustannuksia. PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen. Avustuksen tavoitteena on turvata joukkoliikenteen palvelutasoa. Hintavelvoitteiden korvaamiseen myönnettyä avustusta saa käyttää seutu- ja kaupunkilippujen kustannuksiin. Avustuksen tavoitteena on lisätä joukkoliikenteen käyttöä. Joukkoliikenteen kehittämisohjelman toteuttamisen rahoittamiseen myönnettävän valtionavustuksen tavoitteena on tukea valtakunnallisia ja hakijan joukkoliikenteen kehittämistoimia aiesopimuksessa sovitulla tavalla.
 
 	Mikäli hakija saa valtionavustusta keskisuurten kaupunkiseutujen joukkoliikennetuen lisäksi muun lainsäädännön perusteella hakemuksessa esitettyihin tarkoituksiin, tulee sen ilmoittaa näistä ja osoittaa, ettei yhteenlaskettu valtionavustuksen määrä ylitä 50 % hyväksyttävistä kustannuksista. Valtionavustusta saa käyttää tämän päätöksen perusteella vuoden {vuosi} aikana syntyneiden kustannusten kattamiseen.
 
@@ -48,7 +46,7 @@
 
 *Seuranta ja vaadittavat selvitykset
 
-	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää hakijan ja Liikenneviraston yhteisen seurantapalaverin vuoden {vuosi} syksyllä.  Palaverissa laaditaan yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
+	Valtionavustuksen käytön seurantaa varten Liikennevirasto järjestää hakijan ja Liikenneviraston yhteisen seurantapalaverin vuoden {vuosi} syksyllä.  Palaverissa käydään läpi yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
 
 *Sovellettava lainsäädäntö
 

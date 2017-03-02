@@ -155,9 +155,9 @@
         (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu")))))
 
 (fact "Avustushakemuksen päätös - päätöksen lisätiedot"
-      (test-ah0-paatos-selite nil "kohteisiin.\n\n\tAvustukseen")
-      (test-ah0-paatos-selite "" "kohteisiin.\n\n\tAvustukseen")
-      (test-ah0-paatos-selite " " "kohteisiin.\n\n\tAvustukseen")
+      (test-ah0-paatos-selite nil "kohteisiin.\n\n\tLopullisessa")
+      (test-ah0-paatos-selite "" "kohteisiin.\n\n\tLopullisessa")
+      (test-ah0-paatos-selite " " "kohteisiin.\n\n\tLopullisessa")
       (test-ah0-paatos-selite "FooBar" "\n\n\tFooBar")
       (test-ah0-paatos-selite "Foo\nBar" "\n\n\tFoo\n\n\tBar")
       (test-ah0-paatos-selite "Foo\n\n\r\rBar" "\n\n\tFoo\n\n\tBar"))
@@ -337,3 +337,32 @@
       (percentage 1M 1000M) => "0.1"
       (percentage 4M 1000M) => "0.4"
       (percentage 5M 1000M) => "0.5")
+
+(fact
+  "Avustushakemuksen päätöksen alv-selite"
+  (test-ctx
+    (let [kausi (test/next-avattu-empty-hakemuskausi!)
+          ah0 (add-hakemus! kausi "AH0")
+          paatos {:hakemusid ah0, :myonnettyavustus 1M :selite "FooBar."}]
+
+      (p/save-paatos! paatos)
+
+      (ak/add-avustuskohde! {:hakemusid                ah0
+                             :avustuskohdeluokkatunnus "PSA"
+                             :avustuskohdelajitunnus   "1"
+                             :haettavaavustus          1,
+                             :omarahoitus              1})
+
+      (let [txt (pdf/pdf->text (p/find-paatos-pdf ah0))]
+        txt => (partial strx/substring? "Paikallisliikenne 1 e")
+        txt => (partial strx/substring? "FooBar. Lopullisessa"))
+
+      (ak/add-avustuskohde! {:hakemusid                ah0
+                             :avustuskohdeluokkatunnus "HK"
+                             :avustuskohdelajitunnus   "KL"
+                             :haettavaavustus          1,
+                             :omarahoitus              1})
+
+      (let [txt (pdf/pdf->text (p/find-paatos-pdf ah0))]
+        txt => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,1 e")
+        txt => (partial strx/substring? "FooBar. Avustukseen")))))
