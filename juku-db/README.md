@@ -39,22 +39,21 @@ Leiningen build-työkalun asennus: http://leiningen.org/#install
 
 Tietokannan päivitys:
 
-    lein update-db
+    lein run update-db
 
 Tietokannan tyhjentäminen:
 
-    lein clear-db
+    lein run clear-db
 
 Tyhjennys/päivitys:
 
-    lein do clear-db, update-db
+    lein do run clear-db, run update-db
 
 Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
 
-Testidata: (test/sql/repeatable.test) on mahdollista lisätä tietokantaan
-päivityksen yhteydessä käyttämällä profiilia **test-data**
-
-    lein with-profiles +test-data do clear-db, update-db
+Tämä kehityskäyttöön tarkoitettu päivitys lisää aina myös testidatan. SQL lähdetiedostot luetaan kansioista:
+ - sql - tuotantokäyttöön tarkoitetut skeema-päivitykset
+ - test/sql - testauksia varten luotava vakiodata
 
 Oletustietokanta-asetukset ovat:
 - url = jdbc:oracle:thin:@localhost:1521:orcl
@@ -68,15 +67,7 @@ Asetuksia voi muuttaa ympäristömuuttujilla:
 
 Esim. letto-tietokannassa oleva kehitysympäristön päivitys:
 
-    DB_URL=letto.solita.fi:1521/ldev.solita.fi lein with-profiles +test-data do clear-db, update-db
-
-Livin kehitysympäristö
-----------------------
-
-Kehitysympäristön tietokannan voi alustaa komennolla:
-
-    livi-kehitys-clear-db-update-db-test-data.sh <DB_USER> <DB_PASSWORD>
-
+    DB_URL=letto.solita.fi:1521/ldev.solita.fi lein do run clear-db, run update-db
 
 Tuotantoasennus
 ---------------

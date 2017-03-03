@@ -18,26 +18,25 @@
       "- update-db"
       "- mark-up-to-date"]))
 
-(defn resource-url []
-      (let [sql-url (.getResource (.getClass MainFactory) "/project.clj")]
-           (if (= (.getProtocol sql-url) "jar")
-             (let [path (.getPath sql-url)
-                   index (.indexOf path "!")]
-               (.substring path 5 index))
-             (.getPath (.getParentFile (io/as-file sql-url))))))
+(defn distribution-sql-location []
+  (let [sql-url (.getResource juku.dbmaintain "/project.clj")]
+    (if (= (.getProtocol sql-url) "jar")
+      (let [path (.getPath sql-url)
+            index (.indexOf path "!")]
+        (.substring path 5 index))
+      (.getPath (.getParentFile (io/as-file sql-url))))))
 
-(defn make-properties []
+(defn make-properties [sql-locations]
   (doto (Properties.)
     (.load (.getResourceAsStream MainFactory "/dbmaintain-default.properties"))
-    (.put "dbMaintainer.script.locations" (resource-url))
-    (.put "dbMaintainer.autoCreateDbMaintainScriptsTable" "true")
-    (.put "dbMaintainer.script.encoding" "UTF-8")
-    (.put "database.driverClassName" "oracle.jdbc.driver.OracleDriver")
+    (.load (ClassLoader/getSystemResourceAsStream "juku/dbmaintain.properties"))
+
+    (.put "dbMaintainer.script.locations" sql-locations)
+
     (.put "database.url" (str "jdbc:oracle:thin:@" (or (System/getenv "DB_URL") "localhost:1521:orcl")))
     (.put "database.userName" (or (System/getenv "DB_USER") "juku"))
     (.put "database.password" (or (System/getenv "DB_PASSWORD") "juku"))
-    (.put "database.schemaNames" (or (System/getenv "DB_USER") "juku"))
-    (.put "database.dialect" "oracle")))
+    (.put "database.schemaNames" (or (System/getenv "DB_USER") "juku"))))
 
 (defn ^MainFactory get-mainfactory
       [properties]
@@ -78,13 +77,11 @@
     (let [factory (get-mainfactory properties)]
          (.. factory createSequenceUpdater updateSequences)))
 
-(defn exit [status msg]
-  (println msg)
-  (System/exit status))
 
-(defn -main [& args]
+(defn run [sql-locations args]
+  (println "SQL locations: " sql-locations)
   (let [command (str/trim (or (first args) "<empty string>"))
-        properties (make-properties)]
+        properties (make-properties sql-locations)]
     (case command
       "check-db" (check-db properties)
       "clear-db" (clear-db properties)
@@ -93,6 +90,10 @@
       (do
         (println "Unsupported command:" command)
         (println ohje)))))
+
+(defn -main [& args] (run (distribution-sql-location) args))
+
+(defn dev-main [& args] (run "sql, test/sql" args))
 
 
 
