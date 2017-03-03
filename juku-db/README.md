@@ -51,9 +51,11 @@ Tyhjennys/päivitys:
 
 Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
 
-Tämä kehityskäyttöön tarkoitettu päivitys lisää aina myös testidatan. SQL lähdetiedostot luetaan kansioista:
+Tämä kehityskäyttöön tarkoitettu päivitys lisää aina myös testidatan. 
+Testidata on tarkoitettu automaattisten testien ajamista varten. 
+SQL lähdetiedostot luetaan kansioista:
  - sql - tuotantokäyttöön tarkoitetut skeema-päivitykset
- - test/sql - testauksia varten luotava vakiodata
+ - test/sql - automaattisia testejä varten tehty vakiodata esim. testikäyttäjät
 
 Oletustietokanta-asetukset ovat:
 - url = jdbc:oracle:thin:@localhost:1521:orcl
@@ -79,5 +81,19 @@ Tuotantoasennuksessa tuotantokannan osoite ja salasana annetaan ympäristömuutt
 
     DB_URL=oracle.livi.fi:1521/juku.livi.fi DB_PASSWORD=trustno1 java -jar juku-db.jar update-db
 
+Asennusohjelma tuotetaan komennolla:
+
+    lein uberjar
+
+Kehitysympäristöt
+-----------------
+Kehitysympäristöt asennetaan samalla tavalla kuin tuotantoympäristö. 
+Kehitysympäristössä kanta voidaan tyhjentää komennolla:
+
+    java -jar juku-db.jar clear-db
+
+Asennusohjelmasta voi tuottaa testidatan sisältävän version komennolla:
+
+    lein with-profiles +test-data uberjar
 
 [maven-repository]: https://maven.oracle.com`
