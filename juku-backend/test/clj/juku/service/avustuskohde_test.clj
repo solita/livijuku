@@ -212,3 +212,9 @@
                   "\tPaikallisliikenne\t\t\t\t\t1 000 e"
                   "\n\t*Hintavelvoitteiden korvaaminen (alv 10%)"
                   "\tSeutulippu\t\t\t\t\t1 000 e"]))
+
+(fact
+  "Filter avustushaettu"
+  (let [ak1 {:hakemusid 1, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}
+        ak2 {:hakemusid 1, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "2", :haettavaavustus 0M, :omarahoitus 44M}]
+    (ak/filter-avustustahaettu [ak1 ak2]) => [ak1]))

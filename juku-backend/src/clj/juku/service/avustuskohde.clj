@@ -131,11 +131,13 @@
 
 (defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
 
+(defn filter-avustustahaettu [avustuskohteet] (filter (coll/predicate > :haettavaavustus 0) avustuskohteet))
+
 (defn avustuskohteet-summary
   "Avustuskohteiden yhteenveto erittely. Avustuskohteet summattu avustuskohdeluokittain.
   Avustuskohteen rahasummat annetaan alvittomina eli samassa muodossa kuin ne on tallennettu."
   [avustuskohteet]
-  (let [avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
+  (let [avustuskohteet (filter-avustustahaettu avustuskohteet)
         avustuskohdeluokat (m/map-values first (group-by :tunnus (select-avustuskohdeluokat)))
         avustuskohteet-luokittain (partition-by :avustuskohdeluokkatunnus avustuskohteet)
         avustuskohdeluokka (fn [kohteet]
@@ -156,8 +158,7 @@
   (let [avustuskohteet+alv (map avustus+alv avustuskohteet)]
     {:avustuskohteet (avustuskohteet-section avustuskohteet+alv)
      :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet+alv))
-     :omarahoitus (pdf/format-number (total-omarahoitus (filter (coll/predicate > :haettavaavustus 0)
-                                                                avustuskohteet+alv)))
+     :omarahoitus (pdf/format-number (total-omarahoitus (filter-avustustahaettu avustuskohteet+alv)))
      :omarahoitus-all (pdf/format-number (total-omarahoitus avustuskohteet+alv))
      :avustuskohteet-summary (avustuskohteet-summary avustuskohteet)}))
 
