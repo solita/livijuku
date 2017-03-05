@@ -36,7 +36,8 @@
                            [org.clojure/tools.logging "0.3.1"]
                            [ch.qos.logback/logback-classic "1.1.7"]]
 
-            :plugins [[test2junit "1.1.0"]
+            :plugins [[lein-oracle-repository "0.1.0"]
+                      [test2junit "1.1.0"]
                       [lein-ring "0.8.12"]]
 
             :ring {:handler      juku.handler/app
