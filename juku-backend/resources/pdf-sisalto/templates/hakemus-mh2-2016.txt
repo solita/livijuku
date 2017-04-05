@@ -8,7 +8,7 @@
 
 {avustuskohteet}
 
-	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. Kaiken kaiken kaikkiaan hakija on osoittanut omaa rahoitusta {omarahoitus-all} euroa.
+	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. {omarahoitus-all-selite}
 
 	Avustus maksetaan hakijan ilmoittamalle tilille.
 

@@ -8,7 +8,7 @@
 
 {avustuskohteet}
 
-	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. Kaiken kaiken kaikkiaan hakija on osoittanut omaa rahoitusta {omarahoitus-all} euroa.
+	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. {omarahoitus-all-selite}
 
 *Päätös
 

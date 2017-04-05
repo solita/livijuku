@@ -170,12 +170,21 @@
 
     (str/join "\n\n" (map avustuskohdeluokka avustuskohteet-luokittain))))
 
+(defn omarahoitus-all-selite [omarahoitus omarahoitus-all]
+  (if (= omarahoitus omarahoitus-all)
+    ""
+    (str "Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta "
+         (pdf/format-number omarahoitus-all) " euroa.")))
+
 (defn avustuskohde-template-values [avustuskohteet]
-  (let [avustuskohteet+alv (map avustus+alv avustuskohteet)]
+  (let [avustuskohteet+alv (map avustus+alv avustuskohteet)
+        omarahoitus (total-omarahoitus (filter-avustustahaettu avustuskohteet+alv))
+        omarahoitus-all (total-omarahoitus avustuskohteet+alv)]
     {:avustuskohteet (avustuskohteet-section avustuskohteet+alv)
      :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet+alv))
-     :omarahoitus (pdf/format-number (total-omarahoitus (filter-avustustahaettu avustuskohteet+alv)))
-     :omarahoitus-all (pdf/format-number (total-omarahoitus avustuskohteet+alv))
+     :omarahoitus (pdf/format-number omarahoitus)
+     :omarahoitus-all (pdf/format-number omarahoitus-all)
+     :omarahoitus-all-selite (omarahoitus-all-selite omarahoitus omarahoitus-all)
      :avustuskohteet-summary (avustuskohteet-summary avustuskohteet)}))
 
 (defn avustuskohde-template-values-by-hakemusid [hakemusid]
