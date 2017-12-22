@@ -148,10 +148,14 @@
                            (mh-template-values hakemus haettuavustus organisaatio)
                            (mh2-templatevalues hakemus))
               "ELY" (merge common-template-values
-                           (ely/ely-paatos-template-values paatos hakemus)))]
+                           (ely/ely-paatos-template-values paatos hakemus)))
+          otsikko
+            (case (:hakemustyyppitunnus hakemus)
+              "ELY" "Päätös"
+              "Valtionavustuspäätös")]
 
       (pdf/muodosta-pdf
-        {:otsikko {:teksti "Valtionavustuspäätös" :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
+        {:otsikko {:teksti otsikko :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
          :teksti (xstr/interpolate template template-values)
 
          :footer (str "Liikennevirasto" (if preview " - esikatselu"))}))))
