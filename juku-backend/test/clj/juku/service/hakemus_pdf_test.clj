@@ -281,7 +281,49 @@
 
         (assert-hsl-maksatushakemus-teksti text vuosi "10 001,24" "13 001,24")
 
-        text => (partial strx/substring? "Kaiken kaiken kaikkiaan hakija on osoittanut omaa rahoitusta 14 101,24 euroa")
+        text => (partial strx/substring? "Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta 14 101,24 euroa")
+
+        text => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
+        text => (partial strx/substring? "Paikallisliikenne 5 000 e")
+        text => (partial strx/substring? "Integroitupalvelulinja 5 000 e")
+        text => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
+        text => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,24 e")))))
+
+(fact
+  "Maksatushakemuksella ei ole avustuskohteita joilla kirjattu vain omaa rahoitusta - LIVIJUKU-1020"
+  (test-ctx
+    (let [id (hc/add-hakemus! hsl-mh1-hakemus)]
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "PSA"
+                             :avustuskohdelajitunnus "1"
+                             :haettavaavustus 5000,
+                             :omarahoitus 5000})
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "PSA"
+                             :avustuskohdelajitunnus "2"
+                             :haettavaavustus 5000,
+                             :omarahoitus 8000})
+
+      (ak/add-avustuskohde! {:hakemusid id
+                             :avustuskohdeluokkatunnus "HK"
+                             :avustuskohdelajitunnus "KL"
+                             :haettavaavustus 1.125,
+                             :omarahoitus 1.125})
+
+
+      (h/laheta-hakemus! id)
+
+      (pdf/assert-otsikko "Valtionavustushakemus" nil)
+      (:footer pdf/*mock-pdf*) => "Liikennevirasto"
+
+      (let [text (pdf/pdf->text (h/find-hakemus-pdf id))]
+
+        (assert-hsl-maksatushakemus-teksti text vuosi "10 001,24" "13 001,24")
+
+        text => #(not (strx/substring? %
+                  "Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta"))
 
         text => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
         text => (partial strx/substring? "Paikallisliikenne 5 000 e")

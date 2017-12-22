@@ -1,4 +1,4 @@
-(defproject juku-backend "1.6.0-SNAPSHOT"
+(defproject juku-backend "1.6.2"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
@@ -36,7 +36,8 @@
                            [org.clojure/tools.logging "0.3.1"]
                            [ch.qos.logback/logback-classic "1.1.7"]]
 
-            :plugins [[test2junit "1.1.0"]
+            :plugins [[lein-oracle-repository "0.1.0"]
+                      [test2junit "1.1.0"]
                       [lein-ring "0.8.12"]]
 
             :ring {:handler      juku.handler/app

@@ -359,10 +359,22 @@
 
       (ak/add-avustuskohde! {:hakemusid                ah0
                              :avustuskohdeluokkatunnus "HK"
+                             :avustuskohdelajitunnus   "SL"
+                             :haettavaavustus          0,
+                             :omarahoitus              1})
+
+      (let [txt (pdf/pdf->text (p/find-paatos-pdf ah0))]
+        txt => (partial strx/substring? "Paikallisliikenne 1 e")
+        txt => (partial (comp not strx/substring?) "Seutulippu")
+        txt => (partial strx/substring? "FooBar. Lopullisessa"))
+
+      (ak/add-avustuskohde! {:hakemusid                ah0
+                             :avustuskohdeluokkatunnus "HK"
                              :avustuskohdelajitunnus   "KL"
                              :haettavaavustus          1,
                              :omarahoitus              1})
 
       (let [txt (pdf/pdf->text (p/find-paatos-pdf ah0))]
+        txt => (partial strx/substring? "Paikallisliikenne 1 e")
         txt => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,1 e")
         txt => (partial strx/substring? "FooBar. Avustukseen")))))

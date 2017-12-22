@@ -99,7 +99,7 @@
                                "<maksettu avustus>")}))
 
 (defn alv-selite [avustuskohteet]
-  (if (some ak/include-alv? avustuskohteet)
+  (if (some ak/include-alv? (ak/filter-avustustahaettu avustuskohteet))
     "\n\n\tAvustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta."
     ""))
 
