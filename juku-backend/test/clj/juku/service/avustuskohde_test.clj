@@ -171,6 +171,12 @@
   (ak/avustuskohteet-summary (repeat 3 (avustuskohdeluokka "PSA" 1M)))
     => "\tPSA:n mukaisen liikenteen hankinta 3 e (alv 0%)"
 
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1.126M)])
+    => "\tPSA:n mukaisen liikenteen hankinta 1,13 e (alv 0%)"
+
+  (ak/avustuskohteet-summary (repeat 2 (avustuskohdeluokka "PSA" 1.246M)))
+    => "\tPSA:n mukaisen liikenteen hankinta 2,5 e (alv 0%)"
+
   (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1M)
                               (avustuskohdeluokka "HK" 1M)])
     => (str "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)\n\n"
@@ -179,8 +185,14 @@
   (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1M)
                               (avustuskohdeluokka "HK" 2.2M)
                               (avustuskohdeluokka "HK" 1.1M)])
-  => (str "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)\n\n"
-          "\tHintavelvoitteiden korvaaminen 3,63 e (alv 10%) sisältäen arvonlisäveron osuuden 0,33 e.")
+    => (str "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)\n\n"
+            "\tHintavelvoitteiden korvaaminen 3,63 e (alv 10%) sisältäen arvonlisäveron osuuden 0,33 e.")
+
+  (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 1M)
+                              (avustuskohdeluokka "HK" 2.245M)    ; syötetty alvillisena: 2.47
+                              (avustuskohdeluokka "HK" 1.136M)])  ; syötetty alvillisena: 1.25
+    => (str "\tPSA:n mukaisen liikenteen hankinta 1 e (alv 0%)\n\n"
+            "\tHintavelvoitteiden korvaaminen 3,72 e (alv 10%) sisältäen arvonlisäveron osuuden 0,33 e.")
 
   (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 0M)])
     => ""
@@ -212,3 +224,9 @@
                   "\tPaikallisliikenne\t\t\t\t\t1 000 e"
                   "\n\t*Hintavelvoitteiden korvaaminen (alv 10%)"
                   "\tSeutulippu\t\t\t\t\t1 000 e"]))
+
+(fact
+  "Filter avustushaettu"
+  (let [ak1 {:hakemusid 1, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "1", :haettavaavustus 1M, :omarahoitus 1M}
+        ak2 {:hakemusid 1, :avustuskohdeluokkatunnus "PSA", :avustuskohdelajitunnus "2", :haettavaavustus 0M, :omarahoitus 44M}]
+    (ak/filter-avustustahaettu [ak1 ak2]) => [ak1]))

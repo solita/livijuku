@@ -98,6 +98,11 @@
      :mh1-myonnettyavustus (or (pdf/format-number myonnettyavustus)
                                "<maksettu avustus>")}))
 
+(defn alv-selite [avustuskohteet]
+  (if (some ak/include-alv? (ak/filter-avustustahaettu avustuskohteet))
+    "\n\n\tAvustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta."
+    ""))
+
 (defn paatos-pdf
   ([hakemusid] (paatos-pdf hakemusid false))
 
@@ -132,6 +137,7 @@
           template-values
             (case (:hakemustyyppitunnus hakemus)
               "AH0" (merge common-template-values
+                           {:alv-selite (alv-selite avustuskohteet)}
                            (ak/avustuskohde-template-values avustuskohteet))
               "MH1" (merge common-template-values
                            (ak/avustuskohde-template-values avustuskohteet)

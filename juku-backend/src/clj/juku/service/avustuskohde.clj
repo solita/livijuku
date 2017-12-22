@@ -57,14 +57,26 @@
   "Arvonlisäveron lisääminen arvonlisäverottomaan hintaan."
   [hinta-alv0 alv] (* hinta-alv0 (inc (/ alv 100))))
 
+(defn alv-amount
+  "Arvonlisävero arvonlisäverottomasta hinnasta."
+  [hinta-alv0 alv] (* hinta-alv0 (/ alv 100)))
+
+(defn official-amount-fn [kohde]
+  "Määrittää avustuskohteelle raha-arvon muunnosfunktion tallennetusta muodosta
+  dokumenteilla esitettävään viralliseen tarkkuuteen ja kohteen mukaisella arvonlisäverolla.
+  ALV lisätään vain jos kohteen avustus maksetaan arvonlisäverollisena.
+  Muunnos sisältää aina myös tarvittavat pyöristykset kahteen desimaaliin."
+  (if (include-alv? kohde)
+    (fn [moneyamount] (round (bigdec (+alv moneyamount (alv% kohde)))))
+    round))
+
 (defn avustus+alv
-  "Avustuskohteen rahamäärien päivitys arvonlisäverollisiksi, jos ko. kohteen avustus pitää hakea arvonlisäverollisena.
-  Muunnos sisältää myös tarvittavat pyöristykset"
+  "Avustuskohteen rahamäärien päivitys arvonlisäverollisiksi,
+  jos ko. kohteen avustus pitää hakea arvonlisäverollisena.
+  Muunnos sisältää aina myös tarvittavat pyöristykset."
   [avustus-alv0]
-  (if (include-alv? avustus-alv0)
-    (let [+alv #(round (bigdec (+alv % (alv% avustus-alv0))))]
-      (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus] +alv))
-    (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus] round)))
+  (map/update-vals avustus-alv0 [:haettavaavustus :omarahoitus]
+                   (official-amount-fn avustus-alv0)))
 
 ; *** Hakemuksen avustuskohteisiin liittyvät palvelut ***
 
@@ -131,24 +143,30 @@
 
 (defn total-omarahoitus [avustuskohteet] (reduce + 0 (map :omarahoitus avustuskohteet)))
 
+(defn filter-avustustahaettu [avustuskohteet] (filter (coll/predicate > :haettavaavustus 0) avustuskohteet))
+
+(defn avustuskohteet-summary-alv-osuus [avustukset alv]
+  (str " sisältäen arvonlisäveron osuuden "
+       (pdf/format-number (reduce + (map #(round (alv-amount % alv)) avustukset))) " e."))
+
 (defn avustuskohteet-summary
   "Avustuskohteiden yhteenveto erittely. Avustuskohteet summattu avustuskohdeluokittain.
   Avustuskohteen rahasummat annetaan alvittomina eli samassa muodossa kuin ne on tallennettu."
   [avustuskohteet]
-  (let [avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
+  (let [avustuskohteet (filter-avustustahaettu avustuskohteet)
         avustuskohdeluokat (m/map-values first (group-by :tunnus (select-avustuskohdeluokat)))
         avustuskohteet-luokittain (partition-by :avustuskohdeluokkatunnus avustuskohteet)
-        avustuskohdeluokka (fn [kohteet]
-                             (let [kohde (first kohteet)
-                                   avustus (reduce + (map :haettavaavustus kohteet))
-                                   alv (alv% kohde)]
+        avustuskohdeluokka
+        (fn [kohteet]
+          (let [kohde (first kohteet)
+                avustukset (map :haettavaavustus kohteet)]
 
-                               (str "\t" (avustuskohdeluokka-nimi kohde avustuskohdeluokat) " "
-                                    (pdf/format-number (if (include-alv? kohde) (+alv avustus alv) avustus)) " e "
-                                    (alv-title kohde)
-                                    (if (include-alv? kohde)
-                                      (str " sisältäen arvonlisäveron osuuden "
-                                           (pdf/format-number (* avustus (/ alv 100))) " e.")))))]
+            (str "\t" (avustuskohdeluokka-nimi kohde avustuskohdeluokat) " "
+                 (pdf/format-number (reduce + (map (official-amount-fn kohde) avustukset)))
+                 " e "
+                 (alv-title kohde)
+                 (if (include-alv? kohde)
+                   (avustuskohteet-summary-alv-osuus avustukset (alv% kohde))))))]
 
     (str/join "\n\n" (map avustuskohdeluokka avustuskohteet-luokittain))))
 
@@ -156,7 +174,8 @@
   (let [avustuskohteet+alv (map avustus+alv avustuskohteet)]
     {:avustuskohteet (avustuskohteet-section avustuskohteet+alv)
      :haettuavustus (pdf/format-number (total-haettavaavustus avustuskohteet+alv))
-     :omarahoitus (pdf/format-number (total-omarahoitus avustuskohteet+alv))
+     :omarahoitus (pdf/format-number (total-omarahoitus (filter-avustustahaettu avustuskohteet+alv)))
+     :omarahoitus-all (pdf/format-number (total-omarahoitus avustuskohteet+alv))
      :avustuskohteet-summary (avustuskohteet-summary avustuskohteet)}))
 
 (defn avustuskohde-template-values-by-hakemusid [hakemusid]

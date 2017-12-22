@@ -1,8 +1,8 @@
-(defproject juku-backend "1.5.3"
+(defproject juku-backend "1.6.1"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
-            :repositories [["solita" {:url "http://mvn.solita.fi/repository/solita"}]]
+            :repositories [["oracle" {:url "oam11g://maven.oracle.com"}]]
 
             :dependencies [[org.clojure/clojure "1.7.0"]
                            [slingshot "0.12.2"]
@@ -26,17 +26,18 @@
                            [metosin/ring-swagger-ui "2.1.5-M2"]
 
                            ;; *** datababse ***
-                           [oracle/ojdbc7 "12.1.0.2"]
+                           [com.oracle.jdbc/ojdbc7 "12.1.0.2"]
                            [org.clojure/java.jdbc "0.6.1"]
                            [yesql "0.5.3"]
                            [honeysql "0.7.0"]
-                           [com.zaxxer/HikariCP "2.4.6"]
+                           [com.zaxxer/HikariCP "2.6.0"]
 
                            ;; *** logging libraries ***
                            [org.clojure/tools.logging "0.3.1"]
                            [ch.qos.logback/logback-classic "1.1.7"]]
 
-            :plugins [[test2junit "1.1.0"]
+            :plugins [[lein-oracle-repository "0.1.0"]
+                      [test2junit "1.1.0"]
                       [lein-ring "0.8.12"]]
 
             :ring {:handler      juku.handler/app

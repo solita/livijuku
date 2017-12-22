@@ -5,7 +5,7 @@ Tämä projekti sisältää tietokantapäivitykset Oracle Juku-tietokannan skeem
 
 Päivitysten hallintaan käytetään dbmaintain työkalua: http://www.dbmaintain.org/overview.html
 
-Tätä työkalua käytetään (leiningen asennustyökalulla): http://leiningen.org
+Tätä työkalua käytetään leiningen asennustyökalulla: http://leiningen.org
 
 Oletukset
 ---------
@@ -22,6 +22,16 @@ Tarvittavien taulualueiden luontiin löytyy esimerkit: users/tablespace.sql
 
 Tarvittavien käyttäjien luontiin löytyy esimerkit: users/users.sql
 
+JDBC-ajurit
+-----------
+Oracle JDBC-ajurit ladataan oraclen [maven-varastosta](maven-repository). 
+Tänne pääsy edellyttää Oracle Technology Network (OTN) tunnukset. 
+Ohjeet OTN tunnusten saamiseen löytyy [täältä](maven-repository).
+
+Tunnukset tallennetaan tiedostoon: `~/.lein/profiles.clj` esim.
+ 
+ `{:auth {:repository-auth {#"oracle" {:username "scott" :password "tiger"}}}}`
+
 Kehityskäyttö
 -------------
 
@@ -29,22 +39,23 @@ Leiningen build-työkalun asennus: http://leiningen.org/#install
 
 Tietokannan päivitys:
 
-    lein update-db
+    lein run update-db
 
 Tietokannan tyhjentäminen:
 
-    lein clear-db
+    lein run clear-db
 
 Tyhjennys/päivitys:
 
-    lein do clear-db, update-db
+    lein do run clear-db, run update-db
 
 Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
 
-Testidata: (test/sql/repeatable.test) on mahdollista lisätä tietokantaan
-päivityksen yhteydessä käyttämällä profiilia **test-data**
-
-    lein with-profiles +test-data do clear-db, update-db
+Tämä kehityskäyttöön tarkoitettu päivitys lisää aina myös testidatan. 
+Testidata on tarkoitettu automaattisten testien ajamista varten. 
+SQL lähdetiedostot luetaan kansioista:
+ - sql - tuotantokäyttöön tarkoitetut skeema-päivitykset
+ - test/sql - automaattisia testejä varten tehty vakiodata esim. testikäyttäjät
 
 Oletustietokanta-asetukset ovat:
 - url = jdbc:oracle:thin:@localhost:1521:orcl
@@ -58,15 +69,7 @@ Asetuksia voi muuttaa ympäristömuuttujilla:
 
 Esim. letto-tietokannassa oleva kehitysympäristön päivitys:
 
-    DB_URL=letto.solita.fi:1521/ldev.solita.fi lein with-profiles +test-data do clear-db, update-db
-
-Livin kehitysympäristö
-----------------------
-
-Kehitysympäristön tietokannan voi alustaa komennolla:
-
-    livi-kehitys-clear-db-update-db-test-data.sh <DB_USER> <DB_PASSWORD>
-
+    DB_URL=letto.solita.fi:1521/ldev.solita.fi lein do run clear-db, run update-db
 
 Tuotantoasennus
 ---------------
@@ -77,3 +80,20 @@ Tämä paketti sisältää kaiken tarvittavan tietokannan päivittämiseen.
 Tuotantoasennuksessa tuotantokannan osoite ja salasana annetaan ympäristömuuttujina esim.
 
     DB_URL=oracle.livi.fi:1521/juku.livi.fi DB_PASSWORD=trustno1 java -jar juku-db.jar update-db
+
+Asennusohjelma tuotetaan komennolla:
+
+    lein uberjar
+
+Kehitysympäristöt
+-----------------
+Kehitysympäristöt asennetaan samalla tavalla kuin tuotantoympäristö. 
+Kehitysympäristössä kanta voidaan tyhjentää komennolla:
+
+    java -jar juku-db.jar clear-db
+
+Asennusohjelmasta voi tuottaa testidatan sisältävän version komennolla:
+
+    lein with-profiles +test-data uberjar
+
+[maven-repository]: https://maven.oracle.com`
