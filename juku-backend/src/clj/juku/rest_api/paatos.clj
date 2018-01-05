@@ -55,9 +55,10 @@
 
     (POST "/hakemuskausi/:vuosi/:hakemustyyppitunnus/hyvaksy-paatokset" []
            :auth [:hyvaksy-paatos]
-           :audit []
+           :audit [:query-params]
+           :query-params [{asiahallinta :- s/Bool true}]
            :return  nil
            :path-params [vuosi :- Long
                          hakemustyyppitunnus :- s/Str]
            :summary "Hyväksy kaikki kauden tietyn hakemustyypin päätökset."
-           (ok (service/hyvaksy-paatokset! vuosi hakemustyyppitunnus))))
+           (ok (service/hyvaksy-paatokset! vuosi hakemustyyppitunnus asiahallinta))))
