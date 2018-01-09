@@ -243,7 +243,7 @@
 
         (test/with-user "juku_hakija_ely" ["juku_hakija"] (h/laheta-hakemus! id))
         (h/tarkasta-hakemus! id)
-        (p/hyvaksy-paatokset! vuosi "ely")
+        (p/hyvaksy-paatokset! vuosi "ely" true)
 
         (let [request (asha/request :paatos)
               multipart (asha/group-by-multiparts request)
