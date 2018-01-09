@@ -11,7 +11,9 @@
             [yesql.core :as sql]
             [clj-time.core :as time]
             [clojure.string :as str]
-            [common.collection :as coll])
+            [common.collection :as coll]
+            [juku.service.paatos :as p]
+            [juku.service.hakemus-core :as hc])
   (:import (java.io ByteArrayInputStream)))
 
 (sql/defqueries "juku/service/test.sql" {:connection db})
@@ -87,4 +89,9 @@
       (doseq [hakemus (filter (coll/eq :hakemustilatunnus "K") (select-hakemukset-from-kausi {:vuosi vuosi :hakemustyyppitunnus (str/upper-case hakemustyyppitunnus)}))]
         (binding [user/*current-user* (assoc user/*current-user* :organisaatioid (:organisaatioid hakemus))]
           (h/laheta-hakemus! (:id hakemus)))))))
+
+(defn peruuta-paatokset! [vuosi hakemustyyppitunnus]
+  (with-transaction
+    (doseq [hakemusid (hc/find-hakemukset-from-kausi vuosi hakemustyyppitunnus)]
+      (p/peruuta-paatos! hakemusid ))))
 

@@ -169,21 +169,26 @@
 
       (paatos-pdf hakemusid true))))
 
-(defn hyvaksy-paatos! [hakemusid]
-  (with-transaction
-    (let [hakemus (h/get-hakemus hakemusid)
-          updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
-          ^io/byte-array-type paatos-asiakirja-bytes (c/slurp-bytes (paatos-pdf hakemusid))]
-      (assert-unique-update! updated hakemusid)
-      (dml/assert-update updated {:type ::paatos-not-found
-                                  :hakemusid hakemusid
-                                  :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
-      (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" (io/input-stream paatos-asiakirja-bytes))
-      (if-let [diaarinumero (:diaarinumero hakemus)]
-        (asha/paatos diaarinumero {:paattaja (user/user-fullname user/*current-user*)} (io/input-stream paatos-asiakirja-bytes)))
+(defn hyvaksy-paatos!
+  ([hakemusid] (hyvaksy-paatos! hakemusid true))
+  ([hakemusid enableAsiahallinta?]
+    (with-transaction
+      (let [hakemus (h/get-hakemus hakemusid)
+            updated (update-paatos-hyvaksytty! {:hakemusid hakemusid})
+            ^io/byte-array-type paatos-asiakirja-bytes (c/slurp-bytes (paatos-pdf hakemusid))]
+        (assert-unique-update! updated hakemusid)
+        (dml/assert-update updated {:type ::paatos-not-found
+                                    :hakemusid hakemusid
+                                    :message (str "Hakemuksella " hakemusid " ei ole avointa päätöstä")})
+        (h/change-hakemustila+log! hakemus "P" "T" "päättäminen" (io/input-stream paatos-asiakirja-bytes))
+        (when enableAsiahallinta?
+          (if-let [diaarinumero (:diaarinumero hakemus)]
+            (asha/paatos diaarinumero
+                         {:paattaja (user/user-fullname user/*current-user*)}
+                         (io/input-stream paatos-asiakirja-bytes))))
 
-      (email/send-hakemustapahtuma-message hakemus "P" (io/input-stream paatos-asiakirja-bytes))))
-  nil)
+        (email/send-hakemustapahtuma-message hakemus "P" (io/input-stream paatos-asiakirja-bytes))))
+    nil))
 
 (defn peruuta-paatos! [hakemusid]
   (with-transaction
@@ -196,10 +201,10 @@
       (h/change-hakemustila+log! hakemus "T" "P" "päätöksen peruuttaminen")))
   nil)
 
-(defn hyvaksy-paatokset! [vuosi hakemustyyppitunnus]
+(defn hyvaksy-paatokset! [vuosi hakemustyyppitunnus enableAsiahallinta?]
   (with-transaction
     (doseq [hakemusid (hc/find-hakemukset-from-kausi vuosi hakemustyyppitunnus)]
-      (hyvaksy-paatos! hakemusid))))
+      (hyvaksy-paatos! hakemusid enableAsiahallinta?))))
 
 (defn save-paatokset! [paatokset]
   (with-transaction
