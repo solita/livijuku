@@ -63,7 +63,7 @@
 
 (defn paatos-template [hakemus organisaatio]
   (case (:hakemustyyppitunnus hakemus)
-    "AH0" (str "paatos-ah0-" (str/lower-case (:lajitunnus organisaatio)) "-2016.txt")
+    "AH0" (str "paatos-ah0-" (str/lower-case (:lajitunnus organisaatio)) "-2018.txt")
     "ELY" (case (:vuosi hakemus)
             2018 "paatos-ely-2018.txt"
             2017 "paatos-ely-2017.txt"
