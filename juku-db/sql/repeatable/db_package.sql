@@ -13,10 +13,12 @@ end db;
 create or replace package body db as
     
     procedure revoke_grants is
+      application_user constant varchar2(30 char) := user || '_app';
     begin 
         for cur in (
-          select 'revoke ' || privilege || ' on ' || user || '.' || table_name || ' from ' || grantee stm from all_tab_privs_made 
-          where table_name not in ('DB', 'MODEL') and not(table_name like 'SYSTP%')
+          select 'revoke ' || privilege || ' on ' || user || '.' || table_name || ' from ' || grantee stm
+          from all_tab_privs_made
+          where table_name not in ('DB', 'MODEL') and not(table_name like 'SYSTP%') and grantee = application_user
         )
         loop
             model.putline_or_execute(cur.stm);

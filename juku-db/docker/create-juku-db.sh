@@ -26,3 +26,6 @@ db::sqlplus_pdb orclpdb1 "dba/tablespace.sql"
 
 # create users
 db::sqlplus_pdb orclpdb1 "dba/users.sql"
+
+# add wm_concat
+db::sqlplus_pdb orclpdb1 "dba/wm_concat_shim.sql"

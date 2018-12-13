@@ -6,11 +6,11 @@ function db::exec() {
 
 function db::sqlplus() {
   filename=$1
-  db::exec "(echo @$filename; printf '\n'; echo exit) | sqlplus / as sysdba"
+  db::exec "(echo @$filename; printf '\n'; echo exit) | sqlplus system/Oradoc_db1"
 }
 
 function db::sqlplus_pdb() {
   pdb=$1
   filename=$2
-  db::exec "(echo @docker/connect-pdb.sql $pdb; printf '\n'; echo @$filename; printf '\n'; echo exit) | sqlplus / as sysdba"
+  db::exec "(echo @docker/connect-pdb.sql $pdb; printf '\n'; echo @$filename; printf '\n'; echo exit) | sqlplus system/Oradoc_db1"
 }
