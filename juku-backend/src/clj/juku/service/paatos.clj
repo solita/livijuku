@@ -68,7 +68,7 @@
             2018 "paatos-ely-2018.txt"
             2017 "paatos-ely-2017.txt"
             "paatos-ely-2016.txt")
-    (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt")))
+    (str "paatos-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2018.txt")))
 
 (def maararahamomentti
   {"KS1"	"31.30.63.09"
