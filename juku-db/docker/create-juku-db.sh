@@ -10,6 +10,7 @@ source db.sh
 docker run -d -it \
       -v $BASEDIR/..:/opt/juku/ \
       -p 1521:1521 \
+      -p 50000:50000 \
       --name juku-db \
       container-registry.oracle.com/database/enterprise:12.2.0.1
 
