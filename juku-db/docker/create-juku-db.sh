@@ -16,9 +16,6 @@ docker run -d -it \
 
 ./wait-until-running.sh
 
-# print listener status - this prints available sids:
-db::exec "lsnrctl status"
-
 # configuration
 db::sqlplus "docker/config.sql"
 
