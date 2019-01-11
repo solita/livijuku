@@ -1,3 +1,5 @@
+-- Define tablespace datafiles explicitly
+-- This does not require that we are using Oracle Managed Files
 
 define DATAFILE_PATH = '/home/oracle/app/oracle/oradata/orcl'
 
