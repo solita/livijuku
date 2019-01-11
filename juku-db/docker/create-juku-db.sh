@@ -27,3 +27,9 @@ db::sqlplus_pdb orclpdb1 "dba/users.sql"
 
 # add wm_concat
 db::sqlplus_pdb orclpdb1 "dba/wm_concat_shim.sql"
+
+# enable epg
+db::sqlplus_pdb orclpdb1 "dba/enable-epg.sql"
+
+# check epg status
+db::sqlplus_pdb orclpdb1 '$ORACLE_HOME/rdbms/admin/epgstat.sql'
