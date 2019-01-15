@@ -1,4 +1,4 @@
-(defproject juku-db "1.6.0"
+(defproject juku-db "1.6.1"
 	:min-lein-version "2.5.1"
 	:repositories [["oracle" {:url "oam11g://maven.oracle.com"}]]
 

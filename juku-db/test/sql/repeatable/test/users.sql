@@ -40,14 +40,14 @@ values ('juku_hakija_lappi', 'Liisa', 'Lappi', 'petri.sirkkala@solita.fi', (sele
 
 -- käsittelijäroolit: juku_kasittelija, juku_paatoksentekija, LV
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
-values ('juku_kasittelija', 'Katri', 'Käsittelijä', 'petri.sirkkala@solita.fi', (select id from organisaatio where lajitunnus = 'LV'), 0);
+values ('juku_kasittelija', 'Katri', 'Käsittelijä', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Liikennevirasto'), 0);
 
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
-values ('juku_paatoksentekija', 'Päivi', 'Päätöksentekijä', 'petri.sirkkala@solita.fi', (select id from organisaatio where lajitunnus = 'LV'), 0);
+values ('juku_paatoksentekija', 'Päivi', 'Päätöksentekijä', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Liikennevirasto'), 0);
 
 -- pääkäyttäjä, LV
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
-values ('juku_paakayttaja', 'Jussi', 'Koskinen', 'petri.sirkkala@solita.fi', (select id from organisaatio where lajitunnus = 'LV'), 0);
+values ('juku_paakayttaja', 'Jussi', 'Koskinen', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Liikennevirasto'), 0);
 
 insert into kayttajakayttajarooli (kayttajatunnus, kayttajaroolitunnus)
 select tunnus, 'HA' from kayttaja where tunnus like '%hakija%';

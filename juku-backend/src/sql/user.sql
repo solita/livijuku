@@ -13,12 +13,12 @@ from kayttaja_view where jarjestelma = 0 and poistettuaika is null
 -- name: select-all-livi-users
 select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika, roolit
 from kayttaja_view kayttaja
-where kayttaja.organisaatioid = (select id from organisaatio where organisaatio.lajitunnus = 'LV') and poistettuaika is null
+where kayttaja.organisaatioid in (select id from organisaatio where organisaatio.lajitunnus = 'LV') and poistettuaika is null
 
 -- name: select-all-non-livi-users
 select tunnus, etunimi, sukunimi, nimi, organisaatioid, jarjestelma, sahkoposti, sahkopostiviestit, kirjautumisaika, roolit
 from kayttaja_view kayttaja
-where kayttaja.organisaatioid <> (select id from organisaatio where organisaatio.lajitunnus = 'LV') and poistettuaika is null
+where kayttaja.organisaatioid not in (select id from organisaatio where organisaatio.lajitunnus = 'LV') and poistettuaika is null
 
 -- name: select-oikeudet-where-roolit-in
 select distinct kayttooikeus.tunnus from kayttooikeus 
