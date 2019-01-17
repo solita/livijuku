@@ -18,9 +18,9 @@ Oletustaulualueen lisäksi tarvitaan taulualue indekseille: **juku_indx**.
 
 Indeksitaulualue valitaan siten että sen nimi on juku%_indx, johon juku käyttäjällä on varattu tilaa (quota).
 
-Tarvittavien taulualueiden luontiin löytyy esimerkit: users/tablespace.sql
+Tarvittavien taulualueiden luontiin löytyy esimerkit: dba/tablespace.sql
 
-Tarvittavien käyttäjien luontiin löytyy esimerkit: users/users.sql
+Tarvittavien käyttäjien luontiin löytyy esimerkit: dba/users.sql
 
 JDBC-ajurit
 -----------
