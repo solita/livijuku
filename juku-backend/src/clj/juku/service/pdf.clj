@@ -139,15 +139,14 @@
 
 (defn lisaa-logo
   [dokumentti sivu]
-  (with-open [pdf (io/input-stream (io/resource "pdf-sisalto/livi-logo.pdf"))
+  (with-open [pdf (io/input-stream (io/resource "pdf-sisalto/traficom-logo.pdf"))
               logo-dokumentti (PDDocument/load pdf)]
     (let [layer (LayerUtility. dokumentti)
           logo (.importPageAsForm layer logo-dokumentti 0)
           korkeus (.getHeight (.getBBox logo))
-          skaalaus (/ 50 korkeus)
+          skaalaus 0.25
           skaalattu-korkeus (* skaalaus korkeus)
-          ylareuna (.getUpperRightY sivukoko)
-          aft (AffineTransform. skaalaus 0.0 0.0 skaalaus vasen-marginaali (- ylareuna (+ 28 skaalattu-korkeus))) ]
+          aft (AffineTransform. skaalaus 0.0 0.0 skaalaus (- vasen-marginaali 5)  (- ylamarginaali skaalattu-korkeus 4)) ]
       (.appendFormAsLayer layer sivu logo aft "LIVI-LOGO"))))
 
 (defn muodosta-osat
@@ -230,4 +229,3 @@
 (def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
 
 (defn format-number [n] (if n (.format ^NumberFormat number-format-fi n)))
-

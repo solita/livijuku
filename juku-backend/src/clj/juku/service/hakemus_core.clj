@@ -16,6 +16,8 @@
             [clojure.string :as str])
   (:import (org.joda.time LocalDate)))
 
+(def kasittelija-organisaatio-name "Liikenne- ja viestintävirasto")
+
 ; *** Hakemukseen liittyvät kyselyt ***
 (sql/defqueries "hakemus.sql")
 

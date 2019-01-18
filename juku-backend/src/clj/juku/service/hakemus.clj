@@ -69,7 +69,9 @@
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}
          :teksti (xstr/interpolate template template-values)
-         :footer (c/maybe-nil #(str "Liikennevirasto - esikatselu - " %) "Liikennevirasto" esikatselu-message)}))))
+         :footer (c/maybe-nil #(str hc/kasittelija-organisaatio-name " - esikatselu - " %)
+                              hc/kasittelija-organisaatio-name
+                              esikatselu-message)}))))
 
 (defn find-hakemus-pdf [hakemusid]
   (let [hakemus (h/get-hakemus hakemusid)]

@@ -159,7 +159,7 @@
         {:otsikko {:teksti otsikko :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
          :teksti (xstr/interpolate template template-values)
 
-         :footer (str "Liikennevirasto" (if preview " - esikatselu"))}))))
+         :footer (str hc/kasittelija-organisaatio-name (if preview " - esikatselu"))}))))
 
 (defn find-paatos-pdf [hakemusid]
   (let [paatos (find-current-paatos hakemusid)]
