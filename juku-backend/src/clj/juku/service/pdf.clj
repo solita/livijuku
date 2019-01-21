@@ -35,7 +35,7 @@
     :y 0
     :teksti (:diaarinumero otsikko)}
    ;; lopuksi headerin marginaali
-   {:x (- 0 200 135)
+   {:x (- 0 200 100)
     :y (- (* 3 12))}])
 
 (defn laske-koordinaatti
