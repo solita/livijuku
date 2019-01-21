@@ -12,7 +12,8 @@
             [clojure.set :as set]
             [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
-            [juku.settings :refer [settings]])
+            [juku.settings :refer [settings]]
+            [juku.settings :refer [asiahallinta-on?]])
   (:import (java.util UUID)
            (org.joda.time DateTime)))
 
@@ -85,7 +86,7 @@
 
 (defn- post-with-liitteet [path operation json-part-name json-schema json-object liitteet]
 
-  (if (not= (:asiahallinta settings) "off")
+  (if (asiahallinta-on?)
     (let [json-part {:name json-part-name
                      :content (to-json json-schema json-object)
                      :mime-type "application/json"
@@ -102,7 +103,7 @@
 
 (defn- post [path operation json-schema json-object]
 
-  (if (not= (:asiahallinta settings) "off")
+  (if (asiahallinta-on?)
     (let [request (assoc (default-request operation)
                     :content-type :json
                     :body (to-json json-schema json-object))
@@ -115,7 +116,7 @@
 
 (defn- put [path operation]
 
-  (if (not= (:asiahallinta settings) "off")
+  (if (asiahallinta-on?)
     (let [request (default-request operation)
           url (str (get-in settings [:asiahallinta :url]) "/" path)]
 

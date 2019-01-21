@@ -13,17 +13,22 @@
 
 (def not-nil? (comp not nil?))
 
+(def not-empty? seq)
+
 (defn partial-first-arg [f & rest-args] (fn [first-arg] (apply f first-arg rest-args)))
 
 (defn nil-safe [f]
   (fn ([x] (if x (f x)))
       ([x & next] (if (and x (every? not-nil? next)) (apply f x next)))))
 
-(defmacro if-let* [bindings expr else]
-  (if (seq bindings)
-    `(if-let [~(first bindings) ~(second bindings)]
-       (if-let* ~(drop 2 bindings) ~expr ~else) ~else)
-    expr))
+(defmacro if-let*
+  ([bindings expr] `(if-let* ~bindings ~expr nil))
+  ([bindings expr else]
+   {:pre [(is-divisible-by (count bindings) 2)]}
+    (if (not-empty? bindings)
+      `(if-let [~(first bindings) ~(second bindings)]
+         (if-let* ~(drop 2 bindings) ~expr ~else) ~else)
+      expr)))
 
 (defmacro if-let3
   "This macro constructs a hierarchy of nested if-let forms (see if-let).
