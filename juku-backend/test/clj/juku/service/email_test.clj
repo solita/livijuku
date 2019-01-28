@@ -35,11 +35,17 @@
       (:subject (email/*mock-email* index)) => subject
       (:body (email/*mock-email* index)) => (partial strx/substring? body))))
 
+(defn assert-message-count
+  ([expected]
+   (fact "email amount check"
+         (count email/*mock-email*) => expected)))
+
 ;; *** Sähköpostiviestit avustushakemuksista ***
 
 (fact "Hakemuksen lähettäminen"
   (test-ctx "AH0"
     (h/laheta-hakemus! id)
+    (assert-message-count 2)
     (assert-message (str "Avustushakemus " vuosi " on saapunut")
                     (str "valtionavustushakemuksenne vuodelle " vuosi " on saapunut"))
     (assert-message 1 (str "Helsingin seudun liikenne - avustushakemus " vuosi " on saapunut")
@@ -49,7 +55,7 @@
   (test-ctx "AH0"
     (h/laheta-hakemus! id)
     (h/taydennyspyynto! id "selite")
-
+    (assert-message-count 3)
     (assert-message 2 (str "Avustushakemus " vuosi " täydennyspyyntö")
                       (str "Joukkoliikenteen valtionavustushakemuksenne vuodelle " vuosi " on palautettu täydennettäväksi"))))
 
@@ -59,6 +65,7 @@
     (h/taydennyspyynto! id "selite")
     (h/laheta-taydennys! id)
 
+    (assert-message-count 5)
     (assert-message 3 (str "Avustushakemus " vuosi " täydennys")
                       (str "Joukkoliikenteen valtionavustushakemuksenne täydennys on saapunut"))))
 
@@ -72,7 +79,7 @@
                      :selite nil})
 
     (p/hyvaksy-paatos! id)
-
+    (assert-message-count 3)
     (assert-message 2 (str "Avustuspäätös " vuosi)
                       (str "Joukkoliikenteen valtionavustushakemukseenne vuodelle " vuosi " on tehty päätös"))))
 

@@ -8,6 +8,13 @@
 -- HSL, KS1
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
 values ('juku_hakija', 'Harri', 'Helsinki', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Helsingin seudun liikenne'), 0);
+
+insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma,
+                      poistettuaika, poistaja)
+values ('juku_hakija_deleted', 'Pentti', 'Poistettu', 'pentti.poistettu@solita.fi',
+  (select id from organisaatio where nimi = 'Helsingin seudun liikenne'), 0,
+  sysdate, 'JUKU');
+
 insert into kayttaja (tunnus, etunimi, sukunimi, sahkoposti, organisaatioid, jarjestelma)
 values ('juku_allekirjoittaja', 'Allu', 'Allekirjoittaja', 'petri.sirkkala@solita.fi', (select id from organisaatio where nimi = 'Helsingin seudun liikenne'), 0);
 
