@@ -22,21 +22,30 @@
 (def sisennys 60.0)
 (def footer-tila 70.0)
 
+(def header-left-position 170)
+(def header-date-length 90)
+
 (defn muodosta-header
-  "Header on aina vakiomuotoinen ja esiintyy vain dokumentin ensimmäisellä sivulla"
-  [otsikko]
-  [{:x (+ vasen-marginaali 200)
-    :y ensimmainen-rivi
-    :teksti (:teksti otsikko)}
-   {:x 0
-    :y (- (* 3 12))
-    :teksti (:paivays otsikko)}
-   {:x 100
-    :y 0
-    :teksti (:diaarinumero otsikko)}
-   ;; lopuksi headerin marginaali
-   {:x (- 0 200 100)
-    :y (- (* 3 12))}])
+    "Header on aina vakiomuotoinen ja esiintyy vain dokumentin ensimmäisellä sivulla"
+    [otsikko]
+    [{:x (+ vasen-marginaali header-left-position)
+      :y ensimmainen-rivi
+      :teksti (:teksti otsikko)}
+     {:x 0
+      :y -24
+      :teksti "Päiväys/Datum"
+      :bold true}
+     {:x      header-date-length
+      :y      0
+      :teksti "Dnro/Dnr"
+      :bold   true}
+     {:x      (- header-date-length) :y -12
+      :teksti (:paivays otsikko)}
+     {:x      header-date-length :y 0
+      :teksti (:diaarinumero otsikko)}
+     ;; lopuksi headerin marginaali
+     {:x (- 0 header-left-position header-date-length)
+      :y (- (* 3 12))}])
 
 (defn laske-koordinaatti
   [key elementti]

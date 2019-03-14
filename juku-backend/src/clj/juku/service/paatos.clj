@@ -110,7 +110,7 @@
 
   ([hakemusid preview]
     (let [paatos (find-current-paatos hakemusid)
-          paatospvm-txt (if preview "<päätöspäivämäärä>" (h/format-date (time/today)))
+          paatospvm-txt (if preview "<päätöspvm>" (h/format-date (time/today)))
           lahetyspvm-txt (some-> (select-lahetys-pvm {:hakemusid hakemusid})
                                  first :lahetyspvm coerce/date->localdate h/format-date)
           hakemus (h/get-hakemus+ hakemusid)
@@ -119,7 +119,7 @@
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
           haettuavustus (ak/total-haettavaavustus avustuskohteet)
 
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
+          template (slurp (io/reader (io/re source (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
           common-template-values
             {:organisaatio-nimi (:nimi organisaatio)
              :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
