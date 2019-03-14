@@ -1,40 +1,47 @@
-*Valtionavustuksen maksatuspäätös 1.7.-31.12.{vuosi}
+*{organisaatio-nimi}
+
+*Joukkoliikenteen valtionavustuksen maksaminen
+
+	Valtioneuvoston asetuksen liikenteen palveluiden valtionavustuksista (509/2018) mukaan Liikenne- ja viestintävirasto voi myöntää joukkoliikenteen valtionavustusta suurille ja keskisuurille kaupunkiseuduille asetuksessa määriteltyihin kohteisiin. Valtionavustusta voidaan myöntää enintään 50 prosenttia aiheutuneista hyväksyttävistä kustannuksista.
 
 *Hakemus {lahetyspvm}
 
-	Hakija: {organisaatio-nimi}
+	Hakija on toimittanut Liikenne- ja viestintävirastolle {lahetyspvm} joukkoliikenteen valtionavustuksen maksatushakemuksen 1.7.-31.12.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus}. Hakukohteet on esitelty maksatushakemuksessa.
 
-	Hakija on toimittanut Liikennevirastolle {lahetyspvm} joukkoliikenteen maksatushakemuksen ajalta 1.7. - 31.12.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
-
-{avustuskohteet}
-
-	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. {omarahoitus-all-selite}
+	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus}.
 
 *Päätös
 
-	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa. Maksettava valtionavustus jakautuu seuraavasti:
+	Liikenne- ja viestintävirasto maksaa tällä päätöksellä valtionavustus yhteensä {myonnettyavustus}.
 
-{avustuskohteet-summary}
+*Päätöksen perusteet
 
-*Päätöksen perustelut
+	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} enintään {ah0-myonnettyavustus}. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
 
-	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} arvonlisäveroineen yhteensä enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
+	Hakija on toimittanut vaadittavat tiedot avustuksen käytöstä.
 
-	Liikennevirasto on {mh1-paatospvm} tehdyllä päätöksellä maksanut {mh1-myonnettyavustus} euroa hakijalle. Hakija hakee 1.7. - 31.12.{vuosi} muodostuneita kustannuksia maksuun yhteensä {haettuavustus}, joka on {osuusavustuksesta} % vuodelle {vuosi} myönnetystä valtionavustuksesta. Hakija on toimittanut vaaditut tiedot avustuksen käytöstä.{selite}
+	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin {momentti} määrärahasta. Avustus maksetaan hakijan ilmoittamalle tilille.
 
-	Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin {momentti} määrärahasta.
+*Muutoksenhaku
 
-	Avustus maksetaan hakijan ilmoittamalle tilille.
+	Jos ette tyydy saamaanne päätökseen, voitte hakea siihen oikaisua. Ohje oikaisuun on saatavilla JUKU-järjestelmästä.
 
 *Sovellettava lainsäädäntö
 
 	Laki liikenteen palveluista (320/2017)
-	Valtioneuvoston asetus liikenteen palvelujen valtionavustuksista (509/2018)
+
+	Valtioneuvoston asetus joukkoliikenteen valtionavustuksista (509/2018)
+
 	Valtionavustuslaki (688/2001)
 
-*Muutoksenhaku ja oikaisuvaatimus
+	*Päätöksentekijä
 
-	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on saatavilla JUKU-järjestelmässä.
+	Yksikönpäällikkö
 
-	Päättäjä	{paattaja}
-	Esittelijä	{esittelija}
+	Asta Tuominen
+
+	*Esittelijä
+
+	Joukkoliikenneasiantuntija
+
+	Toni Bärman
