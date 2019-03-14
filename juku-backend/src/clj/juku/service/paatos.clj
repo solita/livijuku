@@ -119,7 +119,7 @@
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
           haettuavustus (ak/total-haettavaavustus avustuskohteet)
 
-          template (slurp (io/reader (io/re source (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
+          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
           common-template-values
             {:organisaatio-nimi (:nimi organisaatio)
              :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
