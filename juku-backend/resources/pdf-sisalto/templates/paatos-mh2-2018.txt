@@ -6,17 +6,17 @@
 
 *Hakemus {lahetyspvm}
 
-	Hakija on toimittanut Liikenne- ja viestintävirastolle {lahetyspvm} joukkoliikenteen valtionavustuksen maksatushakemuksen 1.7.-31.12.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus}. Hakukohteet on esitelty maksatushakemuksessa.
+	Hakija on toimittanut Liikenne- ja viestintävirastolle {lahetyspvm} joukkoliikenteen valtionavustuksen maksatushakemuksen 1.7.-31.12.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus} euroa. Hakukohteet on esitelty maksatushakemuksessa.
 
-	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus}.
+	Hakija on käyttänyt omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa.
 
 *Päätös
 
-	Liikenne- ja viestintävirasto maksaa tällä päätöksellä valtionavustus yhteensä {myonnettyavustus}.
+	Liikenne- ja viestintävirasto maksaa tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa.
 
 *Päätöksen perusteet
 
-	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} enintään {ah0-myonnettyavustus}. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
+	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
 
 	Hakija on toimittanut vaadittavat tiedot avustuksen käytöstä.
 
