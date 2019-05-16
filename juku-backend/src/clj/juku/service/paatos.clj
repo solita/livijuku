@@ -63,7 +63,7 @@
 
 (defn paatos-template [hakemus organisaatio]
   (case (:hakemustyyppitunnus hakemus)
-    "AH0" (str "paatos-ah0-" (str/lower-case (:lajitunnus organisaatio)) "-2018.txt")
+    "AH0" (str "paatos-ah0-" (str/lower-case (:lajitunnus organisaatio)) "-2019.txt")
     "ELY" (case (:vuosi hakemus)
             2019 "paatos-ely-2019.txt"
             2018 "paatos-ely-2018.txt"
@@ -110,7 +110,7 @@
 
   ([hakemusid preview]
     (let [paatos (find-current-paatos hakemusid)
-          paatospvm-txt (if preview "<päätöspäivämäärä>" (h/format-date (time/today)))
+          paatospvm-txt (if preview "<päätöspvm>" (h/format-date (time/today)))
           lahetyspvm-txt (some-> (select-lahetys-pvm {:hakemusid hakemusid})
                                  first :lahetyspvm coerce/date->localdate h/format-date)
           hakemus (h/get-hakemus+ hakemusid)
@@ -159,7 +159,7 @@
         {:otsikko {:teksti otsikko :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
          :teksti (xstr/interpolate template template-values)
 
-         :footer (str "Liikennevirasto" (if preview " - esikatselu"))}))))
+         :footer (str hc/kasittelija-organisaatio-name (if preview " - esikatselu"))}))))
 
 (defn find-paatos-pdf [hakemusid]
   (let [paatos (find-current-paatos hakemusid)]

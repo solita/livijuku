@@ -22,21 +22,30 @@
 (def sisennys 60.0)
 (def footer-tila 70.0)
 
+(def header-left-position 170)
+(def header-date-length 90)
+
 (defn muodosta-header
-  "Header on aina vakiomuotoinen ja esiintyy vain dokumentin ensimmäisellä sivulla"
-  [otsikko]
-  [{:x (+ vasen-marginaali 200)
-    :y ensimmainen-rivi
-    :teksti (:teksti otsikko)}
-   {:x 0
-    :y (- (* 3 12))
-    :teksti (:paivays otsikko)}
-   {:x 135
-    :y 0
-    :teksti (:diaarinumero otsikko)}
-   ;; lopuksi headerin marginaali
-   {:x (- 0 200 135)
-    :y (- (* 3 12))}])
+    "Header on aina vakiomuotoinen ja esiintyy vain dokumentin ensimmäisellä sivulla"
+    [otsikko]
+    [{:x (+ vasen-marginaali header-left-position)
+      :y ensimmainen-rivi
+      :teksti (:teksti otsikko)}
+     {:x 0
+      :y -24
+      :teksti "Päiväys/Datum"
+      :bold true}
+     {:x      header-date-length
+      :y      0
+      :teksti "Dnro/Dnr"
+      :bold   true}
+     {:x      (- header-date-length) :y -12
+      :teksti (:paivays otsikko)}
+     {:x      header-date-length :y 0
+      :teksti (:diaarinumero otsikko)}
+     ;; lopuksi headerin marginaali
+     {:x (- 0 header-left-position header-date-length)
+      :y (- (* 3 12))}])
 
 (defn laske-koordinaatti
   [key elementti]
@@ -139,15 +148,14 @@
 
 (defn lisaa-logo
   [dokumentti sivu]
-  (with-open [pdf (io/input-stream (io/resource "pdf-sisalto/livi-logo.pdf"))
+  (with-open [pdf (io/input-stream (io/resource "pdf-sisalto/traficom-logo.pdf"))
               logo-dokumentti (PDDocument/load pdf)]
     (let [layer (LayerUtility. dokumentti)
           logo (.importPageAsForm layer logo-dokumentti 0)
           korkeus (.getHeight (.getBBox logo))
-          skaalaus (/ 50 korkeus)
+          skaalaus 0.25
           skaalattu-korkeus (* skaalaus korkeus)
-          ylareuna (.getUpperRightY sivukoko)
-          aft (AffineTransform. skaalaus 0.0 0.0 skaalaus vasen-marginaali (- ylareuna (+ 28 skaalattu-korkeus))) ]
+          aft (AffineTransform. skaalaus 0.0 0.0 skaalaus (- vasen-marginaali 5)  (- ylamarginaali skaalattu-korkeus 4)) ]
       (.appendFormAsLayer layer sivu logo aft "LIVI-LOGO"))))
 
 (defn muodosta-osat
@@ -230,4 +238,3 @@
 (def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
 
 (defn format-number [n] (if n (.format ^NumberFormat number-format-fi n)))
-

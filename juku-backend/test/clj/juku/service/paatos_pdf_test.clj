@@ -174,7 +174,7 @@
       (p/find-paatos-pdf id) => (partial instance? InputStream)
       (pdf/assert-otsikko "Valtionavustuspäätös" "testing")
       (assert-hsl-avustushakemuspaatos-teksti)
-      (:footer pdf/*mock-pdf*) => "Liikennevirasto")))
+      (:footer pdf/*mock-pdf*) => hc/kasittelija-organisaatio-name)))
 
 (fact "Maksatushakemuksen päätöksen esikatselu avustushakemuksen päätös on tehty"
   (test-ctx
@@ -226,7 +226,7 @@
             teksti => (partial strx/substring? "Päättäjä\tPäivi Päätöksentekijä")
             teksti => (partial strx/substring? "Esittelijä\tKatri Käsittelijä"))
 
-          (:footer pdf/*mock-pdf*) => "Liikennevirasto")))))
+          (:footer pdf/*mock-pdf*) => hc/kasittelija-organisaatio-name)))))
 
 (fact "Maksatushakemuksessa (mh1) osuusavustuksesta on päättymätön murtoluku"
   (test-ctx

@@ -69,7 +69,9 @@
       (pdf/muodosta-pdf
         {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}
          :teksti (xstr/interpolate template template-values)
-         :footer (c/maybe-nil #(str "Liikennevirasto - esikatselu - " %) "Liikennevirasto" esikatselu-message)}))))
+         :footer (c/maybe-nil #(str hc/kasittelija-organisaatio-name " - esikatselu - " %)
+                              hc/kasittelija-organisaatio-name
+                              esikatselu-message)}))))
 
 (defn find-hakemus-pdf [hakemusid]
   (let [hakemus (h/get-hakemus hakemusid)]
@@ -115,14 +117,19 @@
       (assert-oma-hakemus*! hakemus)
       (h/change-hakemustila! hakemus "V" ["K"] "vireillelaitto")
 
+
       (if (#{"AH0" "ELY"} (:hakemustyyppitunnus hakemus))
-        (h/update-hakemus-set-diaarinumero!
-          {:vuosi (:vuosi hakemus)
-           :organisaatioid (:organisaatioid hakemus)
-           :diaarinumero (asha/hakemus-vireille {:kausi (:diaarinumero hakemuskausi)
-                                                 :tyyppi (hakemustyyppi->asiatyyppi (:hakemustyyppitunnus hakemus))
-                                                 :hakija (:nimi organisaatio)}
-                                                hakemus-asiakirja liitteet)})
+        (c/if-let* [kausi-diaarinumero (:diaarinumero hakemuskausi)
+                    hakemus-diaarinumero
+                      (asha/hakemus-vireille
+                         {:kausi kausi-diaarinumero
+                          :tyyppi (hakemustyyppi->asiatyyppi (:hakemustyyppitunnus hakemus))
+                          :hakija (:nimi organisaatio)}
+                         hakemus-asiakirja liitteet)]
+          (h/update-hakemus-set-diaarinumero!
+            {:vuosi (:vuosi hakemus)
+             :organisaatioid (:organisaatioid hakemus)
+             :diaarinumero hakemus-diaarinumero}))
 
         (if-let [diaarinumero (:diaarinumero hakemus)]
           (let [kasittelija (user/find-user (or (:kasittelija hakemus)

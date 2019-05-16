@@ -1,0 +1,81 @@
+*{organisaatio-nimi}
+
+*Keskisuurten kaupunkiseutujen joukkoliikenteen valtionavustus
+
+	Valtioneuvoston asetuksen liikenteen palveluiden valtionavustuksista (509/2018) mukaan Liikenne- ja viestintävirasto voi myöntää joukkoliikenteen valtionavustusta suurille ja keskisuurille kaupunkiseuduille asetuksessa määriteltyihin kohteisiin. Valtionavustusta voidaan myöntää enintään 50 prosenttia aiheutuneista hyväksyttävistä kustannuksista.
+
+*Hakemus {lahetyspvm}
+
+	Hakija hakee vuodelle {vuosi} keskisuurten kaupunkiseutujen joukkoliikenteen valtionavustusta {haettuavustus} euroa.
+
+*Päätös
+
+	Liikenne- ja viestintävirasto myöntää hakijalle joukkoliikenteen valtionavustusta enintään {myonnettyavustus} euroa. Valtionavustus myönnetään talousarvion momentin 31.30.63.11 (keskisuurten kaupunkisetujen joukkoliikennetuki) määrärahasta hakemuksessa esitettyisiin kohteisiin. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista.
+
+*Päätöksen perusteet
+
+	Hakija on valtioneuvoston asetuksen tarkoittama keskisuuri kaupunkiseutu ja liikennepalvelulain (320/2017) mukainen joukkoliikenteen toimivaltainen viranomainen.
+
+	Hakemuksessa yksilöidyt hakukohteet ovat valtionavustusasetuksen mukaisia.
+
+	Valtionavustusasetuksen 4 §:n mukaan valtionavustuksen myöntämisen edellytyksenä on, että asianomainen kaupunki, Liikenne- ja viestintävirasto ja toimivaltainen elinkeino-, liikenne- ja ympäristökeskus ovat tehneet aiesopimuksen liikenteen palvelujen kehittämisestä. Aiesopimus on tehty ja näin ollen hakemus täyttää valtionavustusasetuksen mukaiset edellytykset.
+
+	Liikennevirasto on laatinut selvityksen joukkoliikenteen valtionrahoituksesta, jossa määritettiin valtionavustuksen jakokriteerit (Liikenneviraston tutkimuksia ja selvityksiä 43/2015). Selvityksessä esitettyjä jakokriteereitä on sovellettu määrärahapäätöksessä. Keskisuurten kaupunkiseutujen rahoituksesta 70 prosenttia jaetaan asukaslukujen suhteessa ja 30 prosenttia kuntien oman rahoituksen suhteessa.
+
+	Kuntien omassa joukkoliikennerahoituksessa on käytetty JUKU-järjestelmään annettuja tietoja. Haettua valtionavustusta ei voida myöntää täysimääräisenä määrärahatilanteesta johtuen.
+
+*Avustuksen käyttö ja hyväksyttävät kustannukset.
+
+	Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, julkisen palvelun velvoitteesta maksettavasta korvauksesta ja liikenteen palvelujen kehittämisestä aiheutuvia kustannuksia. PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen.
+
+	Avustuksen tavoitteena on nostaa seutujen joukkoliikenteen palvelutasoa ja lisätä joukkoliikenteen käyttöjä ja markkinaosuutta sekä parantaa sen kilpailukykyä.
+
+	Valtionavustusta saa käyttää tämän päätöksen perusteella vuoden 2019 aikana syntyneiden kustannusten kattamiseen.
+
+*Valtionavustuksen maksatus
+
+	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen, kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun hakija on toimittanut seurantatiedot ajalta 1.1. - 30.6.2019 päivämäärään 31.8.2019 mennessä. Toinen erä maksetaan, kun hakija on toimittanut seurantatiedot ajalta 1.7. - 31.12.2019 päivämäärään 31.1.2020 mennessä.
+
+	Valtionavustuksen maksatushakemus ja tarvittavat seurantatiedot tulee täyttää JUKU-järjestelmässä. Lisäksi Liikenne- ja viestintävirastolla on oikeus pyytää tuen saajalta myös muita selvityksiä valtionavustuksen käytöstä.
+
+*Muut ehdot
+
+	Valtionavustusta saa käyttää ainoastaan tässä päätöksessä määrättyyn tarkoitukseen. Avustuksen saajan tulee ilmoittaa kirjallisesti viipymättä Liikenne- ja viestintävirastolle avustuksen käyttötarkoituksen muutoksesta ja muista avustuksen käyttöön vaikuttavista seikoista.
+
+	Liikenne- ja viestintävirastolla on oikeus suorittaa valtionavustuksen saajan talouteen ja toimintaan kohdistuvia tarkastuksia siten kuin valtionavustuslain 16 ja 17 §:ssä säädetään. Liikenne- ja viestintävirasto voi määrätä valtionavustuksen maksamisen keskeytettäväksi, jos on perusteltua aihetta epäillä, että avustusta on käytetty muuhun kuin myönnettyyn tarkoitukseen tai saaja on laiminlyönyt ilmoitusvelvollisuutensa taikka ne perusteet, joilla avustusta on myönnetty, ovat olennaisesti muuttuneet samoin kuin silloin kun Euroopan yhteisön lainsäädännössä edellytetään maksamisen keskeyttämistä.
+
+	Valtionavustuksen saajan tulee viipymättä palauttaa virheellisesti, liikaa tai ilmeisen perusteettomasti saamansa valtionavustus tai sen osa.
+
+	Liikenne- ja viestintävirasto määrää valtionavustuksen maksamisen lopetettavaksi ja jo maksetun avustuksen takaisin perittäväksi, jos valtionavustuslain 21 §:ssä säädetyt edellytykset täyttyvät. Liikenne- ja viestintävirasto voi määrätä valtionavustuksen maksamisen lopetettavaksi ja jo maksetun avustuksen takaisin perittäväksi, jos valtionavustuslain 22 §:ssä säädetyt edellytykset täyttyvät. Palautettavan tai takaisin perittävän valtionavustuksen korosta on säädetty valtionavustuslain 24 ja 25 §:ssä.
+
+	Liikennevirasto julkaisi 28.1.2019 hakuohjeet suurten ja keskisuurten kaupunkiseutujen joukkoliikenteen valtionavustuksista 2019. Hakuohjeet ovat osa tätä päätöstä ja hakijan tulee noudattaa niissä esitettyjä ohjeita. Hakuohjeet ovat saatavilla JUKU-järjestelmästä.
+
+	Valtionavustuksen käytön seurantaa varten järjestetään hakijan ja Liikenne- ja viestintäviraston yhteinen seurantatapaamisen vuoden 2019 syksyllä. Tapaamisessa käydään läpi yhteenveto toteutuneista toimenpiteistä, arvioidaan toimenpiteiden vaikutuksia sekä tarkennetaan seuraavan vuoden toimenpiteitä ja rahoitusmahdollisuuksia.
+
+*Muutoksenhaku
+
+	Jos ette tyydy saamaanne päätökseen, voitte hakea siihen oikaisua. Ohje oikaisuun on saatavilla JUKU-järjestelmästä.
+
+*Sovellettava lainsäädäntö
+
+	Laki liikenteen palveluista (320/2017)
+
+	Valtioneuvoston asetus joukkoliikenteen valtionavustuksista (509/2018)
+
+	Valtionavustuslaki (688/2001)
+
+
+
+
+	*Päätöksentekijä
+
+	Osastopäällikkö
+
+	Kirsi Pulkamo
+
+
+	*Esittelijä
+
+	Joukkoliikenneasiantuntija
+
+	Toni Bärman

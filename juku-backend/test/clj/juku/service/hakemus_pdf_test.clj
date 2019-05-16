@@ -227,7 +227,7 @@
 
       (assert-hsl-avustushakemus-teksti 0 0)
 
-      (:footer pdf/*mock-pdf*) => (partial strx/substring? "Liikennevirasto"))))
+      (:footer pdf/*mock-pdf*) => (partial strx/substring? hc/kasittelija-organisaatio-name))))
 
 (fact "Keskeneräinen 1. maksatushakemus"
   (test-ctx
@@ -275,7 +275,7 @@
       (h/laheta-hakemus! id)
 
       (pdf/assert-otsikko "Valtionavustushakemus" nil)
-      (:footer pdf/*mock-pdf*) => "Liikennevirasto"
+      (:footer pdf/*mock-pdf*) => hc/kasittelija-organisaatio-name
 
       (let [text (pdf/pdf->text (h/find-hakemus-pdf id))]
 
@@ -316,7 +316,7 @@
       (h/laheta-hakemus! id)
 
       (pdf/assert-otsikko "Valtionavustushakemus" nil)
-      (:footer pdf/*mock-pdf*) => "Liikennevirasto"
+      (:footer pdf/*mock-pdf*) => hc/kasittelija-organisaatio-name
 
       (let [text (pdf/pdf->text (h/find-hakemus-pdf id))]
 
