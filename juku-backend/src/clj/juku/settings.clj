@@ -31,7 +31,7 @@
                        :asiahallinta (s/conditional map? Asiahallinta string? (s/eq "off"))})
 
 (def default-settings {
-           :server {:port 8082}
+           :server {:port 8080}
            :liite-max-size 52428800
            :web {
              :url "http://localhost:9000"
