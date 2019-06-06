@@ -1,4 +1,4 @@
-(defproject juku-backend "1.6.16"
+(defproject juku-backend "1.7.0-SNAPSHOT"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.4.3"
@@ -55,7 +55,7 @@
                                                 [lein-pdo "0.1.1"]
                                                 [lein-midje "3.1.3"]
 
-                                                [lein-ancient "0.6.7"]
+                                                [lein-ancient "0.6.15"]
                                                 [lein-kibit "0.1.2"]
                                                 [jonase/eastwood "0.2.1"]]
 
