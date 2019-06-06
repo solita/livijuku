@@ -19,7 +19,7 @@
       "- mark-up-to-date"]))
 
 (defn distribution-sql-location []
-  (let [sql-url (.getResource juku.dbmaintain "/project.clj")]
+  (let [sql-url (.getResource juku.dbmaintain "/juku/dbmaintain.properties")]
     (if (= (.getProtocol sql-url) "jar")
       (let [path (.getPath sql-url)
             index (.indexOf path "!")]
