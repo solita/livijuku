@@ -1,11 +1,11 @@
 (ns juku.rest-api.authorization
-  (require [clojure.string :as s]
-           [juku.service.user :as user]
-           [compojure.api.meta :as meta]
-           [juku.headers :as h]
-           [clojure.tools.logging :as log]
-           [ring.util.http-response :as http]
-           [common.core :as c]))
+  (:require [clojure.string :as s]
+            [juku.service.user :as user]
+            [compojure.api.meta :as meta]
+            [juku.headers :as h]
+            [clojure.tools.logging :as log]
+            [ring.util.http-response :as http]
+            [common.core :as c]))
 
 ;-- Authorisaatio --
 (defmethod meta/restructure-param :auth [_ auth {:keys [body] :as acc}]
