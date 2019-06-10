@@ -4,37 +4,39 @@
             :min-lein-version "2.4.3"
             :repositories [["oracle" {:url "oam11g://maven.oracle.com"}]]
 
-            :dependencies [[org.clojure/clojure "1.7.0"]
+            :dependencies [[org.clojure/clojure "1.10.1"]
                            [slingshot "0.12.2"]
-                           [clj-time "0.12.0"]
-                           [com.google.guava/guava "19.0"]
-                           [org.apache.pdfbox/pdfbox "1.8.11"]
+                           [clj-time "0.15.1"]
+                           [com.google.guava/guava "23.0"]
+                           [org.apache.pdfbox/pdfbox "2.0.15"]
                            [clojure-csv/clojure-csv "2.0.2"]
-                           [clj-pdf "2.2.1"]
+                           [clj-pdf "2.3.5"]
 
-                           [clj-http "2.0.1"]
-                           [com.draines/postal "2.0.0"]
+                           [clj-http "3.10.0"]
+                           [com.draines/postal "2.0.3"]
 
                            [environ "1.0.3"] ;; Library for managing environment variables in Clojure.
 
                            ;; *** web application ***
-                           [http-kit "2.1.19"] ;; http server
-                           [ring "1.5.0"]
-                           [ring/ring-defaults "0.2.1"]
+                           [http-kit "2.3.0"] ;; http server
+                           [ring "1.7.1"]
+                           [ring/ring-defaults "0.3.2"]
 
-                           [metosin/compojure-api "1.1.3"]
-                           [metosin/ring-swagger-ui "2.1.5-M2"]
+                           [metosin/compojure-api "1.1.12"]
+                           [metosin/ring-swagger-ui "3.20.1"]
 
                            ;; *** datababse ***
                            [com.oracle.jdbc/ojdbc7 "12.1.0.2"]
-                           [org.clojure/java.jdbc "0.6.1"]
+                           [org.clojure/java.jdbc "0.7.9"]
                            [yesql "0.5.3"]
-                           [honeysql "0.7.0"]
-                           [com.zaxxer/HikariCP "2.6.0"]
+                           [honeysql "0.9.4"]
+                           [com.zaxxer/HikariCP "3.3.1"]
 
                            ;; *** logging libraries ***
-                           [org.clojure/tools.logging "0.3.1"]
-                           [ch.qos.logback/logback-classic "1.1.7"]]
+                           [org.clojure/tools.logging "0.4.1"]
+                           [ch.qos.logback/logback-classic "1.2.3"]]
+
+            :managed-dependencies [[org.flatland/ordered "1.5.7"]]
 
             :plugins [[lein-oracle-repository "0.1.0"]
                       [test2junit "1.1.0"]
@@ -46,10 +48,10 @@
             :profiles {:dev     {:dependencies [[javax.servlet/servlet-api "2.5"]
                                                 [ring-mock "0.1.5"]
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
-                                                [midje "1.8.3"]
+                                                [midje "1.9.8"]
                                                 ;;[midje-junit-formatter "0.1.0-SNAPSHOT"]
-                                                [clj-http-fake "1.0.2"]
-                                                [metosin/scjsv "0.2.0"]]
+                                                [clj-http-fake "1.0.3"]
+                                                [metosin/scjsv "0.5.0"]]
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.
                                                 [lein-pdo "0.1.1"]
