@@ -1,10 +1,10 @@
 (ns juku.service.pdf
   (:import (org.apache.pdfbox.pdmodel PDPage
+                                      PDPageContentStream
                                       PDDocument)
-           org.apache.pdfbox.pdmodel.edit.PDPageContentStream
-           (org.apache.pdfbox.pdmodel.font PDTrueTypeFont
-                                           PDType1Font)
-           org.apache.pdfbox.util.LayerUtility
+           org.apache.pdfbox.pdmodel.common.PDRectangle
+           org.apache.pdfbox.pdmodel.font.PDTrueTypeFont
+           org.apache.pdfbox.multipdf.LayerUtility
            java.awt.geom.AffineTransform
            (java.io ByteArrayOutputStream
                     ByteArrayInputStream)
@@ -14,7 +14,7 @@
   (:require [clojure.java.io :as io]
             [common.map :as m]))
 
-(def sivukoko (PDPage/PAGE_SIZE_A4))
+(def sivukoko (PDRectangle/A4))
 (def ylamarginaali (- (.getUpperRightY sivukoko) 28))
 (def ensimmainen-rivi (- ylamarginaali 12))
 (def vasen-marginaali 57.0)
@@ -222,8 +222,8 @@
 (defn muodosta-pdf
   [osat]
   (with-open [dokumentti (PDDocument.)
-              fonttitiedosto (io/input-stream (io/resource "org/apache/pdfbox/resources/ttf/ArialMT.ttf"))
-              boldfonttitiedosto (io/input-stream (io/resource "org/apache/pdfbox/resources/ttf/Arial-BoldMT.ttf"))]
+              fonttitiedosto (io/input-stream (io/resource "pdf-sisalto/roboto/Roboto-Regular.ttf"))
+              boldfonttitiedosto (io/input-stream (io/resource "pdf-sisalto/roboto/Roboto-Bold.ttf"))]
     (let [output (ByteArrayOutputStream.)
           fontti (PDTrueTypeFont/loadTTF dokumentti fonttitiedosto)
           bold-fontti (PDTrueTypeFont/loadTTF dokumentti boldfonttitiedosto)

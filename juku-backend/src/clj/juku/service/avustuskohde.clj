@@ -110,7 +110,7 @@
     (map assoc-avustuskohdelajit luokat)))
 
 (defn avustuskohderivit [avustuskohteet avustuskohdelajit]
-  (let [avustuskohde-template "\t{avustuskohdenimi}\t\t\t\t\t{haettavaavustus} e"
+  (let [avustuskohde-template "\t{avustuskohdenimi}\t\t\t\t\t{haettavaavustus} €"
         avustuskohteet+nimi (coll/assoc-join avustuskohteet :avustuskohdenimi avustuskohdelajit
                                              [:avustuskohdeluokkatunnus :avustuskohdelajitunnus]
                                              (comp :nimi first coll/children))]
