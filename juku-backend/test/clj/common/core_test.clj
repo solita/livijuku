@@ -1,6 +1,7 @@
 (ns common.core-test
   (:require [midje.sweet :refer :all]
-            [common.core :as c]))
+            [common.core :as c])
+  (:import (clojure.lang Compiler$CompilerException)))
 
 (fact
   "if-let* tests"
@@ -13,4 +14,6 @@
 
 (fact
   "if-let* tests - invalid usage"
-  (macroexpand `(c/if-let* [a] a)) => (throws AssertionError))
+  (macroexpand `(c/if-let* [a] a)) =>
+    (throws Compiler$CompilerException
+            #(->> % .getCause (instance? AssertionError))))
