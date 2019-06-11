@@ -99,7 +99,7 @@
       (p/find-paatos-pdf id) => (partial instance? InputStream)
 
       (assert-hsl-avustushakemuspaatos-teksti)
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" nil)
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
@@ -110,7 +110,7 @@
       (p/find-paatos-pdf id) => (partial instance? InputStream)
 
       (assert-hml-avustushakemuspaatos-teksti)
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" nil)
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
@@ -124,7 +124,7 @@
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 0 "<avustuksen myöntämispvm>" "<myönnetty avustus>")
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) "<osuus avustuksesta>" 0)
 
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" nil)
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
@@ -137,7 +137,7 @@
 
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.7. - 31.12." 0 "<avustuksen myöntämispvm>" "<myönnetty avustus>")
       (assert-hsl-maksatushakemuspaatos2-teksti "<maksatuspäätös pvm>" "<maksettu avustus>")
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" nil)
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" nil)
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
@@ -199,7 +199,7 @@
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 1 pdf/today 1)
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) 100 1)
 
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing")
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" "testing")
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu"))))
 
@@ -256,7 +256,7 @@
       ;; Huom! luvuissa oleva välilyönti on nbsp (00A0) ei siis normaali välilyönti (0020)
       (:teksti pdf/*mock-pdf*) => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta 16 000 e (alv 0%)")
 
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" "testing"))))
 
 (fact "Maksatushakemuksessa (mh1) osuusavustuksesta on 50%"
   (test-ctx
@@ -280,7 +280,7 @@
       (p/find-paatos-pdf mh1) => (partial instance? InputStream)
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 1 pdf/today 2)
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) 50 1)
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" "testing"))))
 
 (fact "Maksatushakemus (mh1) - avustusta myönnetty 0€"
   (test-ctx
@@ -305,7 +305,7 @@
 
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 1 pdf/today 0)
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi)"**" 1)
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" "testing"))))
 
 (fact "Maksatushakemus (mh1) - maksuun ei haettu vielä mitään"
   (test-ctx
@@ -323,7 +323,7 @@
 
       (assert-hsl-maksatushakemuspaatos-teksti (:vuosi kausi) "1.1. - 30.6." 0 pdf/today 1)
       (assert-hsl-maksatushakemuspaatos1-teksti (:vuosi kausi) 0 0)
-      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspäivämäärä>" "testing"))))
+      (pdf/assert-otsikko "Valtionavustuspäätös" "<päätöspvm>" "testing"))))
 
 (def percentage (comp p/format-bigdec p/percentage))
 
