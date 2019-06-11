@@ -205,25 +205,25 @@
   "Avustuskohdelistaus asiakirjoissa"
 
   (ak/avustuskohteet-section [(avustuskohdeluokka "PSA" "1" 1M)])
-    => "\t*PSA:n mukaisen liikenteen hankinta (alv 0%)\n\tPaikallisliikenne\t\t\t\t\t1 e"
+    => "\t*PSA:n mukaisen liikenteen hankinta (alv 0%)\n\tPaikallisliikenne\t\t\t\t\t1 €"
 
   (ak/avustuskohteet-section [(avustuskohdeluokka "HK" "SL" 1M)])
-    => "\t*Hintavelvoitteiden korvaaminen (alv 10%)\n\tSeutulippu\t\t\t\t\t1 e"
+    => "\t*Hintavelvoitteiden korvaaminen (alv 10%)\n\tSeutulippu\t\t\t\t\t1 €"
 
   (ak/avustuskohteet-section [(avustuskohdeluokka "PSA" "1" 1M) (avustuskohdeluokka "HK" "SL" 1M)])
     => (str/join "\n"
                  ["\t*PSA:n mukaisen liikenteen hankinta (alv 0%)"
-                  "\tPaikallisliikenne\t\t\t\t\t1 e"
+                  "\tPaikallisliikenne\t\t\t\t\t1 €"
                   "\n\t*Hintavelvoitteiden korvaaminen (alv 10%)"
-                  "\tSeutulippu\t\t\t\t\t1 e"])
+                  "\tSeutulippu\t\t\t\t\t1 €"])
 
   ;; Huom! luvuissa oleva välilyönti on nbsp (00A0) ei siis normaali välilyönti (0020)
   (ak/avustuskohteet-section [(avustuskohdeluokka "PSA" "1" 1000M) (avustuskohdeluokka "HK" "SL" 1000M)])
     => (str/join "\n"
                  ["\t*PSA:n mukaisen liikenteen hankinta (alv 0%)"
-                  "\tPaikallisliikenne\t\t\t\t\t1 000 e"
+                  "\tPaikallisliikenne\t\t\t\t\t1 000 €"
                   "\n\t*Hintavelvoitteiden korvaaminen (alv 10%)"
-                  "\tSeutulippu\t\t\t\t\t1 000 e"]))
+                  "\tSeutulippu\t\t\t\t\t1 000 €"]))
 
 (fact
   "Filter avustushaettu"
