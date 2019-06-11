@@ -239,4 +239,7 @@
 
 (def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
 
-(defn format-number [n] (if n (str/replace (.format ^NumberFormat number-format-fi n) #"\h" " ")))
+(defn format-number [n]
+  (if n (-> (.format ^NumberFormat number-format-fi n)
+            (str/replace  #"\h" " ")
+            (str/replace  "\u2212" "-"))))
