@@ -9,10 +9,12 @@
            (java.io ByteArrayOutputStream
                     ByteArrayInputStream)
            (java.util Locale)
-           (java.text NumberFormat))
+           (java.text NumberFormat)
+           (org.apache.pdfbox.pdmodel.font.encoding WinAnsiEncoding))
 
   (:require [clojure.java.io :as io]
-            [common.map :as m]))
+            [common.map :as m]
+            [clojure.string :as str]))
 
 (def sivukoko (PDRectangle/A4))
 (def ylamarginaali (- (.getUpperRightY sivukoko) 28))
@@ -225,8 +227,8 @@
               fonttitiedosto (io/input-stream (io/resource "pdf-sisalto/roboto/Roboto-Regular.ttf"))
               boldfonttitiedosto (io/input-stream (io/resource "pdf-sisalto/roboto/Roboto-Bold.ttf"))]
     (let [output (ByteArrayOutputStream.)
-          fontti (PDTrueTypeFont/loadTTF dokumentti fonttitiedosto)
-          bold-fontti (PDTrueTypeFont/loadTTF dokumentti boldfonttitiedosto)
+          fontti (PDTrueTypeFont/load dokumentti fonttitiedosto WinAnsiEncoding/INSTANCE)
+          bold-fontti (PDTrueTypeFont/load dokumentti boldfonttitiedosto WinAnsiEncoding/INSTANCE)
           sivutettu-sisalto (muodosta-osat fontti bold-fontti osat)
           footer (muodosta-footer fontti bold-fontti osat)
           sivut (kirjoita-sisalto dokumentti fontti bold-fontti sivutettu-sisalto footer)]
@@ -237,4 +239,4 @@
 
 (def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
 
-(defn format-number [n] (if n (.format ^NumberFormat number-format-fi n)))
+(defn format-number [n] (if n (str/replace (.format ^NumberFormat number-format-fi n) #"\h" " ")))
