@@ -3,12 +3,18 @@
             [clj-time.core :as time]
             [clj-time.format :as tf]
             [common.map :as m]
-            [juku.service.asiahallinta]
             [common.collection :as coll]
             [clj-http.fake :as fake]
             [juku.settings :refer [settings]]))
 
 (def ^:dynamic *asha*)
+
+(def default-settings {
+  :url "http://asha.livijuku.solita.fi/api"
+  :user "test"
+  :password "test"
+  ;; asioiden omistavan henkilön käyttäjätunnus
+  :omistavahenkilo "test"})
 
 (defn asha-handler [operation result] (fn [req] (set! *asha* (assoc *asha* operation req)) {:status 200 :headers {} :body result}))
 
@@ -28,20 +34,22 @@
          (time/before? (tf/parse (tf/formatters :date-time) (get headers "SOA-Aikaleima")) (time/now)))))
 
 (defmacro with-asha [& body]
-  `(fake/with-fake-routes {#"http://(.+)/hakemuskausi" (asha-handler :avaus "testing\n")
-                           #"http://(.+)/hakemuskausi/(.+)/sulje" (asha-handler :sulkeminen "")
-                           #"http://(.+)/hakemuskausi/(.+)/hakuohje" (asha-handler :hakuohje "")
+  `(fake/with-fake-routes
+     {#"http://(.+)/hakemuskausi" (asha-handler :avaus "testing\n")
+      #"http://(.+)/hakemuskausi/(.+)/sulje" (asha-handler :sulkeminen "")
+      #"http://(.+)/hakemuskausi/(.+)/hakuohje" (asha-handler :hakuohje "")
 
-                           #"http://(.+)/hakemus" (asha-handler :vireille "testing\n")
-                           #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha-handler :taydennyspyynto "")
-                           #"http://(.+)/hakemus/(.+)/taydennys" (asha-handler :taydennys "")
-                           #"http://(.+)/hakemus/(.+)/tarkastettu" (asha-handler :tarkastettu "")
-                           #"http://(.+)/hakemus/(.+)/kasittely" (asha-handler :kasittely "")
-                           #"http://(.+)/hakemus/(.+)/paatos" (asha-handler :paatos "")
+      #"http://(.+)/hakemus" (asha-handler :vireille "testing\n")
+      #"http://(.+)/hakemus/(.+)/taydennyspyynto" (asha-handler :taydennyspyynto "")
+      #"http://(.+)/hakemus/(.+)/taydennys" (asha-handler :taydennys "")
+      #"http://(.+)/hakemus/(.+)/tarkastettu" (asha-handler :tarkastettu "")
+      #"http://(.+)/hakemus/(.+)/kasittely" (asha-handler :kasittely "")
+      #"http://(.+)/hakemus/(.+)/paatos" (asha-handler :paatos "")
 
-                           #"http://(.+)/hakemus/(.+)/maksatushakemus" (asha-handler :maksatushakemus "")}
+      #"http://(.+)/hakemus/(.+)/maksatushakemus" (asha-handler :maksatushakemus "")}
 
-      (binding [*asha* {}] ~@body)))
+      (with-redefs [settings (assoc settings :asiahallinta default-settings)]
+        (binding [*asha* {}] ~@body))))
 
 (defmacro with-asha-off [& body] `(with-redefs [settings (assoc settings :asiahallinta "off")] ~@body))
 

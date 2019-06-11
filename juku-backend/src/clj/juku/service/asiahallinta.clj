@@ -54,8 +54,9 @@
 
 (s/defschema Paatos {:paattaja s/Str})
 
-(def omistaja {:omistavaOrganisaatio "Liikennevirasto"
-               :omistavaHenkilo (get-in settings [:asiahallinta :omistavahenkilo])})
+(defn omistaja [config]
+  {:omistavaOrganisaatio "Liikennevirasto"
+   :omistavaHenkilo (get-in config [:asiahallinta :omistavahenkilo])})
 
 (defn- log-time* [title f]
   (let [start (System/nanoTime)
@@ -134,7 +135,7 @@
 (defn avaa-hakemuskausi [hakemuskausi hakuohje]
   (strx/trim (:body (post-with-liitteet
                      "hakemuskausi" "AvaaKausi" "hakemuskausi"
-                     Hakemuskausi (merge hakemuskausi omistaja)
+                     Hakemuskausi (merge hakemuskausi (omistaja settings))
                      [(hakuohje-asiakirja-multipart hakuohje)]))))
 
 (defn hakemus-asiakirja-multipart [asiakirja]
@@ -145,7 +146,7 @@
 
 (defn hakemus-vireille [hakemus hakemusasiakirja liitteet]
   (str/trim (:body (post-with-liitteet
-                     "hakemus" "Vireilla" "hakemus" Hakemus (merge hakemus omistaja)
+                     "hakemus" "Vireilla" "hakemus" Hakemus (merge hakemus (omistaja settings))
                      (cons (hakemus-asiakirja-multipart hakemusasiakirja)
                            (map rename-content-keys liitteet))))))
 
