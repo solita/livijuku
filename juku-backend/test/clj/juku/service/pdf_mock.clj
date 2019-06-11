@@ -7,7 +7,8 @@
   (:import (java.io InputStream)
            (org.apache.pdfbox.pdfparser PDFParser)
            (org.apache.pdfbox.pdmodel PDDocument)
-           (org.apache.pdfbox.util PDFTextStripper)))
+           (org.apache.pdfbox.text PDFTextStripper)
+           (org.apache.pdfbox.io RandomAccessBuffer)))
 
 (def ^:dynamic *mock-pdf*)
 
@@ -32,7 +33,7 @@
                                     :diaarinumero diaarinumero})))
 
 (defn pdf->text [^InputStream document]
-  (let [^PDFParser parser (doto (PDFParser. document) .parse)
+  (let [^PDFParser parser (doto (PDFParser. (RandomAccessBuffer. document)) .parse)
         ^PDFTextStripper stripper (PDFTextStripper. )]
 
     (with-open [^PDDocument pdf (.getPDDocument parser)]

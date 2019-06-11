@@ -101,10 +101,10 @@
 
       (let [teksti (:teksti pdf/*mock-pdf*)]
         teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
-        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1 e")
-        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1 e")
+        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1 €")
+        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1 €")
         teksti => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
-        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1,1 e"))
+        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1,1 €"))
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))
 
@@ -144,11 +144,11 @@
 
       (let [teksti (:teksti pdf/*mock-pdf*)]
         teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
-        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1,12 e")
-        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1,13 e")
+        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t1,12 €")
+        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t1,13 €")
         teksti => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
-        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1,24 e")
-        teksti => (partial strx/substring? "Kaupunkilippu tai kuntalippu\t\t\t\t\t1,24 e"))
+        teksti => (partial strx/substring? "Seutulippu\t\t\t\t\t1,24 €")
+        teksti => (partial strx/substring? "Kaupunkilippu tai kuntalippu\t\t\t\t\t1,24 €"))
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen"))))
 
@@ -205,13 +205,12 @@
 
       (pdf/assert-otsikko "Valtionavustushakemus" nil)
 
-      ; huom! rahamääräsä oleva välilyönti on nbsp
-      (assert-hsl-avustushakemus-teksti "20 000" "20 000")
+      (assert-hsl-avustushakemus-teksti "20 000" "20 000")
 
       (let [teksti (:teksti pdf/*mock-pdf*)]
         teksti => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta")
-        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t10 000 e")
-        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t10 000 e"))
+        teksti => (partial strx/substring? "Paikallisliikenne\t\t\t\t\t10 000 €")
+        teksti => (partial strx/substring? "Integroitupalvelulinja\t\t\t\t\t10 000 €"))
 
       (:footer pdf/*mock-pdf*) => (partial strx/substring? "esikatselu - hakemus on keskeneräinen")))))
 
@@ -284,10 +283,10 @@
         text => (partial strx/substring? "Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta 14 101,24 euroa")
 
         text => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
-        text => (partial strx/substring? "Paikallisliikenne 5 000 e")
-        text => (partial strx/substring? "Integroitupalvelulinja 5 000 e")
+        text => (partial strx/substring? "Paikallisliikenne 5 000 €")
+        text => (partial strx/substring? "Integroitupalvelulinja 5 000 €")
         text => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
-        text => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,24 e")))))
+        text => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,24 €")))))
 
 (fact
   "Maksatushakemuksella ei ole avustuskohteita joilla kirjattu vain omaa rahoitusta - LIVIJUKU-1020"
@@ -326,7 +325,7 @@
                   "Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta"))
 
         text => (partial strx/substring? "PSA:n mukaisen liikenteen hankinta (alv 0%)")
-        text => (partial strx/substring? "Paikallisliikenne 5 000 e")
-        text => (partial strx/substring? "Integroitupalvelulinja 5 000 e")
+        text => (partial strx/substring? "Paikallisliikenne 5 000 €")
+        text => (partial strx/substring? "Integroitupalvelulinja 5 000 €")
         text => (partial strx/substring? "Hintavelvoitteiden korvaaminen (alv 10%)")
-        text => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,24 e")))))
+        text => (partial strx/substring? "Kaupunkilippu tai kuntalippu 1,24 €")))))
