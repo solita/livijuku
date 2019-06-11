@@ -32,7 +32,7 @@
   (if (and (not= (:email settings) "off")
            (not-empty to))
     (let [message (assoc default-request
-                    :to to
+                    :to (vec to)
                     :subject subject
                     :body parts)]
 
