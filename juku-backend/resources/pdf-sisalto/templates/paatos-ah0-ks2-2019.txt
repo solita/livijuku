@@ -34,7 +34,7 @@
 
 *Valtionavustuksen maksatus
 
-	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen, kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun hakija on toimittanut seurantatiedot ajalta 1.1. - 30.6.2019 päivämäärään 31.8.2019 mennessä. Toinen erä maksetaan, kun hakija on toimittanut seurantatiedot ajalta 1.7. - 31.12.2019 päivämäärään 31.1.2020 mennessä.
+	Valtionavustus maksetaan hakemuksesta tuen saajalle kahdessa erässä toteutuneiden kustannusten perusteella sen jälkeen, kun avustuksen käytöstä on esitetty hyväksyttävä selvitys. Ensimmäinen erä, joka on enintään puolet myönnetystä valtionavustuksesta, maksetaan kun hakija on toimittanut seurantatiedot ajalta 1.1. - 30.6.{vuosi} päivämäärään {mh1-hakuaika-loppupvm} mennessä. Toinen erä maksetaan, kun hakija on toimittanut seurantatiedot ajalta 1.7. - 31.12.{vuosi} päivämäärään {mh2-hakuaika-loppupvm} mennessä.
 
 	Valtionavustuksen maksatushakemus ja tarvittavat seurantatiedot tulee täyttää JUKU-järjestelmässä. Lisäksi Liikenne- ja viestintävirastolla on oikeus pyytää tuen saajalta myös muita selvityksiä valtionavustuksen käytöstä.
 
