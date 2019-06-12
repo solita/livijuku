@@ -37,7 +37,7 @@
              :url "http://localhost:9000"
              :context-path ""}
            :db {
-              :url "jdbc:oracle:thin:@localhost:1521:orcl"
+              :url "jdbc:oracle:thin:@localhost:1521/orclpdb1.localdomain"
               :user "juku_app"
               :password "juku"}
            :email {
