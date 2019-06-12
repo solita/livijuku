@@ -33,7 +33,7 @@
 
     (.put "dbMaintainer.script.locations" sql-locations)
 
-    (.put "database.url" (str "jdbc:oracle:thin:@" (or (System/getenv "DB_URL") "localhost:1521:orcl")))
+    (.put "database.url" (str "jdbc:oracle:thin:@" (or (System/getenv "DB_URL") "localhost:1521/orclpdb1.localdomain")))
     (.put "database.userName" (or (System/getenv "DB_USER") "juku"))
     (.put "database.password" (or (System/getenv "DB_PASSWORD") "juku"))
     (.put "database.schemaNames" (or (System/getenv "DB_USER") "juku"))))
