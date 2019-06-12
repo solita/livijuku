@@ -1,38 +1,41 @@
 #!/usr/bin/env bash
 set -e
 
-BASEDIR=$(cd $(dirname $0); /bin/pwd)
-cd $BASEDIR
+cd $(dirname $0)
+BASEDIR=$(/bin/pwd)
+juku_db=${1:-"juku-db"}
+db_port=${2:-"1521"}
+epg_port=${3:-"50000"}
 
 source db.sh
 
 # run database
 docker run -d -it \
       -v $BASEDIR/..:/opt/juku/ \
-      -p 1521:1521 \
-      -p 50000:50000 \
-      --name juku-db \
+      -p 127.0.0.1:1521:1521 \
+      -p 127.0.0.1:50000:50000 \
+      --name $juku_db \
       container-registry.oracle.com/database/enterprise:12.2.0.1
 
-./wait-until-running.sh
+./wait-until-running.sh $juku_db
 
 # configuration
-db::sqlplus "docker/config.sql"
+db::sqlplus $juku_db "docker/config.sql"
 
 # create tablespaces
-db::sqlplus_pdb orclpdb1 "dba/tablespace.sql"
+db::sqlplus_pdb $juku_db orclpdb1 "dba/tablespace.sql"
 
 # create users
-db::sqlplus_pdb orclpdb1 "dba/users.sql"
+db::sqlplus_pdb $juku_db orclpdb1 "dba/users.sql"
 
 # add wm_concat
-db::sqlplus_pdb orclpdb1 "dba/wm_concat_shim.sql"
+db::sqlplus_pdb $juku_db orclpdb1 "dba/wm_concat_shim.sql"
 
 # enable epg
-db::sqlplus_pdb orclpdb1 "dba/enable-epg.sql"
+db::sqlplus_pdb $juku_db orclpdb1 "dba/enable-epg.sql"
 
 # enable flashback for development environment
-db::sqlplus_pdb orclpdb1 "dba/flashback.sql"
+db::sqlplus_pdb $juku_db orclpdb1 "dba/flashback.sql"
 
 # check epg status
-db::sqlplus_pdb orclpdb1 '$ORACLE_HOME/rdbms/admin/epgstat.sql'
+db::sqlplus_pdb $juku_db orclpdb1 '$ORACLE_HOME/rdbms/admin/epgstat.sql'
