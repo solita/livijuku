@@ -60,6 +60,9 @@
 
 (defmacro with-user [user & body] `(with-user* ~user (fn [] ~@body)))
 
+(defn remove-quotes [txt]
+  (str/replace txt "\"" ""))
+
 (defn wrap-user [handler]
   (fn [request]
     (c/if-let3
@@ -71,7 +74,7 @@
         (error r/bad-request "Käyttäjätunnusta ei löydy pyynnön otsikkotiedosta: iv-user.")
        group-txt (:iv-groups headers)
         (error r/bad-request "Käyttäjän " uid " käyttäjäryhmiä ei ole pyynnön otsikkotiedossa: iv-groups.")
-       roles (c/nil-if empty? (user/find-roleids (str/split group-txt #",")))
+       roles (c/nil-if empty? (user/find-roleids (map (comp remove-quotes str/trim) (str/split group-txt #","))))
         (error r/forbidden "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - iv-groups: " group-txt)
        organisaatio-name (h/parse-header headers :o nil)
         (error r/bad-request "Käyttäjän " uid " organisaation nimeä ei löydy pyynnön otsikkotiedosta: o.")
