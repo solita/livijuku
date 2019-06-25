@@ -34,9 +34,9 @@
            (:id organisaatio) nil))
 
 (defn- headers->user-data [orgnisaatio-id headers]
-  (assoc (m/dissoc-if {:etunimi (strx/trim (h/parse-header headers :oam-user-first-name))
-                       :sukunimi (strx/trim (h/parse-header headers :oam-user-last-name))
-                       :sahkoposti (strx/trim (h/parse-header headers :oam-user-mail))} str/blank?)
+  (assoc (m/dissoc-if {:etunimi (strx/trim (h/parse-header headers :givenname))
+                       :sukunimi (strx/trim (h/parse-header headers :sn))
+                       :sahkoposti (strx/trim (h/parse-header headers :mail))} str/blank?)
                        :organisaatioid orgnisaatio-id))
 
 (defn save-user [uid orgnisaatio-id roles headers]
@@ -72,12 +72,12 @@
        group-txt (:iv-groups headers)
         (error r/bad-request "Käyttäjän " uid " käyttäjäryhmiä ei ole pyynnön otsikkotiedossa: iv-groups.")
        roles (c/nil-if empty? (user/find-roleids (str/split group-txt #",")))
-        (error r/forbidden "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - oam-groups: " group-txt)
-       organisaatio-name (h/parse-header headers :oam-user-organization nil)
-        (error r/bad-request "Käyttäjän " uid " organisaation nimeä ei löydy pyynnön otsikkotiedosta: oam-user-organization.")
-       orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :oam-user-department))
+        (error r/forbidden "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - iv-groups: " group-txt)
+       organisaatio-name (h/parse-header headers :o nil)
+        (error r/bad-request "Käyttäjän " uid " organisaation nimeä ei löydy pyynnön otsikkotiedosta: o.")
+       orgnisaatio-id (find-matching-organisaatio organisaatio-name (h/parse-header headers :ou))
         (error r/forbidden "Käyttäjän " uid " organisaatiota: " organisaatio-name
-              " (osasto: " (h/parse-header headers :oam-user-department) ") ei tunnisteta.")
+              " (osasto: " (h/parse-header headers :ou) ") ei tunnisteta.")
        privileges (c/nil-if empty? (user/find-privileges roles orgnisaatio-id))
         (error r/forbidden "Käyttäjällä " uid " ei ole voimassaolevaa käyttöoikeutta järjestelmään.")]
 
