@@ -23,11 +23,10 @@
     value))
 
 (defn parse-header
-  "Lue mahdollisesti base64-koodatun otsikkotiedon arvo.
-  Jos otsikkoa ei tulkita oikealla tavalla base64-koodatuksi, niin otsikon arvo palautetaan sellaisenaan."
+  "Read percent encoded (rfc3986) header value."
 
    ([headers header not-found] {:pre [(map? headers) (c/not-nil? header)]}
-      (if-let [value (get headers header)] (decode-value value) not-found))
+      (if-let [value (get headers header)] (codec/url-decode value) not-found))
 
    ([headers header] (parse-header headers header nil)))
 
