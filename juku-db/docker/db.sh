@@ -8,12 +8,12 @@ function db::exec() {
 function db::sqlplus() {
   container=$1
   filename=$2
-  db::exec $container "(echo @$filename; printf '\n'; echo exit) | sqlplus system/Oradoc_db1"
+  db::exec $container "printf \"@$filename ${*:3}\nexit\n\" | sqlplus system/Oradoc_db1"
 }
 
 function db::sqlplus_pdb() {
   container=$1
   pdb=$2
   filename=$3
-  db::exec $container "(echo @docker/connect-pdb.sql $pdb; printf '\n'; echo @$filename; printf '\n'; echo exit) | sqlplus system/Oradoc_db1"
+  db::exec $container "printf \"@docker/connect-pdb.sql $pdb\n@$filename ${*:4}\nexit\n\" | sqlplus system/Oradoc_db1"
 }

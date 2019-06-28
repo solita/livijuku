@@ -24,7 +24,7 @@ create role livi_application not identified;
 grant create session to livi_application;
 
 create user juku 
-    identified by juku 
+    identified by &1
     default tablespace juku_data 
     quota unlimited on juku_data 
     quota unlimited on juku_indx 
@@ -32,7 +32,7 @@ create user juku
 ;
 
 create user juku_app 
-    identified by juku 
+    identified by &2
     account unlock 
 ;
 

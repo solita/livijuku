@@ -26,7 +26,7 @@ db::sqlplus $juku_db "docker/config.sql"
 db::sqlplus_pdb $juku_db orclpdb1 "dba/tablespace.sql"
 
 # create users
-db::sqlplus_pdb $juku_db orclpdb1 "dba/users.sql"
+db::sqlplus_pdb $juku_db orclpdb1 "dba/users.sql" juku juku
 
 # add wm_concat
 db::sqlplus_pdb $juku_db orclpdb1 "dba/wm_concat_shim.sql"
