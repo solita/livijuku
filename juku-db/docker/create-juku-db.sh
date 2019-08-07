@@ -25,6 +25,9 @@ db::sqlplus $juku_db "docker/config.sql"
 # create tablespaces
 db::sqlplus_pdb $juku_db orclpdb1 "dba/tablespace.sql"
 
+# create roles
+db::sqlplus_pdb $juku_db orclpdb1 "dba/roles.sql"
+
 # create users
 db::sqlplus_pdb $juku_db orclpdb1 "dba/users.sql" juku juku
 
