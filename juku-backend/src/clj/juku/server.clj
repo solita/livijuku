@@ -26,7 +26,11 @@
   (log/info (str "Environment: " (System/getenv)))
   (log/info (str "System properties: " (System/getProperties)))
   (log/info (str "Starting web server on port " port))
-  (reset! server (http-kit/run-server handler {:port port :max-body 209715200 :thread 20})))
+  (reset! server (http-kit/run-server handler
+     {:port port
+      :max-line 65536
+      :max-body 209715200
+      :thread 20})))
 
 (defn start []
   (let [env-port (System/getenv "SERVER_PORT")
