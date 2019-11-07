@@ -15,7 +15,8 @@
                       :password    s/Str})
 
 (s/defschema Web {:url            s/Str
-                  :context-path   s/Str})
+                  :context-path   s/Str
+                  :api-path       s/Str})
 
 (s/defschema Email {:from         s/Str
                     :server       s/Str
@@ -35,7 +36,8 @@
            :liite-max-size 52428800
            :web {
              :url "http://localhost:9000"
-             :context-path ""}
+             :context-path ""
+             :api-path "/"}
            :db {
               :url "jdbc:oracle:thin:@localhost:1521/orclpdb1.localdomain"
               :user "juku_app"

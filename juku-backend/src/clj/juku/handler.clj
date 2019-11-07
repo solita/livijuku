@@ -20,6 +20,7 @@
             [juku.rest-api.user :refer [user-routes]]
             [juku.rest-api.tilastot :refer [tilastot-routes]]
             [juku.rest-api.kilpailutus :refer [kilpailutus-routes kilpailutus-public-routes]]
+            [juku.settings :refer [settings]]
             [common.core :as jc]
 
             [ring.middleware.defaults :as m]
@@ -42,8 +43,7 @@
                                   #"GET /hakemus/.*/seuranta/pdf.*"
                                   #"GET /kilpailutukset/csv.*"
                                   #"GET /tunnusluku/csv.*"
-                                  #"GET /api/ui/.*"
-                                  #"GET /swagger.json"
+                                  #"GET /documentation/.*"
 
                                   #"POST /hakemuskausi/.*/hakuohje"
                                   #"POST /hakemuskausi/.*/elyhakuohje"
@@ -82,9 +82,10 @@
        :params-opts {jm/wrap-csv-params {:delimiter \;}}}
 
      :swagger
-      {:ui "/api/ui"
-       :spec "/swagger.json"
-       :data {:info {
+      {:ui "/documentation"
+       :spec "/documentation/swagger.json"
+       :data {:basePath (-> settings :web :api-path)
+              :info {
                  :title "Liikennevirasto - Juku API"
                  :version "1.5.0"
                  :description "Joukkoliikenteen avustushakemusten hallintaan ja hakuihin liittyvät palvelut"
