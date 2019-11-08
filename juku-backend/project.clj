@@ -1,7 +1,7 @@
-(defproject juku-backend "1.7.0-SNAPSHOT"
+(defproject juku-backend "1.7.1"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
-            :min-lein-version "2.4.3"
+            :min-lein-version "2.9.1"
             :repositories [["oracle" {:url "oam11g://maven.oracle.com"}]]
 
             :dependencies [[org.clojure/clojure "1.10.1"]
@@ -22,7 +22,7 @@
                            [ring "1.7.1"]
                            [ring/ring-defaults "0.3.2"]
 
-                           [metosin/compojure-api "1.1.12"]
+                           [metosin/compojure-api "1.1.13"]
                            [metosin/ring-swagger-ui "3.20.1"]
 
                            ;; *** datababse ***
@@ -38,7 +38,7 @@
 
             :managed-dependencies [[org.flatland/ordered "1.5.7"]]
 
-            :plugins [[lein-oracle-repository "0.1.0"]
+            :plugins [[lein-oracle-repository "0.2.0"]
                       [test2junit "1.1.0"]
                       [lein-ring "0.8.12"]]
 
