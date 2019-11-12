@@ -1,5 +1,5 @@
-Juku
-====
+Liikenne- ja viestintävirasto - Juku
+===
 
 JUKU on joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä. 
 JUKU -järjestelmällä kunnat ja ELY-keskukset hakevat tukea julkisen liikenteen järjestämiseen ja viranomainen käsittelee tukihakemuksia. 
