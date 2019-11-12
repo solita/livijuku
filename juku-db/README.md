@@ -84,10 +84,10 @@ Asennusohjelma tuotetaan komennolla:
 
     lein uberjar
 
-Kehitysympäristöt
+Testiympäristöt
 -----------------
-Kehitysympäristöt asennetaan samalla tavalla kuin tuotantoympäristö. 
-Kehitysympäristössä kanta voidaan tyhjentää komennolla:
+Testiympäristöt asennetaan samalla tavalla kuin tuotantoympäristö. 
+Testiympäristössä kanta voidaan tyhjentää komennolla:
 
     java -jar juku-db.jar clear-db
 
