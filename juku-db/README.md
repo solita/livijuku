@@ -1,11 +1,9 @@
 Juku tietokanta
 ===============
 
-Tämä projekti sisältää tietokantapäivitykset Oracle Juku-tietokannan skeeman päivitykseen ja luontiin tyhjästä.
+Tämä projekti sisältää tietokantapäivitykset Oracle Juku-tietokannan skeeman luontiin ja päivitykseen.
 
-Päivitysten hallintaan käytetään dbmaintain työkalua: http://www.dbmaintain.org/overview.html
-
-Tätä työkalua käytetään leiningen asennustyökalulla: http://leiningen.org
+Päivitysten hallintaan käytetään [dbmaintain-työkalua][dbmaintain].
 
 Oletukset
 ---------
@@ -16,17 +14,18 @@ jolla tietokantaobjektit luodaan ja jolla on riittävät oikeudet muutosten teke
 Kaikki tietoa varaavat kantaobjektit luodaan juku-käyttäjän oletustaulualueeseen: **juku_data**.
 Oletustaulualueen lisäksi tarvitaan taulualue indekseille: **juku_indx**.
 
-Indeksitaulualue valitaan siten että sen nimi on juku%_indx, johon juku käyttäjällä on varattu tilaa (quota).
+Indeksitaulualue valitaan siten että sen nimi on `juku%_indx`, johon juku käyttäjällä on varattu tilaa (quota).
 
-Tarvittavien taulualueiden luontiin löytyy esimerkit: dba/tablespace.sql
+Tarvittavien taulualueiden luontiin löytyy esimerkit: [dba/tablespace.sql](dba/tablespace.sql)
 
-Tarvittavien käyttäjien luontiin löytyy esimerkit: dba/users.sql
+Tarvittavien roolien ja käyttäjien luontiin löytyy esimerkit: 
+[dba/roles.sql](dba/roles.sql) ja [dba/users.sql](dba/users.sql)
 
 JDBC-ajurit
 -----------
-Oracle JDBC-ajurit ladataan oraclen [maven-varastosta](maven-repository). 
+Oracle JDBC-ajurit ladataan oraclen [maven-varastosta][maven-repository]. 
 Tänne pääsy edellyttää Oracle Technology Network (OTN) tunnukset. 
-Ohjeet OTN tunnusten saamiseen löytyy [täältä](maven-repository).
+Ohjeet OTN tunnusten saamiseen löytyy [täältä][maven-repository].
 
 Tunnukset tallennetaan tiedostoon: `~/.lein/profiles.clj` esim.
  
@@ -35,11 +34,13 @@ Tunnukset tallennetaan tiedostoon: `~/.lein/profiles.clj` esim.
 Kehityskäyttö
 -------------
 
-Leiningen build-työkalun asennus: http://leiningen.org/#install
+Asenna [java][java], [docker][docker] ja [leiningen][leiningen].
+
+Käynnistä [tietokanta](/juku-db/docker).
 
 Tietokannan päivitys:
 
-    lein run update-db
+    lein with-profiles +test-data run update-db
 
 Tietokannan tyhjentäminen:
 
@@ -47,9 +48,7 @@ Tietokannan tyhjentäminen:
 
 Tyhjennys/päivitys:
 
-    lein do run clear-db, run update-db
-
-Ohjeet tietokantapalvelimen käyttämiseen vagrant-työkalulla löytyy: vagrant/README.md
+    lein with-profiles +test-data do run clear-db, run update-db
 
 Tämä kehityskäyttöön tarkoitettu päivitys lisää aina myös testidatan. 
 Testidata on tarkoitettu automaattisten testien ajamista varten. 
@@ -58,9 +57,9 @@ SQL lähdetiedostot luetaan kansioista:
  - test/sql - automaattisia testejä varten tehty vakiodata esim. testikäyttäjät
 
 Oletustietokanta-asetukset ovat:
-- url = jdbc:oracle:thin:@localhost:1521:orcl
-- user = juku
-- password = juku
+- url = `jdbc:oracle:thin:@localhost:1521/orclpdb1.localdomain`
+- user = `juku`
+- password = `juku`
 
 Asetuksia voi muuttaa ympäristömuuttujilla:
 - DB_URL
@@ -96,4 +95,8 @@ Asennusohjelmasta voi tuottaa testidatan sisältävän version komennolla:
 
     lein with-profiles +test-data uberjar
 
-[maven-repository]: https://maven.oracle.com`
+[maven-repository]: https://maven.oracle.com
+[dbmaintain]: http://www.dbmaintain.org
+[leiningen]: http://leiningen.org
+[java]: https://openjdk.java.net/
+[docker]: https://www.docker.com/

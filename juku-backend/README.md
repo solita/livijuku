@@ -1,38 +1,35 @@
-Liikenne- ja viestintävirasto - Juku palvelut
-=============================================
+Juku palvelut
+=============
 
 Tämä projekti sisältää Liikenne- ja viestintäviraston Juku -järjestelmän taustapalveluiden toteutuksen.
 
 Kehityskäyttö
 -------------
 
-Leiningen build-työkalun asennus: http://leiningen.org/#install
+Asenna [java][java], [docker][docker] ja [leiningen][leiningen].
+
+Kehitystietokannan käynnistäminen ks. [juku-db](../juku-db)
 
 Palvelimen käynnistys paikallisesti: `./start.sh`
 
-Palvelimen käynnistäminen edellyttää tietokannan
-* oletus: `jdbc:oracle:thin:@localhost:1521/orclpdb1.localdomain`
-
-Palvelujen rajapintadokumentaatio: http://localhost:8080/api/ui/index.html
-
-Kehitystietokannan käyttäminen dockerilla ks. ../juku-db/docker/README.md
+Palvelujen rajapintadokumentaatio: `http://localhost:8080/documentation/`
 
 ### Palveluiden käyttäminen curl-työkalulla
 
 Pyynnön otsikkotiedot (pakolliset kaikissa pyynnöissä):
-* -H oam-remote-user:käyttäjätunnus
-* -H oam-groups:käyttäjäroolit
-* -H oam-user-organization:käyttäjän organisaation nimi
+* -H iv-user:käyttäjätunnus
+* -H iv-groups:käyttäjäroolit
+* -H o:käyttäjän organisaation id
 
-Esimerkki: `curl -v -H oam-remote-user:harri -H oam-groups:juku_hakija -H "oam-user-organization:helsingin ..." http://localhost:8080/user`
+Esimerkki: `curl -v -H iv-user:harri -H iv-groups:juku_hakija -H o:069205 http://localhost:8080/user`
 
 Liitteiden lähettäminen multipart/form-data-muodossa: --form liite="@tiedostonimi;type=mime-type"
 
-Esimerkki: `curl -v -H oam-remote-user:harri -H oam-groups:juku_hakija -H "oam-user-organization:helsingin ..." --form liite="@README.md;type=text/plain" http://localhost:8080/hakemus/1/liite`
+Esimerkki: `curl -v -H iv-user:harri -H iv-groups:juku_hakija -H o:069205 --form liite="@README.md;type=text/plain" http://localhost:8080/hakemus/1/liite`
 
 Hakuohjeen päivittäminen: -X PUT --form hakuohje="@tiedostonimi;type=text/plain"
 
-Esimerkki: `curl -v -X PUT -include -H oam-remote-user:harri -H oam-groups:juku_hakija -H "oam-user-organization:helsingin ..." --form hakuohje="@README.md;type=text/plain" http://localhost:8080/hakemuskausi/2015/hakuohje`
+Esimerkki: `curl -v -X PUT -include -H iv-user:harri -H iv-groups:juku_hakija -H o:069205 --form hakuohje="@README.md;type=text/plain" http://localhost:8080/hakemuskausi/2015/hakuohje`
 
 Tuotantokäyttö
 --------------
@@ -50,3 +47,7 @@ Testaus
 -------
 
 Midje testit ajetaan komennolla: `lein midje`
+
+[leiningen]: http://leiningen.org
+[java]: https://openjdk.java.net/
+[docker]: https://www.docker.com/
