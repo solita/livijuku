@@ -198,3 +198,12 @@
                 :decoder (fn [csv]
                            (apply csv/parse-csv csv
                                   (apply concat (-> options :options))))))))
+
+; *** A simple api key middleware ***
+
+(defn wrap-api-key [api-key handler]
+  (fn [request]
+    (let [header-api-key (get-in request [:headers "x-api-key"])]
+      (if (= api-key header-api-key)
+        (handler request)
+        (error r/forbidden (str "API key in x-api-key header is not valid"))))))

@@ -49,6 +49,8 @@
                                   #"POST /hakemuskausi/.*/elyhakuohje"
                                   #"POST /hakemus/.*/liite"]))
 
+(def wrap-api-key (partial jm/wrap-api-key (-> settings :web :api-key)))
+
 ;; Compojure API swagger format fix - remove nil formats
 (defonce ->mime-types-original capi-mw/->mime-types)
 (alter-var-root #'capi-mw/->mime-types (constantly (fn [formats] (filter core/not-nil? (->mime-types-original formats)))))
@@ -99,7 +101,7 @@
       (middleware [jm/wrap-public-user] tilastot-routes kilpailutus-public-routes organisaatio-routes)
       (undocumented notfound))
 
-    (middleware [jm/wrap-user wrap-double-submit-cookie+whitelist]
+    (middleware [wrap-api-key jm/wrap-user wrap-double-submit-cookie+whitelist]
       (context "" [] :tags ["Hakemuskausi API"] hakemuskausi-routes)
       (context "" [] :tags ["Hakemus API"] hakemus-routes)
       (context "" [] :tags ["Avustuskohde API"] avustuskohde-routes)

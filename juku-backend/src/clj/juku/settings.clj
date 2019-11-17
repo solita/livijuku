@@ -16,7 +16,8 @@
 
 (s/defschema Web {:url            s/Str
                   :context-path   s/Str
-                  :api-path       s/Str})
+                  :api-path       s/Str
+                  (s/optional-key :api-key) s/Str})
 
 (s/defschema Email {:from         s/Str
                     :server       s/Str
