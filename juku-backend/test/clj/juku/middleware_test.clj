@@ -9,11 +9,21 @@
 (def tampere (coll/single-result-required! (filter (coll/eq :nimi "Tampere") (org/organisaatiot))
                                            {:message "Testikaupunkia Tampere ei löytynyt"}))
 
-(facts "Find matching organization"
+(defn create-headers [uid groups organization first-name last-name]
+  {"iv-user"    uid
+   "iv-groups" groups
+   "o"          organization
+   "givenname"  first-name
+   "sn"         last-name})
 
-  (fact (m/find-matching-organisaatio "Tampereen kaupunki" nil) => (:id tampere) )
-  (fact (m/find-matching-organisaatio "Tampereen \t kuntayhtymä" nil) => (:id tampere))
-  (fact (m/find-matching-organisaatio "Tampere" nil) => nil))
+(facts "Find matching organization"
+  (m/find-matching-organisaatio "050834" nil) => (:id tampere)
+  (m/find-matching-organisaatio "050834" "asdf") => (:id tampere)
+
+  (m/find-matching-organisaatio "Liikennevirasto" nil) => 15M
+  (m/find-matching-organisaatio "LiikenneVirasto" nil) => 15M
+  (m/find-matching-organisaatio "Liikennevirasto \t 1234" nil) => 15M
+  (m/find-matching-organisaatio "Liikenne" nil) => nil)
 
 (facts "User management"
 
@@ -43,11 +53,10 @@
                 :privileges (user/find-privileges ["PK"] organisaatioid)
                 :jarjestelma false}
 
-          request {:headers {"oam-remote-user"        uid
-                             "oam-groups"             "juku_paakayttaja"
-                             "oam-user-organization"  "liikennevirasto"
-                             "oam-user-first-name"    "=?UTF-8?B?UMOka8Ok?="
-                             "oam-user-last-name"     "=?UTF-8?B?UMOkw6Rrw6R5dHTDpGrDpA?="}}]
+          request {:headers (create-headers
+                              uid "juku_paakayttaja" "liikennevirasto"
+                              "P%C3%A4k%C3%A4"
+                              "P%C3%A4%C3%A4k%C3%A4ytt%C3%A4j%C3%A4")}]
       ((m/wrap-user
          (fn [request] (dissoc user/*current-user* :kirjautumisaika) => user))
         request)
@@ -55,26 +64,19 @@
 
   (fact "Uusi käyttäjä - virheellinen ryhmätieto"
      (let [uid (str "tst" (rand-int 999999))
-           request {:headers {"oam-remote-user"        uid
-                              "oam-groups"             "asdf"
-                              "oam-user-organization"  "liikennevirasto"
-                              "oam-user-first-name"    "test"
-                              "oam-user-last-name"     "test"}}]
+           request {:headers (create-headers uid "asdf" "liikennevirasto"
+                                             "test" "test")}]
 
        (let [handler (fn [_] (ss/throw+ "käsittelijää ei pitäisi kutsua"))
              error ((m/wrap-user handler) request)]
          (:status error) => 403
-         (:body error) => (str "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - oam-groups: asdf"))
+         (:body error) => (str "Käyttäjällä " uid " ei ole yhtään juku-järjestelmän käyttäjäroolia - iv-groups: asdf"))
        (dissoc (user/find-user uid) :kirjautumisaika) => nil))
 
 
   (fact "Uusi käyttäjä - virheellinen organisaatio"
      (let [uid (str "tst" (rand-int 999999))
-           request {:headers {"oam-remote-user"        uid
-                              "oam-groups"             "juku_paatoksentekija"
-                              "oam-user-organization"  "liikennevirast1"
-                              "oam-user-first-name"    "test"
-                              "oam-user-last-name"     "test"}}]
+           request {:headers (create-headers uid "juku_paatoksentekija" "liikennevirast1" "test" "test")}]
 
        (let [handler (fn [_] (ss/throw+ "käsittelijää ei pitäisi kutsua"))
              error ((m/wrap-user handler) request)]
@@ -85,8 +87,8 @@
   (fact "Uusi käyttäjä - päällekkäinen otsikkotieto"
      (let [uid (str "tst" (rand-int 999999))
 
-           request {:headers {"oam-remote-user"        uid
-                              "oam_remote-user"        "asdf"
+           request {:headers {"iv-user"        uid
+                              "iv_user"        "asdf"
                               "oam-groups"             "asdf"
                               "oam-user-organization"  "liikennevirasto"
                               "oam-user-first-name"    "test"
