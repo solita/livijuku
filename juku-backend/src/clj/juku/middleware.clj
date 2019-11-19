@@ -3,6 +3,7 @@
             [juku.service.user :as user]
             [juku.service.organisaatio :as org]
             [common.map :as m]
+            [buddy.sign.jwt :as jwt]
             [common.core :as c]
             [compojure.api.meta :as meta]
             [common.collection :as coll]
@@ -152,37 +153,59 @@
         response
         (no-cache response)))))
 
-(defn wrap-double-submit-cookie
+(defn- validate-token [header cookie secret]
+  (cond
+    (not= header cookie)
+      (str "Keksin XSRF-TOKEN arvo: " cookie
+           " ei vastaa x-xsrf-token-otsikkotiedossa olevaa arvoa: " header)
+    (nil? header) "Otsikko x-xsrf-token puuttuu."
+    :else (try (jwt/unsign header secret) nil
+               (catch Throwable t (.getMessage t)))))
 
-  "CSRF-hyökkäyksen esto ja json-haavoittovuuden suoja perustuu double submit cookie -malliin.
-  Double submit cookie -mallissa sovellus todistaa olevansa oikea pystymällä joko kirjoittamaan tai lukemaan
-  sovelluksen domainin sessiokeksejä. Kaikki pyynnöt edellyttävät että tietojen:
+(defn request-token [secret _]
+  (assoc-in (r/ok) [:cookies "XSRF-TOKEN"]
+            {:value (jwt/sign {:id (random/base64 16)} secret)
+             :http-only false :path "/"}))
+
+(defn wrap-csrf-prevention
+
+  "CSRF-hyökkäyksen esto ja json-haavoittovuuden suoja perustuu double submit cookie -malliin
+  ja allekirjoitettuun token arvoon.
+
+  Tässä mallissa käyttöliitymäsovellus todistaa olevansa oikea pystymällä lukemaan XSRF-TOKEN keksin
+  kirjoittamalla se otsikkotietoon. Token on allekirjoitettu ja keksi pyydetään erillisellä pyynnöllä
+  ennen suojattujen palveluiden käyttämistä.
+
+  Kaikki suojatut palvelupyynnöt edellyttävät että tietojen:
   - x-xsrf-token (http-otsikko)
   - XSRF-TOKEN (keksin)
-  arvot ovat samat.
+  arvot ovat samat ja allekirjoituksen validointi onnistuu.
 
   Lähteet:
-  - https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Double_Submit_Cookies
-  - https://en.wikipedia.org/wiki/Cross-site_request_forgery#Forging_login_requests
+  - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+  - https://docs.angularjs.org/api/ng/service/$http#security-considerations
+  - https://en.wikipedia.org/wiki/Cross-site_request_forgery
   - http://security.stackexchange.com/questions/61110/why-does-double-submit-cookies-require-a-separate-cookie
   - http://security.stackexchange.com/questions/59470/double-submit-cookies-vulnerabilities
   - http://stackoverflow.com/questions/4463422/csrf-can-i-use-a-cookie
-  - https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies
-  - https://docs.angularjs.org/api/ng/service/$http#security-considerations"
+  - https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies"
 
-  [handler whitelist]
+  [secret whitelist handler]
   (fn [request]
     (let [header-token (get-in request [:headers "x-xsrf-token"])
-          cookie-token (get-in request [:cookies "XSRF-TOKEN" :value])]
+          cookie-token (get-in request [:cookies "XSRF-TOKEN" :value])
+          error-msg (validate-token header-token cookie-token secret)]
 
-      (if (or (= header-token cookie-token)
-              (some #(re-matches % (str (str/upper-case (name (:request-method request))) " " (:uri request))) whitelist))
-        (let [response (handler request)]
-          (if ((c/nil-safe strx/substring?) "unsecure" cookie-token)
-            (assoc-in response [:cookies "XSRF-TOKEN"] {:value (random/base64 60) :http-only false :path "/"})
-            response))
-        (error r/forbidden (str "Taustapalvelu tunnisti mahdollisesti väärennetyn pyynnön. Keksissä XSRF-TOKEN oleva arvo: "
-                                cookie-token " ei vastaa x-xsrf-token-otsikkotiedossa olevaa arvoa: " header-token))))))
+      (if (or (nil? error-msg)
+              (some #(re-matches % (str (str/upper-case (name (:request-method request))) " " (:uri request)))
+                    whitelist))
+        (handler request)
+        (do
+          (log/error (str "XSRF error: " error-msg))
+          (h/content-type-text-plain
+            (r/forbidden (str "Taustapalvelu tunnisti mahdollisesti väärennetyn pyynnön. "
+                              "Kokeile toimintoa uudestaan ja jos tämä virhe toistuu "
+                              "niin lataa koko sivu uudestaan (Esim. chrome paina F5)."))))))))
 
 ; *** csv support ***
 

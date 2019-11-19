@@ -33,21 +33,29 @@
 
 (c/defroutes notfound (r/not-found "The requested service does not exists."))
 
-(def wrap-double-submit-cookie+whitelist
-  (jc/partial-first-arg
-    jm/wrap-double-submit-cookie [#"GET /hakemuskausi/.*/hakuohje"
-                                  #"GET /hakemuskausi/.*/elyhakuohje"
-                                  #"GET /hakemus/.*/pdf.*"
-                                  #"GET /hakemus/.*/liite/.*"
-                                  #"GET /hakemus/.*/paatos/pdf.*"
-                                  #"GET /hakemus/.*/seuranta/pdf.*"
-                                  #"GET /kilpailutukset/csv.*"
-                                  #"GET /tunnusluku/csv.*"
-                                  #"GET /documentation/.*"
+;; CSRF prevention mechanism
+(def request-token
+  (GET  "/request-token" []
+    :summary  (str "Pyydä CSRF token keksi. "
+                   "Tämä keksi on pakollinen viranomaispalveluissa.")
+    (partial jm/request-token (-> settings :web :api-key))))
 
-                                  #"POST /hakemuskausi/.*/hakuohje"
-                                  #"POST /hakemuskausi/.*/elyhakuohje"
-                                  #"POST /hakemus/.*/liite"]))
+(def wrap-csrf-prevention+whitelist
+  (partial jm/wrap-csrf-prevention (-> settings :web :api-key)
+           [#"GET /request-token"
+            #"GET /hakemuskausi/.*/hakuohje"
+            #"GET /hakemuskausi/.*/elyhakuohje"
+            #"GET /hakemus/.*/pdf.*"
+            #"GET /hakemus/.*/liite/.*"
+            #"GET /hakemus/.*/paatos/pdf.*"
+            #"GET /hakemus/.*/seuranta/pdf.*"
+            #"GET /kilpailutukset/csv.*"
+            #"GET /tunnusluku/csv.*"
+            #"GET /documentation/.*"
+
+            #"POST /hakemuskausi/.*/hakuohje"
+            #"POST /hakemuskausi/.*/elyhakuohje"
+            #"POST /hakemus/.*/liite"]))
 
 (def wrap-api-key (partial jm/wrap-api-key (-> settings :web :api-key)))
 
@@ -101,7 +109,8 @@
       (middleware [jm/wrap-public-user] tilastot-routes kilpailutus-public-routes organisaatio-routes)
       (undocumented notfound))
 
-    (middleware [wrap-api-key jm/wrap-user wrap-double-submit-cookie+whitelist]
+    (middleware [wrap-api-key jm/wrap-user wrap-csrf-prevention+whitelist]
+      (context "" [] :tags ["Authentication"] request-token)
       (context "" [] :tags ["Hakemuskausi API"] hakemuskausi-routes)
       (context "" [] :tags ["Hakemus API"] hakemus-routes)
       (context "" [] :tags ["Avustuskohde API"] avustuskohde-routes)

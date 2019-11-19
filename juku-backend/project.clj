@@ -11,6 +11,7 @@
                            [org.apache.pdfbox/pdfbox "2.0.15"]
                            [clojure-csv/clojure-csv "2.0.2"]
                            [clj-pdf "2.3.5"]
+                           [buddy/buddy-sign "3.1.0"]
 
                            [clj-http "3.10.0"]
                            [com.draines/postal "2.0.3"]
