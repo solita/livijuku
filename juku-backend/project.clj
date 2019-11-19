@@ -51,14 +51,14 @@
                                                 ; Midje provides a migration path from clojure.test to a more flexible, readable, abstract, and gracious style of testing.
                                                 [midje "1.9.8"]
                                                 ;;[midje-junit-formatter "0.1.0-SNAPSHOT"]
-                                                [clj-http-fake "1.0.3"]
-                                                [metosin/scjsv "0.5.0"]]
+                                                [clj-http-fake "1.0.3"]]
 
                                  :plugins      [; Run multiple leiningen tasks in parallel.
                                                 [lein-pdo "0.1.1"]
                                                 [lein-midje "3.1.3"]
 
                                                 [lein-ancient "0.6.15"]
+                                                [lein-nvd "1.3.0"]
                                                 [lein-kibit "0.1.2"]
                                                 [jonase/eastwood "0.2.1"]]
 
