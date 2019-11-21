@@ -26,7 +26,7 @@
                            [metosin/ring-swagger-ui "3.20.1"]
 
                            ;; *** datababse ***
-                           [com.oracle.jdbc/ojdbc7 "12.1.0.2"]
+                           [com.oracle.jdbc/ojdbc10 "19.3.0.0"]
                            [org.clojure/java.jdbc "0.7.10"]
                            [yesql "0.5.3"]
                            [honeysql "0.9.8"]
