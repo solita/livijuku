@@ -28,6 +28,7 @@
   (log/info (str "Starting web server on port " port))
   (reset! server (http-kit/run-server handler
      {:port port
+      :ip "127.0.0.1"
       :max-line 65536
       :max-body 209715200
       :thread 20})))

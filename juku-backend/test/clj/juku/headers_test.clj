@@ -11,8 +11,8 @@
    (fact (parse nil) => nil))
 
 (facts "Base64 encoded header values - form: =?UTF-8?B?(.+)?="
-   (fact (parse "=?UTF-8?B?UMOka8Ok?=") => "Päkä")
-   (fact (parse "=?UTF-8?B?UMOkw6Rrw6R5dHTDpGrDpA?=") => "Pääkäyttäjä"))
+   (fact (parse "P%C3%A4k%C3%A4") => "Päkä")
+   (fact (parse "P%C3%A4%C3%A4k%C3%A4ytt%C3%A4j%C3%A4") => "Pääkäyttäjä"))
 
 (facts "Decode values"
    (fact (h/encode-value nil) => nil)

@@ -16,7 +16,8 @@
 
 (s/defschema Web {:url            s/Str
                   :context-path   s/Str
-                  :api-path       s/Str})
+                  :api-path       s/Str
+                  :api-key        s/Str})
 
 (s/defschema Email {:from         s/Str
                     :server       s/Str
@@ -37,7 +38,8 @@
            :web {
              :url "http://localhost:9000"
              :context-path ""
-             :api-path "/"}
+             :api-path "/"
+             :api-key "abcd"}
            :db {
               :url "jdbc:oracle:thin:@localhost:1521/orclpdb1.localdomain"
               :user "juku_app"
