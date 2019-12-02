@@ -1,9 +1,13 @@
 (ns juku.service.pdf2
   (:require [clj-pdf.core :as pdf]
             [clj-pdf.utils :as pdf-utils]
+            [clj-pdf-markdown.core :as md]
             [clojure.java.io :as io])
-  (:import (com.lowagie.text.pdf PdfWriter PdfTemplate PdfContentByte BaseFont)
-           (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)))
+  (:import (com.lowagie.text.pdf PdfWriter PdfReader PdfTemplate PdfContentByte BaseFont)
+           (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)
+           (org.commonmark.ext.gfm.tables TablesExtension)
+           (org.commonmark.parser Parser)
+           (org.commonmark.node Node)))
 
 (def default-font
   {:size 10
@@ -103,21 +107,43 @@
               :page-numbers false}
      :pages false}))
 
-(pdf/pdf [
-  (metadata "Avustushakemus" "1.1.2020" "1234832498SD" "Testing")
-  [:heading "Lorem Ipsum"]
+(defn parse-markdown [s]
+  (let [^Parser parser (.build (.extensions (Parser/builder) [(TablesExtension/create)]))]
+    (.parse parser s)))
 
-  [:list {:roman true}
-   [:chunk {:style :bold} "a bold item"]
-   "another item"
-   "yet another item"]
+(defn process-header [pdf-config ^Node node]
+  (if (instance? org.commonmark.ext.gfm.tables.TableHead node)
+    {:header (get (md/render-children* pdf-config node) 0)}
+    {}))
 
-  [:paragraph
-   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non iaculis lectus. Integer vel libero libero. Phasellus metus augue, consequat a viverra vel, fermentum convallis sem. Etiam venenatis laoreet quam, et adipiscing mi lobortis sit amet. Fusce eu velit vitae dolor vulputate imperdiet. Suspendisse dui risus, mollis ut tempor sed, dapibus a leo. Aenean nisi augue, placerat a cursus eu, convallis viverra urna. Nunc iaculis pharetra pretium. Suspendisse sit amet erat nisl, quis lacinia dolor. Integer mollis placerat metus in adipiscing. Fusce tincidunt sapien in quam vehicula tincidunt. Integer id ligula ante, interdum sodales enim. Suspendisse quis erat ut augue porta laoreet."]
-  [:pagebreak]
-  [:heading "Asdf  €$"]
-  [:paragraph
-   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non iaculis lectus. Integer vel libero libero. Phasellus metus augue, consequat a viverra vel, fermentum convallis sem. Etiam venenatis laoreet quam, et adipiscing mi lobortis sit amet. Fusce eu velit vitae dolor vulputate imperdiet. Suspendisse dui risus, mollis ut tempor sed, dapibus a leo. Aenean nisi augue, placerat a cursus eu, convallis viverra urna. Nunc iaculis pharetra pretium. Suspendisse sit amet erat nisl, quis lacinia dolor. Integer mollis placerat metus in adipiscing. Fusce tincidunt sapien in quam vehicula tincidunt. Integer id ligula ante, interdum sodales enim. Suspendisse quis erat ut augue porta laoreet."]
-  [:pagebreak]
-  [:paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non iaculis lectus. Integer vel libero libero. Phasellus metus augue, consequat a viverra vel, fermentum convallis sem. Etiam venenatis laoreet quam, et adipiscing mi lobortis sit amet. Fusce eu velit vitae dolor vulputate imperdiet. Suspendisse dui risus, mollis ut tempor sed, dapibus a leo. Aenean nisi augue, placerat a cursus eu, convallis viverra urna. Nunc iaculis pharetra pretium. Suspendisse sit amet erat nisl, quis lacinia dolor. Integer mollis placerat metus in adipiscing. Fusce tincidunt sapien in quam vehicula tincidunt. Integer id ligula ante, interdum sodales enim. Suspendisse quis erat ut augue porta laoreet."]]
-   "test.pdf")
+(defmethod md/render :org.commonmark.ext.gfm.tables.TableBlock [pdf-config ^Node node]
+  (into [:table (merge (process-header pdf-config (.getFirstChild node))
+                       (get-in pdf-config [:table] {}))]
+        (md/render-children* pdf-config (.getLastChild node))))
+
+(defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
+  (md/render-children* pdf-config node))
+
+(defmethod md/render :org.commonmark.ext.gfm.tables.TableCell [pdf-config ^Node node]
+  (into [:cell] (md/render-children* pdf-config node)))
+
+(def markdown-defaults
+ {:table {:border false :padding -2}})
+
+(defn pdf [title date diaari-number footer content out]
+  (pdf/pdf [
+    (metadata title date diaari-number footer)
+    (with-redefs [md/parse-markdown parse-markdown]
+      (md/markdown->clj-pdf markdown-defaults content))] out))
+
+(pdf "Avustushakemus" "1.1.2020" "1234832498SD" "Testing"
+  "# Testing
+
+| | | |
+| -------- | -------- | -------- |
+| John     | Doe      | Male     |
+| Mary     | Smith    | Female   |
+
+
+
+asdf asdf" "test.pdf")

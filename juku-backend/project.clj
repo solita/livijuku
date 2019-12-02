@@ -13,6 +13,8 @@
                            [buddy/buddy-sign "3.1.0"]
 
                            [clj-http "3.10.0"]
+                           [clj-pdf-markdown "0.2.1"]
+                           [com.atlassian.commonmark/commonmark-ext-gfm-tables "0.13.1"]
                            [com.draines/postal "2.0.3"]
 
                            [environ "1.0.3"] ;; Library for managing environment variables in Clojure.
