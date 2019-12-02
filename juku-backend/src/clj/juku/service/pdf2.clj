@@ -5,7 +5,7 @@
             [clojure.java.io :as io])
   (:import (com.lowagie.text.pdf PdfWriter PdfReader PdfTemplate PdfContentByte BaseFont)
            (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)
-           (org.commonmark.ext.gfm.tables TablesExtension)
+           (org.commonmark.ext.gfm.tables TablesExtension TableCell TableHead)
            (org.commonmark.parser Parser)
            (org.commonmark.node Node)))
 
@@ -112,23 +112,26 @@
     (.parse parser s)))
 
 (defn process-header [pdf-config ^Node node]
-  (if (instance? org.commonmark.ext.gfm.tables.TableHead node)
+  (if (instance? TableHead node)
     {:header (get (md/render-children* pdf-config node) 0)}
     {}))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableBlock [pdf-config ^Node node]
-  (into [:table (merge (process-header pdf-config (.getFirstChild node))
-                       (get-in pdf-config [:table] {}))]
+  (concat [:pdf-table (get-in pdf-config [:table] {}) nil]
+        (md/render-children* pdf-config (.getFirstChild node))
         (md/render-children* pdf-config (.getLastChild node))))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
   (md/render-children* pdf-config node))
 
-(defmethod md/render :org.commonmark.ext.gfm.tables.TableCell [pdf-config ^Node node]
-  (into [:cell] (md/render-children* pdf-config node)))
+(defmethod md/render :org.commonmark.ext.gfm.tables.TableCell [pdf-config ^TableCell node]
+  (into [:pdf-cell (merge {:align (keyword (.toLowerCase (.toString (or (.getAlignment node) "left"))))}
+                          (get-in pdf-config [:cell] {}))]
+        (md/render-children* pdf-config node)))
 
 (def markdown-defaults
- {:table {:border false :padding -2}})
+ {:table {:border true :spacing-before 0 :spacing-after 0}
+  :cell {:padding [0 0 0 0]}})
 
 (defn pdf [title date diaari-number footer content out]
   (pdf/pdf [
@@ -137,13 +140,17 @@
       (md/markdown->clj-pdf markdown-defaults content))] out))
 
 (pdf "Avustushakemus" "1.1.2020" "1234832498SD" "Testing"
-  "# Testing
+"
+# Testing
 
-| | | |
-| -------- | -------- | -------- |
+
+
+
+asdf asdf
+
+| a        | b        | c        |
+| -------- | -------: | :------: |
 | John     | Doe      | Male     |
 | Mary     | Smith    | Female   |
-
-
 
 asdf asdf" "test.pdf")
