@@ -130,8 +130,9 @@
         (md/render-children* pdf-config node)))
 
 (def markdown-defaults
- {:table {:border true :spacing-before 0 :spacing-after 0}
-  :cell {:padding [0 0 0 0]}})
+ {:table {:border false :spacing-before 0 :spacing-after 0}
+  :cell {:padding [0 0 0 0]}
+  :spacer {:allow-extra-line-breaks? false}})
 
 (defn pdf [title date diaari-number footer content out]
   (pdf/pdf [
@@ -144,13 +145,20 @@
 # Testing
 
 
+1 2
 
 
-asdf asdf
+* 1asdf
+* 2asdf
+* 3adsf
+3 4
+
 
 | a        | b        | c        |
 | -------- | -------: | :------: |
 | John     | Doe      | Male     |
 | Mary     | Smith    | Female   |
 
-asdf asdf" "test.pdf")
+asdf asdf
+
+# fsadf adsf" "test.pdf")
