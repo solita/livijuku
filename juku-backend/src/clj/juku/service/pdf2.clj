@@ -7,7 +7,8 @@
            (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)
            (org.commonmark.ext.gfm.tables TablesExtension TableCell TableHead)
            (org.commonmark.parser Parser)
-           (org.commonmark.node Node)))
+           (org.commonmark.node Node)
+           (java.io PipedInputStream PipedOutputStream)))
 
 (def default-font
   {:size 10
@@ -134,13 +135,20 @@
   :cell {:padding [0 0 0 0]}
   :spacer {:allow-extra-line-breaks? false}})
 
-(defn pdf [title date diaari-number footer content out]
+(defn pdf [title date diaarinumero footer content out]
   (pdf/pdf [
-    (metadata title date diaari-number footer)
+    (metadata title date diaarinumero footer)
     (with-redefs [md/parse-markdown parse-markdown]
       (md/markdown->clj-pdf markdown-defaults content))] out))
 
-(pdf "Avustushakemus" "1.1.2020" "1234832498SD" "Testing"
+(defn pdf->inputstream [title date diaarinumero footer content]
+  (let [in-stream (new PipedInputStream)
+        out-stream (PipedOutputStream. in-stream)]
+    (.start (Thread. #(with-open [out out-stream]
+                        (pdf title date diaarinumero footer content out))))
+    in-stream))
+
+#_(pdf "Avustushakemus" "1.1.2020" "1234832498SD" "Testing"
 "
 # Testing
 
