@@ -28,7 +28,7 @@
 
 (defn font [original-font {style :style styles :styles :as font-definition}]
   (cond
-    (or (= style :bold))
+    (= style :bold)
       (original-font (assoc font-definition
                         :style :normal
                         :ttf-name "pdf-sisalto/roboto/Roboto-Bold.ttf" ))
@@ -130,9 +130,9 @@
     {}))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableBlock [pdf-config ^Node node]
-  (concat [:pdf-table (get-in pdf-config [:table] {}) nil]
-        (md/render-children* pdf-config (.getFirstChild node))
-        (md/render-children* pdf-config (.getLastChild node))))
+  (vec (concat [:pdf-table (get-in pdf-config [:table] {}) nil]
+          (md/render-children* pdf-config (.getFirstChild node))
+          (md/render-children* pdf-config (.getLastChild node)))))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
   (md/render-children* pdf-config node))
@@ -143,8 +143,15 @@
         (md/render-children* pdf-config node)))
 
 (def markdown-defaults
- {:table {:border false :spacing-before 0 :spacing-after 0 :width-percent 100}
-  :cell {:padding [-1 0 0 0]}
+ {:heading  {:h1 {:style {:size 16} :spacing-before 8}
+             :h2 {:style {:size 15} :spacing-before 8}
+             :h3 {:style {:size 14} :spacing-before 8}
+             :h4 {:style {:size 13} :spacing-before 8}
+             :h5 {:style {:size 12} :spacing-before 8}
+             :h6 {:style {:size 11} :spacing-before 8}}
+  :paragraph { :spacing-before 8 }
+  :table {:border false :spacing-before 8 :spacing-after 0 :width-percent 100}
+  :cell {:padding [-1 0 0 -1]}
   :spacer {:allow-extra-line-breaks? false}})
 
 (defn pdf [title date diaarinumero footer content out]
