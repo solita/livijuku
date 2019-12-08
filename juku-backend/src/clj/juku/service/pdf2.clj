@@ -26,6 +26,18 @@
 
 (def ^BaseFont base-font (.getBaseFont (pdf-utils/font default-font)))
 
+(defn font [original-font {style :style styles :styles :as font-definition}]
+  (cond
+    (or (= style :bold))
+      (original-font (assoc font-definition
+                        :style :normal
+                        :ttf-name "pdf-sisalto/roboto/Roboto-Bold.ttf" ))
+    (some (partial = :bold) styles)
+      (original-font (assoc font-definition
+                     :styles (vec (remove (partial = :bold) styles))
+                     :ttf-name "pdf-sisalto/roboto/Roboto-Bold.ttf" ))
+    :else (original-font font-definition)))
+
 (defn add-logo
   [^Rectangle position ^PdfContentByte canvas]
   (with-open [pdf (io/input-stream (io/resource "pdf-sisalto/traficom-logo.pdf"))
@@ -131,15 +143,16 @@
         (md/render-children* pdf-config node)))
 
 (def markdown-defaults
- {:table {:border false :spacing-before 0 :spacing-after 0}
-  :cell {:padding [0 0 0 0]}
+ {:table {:border false :spacing-before 0 :spacing-after 0 :width-percent 100}
+  :cell {:padding [-1 0 0 0]}
   :spacer {:allow-extra-line-breaks? false}})
 
 (defn pdf [title date diaarinumero footer content out]
-  (pdf/pdf [
-    (metadata title date diaarinumero footer)
-    (with-redefs [md/parse-markdown parse-markdown]
-      (md/markdown->clj-pdf markdown-defaults content))] out))
+  (with-redefs [pdf-utils/font (partial font pdf-utils/font)]
+    (pdf/pdf [
+      (metadata title date diaarinumero footer)
+      (with-redefs [md/parse-markdown parse-markdown]
+        (md/markdown->clj-pdf markdown-defaults content))] out)))
 
 (defn pdf->inputstream [title date diaarinumero footer content]
   (let [in-stream (new PipedInputStream)
