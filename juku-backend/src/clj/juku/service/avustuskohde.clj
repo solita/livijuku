@@ -110,7 +110,7 @@
     (map assoc-avustuskohdelajit luokat)))
 
 (defn avustuskohderivit [avustuskohteet avustuskohdelajit]
-  (let [avustuskohde-template "\t{avustuskohdenimi}\t\t\t\t\t{haettavaavustus} €"
+  (let [avustuskohde-template "| {avustuskohdenimi} | {haettavaavustus} € |"
         avustuskohteet+nimi (coll/assoc-join avustuskohteet :avustuskohdenimi avustuskohdelajit
                                              [:avustuskohdeluokkatunnus :avustuskohdelajitunnus]
                                              (comp :nimi first coll/children))]
@@ -128,16 +128,17 @@
 (defn avustuskohteet-section
   "Asiakirjojen avustuskohdelistauksen teksti. Avustuskohteen rahasummat pitää antaa alvillisina."
   [avustuskohteet]
-  (let [avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
+  (let [header "|3|2|\n|-|-|\n"
+        avustuskohteet (filter (coll/predicate > :haettavaavustus 0) avustuskohteet)
         avustuskohdelajit (map #(set/rename-keys % {:tunnus :avustuskohdelajitunnus}) (select-avustuskohdelajit) )
         avustuskohdeluokat (m/map-values first (group-by :tunnus (select-avustuskohdeluokat)))
         avustuskohteet-luokittain (partition-by :avustuskohdeluokkatunnus avustuskohteet)
         avustuskohdeluokka-otsikko (fn [kohde] (str (avustuskohdeluokka-nimi kohde avustuskohdeluokat) " "
                                                     (alv-title kohde)))
-        avustuskohdeluokka (fn [kohteet] (str "\t*" (avustuskohdeluokka-otsikko (first kohteet)) "\n"
+        avustuskohdeluokka (fn [kohteet] (str "| **" (avustuskohdeluokka-otsikko (first kohteet)) "** | | \n"
                                               (avustuskohderivit kohteet avustuskohdelajit)))]
-
-    (str/join "\n\n" (map avustuskohdeluokka avustuskohteet-luokittain))))
+    (str header
+      (str/join (str "\n\n" header) (map avustuskohdeluokka avustuskohteet-luokittain)))))
 
 (defn total-haettavaavustus [avustuskohteet] (reduce + 0 (map :haettavaavustus avustuskohteet)))
 
