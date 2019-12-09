@@ -131,10 +131,11 @@
     {}))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableBlock [pdf-config ^Node node]
-  [:paragraph (:paragraph pdf-config)
-    (vec (concat [:pdf-table (get-in pdf-config [:table] {}) [3 1]]
-            (md/render-children* pdf-config (.getFirstChild node))
-            (md/render-children* pdf-config (.getLastChild node))))])
+  (let [header (vec (map #(-> % .getFirstChild .getLiteral Integer/parseInt)
+                      (md/node-children (.getFirstChild (.getFirstChild node)))))
+        body (md/render-children* pdf-config (.getLastChild node))]
+    [:paragraph (:paragraph pdf-config)
+      (into [:pdf-table (get-in pdf-config [:table] {}) header] body)]))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
   (md/render-children* pdf-config node))
