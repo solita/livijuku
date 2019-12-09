@@ -169,26 +169,3 @@
     (.start (Thread. #(with-open [out out-stream]
                         (pdf title date diaarinumero footer content out))))
     in-stream))
-
-#_(pdf "Avustushakemus" "1.1.2020" "1234832498SD" "Testing"
-"
-# Testing
-
-
-1 2
-
-
-* 1asdf
-* 2asdf
-* 3adsf
-3 4
-
-
-| a        | b        | c        |
-| -------- | -------: | :------: |
-| John     | Doe      | Male     |
-| Mary     | Smith    | Female   |
-
-asdf asdf
-
-# fsadf adsf" "test.pdf")
