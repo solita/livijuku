@@ -7,7 +7,7 @@
 
 (sql/defqueries "asiakirjamalli.sql")
 
-(defn find-all-asiakirjamallit []
+(defn find-all []
   (select-all-asiakirjamallit))
 
 (defn find-asiakirjamalli [vuosi asiakirjalajitunnus hakemustyyppitunnus organisaatiolajitunnus]

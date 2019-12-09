@@ -1,7 +1,7 @@
 
 -- name: select-all-asiakirjamallit
 select
-  id, asiakirjalajitunnus, voimaantulovuosi
+  id, asiakirjalajitunnus, voimaantulovuosi,
   hakemustyyppitunnus, organisaatiolajitunnus,
   sisalto, poistoaika
 from asiakirjamalli
