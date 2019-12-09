@@ -21,8 +21,8 @@
    :page-number-right 60
    :top               36
    :bottom            36
-   :right             36
-   :left              36})
+   :right             50
+   :left              55})
 
 (def ^BaseFont base-font (.getBaseFont (pdf-utils/font default-font)))
 
@@ -105,15 +105,16 @@
        #_(add-footer document footer))
      :on-document-close (add-page-count page-count-template)
      :on-page-start (add-header page-count-template footer)
-     :letterhead [
+     :letterhead [[:paragraph {:spacing-after 10}
       [:pdf-table
-         {:border false :width 200 :title "otsikko" }
+         {:border false :width 200 :title "otsikko"}
          [20 10 10]
          [[:pdf-cell {:base-layer-fn add-logo :height 10 :rowspan 3} ""]
           [:pdf-cell {:padding [0 0 0 0] :colspan 2} title]
           [:pdf-cell {:padding [0 0 0 0]} [:phrase {:style :bold} "Päiväys/Datum"]]]
          [[:pdf-cell {:padding [0 0 0 0]} [:phrase {:style :bold} "Dnro/Dnr"]]]
-         [[:pdf-cell {:padding [0 0 0 0]} date] [:pdf-cell {:padding [0 0 0 0]} diaarinro]]]]
+         [[:pdf-cell {:padding [0 0 0 0]} [:phrase {} date]]
+          [:pdf-cell {:padding [0 0 0 0]} [:phrase {} diaarinro]]]]]]
      :font default-font
      :footer {:text footer
               :align :left
@@ -130,28 +131,29 @@
     {}))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableBlock [pdf-config ^Node node]
-  (vec (concat [:pdf-table (get-in pdf-config [:table] {}) nil]
-          (md/render-children* pdf-config (.getFirstChild node))
-          (md/render-children* pdf-config (.getLastChild node)))))
+  [:paragraph (:paragraph pdf-config)
+    (vec (concat [:pdf-table (get-in pdf-config [:table] {}) [3 1]]
+            (md/render-children* pdf-config (.getFirstChild node))
+            (md/render-children* pdf-config (.getLastChild node))))])
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
   (md/render-children* pdf-config node))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableCell [pdf-config ^TableCell node]
-  (into [:pdf-cell (merge {:align (keyword (.toLowerCase (.toString (or (.getAlignment node) "left"))))}
-                          (get-in pdf-config [:cell] {}))]
-        (md/render-children* pdf-config node)))
+  [:pdf-cell (merge {:align (keyword (.toLowerCase (.toString (or (.getAlignment node) "left"))))}
+                          (get-in pdf-config [:cell] {}))
+   (into [:paragraph] (md/render-children* pdf-config node))])
 
 (def markdown-defaults
- {:heading  {:h1 {:style {:size 16} :spacing-before 8}
-             :h2 {:style {:size 15} :spacing-before 8}
-             :h3 {:style {:size 14} :spacing-before 8}
-             :h4 {:style {:size 13} :spacing-before 8}
-             :h5 {:style {:size 12} :spacing-before 8}
-             :h6 {:style {:size 11} :spacing-before 8}}
-  :paragraph { :spacing-before 8 }
-  :table {:border false :spacing-before 8 :spacing-after 0 :width-percent 100}
-  :cell {:padding [-1 0 0 -1]}
+ {:heading  {:h1 {:style {:size 12} :spacing-after 8}
+             :h2 {:style {:size 11} :spacing-after 8}
+             :h3 {:style {:size 10} :spacing-after 8}
+             :h4 {:style {:size 10} :spacing-after 8}
+             :h5 {:style {:size 10} :spacing-after 8}
+             :h6 {:style {:size 10} :spacing-after 8}}
+  :paragraph {:spacing-after 8 :indent-left 50}
+  :table {:border false :width-percent 100 :spacing-after 0 :spacing-before 0 :indent-left 0}
+  :cell {:padding [0 0 0 0]}
   :spacer {:allow-extra-line-breaks? false}})
 
 (defn pdf [title date diaarinumero footer content out]
