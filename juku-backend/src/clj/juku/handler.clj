@@ -8,6 +8,7 @@
             [ring.swagger.json-schema :as swagger-json]
 
             [juku.rest-api.authorization]
+            [juku.rest-api.asiakirjamalli :refer [asiakirjamalli-routes]]
             [juku.rest-api.hakemus :refer [hakemus-routes]]
             [juku.rest-api.avustuskohde :refer [avustuskohde-routes]]
             [juku.rest-api.hakemuskausi :refer [hakemuskausi-routes]]
@@ -111,6 +112,7 @@
 
     (middleware [wrap-api-key jm/wrap-user wrap-csrf-prevention+whitelist]
       (context "" [] :tags ["Authentication"] request-token)
+      (context "" [] :tags ["Asiakirjamalli API"] asiakirjamalli-routes)
       (context "" [] :tags ["Hakemuskausi API"] hakemuskausi-routes)
       (context "" [] :tags ["Hakemus API"] hakemus-routes)
       (context "" [] :tags ["Avustuskohde API"] avustuskohde-routes)

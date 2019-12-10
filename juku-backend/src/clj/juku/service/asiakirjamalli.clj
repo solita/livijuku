@@ -7,8 +7,7 @@
 
 (sql/defqueries "asiakirjamalli.sql")
 
-(defn find-all []
-  (select-all-asiakirjamallit))
+(defn find-all [] (select-all-asiakirjamallit))
 
 (defn find-asiakirjamalli [vuosi asiakirjalajitunnus hakemustyyppitunnus organisaatiolajitunnus]
   (first (map (comp coerce/clob->reader :sisalto)

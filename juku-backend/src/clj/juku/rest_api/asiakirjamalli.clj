@@ -8,8 +8,8 @@
             [clojure.java.io :as io]))
 
 (defroutes asiakirjamalli-routes
-    (GET "/asiakirjamallit" []
-          :auth [:view-hakemus]
-          :return [Asiakirjamalli]
-          :summary "Hae kaikki asiakirjamallit."
-          (ok (service/find-all-asiakirjamallit))))
+   (GET "/asiakirjamallit" []
+        :auth [:view-hakemus]
+        :return [Asiakirjamalli]
+        :summary "Hae kaikki asiakirjamallit."
+        (ok (service/find-all))))

@@ -3,7 +3,7 @@
 select
   id, asiakirjalajitunnus, voimaantulovuosi,
   hakemustyyppitunnus, organisaatiolajitunnus,
-  sisalto, poistoaika
+  poistoaika
 from asiakirjamalli
 
 -- name: select-asiakirjamalli-sisalto
