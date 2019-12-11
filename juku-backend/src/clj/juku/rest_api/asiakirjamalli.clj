@@ -12,4 +12,11 @@
         :auth [:view-hakemus]
         :return [Asiakirjamalli]
         :summary "Hae kaikki asiakirjamallit."
-        (ok (service/find-all))))
+        (ok (service/find-all)))
+
+   (GET "/asiakirjamalli/:id" []
+     :path-params [id :- Long]
+     :auth [:view-hakemus]
+     :return [Asiakirjamalli]
+     :summary "Hae yksittäinen asiakirjamalli."
+     (ok (service/find-by-id id))))

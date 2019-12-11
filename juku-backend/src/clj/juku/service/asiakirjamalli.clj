@@ -2,12 +2,26 @@
   (:require [juku.db.yesql-patch :as sql]
             [clojure.java.io :as io]
             [common.core :as c]
+            [ring.util.http-response :as r]
             [clojure.string :as str]
-            [juku.db.coerce :as coerce]))
+            [schema.coerce :as scoerce]
+            [juku.db.coerce :as coerce]
+            [juku.schema.asiakirjamalli :as s]))
 
-(sql/defqueries "asiakirjamalli.sql")
+(def constraint-errors
+  {:asiakirjamalli_u {:http-response r/conflict :message "Asiakirjamalli on jo olemassa"}
+   :asiakirjamalli_hatyyppi_fk {:http-response r/not-found :message "Hakemustyyppiä: {hakemustyyppitunnus} ei ole olemasssa."}})
 
-(defn find-all [] (select-all-asiakirjamallit))
+
+(sql/defqueries "asiakirjamalli.sql" {:constraint-errors constraint-errors
+                                      :dissoc-error-params [:sisalto]})
+
+(def coerce-asiakirja (scoerce/coercer s/Asiakirjamalli coerce/db-coercion-matcher))
+(def coerce-asiakirja+ (scoerce/coercer s/Asiakirjamalli+sisalto coerce/db-coercion-matcher))
+
+(defn find-all [] (map coerce-asiakirja (select-all-asiakirjamallit)))
+
+(defn find-by-id [id] (first (map coerce-asiakirja+ (select-asiakirjamalli-by-id {:id id}))))
 
 (defn find-asiakirjamalli [vuosi asiakirjalajitunnus hakemustyyppitunnus organisaatiolajitunnus]
   (first (map (comp coerce/clob->reader :sisalto)

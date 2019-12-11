@@ -6,6 +6,14 @@ select
   poistoaika
 from asiakirjamalli
 
+-- name: select-asiakirjamalli-by-id
+select
+  id, asiakirjalajitunnus, voimaantulovuosi,
+  hakemustyyppitunnus, organisaatiolajitunnus,
+  sisalto, poistoaika
+from asiakirjamalli
+where id = :id
+
 -- name: select-asiakirjamalli-sisalto
 select sisalto
 from asiakirjamalli
