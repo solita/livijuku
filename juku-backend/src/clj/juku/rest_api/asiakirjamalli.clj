@@ -17,6 +17,6 @@
    (GET "/asiakirjamalli/:id" []
      :path-params [id :- Long]
      :auth [:view-hakemus]
-     :return [Asiakirjamalli]
+     :return Asiakirjamalli+sisalto
      :summary "Hae yksittäinen asiakirjamalli."
      (ok (service/find-by-id id))))
