@@ -29,6 +29,9 @@
              (c/bindings->map vuosi asiakirjalajitunnus
                               hakemustyyppitunnus organisaatiolajitunnus)))))
 
+(defn edit-asiakirjamalli! [id asiakirjamalli]
+  (update-asiakirjamalli! (assoc asiakirjamalli :id id)))
+
 (defn add-asiakirjamalli! [asiakirjamalli]
   (insert-asiakirjamalli! asiakirjamalli))
 
@@ -47,5 +50,5 @@
       :sisalto (find-embedded-template voimaantulovuosi asiakirjalajitunnus
                                        hakemustyyppitunnus organisaatiolajitunnus))))
 
-(when (empty? (find-all-asiakirjamallit))
+(when (empty? (find-all))
   (add-embedded-template 2016 "H" "AH0" nil))

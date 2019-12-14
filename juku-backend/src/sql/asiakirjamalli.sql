@@ -37,3 +37,12 @@ values (asiakirjamalli_seq.nextval,
   :asiakirjalajitunnus, :voimaantulovuosi,
   :hakemustyyppitunnus, :organisaatiolajitunnus,
   :sisalto)
+
+-- name: update-asiakirjamalli!
+update asiakirjamalli set
+    asiakirjalajitunnus = :asiakirjalajitunnus,
+    voimaantulovuosi = :voimaantulovuosi,
+    hakemustyyppitunnus = :hakemustyyppitunnus,
+    organisaatiolajitunnus = :organisaatiolajitunnus,
+    sisalto = :sisalto
+where id = :id

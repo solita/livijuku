@@ -19,4 +19,19 @@
      :auth [:view-hakemus]
      :return Asiakirjamalli+sisalto
      :summary "Hae yksittäinen asiakirjamalli."
-     (ok (service/find-by-id id))))
+     (ok (service/find-by-id id)))
+
+   (PUT "/asiakirjamalli/:id" []
+     :path-params [id :- Long]
+     :body [asiakirjamalli Edit-Asiakirjamalli]
+     :auth [:view-hakemus]
+     :return Long
+     :summary "Päivitä yksittäinen asiakirjamalli."
+     (ok (service/edit-asiakirjamalli! id asiakirjamalli)))
+
+   (POST "/asiakirjamalli" []
+     :body [asiakirjamalli Edit-Asiakirjamalli]
+     :auth [:view-hakemus]
+     :return Long
+     :summary "Luo uusi asiakirjamalli."
+     (ok (service/add-asiakirjamalli! asiakirjamalli))))
