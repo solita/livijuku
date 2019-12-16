@@ -13,4 +13,4 @@
 (s/defschema Asiakirjamalli+sisalto
   (assoc Asiakirjamalli :sisalto s/Str))
 
-(s/defschema Edit-Asiakirjamalli (dissoc Asiakirjamalli+sisalto :id))
+(s/defschema Edit-Asiakirjamalli (dissoc Asiakirjamalli+sisalto :id :poistoaika))
