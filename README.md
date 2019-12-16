@@ -36,7 +36,7 @@ Käynnistä [tietokanta](/juku-db/docker)
 Luo [skeema](/juku-db) tietokantaan
 
     cd juku-db
-	lein with-profiles +test-data do clear-db, update-db
+    lein with-profiles +test-data do run clear-db, run update-db
 
 Käynnistä [backend-palvelu](/juku-backend)
 
