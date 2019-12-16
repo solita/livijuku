@@ -46,3 +46,8 @@ update asiakirjamalli set
     organisaatiolajitunnus = :organisaatiolajitunnus,
     sisalto = :sisalto
 where id = :id
+
+-- name: update-asiakirjamalli-mark-deleted!
+update asiakirjamalli set
+  poistoaika = sysdate
+where id = :id

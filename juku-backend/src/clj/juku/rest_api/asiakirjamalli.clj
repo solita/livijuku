@@ -34,4 +34,11 @@
      :auth [:view-hakemus]
      :return Long
      :summary "Luo uusi asiakirjamalli."
-     (ok (service/add-asiakirjamalli! asiakirjamalli))))
+     (ok (service/add-asiakirjamalli! asiakirjamalli)))
+
+   (DELETE "/asiakirjamalli/:id" []
+     :path-params [id :- Long]
+     :auth [:view-hakemus]
+     :return Long
+     :summary "Päivitä yksittäinen asiakirjamalli."
+     (ok (service/delete-asiakirjamalli! id))))

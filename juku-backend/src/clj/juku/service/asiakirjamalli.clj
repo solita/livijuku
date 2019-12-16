@@ -35,6 +35,9 @@
 (defn add-asiakirjamalli! [asiakirjamalli]
   (insert-asiakirjamalli! asiakirjamalli))
 
+(defn delete-asiakirjamalli! [id]
+  (update-asiakirjamalli-mark-deleted! {:id id}))
+
 (defn- find-embedded-template [vuosi asiakirjalajitunnus hakemustyyppitunnus organisaatiolajitunnus]
   (slurp (io/reader (io/resource
                       (str "pdf-sisalto/templates/"
