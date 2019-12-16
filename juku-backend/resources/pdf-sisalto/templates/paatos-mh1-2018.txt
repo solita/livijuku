@@ -4,7 +4,7 @@
 
 	Hakija: {organisaatio-nimi}
 
-	Hakija on toimittanut Liikennevirastolle {lahetyspvm} joukkoliikenteen maksatushakemuksen ajalta 1.1. - 30.6.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
+	Hakija on toimittanut Liikenne- ja viestintävirastolle {lahetyspvm} joukkoliikenteen maksatushakemuksen ajalta 1.1. - 30.6.{vuosi} JUKU-järjestelmään. Hakija hakee valtionavustusta maksuun yhteensä {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
 
 {avustuskohteet}
 
@@ -12,13 +12,13 @@
 
 *Päätös
 
-	Liikennevirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa. Maksettava valtionavustus jakautuu seuraavasti:
+	Liikenne- ja viestintävirasto maksaa hakijalle tällä päätöksellä valtionavustusta yhteensä {myonnettyavustus} euroa. Maksettava valtionavustus jakautuu seuraavasti:
 
 {avustuskohteet-summary}
 
 *Päätöksen perustelut
 
-	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} arvonlisäveroineen yhteensä enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
+	Liikenne- ja viestintävirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} arvonlisäveroineen yhteensä enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
 
 	Hakija hakee ajalta 1.1. - 30.6.{vuosi} muodostuneita kustannuksia maksuun yhteensä {haettuavustus} euroa, joka on {osuusavustuksesta} % vuodelle {vuosi} myönnetystä valtionavustuksesta. Hakija on toimittanut vaaditut tiedot avustuksen käytöstä.{selite}
 
@@ -34,7 +34,7 @@
 
 *Muutoksenhaku ja oikaisuvaatimus
 
-	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikennevirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on saatavilla JUKU-järjestelmässä.
+	Valtionapuviranomaisen päätökseen ei saa hakea muutosta valittamalla. Tähän päätökseen tyytymätön asianosainen saa hakea oikaisua Liikenne- ja viestintävirastolta 30 päivän kuluessa päätöksen tiedoksisaannista. Oikaisuvaatimusosoitus on saatavilla JUKU-järjestelmässä.
 
 	Päättäjä	{paattaja}
 	Esittelijä	{esittelija}

@@ -16,7 +16,7 @@
 
 *Päätöksen perusteet
 
-	Liikennevirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
+	Liikenne- ja viestintävirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyllä päätöksellä joukkoliikenteen valtionavustusta vuodelle {vuosi} enintään {ah0-myonnettyavustus} euroa. Valtionavustuksen kokonaismäärä on kuitenkin enintään 50 prosenttia hyväksyttävistä kokonaiskustannuksista. Avustusta voi päätöksen mukaan hakea maksuun enintään kahdesti vuodessa.
 
 	Hakija on toimittanut vaadittavat tiedot avustuksen käytöstä.
 
