@@ -50,6 +50,7 @@
             #"GET /hakemus/.*/liite/.*"
             #"GET /hakemus/.*/paatos/pdf.*"
             #"GET /hakemus/.*/seuranta/pdf.*"
+            #"GET /asiakirjamalli/.*/preview"
             #"GET /kilpailutukset/csv.*"
             #"GET /tunnusluku/csv.*"
             #"GET /documentation/.*"

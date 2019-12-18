@@ -41,4 +41,10 @@
      :auth [:modify-asiakirjamalli]
      :return Long
      :summary "Päivitä yksittäinen asiakirjamalli."
-     (ok (service/delete-asiakirjamalli! id))))
+     (ok (service/delete-asiakirjamalli! id)))
+
+   (GET "/asiakirjamalli/:id/preview" []
+     :auth [:view-asiakirjamalli]
+     :path-params [id :- Long]
+     :summary "Lataa esimerkki pdf-dokumentti olemassaolevasta asiakirjamallista."
+     (content-type (ok (service/preview id)) "application/pdf")))
