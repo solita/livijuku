@@ -2,12 +2,15 @@
   (:require [clj-pdf.core :as pdf]
             [clj-pdf.utils :as pdf-utils]
             [clj-pdf-markdown.core :as md]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.string :as str])
   (:import (com.lowagie.text.pdf PdfWriter PdfReader PdfTemplate PdfContentByte BaseFont)
            (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)
            (org.commonmark.ext.gfm.tables TablesExtension TableCell TableHead)
            (org.commonmark.parser Parser)
            (org.commonmark.node Node)
+           (java.text NumberFormat)
+           (java.util Locale)
            (java.io PipedInputStream PipedOutputStream)))
 
 (def default-font
@@ -17,7 +20,7 @@
 
 (def margin
   {:letterhead-top    25
-   :page-number-top   20
+   :page-number-top   25
    :page-number-right 60
    :top               36
    :bottom            36
@@ -46,7 +49,7 @@
           logo-page (.getImportedPage writer logo 1)]
       (.addTemplate canvas logo-page 0.25 0 0 0.25 (.getLeft position) (.getBottom position) ))))
 
-(defn add-header [page-count-template footer]
+(defn add-header [page-count-template]
   (fn [^PdfWriter writer ^Document document]
     (let [canvas (.getDirectContent writer)
           current-page (.getPageNumber writer)
@@ -104,7 +107,7 @@
        (create-page-count-template writer page-count-template)
        #_(add-footer document footer))
      :on-document-close (add-page-count page-count-template)
-     :on-page-start (add-header page-count-template footer)
+     :on-page-start (add-header page-count-template)
      :letterhead [[:paragraph {:spacing-after 10}
       [:pdf-table
          {:border false :width 200 :title "otsikko"}
@@ -152,7 +155,7 @@
              :h4 {:style {:size 10} :spacing-after 8}
              :h5 {:style {:size 10} :spacing-after 8}
              :h6 {:style {:size 10} :spacing-after 8}}
-  :paragraph {:spacing-after 8 :indent-left 50}
+  :paragraph {:spacing-after 8 :indent-left 50 :keep-together true}
   :table {:border false :width-percent 100 :spacing-after 0 :spacing-before 0 :indent-left 0}
   :cell {:padding [0 0 0 0]}
   :spacer {:allow-extra-line-breaks? false}})
@@ -170,3 +173,10 @@
     (.start (Thread. #(with-open [out out-stream]
                         (pdf title date diaarinumero footer content out))))
     in-stream))
+
+(def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
+
+(defn format-number [n]
+  (if n (-> (.format ^NumberFormat number-format-fi n)
+            (str/replace #"\h" " ")
+            (str/replace "\u2212" "-"))))

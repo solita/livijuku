@@ -87,4 +87,5 @@
                                        hakemustyyppitunnus organisaatiolajitunnus))))
 
 (when (empty? (find-all))
-  (add-embedded-template 2016 "H" "AH0" nil))
+  (add-embedded-template 2016 "H" "AH0" nil)
+  (add-embedded-template 2019 "P" "AH0" "KS1"))
