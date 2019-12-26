@@ -1,19 +1,19 @@
-*JOUKKOLIIKENTEEN VALTIONAVUN MAKSATUSHAKEMUS AJALTA 1.1.- 30.6.{vuosi}
+# JOUKKOLIIKENTEEN VALTIONAVUN MAKSATUSHAKEMUS AJALTA 1.1.- 30.6.{vuosi}
 
-*Hakemus {vireillepvm}
+# Hakemus {vireillepvm}
 
-	*Hakija: {organisaatio-nimi}
+**Hakija**: {organisaatio-nimi}
 
-	Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustuksen maksatusta {haettuavustus} euroa ajalta 1.1.- 30.6.{vuosi}. Haettu avustus jakautuu seuraavasti:
+Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustuksen maksatusta {haettuavustus} euroa ajalta 1.1.- 30.6.{vuosi}. Haettu avustus jakautuu seuraavasti:
 
 {avustuskohteet}
 
-	Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. {omarahoitus-all-selite}
+Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. {omarahoitus-all-selite}
 
-	Avustus maksetaan hakijan ilmoittamalle tilille.
+Avustus maksetaan hakijan ilmoittamalle tilille.
 
-	Lähettäjä: {lahettaja}
+Lähettäjä: {lahettaja}
 
-*Liitteet
+# Liitteet
 
 {liitteet}

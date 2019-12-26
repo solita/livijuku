@@ -137,7 +137,7 @@
   (let [header (vec (map #(-> % .getFirstChild .getLiteral Integer/parseInt)
                       (md/node-children (.getFirstChild (.getFirstChild node)))))
         body (md/render-children* pdf-config (.getLastChild node))]
-    [:paragraph (:paragraph pdf-config)
+    [:paragraph (assoc (:paragraph pdf-config) :keep-together false)
       (into [:pdf-table (get-in pdf-config [:table] {}) header] body)]))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
