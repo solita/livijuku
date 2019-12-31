@@ -123,4 +123,4 @@
   (add-embedded-template 2016 "H" "MH1" nil)
   (add-embedded-template 2016 "H" "MH2" nil)
   (add-embedded-template 2019 "P" "AH0" "KS1")
-  (add-embedded-template 2019 "P" "AH0" "KS12"))
+  (add-embedded-template 2019 "P" "AH0" "KS2"))
