@@ -118,7 +118,7 @@
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
-          haettuavustus (ak/total-haettavaavustus avustuskohteet)
+          haettuavustus (ak/total-haettavaavustus (map ak/avustus+alv avustuskohteet))
 
           template (slurp (template/find-asiakirjamalli
                              (:vuosi hakemus) "P" (:hakemustyyppitunnus hakemus)

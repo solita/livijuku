@@ -42,52 +42,56 @@
 (defn delete-asiakirjamalli! [id]
   (update-asiakirjamalli-mark-deleted! {:id id}))
 
+(def example-avustuskohteet
+  {:avustuskohteet "|3|2|\n|-|-|\n| **PSA:n mukaisen liikenteen hankinta (alv 0%)** | | \n| Paikallisliikenne | 200 000 € |\n| Integroitupalvelulinja | 200 000 € |\n| Muu PSA:n mukaisen liikenteen järjestäminen | 200 000 € |\n\n|3|2|\n|-|-|\n| **Hintavelvoitteiden korvaaminen (alv 10%)** | | \n| Seutulippu | 220 000 € |\n| Kaupunkilippu tai kuntalippu | 220 000 € |\n| Liityntälippu | 220 000 € |\n| Työmatkalippu | 220 000 € |\n\n|3|2|\n|-|-|\n| **Liikenteen suunnittelu ja kehittämishankkeet (alv 0%)** | | \n| Informaatio ja maksujärjestelmien kehittäminen | 200 000 € |\n| Matkapalvelukeskuksen suunnittelu ja kehittäminen | 200 000 € |\n| Matkakeskuksen suunnittelu ja kehittäminen | 200 000 € |\n| Raitiotien suunnittelu | 200 000 € |\n| Muu hanke | 200 000 € |",
+   :avustuskohteet-summary "PSA:n mukaisen liikenteen hankinta 600 000 € (alv 0%)\nHintavelvoitteiden korvaaminen 880 000 € (alv 10%) sisältäen arvonlisäveron osuuden 80 000 €.\nLiikenteen suunnittelu ja kehittämishankkeet 1 000 000 € (alv 0%)",
+   :haettuavustus "2 480 000",
+   :omarahoitus "2 980 000",
+   :omarahoitus-all "2 980 000",
+   :omarahoitus-all-selite ""})
+
+(def example-common-hakemus
+  {:vireillepvm "18.12.2019",
+   :organisaatio-nimi "Helsingin seudun liikenne",
+   :organisaatiolaji-pl-gen "suurten kaupunkiseutujen",
+   :lahettaja "<hakijan nimi, joka on lähettänyt hakemuksen>",
+   :vuosi 2020,
+   :liitteet "esimerkki-liite1.pdf\nesimerkki-liite2.pdf"})
+
+(def example-paatos
+  {:paattaja "<päätöksen hyväksyneen käyttäjän nimi>",
+   :esittelija "<hakemuksen tarkastaneen käyttäjän nimi>",
+   :paatosspvm "1.1.2020",
+   :myonnettyavustus "2 480 000",
+   :selite "",
+   :alv-selite "\n\n\tAvustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.",
+
+   :organisaatio-nimi "Helsingin seudun liikenne",
+   :organisaatiolaji-pl-gen "suurten kaupunkiseutujen",
+   :lahetyspvm "18.12.2019",
+   :vuosi 2020,
+   :mh1-hakuaika-loppupvm "31.8.2020",
+   :mh2-hakuaika-loppupvm "31.1.2021"})
+
+(def example-mh-paatos
+  {:osuusavustuksesta "50",
+   :ah0-myonnettyavustus "2 480 000",
+   :ah0-paatospvm "1.1.2020",
+   :momentti "31.30.63.09"})
+
+(def example-mh2-paatos
+  {:mh1-paatospvm "1.1.2020",
+   :mh1-myonnettyavustus "1 240 000"})
+
 (def preview-template-values
   {:h
-   {:ah0 {:avustuskohteet-summary "\tPSA:n mukaisen liikenteen hankinta 600 000 e (alv 0%)\n\n\tHintavelvoitteiden korvaaminen 880 000 e (alv 10%) sisältäen arvonlisäveron osuuden 80 000 e.\n\n\tLiikenteen suunnittelu ja kehittämishankkeet 1 000 000 e (alv 0%)",
-          :vireillepvm "18.12.2019",
-          :organisaatio-nimi "Helsingin seudun liikenne",
-          :omarahoitus "2 980 000",
-          :omarahoitus-all-selite "",
-          :omarahoitus-all "2 980 000",
-          :organisaatiolaji-pl-gen "suurten kaupunkiseutujen",
-          :haettuavustus "2 480 000",
-          :lahettaja "<hakijan nimi, joka on lähettänyt hakemuksen>",
-          :vuosi 2020,
-          :avustuskohteet "|3|2|\n|-|-|\n| **PSA:n mukaisen liikenteen hankinta (alv 0%)** | | \n| Paikallisliikenne | 200 000 € |\n| Integroitupalvelulinja | 200 000 € |\n| Muu PSA:n mukaisen liikenteen järjestäminen | 200 000 € |\n\n|3|2|\n|-|-|\n| **Hintavelvoitteiden korvaaminen (alv 10%)** | | \n| Seutulippu | 220 000 € |\n| Kaupunkilippu tai kuntalippu | 220 000 € |\n| Liityntälippu | 220 000 € |\n| Työmatkalippu | 220 000 € |\n\n|3|2|\n|-|-|\n| **Liikenteen suunnittelu ja kehittämishankkeet (alv 0%)** | | \n| Informaatio ja maksujärjestelmien kehittäminen | 200 000 € |\n| Matkapalvelukeskuksen suunnittelu ja kehittäminen | 200 000 € |\n| Matkakeskuksen suunnittelu ja kehittäminen | 200 000 € |\n| Raitiotien suunnittelu | 200 000 € |\n| Muu hanke | 200 000 € |",
-          :liitteet "whyfp90.pdf"}
-    :mh1 {:avustuskohteet-summary "\tPSA:n mukaisen liikenteen hankinta 300 000 e (alv 0%)\n\n\tHintavelvoitteiden korvaaminen 440 000 e (alv 10%) sisältäen arvonlisäveron osuuden 40 000 e.\n\n\tLiikenteen suunnittelu ja kehittämishankkeet 500 000 e (alv 0%)",
-          :vireillepvm "21.12.2019",
-          :organisaatio-nimi "Helsingin seudun liikenne",
-          :omarahoitus "1 840 000",
-          :omarahoitus-all-selite "",
-          :omarahoitus-all "1 840 000",
-          :organisaatiolaji-pl-gen "suurten kaupunkiseutujen",
-          :haettuavustus "1 240 000",
-          :lahettaja "<hakijan nimi, joka on lähettänyt hakemuksen>",
-          :vuosi 2020,
-          :avustuskohteet "|3|2|\n|-|-|\n| **PSA:n mukaisen liikenteen hankinta (alv 0%)** | | \n| Paikallisliikenne | 100 000 € |\n| Integroitupalvelulinja | 100 000 € |\n| Muu PSA:n mukaisen liikenteen järjestäminen | 100 000 € |\n\n|3|2|\n|-|-|\n| **Hintavelvoitteiden korvaaminen (alv 10%)** | | \n| Seutulippu | 110 000 € |\n| Kaupunkilippu tai kuntalippu | 110 000 € |\n| Liityntälippu | 110 000 € |\n| Työmatkalippu | 110 000 € |\n\n|3|2|\n|-|-|\n| **Liikenteen suunnittelu ja kehittämishankkeet (alv 0%)** | | \n| Informaatio ja maksujärjestelmien kehittäminen | 100 000 € |\n| Matkapalvelukeskuksen suunnittelu ja kehittäminen | 100 000 € |\n| Matkakeskuksen suunnittelu ja kehittäminen | 100 000 € |\n| Raitiotien suunnittelu | 100 000 € |\n| Muu hanke | 100 000 € |",
-          :liitteet "whyfp90.pdf"}}
+   {:ah0 (merge example-common-hakemus example-avustuskohteet)
+    :mh1 (merge example-common-hakemus example-avustuskohteet)
+    :mh2 (merge example-common-hakemus example-avustuskohteet)}
    :p
-   {:ah0 {:paattaja "<päätöksen hyväksyneen käyttäjän nimi>",
-          :esittelija "Paivi Päätöksentekijä",
-          :paatosspvm "<päätöspvm>",
-          :myonnettyavustus "2 480 000",
-          :selite "",
-
-          :avustuskohteet-summary "\tPSA:n mukaisen liikenteen hankinta 600 000 e (alv 0%)\n\n\tHintavelvoitteiden korvaaminen 880 000 e (alv 10%) sisältäen arvonlisäveron osuuden 80 000 e.\n\n\tLiikenteen suunnittelu ja kehittämishankkeet 1 000 000 e (alv 0%)",
-          :alv-selite "\n\n\tAvustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.",
-          :organisaatio-nimi "Helsingin seudun liikenne",
-          :organisaatiolaji-pl-gen "suurten kaupunkiseutujen",
-          :lahetyspvm "18.12.2019",
-          :omarahoitus "2 980 000",
-          :omarahoitus-all-selite "",
-          :haettuavustus "2 480 000",
-          :vuosi 2020,
-          :avustuskohteet "|3|2|\n|-|-|\n| **PSA:n mukaisen liikenteen hankinta (alv 0%)** | | \n| Paikallisliikenne | 200 000 € |\n| Integroitupalvelulinja | 200 000 € |\n| Muu PSA:n mukaisen liikenteen järjestäminen | 200 000 € |\n\n|3|2|\n|-|-|\n| **Hintavelvoitteiden korvaaminen (alv 10%)** | | \n| Seutulippu | 220 000 € |\n| Kaupunkilippu tai kuntalippu | 220 000 € |\n| Liityntälippu | 220 000 € |\n| Työmatkalippu | 220 000 € |\n\n|3|2|\n|-|-|\n| **Liikenteen suunnittelu ja kehittämishankkeet (alv 0%)** | | \n| Informaatio ja maksujärjestelmien kehittäminen | 200 000 € |\n| Matkapalvelukeskuksen suunnittelu ja kehittäminen | 200 000 € |\n| Matkakeskuksen suunnittelu ja kehittäminen | 200 000 € |\n| Raitiotien suunnittelu | 200 000 € |\n| Muu hanke | 200 000 € |",
-          :mh1-hakuaika-loppupvm "31.8.2017",
-          :mh2-hakuaika-loppupvm "31.1.2018",
-          :omarahoitus-all "2 980 000"}}})
+   {:ah0 (merge example-paatos example-avustuskohteet)
+    :mh1 (merge example-mh-paatos example-paatos example-avustuskohteet)
+    :mh2 (merge example-mh2-paatos example-mh-paatos example-paatos example-avustuskohteet)}})
 
 (defn preview-asiakirjamalli [asiakirjamalli]
   (let [template (:sisalto asiakirjamalli)
@@ -123,4 +127,6 @@
   (add-embedded-template 2016 "H" "MH1" nil)
   (add-embedded-template 2016 "H" "MH2" nil)
   (add-embedded-template 2019 "P" "AH0" "KS1")
-  (add-embedded-template 2019 "P" "AH0" "KS2"))
+  (add-embedded-template 2019 "P" "AH0" "KS2")
+  (add-embedded-template 2018 "P" "MH1" nil)
+  (add-embedded-template 2018 "P" "MH2" nil))

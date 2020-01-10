@@ -162,14 +162,14 @@
           (let [kohde (first kohteet)
                 avustukset (map :haettavaavustus kohteet)]
 
-            (str "\t" (avustuskohdeluokka-nimi kohde avustuskohdeluokat) " "
+            (str (avustuskohdeluokka-nimi kohde avustuskohdeluokat) " "
                  (pdf/format-number (reduce + (map (official-amount-fn kohde) avustukset)))
-                 " e "
+                 " € "
                  (alv-title kohde)
                  (if (include-alv? kohde)
                    (avustuskohteet-summary-alv-osuus avustukset (alv% kohde))))))]
 
-    (str/join "\n\n" (map avustuskohdeluokka avustuskohteet-luokittain))))
+    (str/join "\n" (map avustuskohdeluokka avustuskohteet-luokittain))))
 
 (defn omarahoitus-all-selite [omarahoitus omarahoitus-all]
   (if (= omarahoitus omarahoitus-all)
