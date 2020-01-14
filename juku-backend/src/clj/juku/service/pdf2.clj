@@ -3,7 +3,8 @@
             [clj-pdf.utils :as pdf-utils]
             [clj-pdf-markdown.core :as md]
             [clojure.java.io :as io]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [common.core :as c])
   (:import (com.lowagie.text.pdf PdfWriter PdfReader PdfTemplate PdfContentByte BaseFont)
            (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)
            (org.commonmark.ext.gfm.tables TablesExtension TableCell TableHead)
@@ -11,7 +12,8 @@
            (org.commonmark.node Node)
            (java.text NumberFormat)
            (java.util Locale)
-           (java.io PipedInputStream PipedOutputStream)))
+           (java.io PipedInputStream PipedOutputStream)
+           (java.util.concurrent Executors)))
 
 (def default-font
   {:size 10
@@ -137,8 +139,7 @@
   (let [header (vec (map #(-> % .getFirstChild .getLiteral Integer/parseInt)
                       (md/node-children (.getFirstChild (.getFirstChild node)))))
         body (md/render-children* pdf-config (.getLastChild node))]
-    [:paragraph (assoc (:paragraph pdf-config) :keep-together false)
-      (into [:pdf-table (get-in pdf-config [:table] {}) header] body)]))
+    (into [:pdf-table (get-in pdf-config [:table] {}) header] body)))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
   (md/render-children* pdf-config node))
@@ -155,23 +156,41 @@
              :h4 {:style {:size 10} :spacing-after 8}
              :h5 {:style {:size 10} :spacing-after 8}
              :h6 {:style {:size 10} :spacing-after 8}}
-  :paragraph {:spacing-after 8 :indent-left 50 :keep-together true}
+  #_:paragraph #_{:spacing-after 8 :indent-left 50 :keep-together true}
   :table {:border false :width-percent 100 :spacing-after 0 :spacing-before 0 :indent-left 0}
   :cell {:padding [0 0 0 0]}
   :spacer {:allow-extra-line-breaks? false}})
+
+(def default-indent+spacing {:spacing-after 8 :indent-left 50})
+
+(defn indent-paragraph-wrapper [item]
+  (case (first item)
+    :paragraph (assoc item 1 (merge {:keep-together true} default-indent+spacing))
+    :list [:paragraph (merge {:keep-together false} default-indent+spacing)
+           (update item 1 #(assoc % :indent -50))]
+    :table [:paragraph (merge {:keep-together false} default-indent+spacing) item]
+    :pdf-table [:paragraph (merge {:keep-together false} default-indent+spacing) item]
+    item))
+
+(defn wrap-indent-paragraph [clj-pdf]
+  (vec (map indent-paragraph-wrapper clj-pdf)))
 
 (defn pdf [title date diaarinumero footer content out]
   (with-redefs [pdf-utils/font (partial font pdf-utils/font)]
     (pdf/pdf [
       (metadata title date diaarinumero footer)
-      (with-redefs [md/parse-markdown parse-markdown]
-        (md/markdown->clj-pdf markdown-defaults content))] out)))
+      (wrap-indent-paragraph
+        (with-redefs [md/parse-markdown parse-markdown]
+          (md/markdown->clj-pdf markdown-defaults content)))] out)))
+
+(defonce executor (Executors/newFixedThreadPool 10))
+(c/setup-shutdown-hook! #(.shutdown executor))
 
 (defn pdf->inputstream [title date diaarinumero footer content]
   (let [in-stream (new PipedInputStream)
         out-stream (PipedOutputStream. in-stream)]
-    (.start (Thread. #(with-open [out out-stream]
-                        (pdf title date diaarinumero footer content out))))
+    (.execute executor #(with-open [out out-stream]
+                          (pdf title date diaarinumero footer content out)))
     in-stream))
 
 (def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))

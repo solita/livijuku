@@ -33,6 +33,12 @@
              (c/bindings->map vuosi asiakirjalajitunnus
                               hakemustyyppitunnus organisaatiolajitunnus)))))
 
+(defn get-asiakirjamalli! [vuosi asiakirjalajitunnus hakemustyyppitunnus organisaatiolajitunnus]
+  (c/assert-not-nil!
+    (find-asiakirjamalli vuosi asiakirjalajitunnus hakemustyyppitunnus organisaatiolajitunnus)
+    {:message (str "Asiakirjamallia ei ole määritetty hakemustyypille: " hakemustyyppitunnus
+                   ", organisaatiolajille: " organisaatiolajitunnus " ja vuodelle: " vuosi)}))
+
 (defn edit-asiakirjamalli! [id asiakirjamalli]
   (update-asiakirjamalli! (assoc asiakirjamalli :id id)))
 
@@ -126,6 +132,7 @@
   (add-embedded-template 2016 "H" "AH0" nil)
   (add-embedded-template 2016 "H" "MH1" nil)
   (add-embedded-template 2016 "H" "MH2" nil)
+  (add-embedded-template 2016 "H" "ELY" nil)
   (add-embedded-template 2019 "P" "AH0" "KS1")
   (add-embedded-template 2019 "P" "AH0" "KS2")
   (add-embedded-template 2018 "P" "MH1" nil)

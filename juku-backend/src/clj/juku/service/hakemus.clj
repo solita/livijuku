@@ -57,7 +57,7 @@
     (let [pvm (h/format-date (time/today))
           hakemusid (:id hakemus)
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
-          template (slurp (template/find-asiakirjamalli
+          template (slurp (template/get-asiakirjamalli!
                             (:vuosi hakemus) "H" (:hakemustyyppitunnus hakemus)
                             (:lajitunnus organisaatio)))
           common-template-values (common-template-values organisaatio esikatselu-message pvm hakemus)
