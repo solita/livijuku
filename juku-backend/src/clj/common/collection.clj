@@ -6,7 +6,7 @@
 (defn not-found! [error] (ss/throw+ (merge error {:type ::not-found}) (:message error)))
 
 (defn assert-not-empty! [coll error]
-  (if (empty? coll) (not-found! error)))
+  (if (empty? coll) (not-found! error) coll))
 
 (defn single-result!
   "Returns a single result item from the given collection.
