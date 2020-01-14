@@ -64,6 +64,17 @@
    :vuosi 2020,
    :liitteet "esimerkki-liite1.pdf\nesimerkki-liite2.pdf"})
 
+(def example-ely-hakemus
+  {:organisaatio-nimi "Uusimaa ELY",
+   :organisaatiolaji-pl-gen "ELY-keskusten",
+   :haettuavustus "3 502 230",
+   :ostot "100 000",
+   :kaupunkilipputuki "100 000",
+   :seutulipputuki "100 000",
+   :kehittaminen "100 000",
+   :kehityshankkeet "|Kehityshanke 1|10 000 €|\n|Kehityshanke 2|66 666 €|",
+   :maararahatarpeet "|3|2|\n|-|-|\n|**Bruttosopimus**||\n|Sidotut kustannukset|100 000 €|\n|Uudet sopimukset|200 000 €|\n|Kauden tulot|100 000 €|\n\n|3|2|\n|-|-|\n|**Hintavelvoitteiden korvaaminen**||\n|Sidotut kustannukset|100 000 €|\n|Uudet sopimukset|200 000 €|\n\n|3|2|\n|-|-|\n|**Käyttöoikeussopimuskorvaukset (alueellinen)**||\n|Sidotut kustannukset|100 000 €|\n|Uudet sopimukset|200 000 €|\n\n|3|2|\n|-|-|\n|**Käyttöoikeussopimuskorvaukset (reitti)**||\n|Sidotut kustannukset|100 000 €|\n|Uudet sopimukset|200 000 €|\n\n|3|2|\n|-|-|\n|**Muu PSA:n mukainen liikenne**||\n|Sidotut kustannukset|100 000 €|\n|Uudet sopimukset|200 000 €|"})
+
 (def example-paatos
   {:paattaja "<päätöksen hyväksyneen käyttäjän nimi>",
    :esittelija "<hakemuksen tarkastaneen käyttäjän nimi>",
@@ -93,7 +104,8 @@
   {:h
    {:ah0 (merge example-common-hakemus example-avustuskohteet)
     :mh1 (merge example-common-hakemus example-avustuskohteet)
-    :mh2 (merge example-common-hakemus example-avustuskohteet)}
+    :mh2 (merge example-common-hakemus example-avustuskohteet)
+    :ely (merge example-ely-hakemus example-common-hakemus)}
    :p
    {:ah0 (merge example-paatos example-avustuskohteet)
     :mh1 (merge example-mh-paatos example-paatos example-avustuskohteet)
