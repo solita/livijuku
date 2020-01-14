@@ -97,17 +97,17 @@
                              maararahatarpeet+nimi)
 
         maarahatarve-template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/maararahatarve.txt"))))
-        tulot-template "- Kauden tulot {tulot} €"
+        tulot-template "|Kauden tulot|{tulot} €|"
         template (fn [maararahatarve] (if (:tulot maararahatarve)
                                         (str maarahatarve-template "\n" tulot-template)
                                         maarahatarve-template))]
-    (str/join "\n" (map (fn [maararahatarve] (xstr/interpolate (template maararahatarve) maararahatarve))
+    (str/join "\n\n" (map (fn [maararahatarve] (xstr/interpolate (template maararahatarve) maararahatarve))
                         template-values))))
 
 (defn kehityshankkeet-section [kehityshankkeet]
   (if (empty? kehityshankkeet)
     "Ei kehityshankkeita"
-    (let [kehityshanke-template "- {nimi} {arvo} €"]
+    (let [kehityshanke-template "|{nimi}|{arvo} €|"]
       (str/join "\n" (map (partial xstr/interpolate kehityshanke-template)
                           (map (c/partial-first-arg update :arvo pdf/format-number) kehityshankkeet))))))
 
@@ -120,7 +120,7 @@
           (+ (reduce (coll/reduce-function + (fn [x] (- (+ (:sidotut x) (:uudet x)) (or (:tulot x) 0)))) 0 maararahatarpeet)
              (reduce (coll/reduce-function + :arvo) 0 kehityshankkeet)
              (reduce + (map #(if (number? %) % 0) (vals ely-hakemus))))]
-    (merge ely-hakemus
+    (merge (m/map-values pdf/format-number ely-hakemus)
       {:maararahatarpeet (maarahatarpeet-section maararahatarpeet)
        :kehityshankkeet (kehityshankkeet-section kehityshankkeet)
        :haettuavustus (pdf/format-number haettuavustus)})))

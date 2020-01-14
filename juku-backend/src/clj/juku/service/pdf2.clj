@@ -156,7 +156,6 @@
              :h4 {:style {:size 10} :spacing-after 8}
              :h5 {:style {:size 10} :spacing-after 8}
              :h6 {:style {:size 10} :spacing-after 8}}
-  #_:paragraph #_{:spacing-after 8 :indent-left 50 :keep-together true}
   :table {:border false :width-percent 100 :spacing-after 0 :spacing-before 0 :indent-left 0}
   :cell {:padding [0 0 0 0]}
   :spacer {:allow-extra-line-breaks? false}})
@@ -165,11 +164,11 @@
 
 (defn indent-paragraph-wrapper [item]
   (case (first item)
-    :paragraph (assoc item 1 (merge {:keep-together true} default-indent+spacing))
-    :list [:paragraph (merge {:keep-together false} default-indent+spacing)
-           (update item 1 #(assoc % :indent -50))]
-    :table [:paragraph (merge {:keep-together false} default-indent+spacing) item]
-    :pdf-table [:paragraph (merge {:keep-together false} default-indent+spacing) item]
+    :paragraph (assoc item 1 (assoc default-indent+spacing :keep-together true))
+    :list [:paragraph (assoc default-indent+spacing :keep-together false)
+           (update item 1 #(assoc % :indent (- (:indent-left default-indent+spacing))))]
+    :table [:paragraph (assoc default-indent+spacing :keep-together false) item]
+    :pdf-table [:paragraph (assoc default-indent+spacing :keep-together false) item]
     item))
 
 (defn wrap-indent-paragraph [clj-pdf]

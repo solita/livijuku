@@ -6,13 +6,17 @@
 
 {maararahatarpeet}
 
-Joukkoliikennetuki kunnille:
-- Lipputuki - kaupunkilippu {kaupunkilipputuki} €
-- Lipputuki - seutulippu {seutulipputuki} €
-- Liikenteen ostot {ostot} €
-- Kehittäminen {kehittaminen} €
+|3|2|
+|-|-|
+|**Joukkoliikennetuki kunnille**||
+|Lipputuki - kaupunkilippu|{kaupunkilipputuki} €|
+|Lipputuki - seutulippu|{seutulipputuki} €|
+|Liikenteen ostot|{ostot} €|
+|Kehittäminen|{kehittaminen} €|
 
-Kehittämishankkeet:
+|3|2|
+|-|-|
+|**Kehittämishankkeet**||
 {kehityshankkeet}
 
 Haettava valtionavustus yhteensä {haettuavustus} €
