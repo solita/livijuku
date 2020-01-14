@@ -126,8 +126,9 @@
        :haettuavustus (pdf/format-number haettuavustus)})))
 
 (defn maararahakiintiot-section [paatokset]
-  (let [maararaha-template "\t{nimi}\t\t{myonnettyavustus} e"]
-    (str/join "\n" (map (partial xstr/interpolate maararaha-template) paatokset))))
+  (let [maararaha-template "|{nimi}|{myonnettyavustus} €|"]
+    (str/join "\n" (map (partial xstr/interpolate maararaha-template)
+                        (map #(update % :myonnettyavustus pdf/format-number) paatokset)))))
 
 (defn ely-paatos-template-values [_ hakemus]
   (let [vuosi (:vuosi hakemus)

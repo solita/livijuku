@@ -100,16 +100,26 @@
   {:mh1-paatospvm "1.1.2020",
    :mh1-myonnettyavustus "1 240 000"})
 
+(def example-ely-paatos
+  {:organisaatio-nimi "Uusimaa ELY",
+   :organisaatiolaji-pl-gen "ELY-keskusten",
+   :maararahakiintiot "|Uusimaa ELY|1 000 000 €|\n|Varsinais-Suomi ELY|1 000 000 €|\n|Kaakkois-Suomi ELY|1 000 000 €|\n|Pirkanmaa ELY|1 000 000 €|\n|Pohjois-Savo ELY|1 000 000 €|\n|Keski-Suomi ELY|1 000 000 €|\n|Etelä-Pohjanmaa ELY|1 000 000 €|\n|Pohjois-Pohjanmaa ELY|1 000 000 €|\n|Lappi ELY|1 000 000 €|",
+   :maararaha "4 000 000",
+   :jakamatta "1 000 000",
+   :viimevuosi 2019,
+   :myonnettyavustus "3 000 000"})
+
 (def preview-template-values
   {:h
    {:ah0 (merge example-common-hakemus example-avustuskohteet)
     :mh1 (merge example-common-hakemus example-avustuskohteet)
     :mh2 (merge example-common-hakemus example-avustuskohteet)
-    :ely (merge example-ely-hakemus example-common-hakemus)}
+    :ely (merge example-common-hakemus example-ely-hakemus)}
    :p
    {:ah0 (merge example-paatos example-avustuskohteet)
     :mh1 (merge example-mh-paatos example-paatos example-avustuskohteet)
-    :mh2 (merge example-mh2-paatos example-mh-paatos example-paatos example-avustuskohteet)}})
+    :mh2 (merge example-mh2-paatos example-mh-paatos example-paatos example-avustuskohteet)
+    :ely (merge example-paatos example-ely-paatos)}})
 
 (defn preview-asiakirjamalli [asiakirjamalli]
   (let [template (:sisalto asiakirjamalli)
