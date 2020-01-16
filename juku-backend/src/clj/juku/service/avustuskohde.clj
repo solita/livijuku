@@ -135,7 +135,7 @@
         avustuskohteet-luokittain (partition-by :avustuskohdeluokkatunnus avustuskohteet)
         avustuskohdeluokka-otsikko (fn [kohde] (str (avustuskohdeluokka-nimi kohde avustuskohdeluokat) " "
                                                     (alv-title kohde)))
-        avustuskohdeluokka (fn [kohteet] (str "| **" (avustuskohdeluokka-otsikko (first kohteet)) "** | | \n"
+        avustuskohdeluokka (fn [kohteet] (str "| **" (avustuskohdeluokka-otsikko (first kohteet)) "** | |\n"
                                               (avustuskohderivit kohteet avustuskohdelajit)))]
     (str header
       (str/join (str "\n\n" header) (map avustuskohdeluokka avustuskohteet-luokittain)))))
@@ -148,7 +148,7 @@
 
 (defn avustuskohteet-summary-alv-osuus [avustukset alv]
   (str " sisältäen arvonlisäveron osuuden "
-       (pdf/format-number (reduce + (map #(round (alv-amount % alv)) avustukset))) " e."))
+       (pdf/format-number (reduce + (map #(round (alv-amount % alv)) avustukset))) " €."))
 
 (defn avustuskohteet-summary
   "Avustuskohteiden yhteenveto erittely. Avustuskohteet summattu avustuskohdeluokittain.
