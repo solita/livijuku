@@ -158,4 +158,5 @@
   (add-embedded-template 2019 "P" "AH0" "KS1")
   (add-embedded-template 2019 "P" "AH0" "KS2")
   (add-embedded-template 2018 "P" "MH1" nil)
-  (add-embedded-template 2018 "P" "MH2" nil))
+  (add-embedded-template 2018 "P" "MH2" nil)
+  (add-embedded-template 2016 "P" "ELY" nil))

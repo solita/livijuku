@@ -120,7 +120,7 @@
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
           haettuavustus (ak/total-haettavaavustus (map ak/avustus+alv avustuskohteet))
 
-          template (slurp (template/find-asiakirjamalli
+          template (slurp (template/get-asiakirjamalli!
                              (:vuosi hakemus) "P" (:hakemustyyppitunnus hakemus)
                              (:lajitunnus organisaatio)))
           common-template-values
