@@ -130,14 +130,14 @@
              :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
              :vuosi (:vuosi hakemus)
 
-             :selite (c/maybe-nil #(str "\n\n\t" (str/trim (str/replace % #"\R+" "\n\n\t"))) ""
-                                  (c/nil-if str/blank? (:selite paatos)))
+             :selite (c/nil-if str/blank? (:selite paatos))
 
              :myonnettyavustus (pdf/format-number (:myonnettyavustus paatos))
              :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
              :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
              :paattaja (or (:paattajanimi paatos) "<päätöksen hyväksyneen käyttäjän nimi>")
-             :esittelija (user/user-fullname (user/find-user (:kasittelija hakemus)))}
+             :esittelija (or (some-> hakemus :kasittelija user/find-user user/user-fullname)
+                             "<hakemuksen tarkastaneen käyttäjän nimi>")}
 
           template-values
             (case (:hakemustyyppitunnus hakemus)

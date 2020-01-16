@@ -12,7 +12,7 @@
            (org.commonmark.node Node)
            (java.text NumberFormat)
            (java.util Locale)
-           (java.io PipedInputStream PipedOutputStream)
+           (java.io ByteArrayOutputStream ByteArrayInputStream)
            (java.util.concurrent Executors)))
 
 (def default-font
@@ -127,19 +127,18 @@
      :pages false}))
 
 (defn parse-markdown [s]
-  (let [^Parser parser (.build (.extensions (Parser/builder) [(TablesExtension/create)]))]
+  (let [^Parser parser
+        (-> (Parser/builder)
+            (.extensions [(TablesExtension/create)])
+            .build)]
     (.parse parser s)))
 
-(defn process-header [pdf-config ^Node node]
-  (if (instance? TableHead node)
-    {:header (get (md/render-children* pdf-config node) 0)}
-    {}))
-
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableBlock [pdf-config ^Node node]
-  (let [header (vec (map #(-> % .getFirstChild .getLiteral Integer/parseInt)
-                      (md/node-children (.getFirstChild (.getFirstChild node)))))
-        body (md/render-children* pdf-config (.getLastChild node))]
-    (into [:pdf-table (get-in pdf-config [:table] {}) header] body)))
+  (when-not (instance? TableHead (.getLastChild node))
+    (let [header (vec (map #(-> % .getFirstChild .getLiteral Integer/parseInt)
+                        (md/node-children (.getFirstChild (.getFirstChild node)))))
+          body (md/render-children* pdf-config (.getLastChild node))]
+      (into [:pdf-table (get-in pdf-config [:table] {}) header] body))))
 
 (defmethod md/render :org.commonmark.ext.gfm.tables.TableRow [pdf-config ^Node node]
   (md/render-children* pdf-config node))
@@ -148,6 +147,8 @@
   [:pdf-cell (merge {:align (keyword (.toLowerCase (.toString (or (.getAlignment node) "left"))))}
                           (get-in pdf-config [:cell] {}))
    (into [:paragraph] (md/render-children* pdf-config node))])
+
+(defmethod md/render :HtmlInline [pdf-config node] (.getLiteral node))
 
 (def markdown-defaults
  {:heading  {:h1 {:style {:size 12} :spacing-after 8}
@@ -182,15 +183,10 @@
         (with-redefs [md/parse-markdown parse-markdown]
           (md/markdown->clj-pdf markdown-defaults content)))] out)))
 
-(defonce executor (Executors/newFixedThreadPool 10))
-(c/setup-shutdown-hook! #(.shutdown executor))
-
 (defn pdf->inputstream [title date diaarinumero footer content]
-  (let [in-stream (new PipedInputStream)
-        out-stream (PipedOutputStream. in-stream)]
-    (.execute executor #(with-open [out out-stream]
-                          (pdf title date diaarinumero footer content out)))
-    in-stream))
+  (with-open [out (ByteArrayOutputStream. 256)]
+    (pdf title date diaarinumero footer content out)
+    (ByteArrayInputStream. (.toByteArray out))))
 
 (def ^NumberFormat number-format-fi (NumberFormat/getInstance (Locale/forLanguageTag "fi")))
 

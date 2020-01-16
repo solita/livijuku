@@ -1,0 +1,63 @@
+# Elinkeino-, liikenne- ja ympäristökeskukset
+
+# Vuoden {vuosi} määrärahakiintiöt
+
+Valtion vuoden {vuosi} talousarviossa on varattu alueellisen ja paikallisen liikenteen palvelujen ostoon, palvelusopimusasetuksessa tarkoitettujen hintavelvoitteiden korjaamiseen ja alueellisen joukkoliikenteen kehittämiseen {maararaha} euron määräraha.
+
+Liikenneviraston päätöksen perusteella liikenne- ja viestintäministeriö osoittaa elinkeino-, liikenne- ja ympäristökeskuksille yhteensä {myonnettyavustus} euroa valtion vuoden {vuosi} talousarviomomentilta 31.30.63. Määrärahasta jätetään jakamatta yhteensä {jakamatta} euroa aiempaa pienemmäksi arvioidun bruttomallin tulokertymän vuoksi.
+
+Määräraha kiintiöidään yhdeksälle (9) täyden palvelun elinkeino-, liikenne- ja ympäristökeskukselle (ELY). Määrärahakiintiöiden valmistelun yhteydessä on huomioitu vuoden {viimevuosi} määrärahan käyttö ja elinkeino-, liikenne- ja ympäristökeskusten omat laskelmat ja perustelut määrärahatarpeesta vuodelle {vuosi}. Määrärahakiintiöinnin valmistelussa on ollut lähtökohtana peruspalvelutason yhdenvertainen toteutuminen alueilla. Elinkeino-, liikenne- ja ympäristökeskusten esittämiä määrärahatarpeita ei kaikilta osin ole voitu ottaa kiintiöinnissä täysimääräisesti huomioon.
+
+Määrärahan käytössä ja myöntämisessä on kiinnitetty huomiota määrärahan vaikuttavuuteen joukkoliikenteen helppo- ja yhteiskäyttöisyyden sekä runsasväkisillä kaupunkiseuduilla ja niiden välisessä liikenteessä kulkutapa-osuuden kasvattamisen kannalta.
+
+# Määrärahakiintiöt
+
+Joukkoliikenteen valtion rahoituksen määrärahakiintiöt vuodelle {vuosi}:
+
+|1|1|
+|-|-|
+{maararahakiintiot}
+
+{selite}
+
+# Määrärahojen käyttö
+
+Liikennevirasto päättää valtion talousarviossa osoitetun määrärahan tai sen osan kiintiöimisestä elinkeino-, liikenne- ja ympäristökeskuksille. Elinkeino-, liikenne- ja ympäristökeskukset saavat itse käyttää määrärahaa joukkolii-kennelain 45 §:n 1, 2 ja 4 momentin mukaisiin käyttötarkoituksiin. Ne voivat myös myöntää valtionavustusta kunnalle ja kuntayhtymälle käytettäväksi samoihin tarkoituksiin. Valtion rahoitusosuus voi olla enintään yhtä suuri kuin kunnan.
+
+# Valtionavustuksen myöntämisen yleiset edellytykset
+
+Määrärahasta voidaan myöntää valtionavustusta joukkoliikenteen valtion-avustusasetuksen (1273/2013) mukaisesti kunnille ja muille yhteisöille seu-raaviin tarkoituksiin:
+
+1) palvelusopimusasetuksen mukaisen liikenteen ostoihin ja hintavelvoitteen korvaamiseen
+2) matkapalvelukeskuksen ja matkakeskuksen suunnitteluun ja kehittämiseen
+3) joukkoliikenteen suunnitteluun ja kokeiluhankkeisiin
+
+# Alueellinen ja paikallinen liikenne
+
+Elinkeino-, liikenne- ja ympäristökeskukset rahoittavat liikenteenharjoittajille maksettavia sopimuskorvauksia, alueellisen ja paikallisen liikenteen ostoja sekä matkalippuja koskevia hintavelvoitteita. Joukkoliikenteen järjestämis-tavassa 1.7.2014 tapahtunut muutos tarkoittaa sitä, että valtio korvaa alu-eellisia ostoja pääsääntöisesti liikenteenharjoittajille suoraan eikä enää avus-ta kuntia.
+
+Lapin elinkeino-, liikenne- ja ympäristökeskus voi lisäksi ostaa tilausperus-teisia Käsivarren alueen erämaalentoja vailla tieyhteyksiä olevilla alueilla asuvien asukkaiden kesäkaudella tapahtuvien peruspalveluluonteisten asi-ointimatkojen järjestämiseksi. Erämaalentoja ostettaessa on noudatettava liikenne- ja viestintäministeriön kirjeessä Dnro 349/79/2009 todettuja peri-aatteita.
+
+Peruspalvelutasoisella liikenteellä tarkoitetaan kansalaisten ja elinkeinoelämän välttämättömiin liikkumistarpeisiin liittyvää palvelutasoa, joka toteute-taan koko maassa. Peruspalvelutaso määritellään liikennejärjestelmätasolla ja riittää, että se toteutuu yhdellä liikennemuodolla.
+
+Palveluja ostettaessa rahaa ei saa käyttää epätarkoituksenmukaiseen tai tarpeettomasti päällekkäisen liikenteen ostamiseen, eikä sellaisen liikenteen ostamiseen, jossa matkustajakysyntää ei ole. Liikenteen suunnittelussa ja hankinnassa on huomioitava elinkeino-, liikenne- ja ympäristökeskusten vä-linen yhteistyö yhteyksillä, joilla on merkitystä useamman ELY-keskuksen joukkoliikenteen palvelutasolle.
+
+Mikäli joukkoliikennettä ei voida järjestää tuettuna, on välttämättömien kul-jetusten turvaamiseksi pyrittävä kehittämään muita liikkumisvaihtoehtoja. Tämä edellyttää eri toimijoiden ja hallinnonalojen joustavaa yhteistyötä kul-jetusten rakenteellisten epäkohtien korjaamiseksi sekä panostusta palvelu-tason ylläpitämiseksi kuljetuksia yhdistämällä.
+
+Joukkoliikenteen tuella kompensoidaan siirtymäajan sopimusten seutu-, kaupunki- ja työmatkalippujen hinnanalennusta. Hintavelvoitteen rahoitta-misen edellytyksenä on, että kunta osallistuu hintavelvoitteen rahoittamisen kustannuksiin ainakin yhtä suurella osuudella kuin valtio.
+
+# Määrärahan käytön seuranta
+
+Määrärahan käytön seurantaa varten elinkeino-, liikenne- ja ympäristökes-kusten tulee käyttää seurantaa varten Liikenneviraston kehittämää tunnus-lukutyökalua sekä erikseen määriteltyjä raportointitapoja. Lisäksi elinkeino-, liikenne- ja ympäristökeskusten tulee toimittaa Liikennevirastolle erikseen määriteltäviä selvityksiä rahoituksen käytöstä ja vaikutuksista.
+
+# Sovellettava lainsäädäntö
+
+Joukkoliikennelaki (869/2009) 46 §
+
+**Päätöksentekijä**
+Osastopäällikkö
+{paattaja}
+
+**Esittelijä**
+Joukkoliikenneasiantuntija
+{esittelija}

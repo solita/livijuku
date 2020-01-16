@@ -1,0 +1,18 @@
+# JOUKKOLIIKENTEEN VALTIONAVUSTUSHAKEMUS
+
+# Hakemus {vireillepvm}
+
+**Hakija**: {organisaatio-nimi}
+
+Hakija hakee vuonna {vuosi} {organisaatiolaji-pl-gen} joukkoliikenteen valtionavustusta {haettuavustus} euroa. Haettu avustus jakautuu seuraavasti:
+
+{avustuskohteet}
+
+Hakija osoittaa omaa rahoitusta näihin kohteisiin yhteensä {omarahoitus} euroa. {omarahoitus-all-selite}
+
+Lähettäjä: {lahettaja}
+
+# Liitteet
+
+{liitteet}
+

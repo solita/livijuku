@@ -71,7 +71,7 @@
                                  ; What to do in the case of version issues - tehdään näin (ignore) koska muuten tulee valitusta leiniltä
                                  ; (ja koska viisaammatkin ihmiset on näin uskaltaneet tehdä)
                                  :pedantic?    false
-                                 :source-paths ["dev-src/clj"]
+                                 :resource-paths ["test/resources"]
 
                                  :env {:is-dev true}}
                        :uberjar {:main           juku.main
