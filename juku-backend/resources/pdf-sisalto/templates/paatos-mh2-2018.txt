@@ -22,6 +22,8 @@ Hakija on toimittanut vaadittavat tiedot avustuksen käytöstä.
 
 Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin {momentti} määrärahasta. Avustus maksetaan hakijan ilmoittamalle tilille.
 
+{selite}
+
 # Muutoksenhaku
 
 Jos ette tyydy saamaanne päätökseen, voitte hakea siihen oikaisua. Ohje oikaisuun on saatavilla JUKU-järjestelmästä.

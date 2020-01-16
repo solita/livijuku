@@ -24,6 +24,8 @@ Liikennevirasto on laatinut selvityksen joukkoliikenteen valtionrahoituksesta, j
 
 Kuntien omassa joukkoliikennerahoituksessa on käytetty JUKU-järjestelmään annettuja tietoja. Haettua valtionavustusta ei voida myöntää täysimääräisenä määrärahatilanteesta johtuen.
 
+{selite}
+
 # Avustuksen käyttö ja hyväksyttävät kustannukset.
 
 Hyväksyttävinä kustannuksina pidetään palvelusopimusasetuksen mukaisen liikenteen ostoista, julkisen palvelun velvoitteesta maksettavasta korvauksesta ja liikenteen palvelujen kehittämisestä aiheutuvia kustannuksia. PSA:n mukaisen liikenteen hankintaan myönnettyä valtionavustusta saa käyttää paikallisliikenteen, integroidun palveluliikenteen ja muun PSA:n mukaisen liikenteen ostamiseen.
