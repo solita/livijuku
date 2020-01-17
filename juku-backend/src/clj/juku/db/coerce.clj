@@ -26,6 +26,8 @@
 (defn clob->string [^Clob v]
   (let [length (.length v)] (.getSubString v 1 length)))
 
+(defn clob->reader [^Clob v] (.getCharacterStream v))
+
 (defn- create-match-fn [conversion]
   (let [var-conversion (if (var? conversion) conversion (resolve conversion))
         type (-> var-conversion meta :arglists first first meta :tag resolve)]

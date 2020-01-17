@@ -22,11 +22,11 @@ Liikenne- ja viestintävirasto on myöntänyt hakijalle {ah0-paatospvm} tehdyll�
 
 Hakija hakee ajalta 1.1. - 30.6.{vuosi} muodostuneita kustannuksia maksuun yhteensä {haettuavustus} euroa, joka on {osuusavustuksesta} % vuodelle {vuosi} myönnetystä valtionavustuksesta. Hakija on toimittanut vaaditut tiedot avustuksen käytöstä.
 
+{selite}
+
 Avustus maksetaan valtion vuoden {vuosi} talousarvion momentin {momentti} määrärahasta.
 
 Avustus maksetaan hakijan ilmoittamalle tilille.
-
-{selite}
 
 # Sovellettava lainsäädäntö
 

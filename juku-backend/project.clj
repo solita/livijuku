@@ -13,6 +13,9 @@
                            [buddy/buddy-sign "3.1.0"]
 
                            [clj-http "3.10.0"]
+                           [clj-pdf-markdown "0.2.1"]
+                           [com.atlassian.commonmark/commonmark-ext-gfm-tables "0.13.1"]
+                           [com.atlassian.commonmark/commonmark "0.13.1"]
                            [com.draines/postal "2.0.3"]
 
                            [environ "1.0.3"] ;; Library for managing environment variables in Clojure.
@@ -68,7 +71,7 @@
                                  ; What to do in the case of version issues - tehdään näin (ignore) koska muuten tulee valitusta leiniltä
                                  ; (ja koska viisaammatkin ihmiset on näin uskaltaneet tehdä)
                                  :pedantic?    false
-                                 :source-paths ["dev-src/clj"]
+                                 :resource-paths ["test/resources"]
 
                                  :env {:is-dev true}}
                        :uberjar {:main           juku.main

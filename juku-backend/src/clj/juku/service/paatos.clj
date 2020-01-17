@@ -8,7 +8,7 @@
             [juku.service.hakemus-core :as h]
             [juku.service.hakemuskausi :as hk]
             [juku.service.avustuskohde :as ak]
-            [juku.service.pdf :as pdf]
+            [juku.service.pdf2 :as pdf]
             [juku.service.organisaatio :as o]
             [juku.service.asiahallinta :as asha]
             [juku.service.email :as email]
@@ -21,7 +21,8 @@
             [clj-time.core :as time]
             [juku.service.user :as user]
             [juku.service.ely-hakemus :as ely]
-            [juku.service.hakemus-core :as hc]))
+            [juku.service.hakemus-core :as hc]
+            [juku.service.asiakirjamalli :as template]))
 
 ; *** Päätökseen liittyvät kyselyt ***
 (sql/defqueries "paatos.sql")
@@ -117,9 +118,11 @@
           organisaatio (o/find-organisaatio (:organisaatioid hakemus))
           avustuskohteet (ak/find-avustuskohteet-by-hakemusid hakemusid)
           hakuajat (hk/find-hakuajat (:vuosi hakemus))
-          haettuavustus (ak/total-haettavaavustus avustuskohteet)
+          haettuavustus (ak/total-haettavaavustus (map ak/avustus+alv avustuskohteet))
 
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (paatos-template hakemus organisaatio)))))
+          template (slurp (template/get-asiakirjamalli!
+                             (:vuosi hakemus) "P" (:hakemustyyppitunnus hakemus)
+                             (:lajitunnus organisaatio)))
           common-template-values
             {:organisaatio-nimi (:nimi organisaatio)
              :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
@@ -127,14 +130,14 @@
              :lahetyspvm (or lahetyspvm-txt "<lähetyspäivämäärä>")
              :vuosi (:vuosi hakemus)
 
-             :selite (c/maybe-nil #(str "\n\n\t" (str/trim (str/replace % #"\R+" "\n\n\t"))) ""
-                                  (c/nil-if str/blank? (:selite paatos)))
+             :selite (c/nil-if str/blank? (:selite paatos))
 
              :myonnettyavustus (pdf/format-number (:myonnettyavustus paatos))
              :mh1-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh1 :loppupvm]))
              :mh2-hakuaika-loppupvm (h/format-date (get-in hakuajat [:mh2 :loppupvm]))
-             :paattaja (:paattajanimi paatos)
-             :esittelija (user/user-fullname (user/find-user (:kasittelija hakemus)))}
+             :paattaja (or (:paattajanimi paatos) "<päätöksen hyväksyneen käyttäjän nimi>")
+             :esittelija (or (some-> hakemus :kasittelija user/find-user user/user-fullname)
+                             "<hakemuksen tarkastaneen käyttäjän nimi>")}
 
           template-values
             (case (:hakemustyyppitunnus hakemus)
@@ -155,11 +158,10 @@
               "ELY" "Päätös"
               "Valtionavustuspäätös")]
 
-      (pdf/muodosta-pdf
-        {:otsikko {:teksti otsikko :paivays paatospvm-txt :diaarinumero (:diaarinumero hakemus)}
-         :teksti (xstr/interpolate template template-values)
-
-         :footer (str hc/kasittelija-organisaatio-name (if preview " - esikatselu"))}))))
+      (pdf/pdf->inputstream
+        otsikko paatospvm-txt (:diaarinumero hakemus)
+        (str hc/kasittelija-organisaatio-name (if preview " - esikatselu"))
+        (xstr/interpolate template template-values)))))
 
 (defn find-paatos-pdf [hakemusid]
   (let [paatos (find-current-paatos hakemusid)]

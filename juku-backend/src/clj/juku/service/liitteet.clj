@@ -77,5 +77,5 @@
 
 (defn liitteet-section [hakemusid]
   (let [liitteet (find-liitteet hakemusid)
-        nimet (map (comp (partial str "\t") :nimi) liitteet)]
+        nimet (map :nimi liitteet)]
     (str/join "\n" nimet)))

@@ -9,6 +9,7 @@
             [juku.service.avustuskohde :as ak]
             [juku.service.hakemus-core :as h]
             [juku.service.email :as email]
+            [juku.service.asiakirjamalli :as template]
             [slingshot.slingshot :as ss]
             [juku.service.liitteet :as l]
             [juku.service.seuranta :as s]
@@ -18,7 +19,7 @@
             [clj-time.coerce :as timec]
             [schema.coerce :as scoerce]
             [clojure.java.io :as io]
-            [juku.service.pdf :as pdf]
+            [juku.service.pdf2 :as pdf]
             [juku.schema.hakemus :refer :all]
             [ring.util.http-response :as r]
             [common.collection :as coll]
@@ -41,37 +42,36 @@
 
 ;; *** Hakemusasiakirjan (pdf-dokumentti) tuottaminen ***
 
-(defn hakemus-template [hakemus]
-  (str "hakemus-" (str/lower-case (:hakemustyyppitunnus hakemus)) "-2016.txt"))
-
-(defn common-template-values[esikatselu-message pvm hakemus]
-  (let [organisaatio (o/find-organisaatio (:organisaatioid hakemus))]
-    {:organisaatio-nimi (:nimi organisaatio)
-     :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
-     :vireillepvm pvm
-     :vuosi (:vuosi hakemus)
-     :liitteet (l/liitteet-section (:id hakemus))
-     :lahettaja (if esikatselu-message "<hakijan nimi, joka on lähettänyt hakemuksen>"
-                                       (user/user-fullname user/*current-user*))}))
+(defn common-template-values[organisaatio esikatselu-message pvm hakemus]
+  {:organisaatio-nimi (:nimi organisaatio)
+   :organisaatiolaji-pl-gen (h/organisaatiolaji->plural-genetive (:lajitunnus organisaatio))
+   :vireillepvm pvm
+   :vuosi (:vuosi hakemus)
+   :liitteet (l/liitteet-section (:id hakemus))
+   :lahettaja (if esikatselu-message "<hakijan nimi, joka on lähettänyt hakemuksen>"
+                                     (user/user-fullname user/*current-user*))})
 
 (defn hakemus-pdf
   ([hakemus] (hakemus-pdf hakemus nil))
   ([hakemus esikatselu-message]
     (let [pvm (h/format-date (time/today))
           hakemusid (:id hakemus)
-          template (slurp (io/reader (io/resource (str "pdf-sisalto/templates/" (hakemus-template hakemus)))))
-          common-template-values (common-template-values esikatselu-message pvm hakemus)
+          organisaatio (o/find-organisaatio (:organisaatioid hakemus))
+          template (slurp (template/get-asiakirjamalli!
+                            (:vuosi hakemus) "H" (:hakemustyyppitunnus hakemus)
+                            (:lajitunnus organisaatio)))
+          common-template-values (common-template-values organisaatio esikatselu-message pvm hakemus)
           template-values
             (case (:hakemustyyppitunnus hakemus)
               "ELY" (merge common-template-values (ely/ely-template-values hakemus))
               (merge common-template-values (ak/avustuskohde-template-values-by-hakemusid hakemusid)))]
 
-      (pdf/muodosta-pdf
-        {:otsikko {:teksti "Valtionavustushakemus" :paivays pvm :diaarinumero (:diaarinumero hakemus)}
-         :teksti (xstr/interpolate template template-values)
-         :footer (c/maybe-nil #(str hc/kasittelija-organisaatio-name " - esikatselu - " %)
-                              hc/kasittelija-organisaatio-name
-                              esikatselu-message)}))))
+      (pdf/pdf->inputstream
+        "Valtionavustushakemus" pvm (:diaarinumero hakemus)
+        (c/maybe-nil #(str hc/kasittelija-organisaatio-name " - esikatselu - " %)
+                     hc/kasittelija-organisaatio-name
+                     esikatselu-message)
+        (xstr/interpolate template template-values)))))
 
 (defn find-hakemus-pdf [hakemusid]
   (let [hakemus (h/get-hakemus hakemusid)]

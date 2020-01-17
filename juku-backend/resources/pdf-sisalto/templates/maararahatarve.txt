@@ -1,3 +1,5 @@
-	{nimi}
-	 - Sidotut kustannukset				{sidotut} e
-	 - Uudet sopimukset				{uudet} e
+|3|2|
+|-|-|
+|**{nimi}**||
+|Sidotut kustannukset|{sidotut} €|
+|Uudet sopimukset|{uudet} €|

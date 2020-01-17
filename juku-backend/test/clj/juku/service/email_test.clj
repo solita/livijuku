@@ -1,16 +1,17 @@
 (ns juku.service.email-test
   (:require [midje.sweet :refer :all]
-            [clojure.string :as str]
             [common.string :as strx]
             [juku.service.hakemus-core :as hc]
             [juku.service.hakemus :as h]
             [juku.service.paatos :as p]
             [juku.service.hakemuskausi :as hk]
             [juku.service.asiahallinta-mock :as asha]
+            [juku.service.asiakirjamalli-test :as akmalli-test]
             [juku.service.email-mock :as email]
             [juku.service.test :as test]
-            [common.core :as c]
             [juku.service.user :as user]))
+
+(akmalli-test/update-test-asiakirjamallit!)
 
 (def hakemuskausi (test/next-hakemuskausi!))
 (def vuosi (:vuosi hakemuskausi))

@@ -20,7 +20,10 @@
             [common.map :as m]
             [slingshot.slingshot :as ss]
             [ring.util.http-response :as r]
-            [juku.db.coerce :as coerce]))
+            [juku.db.coerce :as coerce]
+            [juku.service.asiakirjamalli-test :as akmalli-test]))
+
+(akmalli-test/update-test-asiakirjamallit!)
 
 ;; *** ely-hakemuksen muokkaus ilman tarkistuksia ***
 (defn insert-maararahatarve! [hakemusid maararahatarve]
@@ -179,11 +182,11 @@
   (fact "tarkasta ely-hakemus"
         content => (partial strx/substring? (str "Hakemus " pdf/today))
         content => (partial strx/substring? "ELY-keskus: Uusimaa")
-        content => #"Sidotut kustannukset\s+1 e"
-        content => #"Uudet sopimukset\s+2 e"
-        content => #"Kauden tulot\s+1 e"
-        content => #"testi1234\s+1 e"
-        content => #"yhteensä\s+11 e"))
+        content => #"Sidotut kustannukset\s+1 €"
+        content => #"Uudet sopimukset\s+2 €"
+        content => #"Kauden tulot\s+1 €"
+        content => #"testi1234\s+1 €"
+        content => #"yhteensä\s+11 €"))
 
 (fact "ELY-hakemuksen lähettäminen"
   (test/with-user "juku_hakija_ely" ["juku_hakija"]
