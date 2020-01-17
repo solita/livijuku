@@ -1,4 +1,4 @@
-(defproject juku-backend "1.7.2"
+(defproject juku-backend "1.8.0-SNAPSHOT"
             :description "Liikennevirasto - Joukkoliikenteen rahoitus-, kustannus- ja suoritetietojen keräys- ja seurantajärjestelmä"
             :url "https://extranet.liikennevirasto.fi/juku/"
             :min-lein-version "2.9.1"
