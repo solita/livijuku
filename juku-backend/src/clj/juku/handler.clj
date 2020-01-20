@@ -44,10 +44,7 @@
 (def wrap-csrf-prevention+whitelist
   (partial jm/wrap-csrf-prevention (-> settings :web :api-key)
            [#"GET /request-token"
-            #"GET /hakemuskausi/.*/hakuohje"
-            #"GET /hakemuskausi/.*/elyhakuohje"
             #"GET /hakemus/.*/pdf.*"
-            #"GET /hakemus/.*/liite/.*"
             #"GET /hakemus/.*/paatos/pdf.*"
             #"GET /hakemus/.*/seuranta/pdf.*"
             #"GET /asiakirjamalli/.*/preview"
