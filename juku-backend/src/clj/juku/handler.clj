@@ -91,7 +91,7 @@
        :params-opts {jm/wrap-csv-params {:delimiter \;}}}
 
      :swagger
-      {:ui "/documentation"
+      {:ui (when (-> settings :web :api-documentation) "/documentation")
        :spec "/documentation/swagger.json"
        :data {:basePath (-> settings :web :api-path)
               :info {
