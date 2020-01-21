@@ -44,17 +44,16 @@
 (def wrap-csrf-prevention+whitelist
   (partial jm/wrap-csrf-prevention (-> settings :web :api-key)
            [#"GET /request-token"
+            #"GET /hakemuskausi/.*/hakuohje"
+            #"GET /hakemuskausi/.*/elyhakuohje"
             #"GET /hakemus/.*/pdf.*"
+            #"GET /hakemus/.*/liite/.*"
             #"GET /hakemus/.*/paatos/pdf.*"
             #"GET /hakemus/.*/seuranta/pdf.*"
             #"GET /asiakirjamalli/.*/preview"
             #"GET /kilpailutukset/csv.*"
             #"GET /tunnusluku/csv.*"
-            #"GET /documentation/.*"
-
-            #"POST /hakemuskausi/.*/hakuohje"
-            #"POST /hakemuskausi/.*/elyhakuohje"
-            #"POST /hakemus/.*/liite"]))
+            #"GET /documentation/.*"]))
 
 (def wrap-api-key (partial jm/wrap-api-key (-> settings :web :api-key)))
 
