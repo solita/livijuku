@@ -21,6 +21,7 @@ where avustuskohdeluokkatunnus = 'K' and tunnus = 'MPK';
 update avustuskohdelaji set nimi = 'Liikenteen palveluiden kokeiluhankkeet'
 where avustuskohdeluokkatunnus = 'K' and tunnus = 'MK';
 
+-- Lakkautetaan avustuskohdelaji: Raitiotien suunnittelu (K/RT)
 update avustuskohdelaji set lakkaamisvuosi = 2020
 where avustuskohdeluokkatunnus = 'K' and tunnus = 'RT';
 
