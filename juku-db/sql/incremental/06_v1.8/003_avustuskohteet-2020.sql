@@ -10,7 +10,7 @@ values ('PK', 'LT', 'Lipputuki', 1, 2020);
 update avustuskohdelaji set lakkaamisvuosi = 2020
 where avustuskohdeluokkatunnus = 'HK';
 
--- Olemassaolevan avustuskohdeluokan nimen muutos
+-- Olemassaolevan avustuskohdeluokan ja lajien nimen muutos
 update avustuskohdeluokka set nimi = 'Liikenteen palvelujen kehittäminen'
 where tunnus = 'K';
 
