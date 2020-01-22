@@ -1,5 +1,6 @@
 (ns juku.service.pdf2
   (:require [clj-pdf.core :as pdf]
+            [clj-pdf.section :as pdf-section]
             [clj-pdf.utils :as pdf-utils]
             [clj-pdf-markdown.core :as md]
             [clojure.java.io :as io]
@@ -9,7 +10,7 @@
            (com.lowagie.text HeaderFooter Phrase FontFactory Font Document Rectangle)
            (org.commonmark.ext.gfm.tables TablesExtension TableCell TableHead)
            (org.commonmark.parser Parser)
-           (org.commonmark.node Node)
+           (org.commonmark.node Node Heading ListBlock)
            (java.text NumberFormat)
            (java.util Locale)
            (java.io ByteArrayOutputStream ByteArrayInputStream)
@@ -130,6 +131,7 @@
   (let [^Parser parser
         (-> (Parser/builder)
             (.extensions [(TablesExtension/create)])
+            (.enabledBlockTypes #{Heading ListBlock})
             .build)]
     (.parse parser s)))
 
@@ -149,6 +151,9 @@
    (into [:paragraph] (md/render-children* pdf-config node))])
 
 (defmethod md/render :HtmlInline [pdf-config node] (.getLiteral node))
+
+(defmethod pdf-section/render :default [tag meta & els]
+  (throw (ex-info (str "Invalid clj-pdf tag: " tag) {:tag tag :type ::illegal-content})))
 
 (def markdown-defaults
  {:heading  {:h1 {:style {:size 12} :spacing-after 8}
@@ -177,11 +182,17 @@
 
 (defn pdf [title date diaarinumero footer content out]
   (with-redefs [pdf-utils/font (partial font pdf-utils/font)]
-    (pdf/pdf [
-      (metadata title date diaarinumero footer)
-      (wrap-indent-paragraph
-        (with-redefs [md/parse-markdown parse-markdown]
-          (md/markdown->clj-pdf markdown-defaults content)))] out)))
+    (try
+      (pdf/pdf [
+        (metadata title date diaarinumero footer)
+        (wrap-indent-paragraph
+          (with-redefs [md/parse-markdown parse-markdown]
+            (md/markdown->clj-pdf markdown-defaults content)))] out)
+      (catch Exception e
+        ;; less verbose errors
+        (throw (cond
+                 (= (some-> e ex-cause ex-data :type) ::illegal-content) (ex-cause e)
+                 :else e))))))
 
 (defn pdf->inputstream [title date diaarinumero footer content]
   (with-open [out (ByteArrayOutputStream. 256)]
