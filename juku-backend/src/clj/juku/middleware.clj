@@ -22,7 +22,8 @@
             [juku.headers :as h]
             [clojure.tools.logging :as log]
             [crypto.random :as random]
-            [compojure.api.exception :as ex]))
+            [compojure.api.exception :as ex])
+  (:import (java.io Serializable)))
 
 (defn normalize-name [name]
   (-> name str/trim str/lower-case (str/replace #"(\s)+" "-")))
@@ -101,6 +102,13 @@
 (defn service-name [request]
   (str ((c/nil-safe str/upper-case) (name (:request-method request))) " " (:uri request)))
 
+(defn remove-non-serializable-values [object]
+  (w/prewalk
+    #(if (or (and (map-entry? %) (not (instance? Serializable (second %))))
+             (not (instance? Serializable %)))
+       nil %)
+    object))
+
 (defn throwable->http-error [^Throwable t]
   (if t
     (let [error (or (ss/get-thrown-object t) (ex-data t))]
@@ -110,7 +118,7 @@
            :type :schema.core/error
            :value (:value error)
            :cause (throwable->http-error (cause t))}
-          (assoc error
+          (assoc (remove-non-serializable-values error)
             :message (or (:message error) (message t))
             :cause (throwable->http-error (cause t))))
         {:message (message t)
