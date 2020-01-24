@@ -45,7 +45,7 @@ Taulukko alkaa tyhjällä rivillä ja päättyy tyhjään riviin. Taulukko koost
 ## Täydennettävät kentät
 
 Asiakirja luodaan täydentämällä merkityt kohdat asiakirjamallista. 
-Täydennetävät kohdat merkitään tunnuksella {tiedon nimi}. 
+Täydennetävät kohdat merkitään tunnuksella `{tiedon nimi}`. 
 Käytettävissä olevat täydennettävät kohdat riippuvat asiakirjan lajista: 
 
 - hakemusasiakirja
@@ -72,3 +72,16 @@ Kaikissa hakemuksissa on käytettävissä seuraavat täydennettävät kohdat:
 |lahettaja|Hakijan nimi, joka on lähettänyt hakemuksen|Mikko Esimerkki|
 |vuosi|Hakemuskausi|2020|
 |liitteet|Hakemuksen liitteiden nimet|esimerkki-liite1.pdf|
+
+#### Avustuskohteet
+
+Avustuskohteiden tiedot on käytettävissä hakemuksissa, joissa on avustuskohteet:
+
+|Nimi|Kuvaus|Esimerkki|
+|-|-|-|
+| avustuskohteet | Avustuskohdetaulukko | |
+| avustuskohteet-summary | Avustuskohteiden yhteenveto |
+| haettuavustus | Hakemuksessa haettu avustus yhteensä | 2 480 000 |
+| omarahoitus | Hakijan käyttämä oma rahoitus kohteisiin johon haettu avustusta | 2 980 000 |
+| omarahoitus-all | Hakijan käyttämä oma rahoitus kaiken kaikkiaan| 2 980 000 |
+| omarahoitus-all-selite | Selite omasta rahoituksesta, jos omaa rahoitusta on käytetty kohteisiin johon ei ole haettu avustusta | Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta 3 000 000 euroa. |
