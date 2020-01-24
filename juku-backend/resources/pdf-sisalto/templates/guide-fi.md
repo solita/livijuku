@@ -75,7 +75,7 @@ Kaikissa hakemuksissa on käytettävissä seuraavat täydennettävät kohdat:
 
 #### Avustuskohteet
 
-Avustuskohteiden tiedot on käytettävissä hakemuksissa, joissa on avustuskohteet:
+Avustuskohteiden tiedot on käytettävissä hakemuksissa (ah0, mh1, mh2), joissa on avustuskohteet:
 
 |Nimi|Kuvaus|Esimerkki|
 |-|-|-|
@@ -85,3 +85,15 @@ Avustuskohteiden tiedot on käytettävissä hakemuksissa, joissa on avustuskohte
 | omarahoitus | Hakijan käyttämä oma rahoitus kohteisiin johon haettu avustusta | 2 980 000 |
 | omarahoitus-all | Hakijan käyttämä oma rahoitus kaiken kaikkiaan| 2 980 000 |
 | omarahoitus-all-selite | Selite omasta rahoituksesta, jos omaa rahoitusta on käytetty kohteisiin johon ei ole haettu avustusta | Yhteensä kaikkiin kohteisiin hakija on osoittanut omaa rahoitusta 3 000 000 euroa. |
+
+#### Ely hakemus
+
+|Nimi|Kuvaus|Esimerkki|
+|-|-|-|
+| haettuavustus | Hakemuksessa haettu avustus yhteensä | 3 502 230 |
+| ostot | Liikenteen ostot | 100 000 |
+| kaupunkilipputuki | | 100 000 |
+| seutulipputuki | | 100 000 |
+| kehittaminen | | 100 000 |
+| kehityshankkeet | Taulukko kehityshankkeista | |
+| maararahatarpeet | Taulukko määrärahatarpeista - joukkoliikennetuki liikenteen ostoihin | |
