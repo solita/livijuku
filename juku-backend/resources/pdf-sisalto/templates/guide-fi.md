@@ -18,7 +18,7 @@ Muotoilusäännöt perustuvat markdown-standardiin.
 
 ### Kappaleet
 
-Tekstikappale alkaa tyhjällä rivillä ja päättyy tyhjään riviin. Tämä sama sääntö pätee kaikkiin lohkoelementteihin.
+Tekstikappale alkaa tyhjällä rivillä ja päättyy tyhjään riviin. 
 Kappaleen teksti kirjoitetaan ilman rivinvaihtoja. Rivinvaihto tuottaa rivinvaihdon kappaleeseen. 
 Kappale on kuitenkin samaa kappaletta niin kauan kunnes tulee tyhjä rivi, joka päättää kappaleen.
 
@@ -97,3 +97,44 @@ Avustuskohteiden tiedot on käytettävissä hakemuksissa (ah0, mh1, mh2), joissa
 | kehittaminen | | 100 000 |
 | kehityshankkeet | Taulukko kehityshankkeista | |
 | maararahatarpeet | Taulukko määrärahatarpeista - joukkoliikennetuki liikenteen ostoihin | |
+
+### Päätösasiakirjat
+
+#### Kaikki hakemukset
+
+Kaikissa päätöksissä käytettävissä olevat tiedot.
+
+|Nimi|Kuvaus|Esimerkki|
+|-|-|-|
+| organisaatio-nimi | Hakemuksen lähettäjän organisaatio | Helsingin seudun liikenne |
+| organisaatiolaji-pl-gen | Hakemuksen lähettäjän organisaatiolaji monikon genetiivi | suurten kaupunkiseutujen |
+| lahetyspvm | Viimeisin hakemuksen lähetyspäivämäärä |18.12.2019|
+| vuosi | Hakemuskausi | 2020|
+| paattaja | Päätöksen hyväksyneen käyttäjän nimi | Päivi Päättäjä |
+| esittelija | Hakemuksen tarkastaneen käyttäjän nimi | Tero Tarkastaja |
+| paatosspvm | Päätöksen päivämäärä |1.1.2020|
+| myonnettyavustus | Päätöksessä myönnetty avustus |2 480 000|
+| selite | Päätökseen annettu ylimääräinen selite | |
+| alv-selite | Selite alv jos johonkin avustuskohtaan sisältyy arvonlisävero | Avustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.|
+| mh1-hakuaika-loppupvm | 1. maksatushakemuksen hakuajan loppumispäivämäärä |31.8.2020|
+| mh2-hakuaika-loppupvm | 2. maksatushakemuksen hakuajan loppumispäivämäärä |31.1.2021|
+
+#### Kaikki maksatushakemukset
+
+|Nimi|Kuvaus|Esimerkki|
+|-|-|-|
+| osuusavustuksesta | Maksatushakemuksessa myönnetyn avustuksen osuus avustushakemuksessa myönnetystä avustuksesta |50|
+| ah0-myonnettyavustus | Avustushakemuksessa myönnetty avustus |2 480 000|
+| ah0-paatospvm | Avustushakemuksen päätöspäivämäärä |1.1.2020|
+| momentti | Momentti |31.30.63.09|
+
+#### 2. maksatushakemus
+
+|Nimi|Kuvaus|Esimerkki|
+|-|-|-|
+| mh1-paatospvm | 1. maksatushakemuksen päätöspäivämäärä|1.1.2020|
+| mh1-myonnettyavustus | 1. maksatushakemuksessa myönnetty avustus |2 480 000|
+
+#### ELY hakemus
+
+TODO
