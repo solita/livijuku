@@ -115,7 +115,7 @@ Kaikissa päätöksissä käytettävissä olevat tiedot.
 | paatosspvm | Päätöksen päivämäärä |1.1.2020|
 | myonnettyavustus | Päätöksessä myönnetty avustus |2 480 000|
 | selite | Päätökseen annettu ylimääräinen selite | |
-| alv-selite | Selite alv jos johonkin avustuskohtaan sisältyy arvonlisävero | Avustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.|
+| alv-selite | Selite arvonlisäverosta jos johonkin avustuskohtaan sisältyy arvonlisävero | Avustukseen sisältyy arvonlisävero hintavelvoitteen korvaamisen osalta.|
 | mh1-hakuaika-loppupvm | 1. maksatushakemuksen hakuajan loppumispäivämäärä |31.8.2020|
 | mh2-hakuaika-loppupvm | 2. maksatushakemuksen hakuajan loppumispäivämäärä |31.1.2021|
 
