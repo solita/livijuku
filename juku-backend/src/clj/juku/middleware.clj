@@ -109,21 +109,16 @@
        nil %)
     object))
 
+(defn classname [object]
+  (.getName (class object)))
+
 (defn throwable->http-error [^Throwable t]
   (if t
-    (let [error (or (ss/get-thrown-object t) (ex-data t))]
-      (if (map? error)
-        (if (= (:type error) :schema.core/error)
-          {:message (message t)
-           :type :schema.core/error
-           :value (:value error)
-           :cause (throwable->http-error (cause t))}
-          (assoc (remove-non-serializable-values error)
-            :message (or (:message error) (message t))
-            :cause (throwable->http-error (cause t))))
+    (let [error (or (ss/get-thrown-object t) (ex-data t) {})]
+      (merge-with #(or %1 %2)
+        (select-keys error [:message :type :http-response])
         {:message (message t)
-         :type (.getName ^Class (.getClass t))
-         :cause (throwable->http-error (cause t))}))))
+         :type (classname t)}))))
 
 (defn exception-handler [exception _ request]
   (let [error (throwable->http-error exception)
