@@ -166,7 +166,8 @@
                (catch Throwable t (.getMessage t)))))
 
 (defn request-token [secret _]
-  (assoc-in (r/ok) [:cookies "XSRF-TOKEN"]
+  (assoc-in (r/content-type (r/ok) "application/javascript")
+            [:cookies "XSRF-TOKEN"]
             {:value (jwt/sign {:id (random/base64 16)} secret)
              :http-only false :path "/"}))
 
