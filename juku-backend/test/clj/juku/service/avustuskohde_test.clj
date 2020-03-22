@@ -199,7 +199,7 @@
 
   (ak/avustuskohteet-summary [(avustuskohdeluokka "PSA" 0M)
                               (avustuskohdeluokka "K" 2M)])
-    => "Liikenteen suunnittelu ja kehittämishankkeet 2 € (alv 0%)")
+    => "Liikenteen palvelujen kehittäminen 2 € (alv 0%)")
 
 (def header "|3|2|\n|-|-|")
 
