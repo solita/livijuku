@@ -77,7 +77,8 @@
     (let [tuki (test-joukkoliikennetuki 1M)]
 
       (tl/save-joukkoliikennetuki! 2016 1 tuki)
-      (set (tl/find-joukkoliikennetuki 2016 1)) => (set tuki))))
+      (set (tl/find-joukkoliikennetuki 2016 1)) =>
+        (conj (set tuki) {:avustuskohdeluokkatunnus "PK" :tuki nil}))))
 
 
 ; *** csv import ***
