@@ -14,6 +14,7 @@ group by lajitunnus
 
 -- name: select-count-akohdelaji
 select count(*) amount from avustuskohdelaji
+where voimaantulovuosi <= :vuosi and lakkaamisvuosi > :vuosi
 
 -- name: select-taydennyspyynto
 select maarapvm, selite from taydennyspyynto where hakemusid = :hakemusid and numero = :nro

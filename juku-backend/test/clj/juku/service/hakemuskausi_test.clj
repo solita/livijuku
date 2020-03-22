@@ -21,7 +21,7 @@
 (defn assert-avustuskohteet [vuosi]
   (fact (str "Test avustuskohteet on luotu oikein avauksen jälkeen vuodelle: " vuosi)
     (let [stats (m/map-values first (group-by :lajitunnus (test/select-akohde-amounts-broup-by-organisaatiolaji {:vuosi vuosi})))
-          aklaji-count (:amount (first (test/select-count-akohdelaji)))
+          aklaji-count (:amount (first (test/select-count-akohdelaji {:vuosi vuosi})))
           distinct (map :distinctvalues (vals stats))]
       (get-in stats ["KS1" :akohdeamount]) => aklaji-count
       (get-in stats ["KS2" :akohdeamount]) => (- aklaji-count 1)
