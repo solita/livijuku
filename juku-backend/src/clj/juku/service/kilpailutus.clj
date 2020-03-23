@@ -77,7 +77,7 @@
 (defn edit-kilpailutus! [kilpailutusid kilpailutus]
   (assert-modify-kilpailutus-allowed*! kilpailutus
     (str "Käyttäjällä " (:tunnus user/*current-user*) " ei ole oikeutta muokata kilpailutusta: " kilpailutusid "."))
-  (dml/update-where-id db "kilpailutus" kilpailutus kilpailutusid)
+  (dml/update-where-id db "kilpailutus" kilpailutus kilpailutusid constraint-errors kilpailutus)
   nil)
 
 (defn find-kilpailutukset [filter]

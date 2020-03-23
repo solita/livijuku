@@ -120,11 +120,14 @@
         {:message (message t)
          :type (classname t)}))))
 
+(defn internal-server-error [error]
+  (r/internal-server-error (select-keys error [:type])))
+
 (defn exception-handler [exception _ request]
   (let [error (throwable->http-error exception)
         http-response (or (:http-response error)
                           (if (isa? (:type error) ::coll/not-found) r/not-found)
-                          r/internal-server-error)
+                          internal-server-error)
         response (http-response (dissoc error :http-response))]
     (log/error exception
                (service-name request) " -> "

@@ -32,6 +32,39 @@
                                                              :tarjoushinta2 nil))))))
 
 (fact
+  "Kilpailutuksen tallennus, muokkaus ja yksittäisen kilpailutuksen haku"
+  (test/with-hakija
+    (let [kilpailutus {:organisaatioid 1M
+                       :kohdenimi "test"
+                       :liikennointialoituspvm    (t/local-date 2016 1 1)
+                       :liikennointipaattymispvm  (t/local-date 2016 2 1)
+                       :tarjousmaara  1M
+                       :tarjoushinta1 1M
+                       :tarjoushinta2 1M}
+          edit-kilpailutus (assoc kilpailutus :tarjousmaara 2M)
+          id (k/add-kilpailutus! kilpailutus)]
+
+      (k/edit-kilpailutus! id edit-kilpailutus)
+      (k/get-kilpailutus! id) => (merge (map/map-values (constantly nil) ks/Kilpailutus)
+                                        (assoc edit-kilpailutus :id id)))))
+
+(fact
+  "Kilpailutuksen tallennus, muokkaus - väärä organisaatio id"
+  (test/with-user "juku_kasittelija" ["juku_kasittelija"]
+    (let [kilpailutus {:organisaatioid 1M
+                       :kohdenimi "test"
+                       :liikennointialoituspvm    (t/local-date 2016 1 1)
+                       :liikennointipaattymispvm  (t/local-date 2016 2 1)
+                       :tarjousmaara  1M
+                       :tarjoushinta1 1M
+                       :tarjoushinta2 1M}
+          edit-kilpailutus (assoc kilpailutus :organisaatioid 6666666M)
+          id (k/add-kilpailutus! kilpailutus)]
+
+      (k/edit-kilpailutus! id edit-kilpailutus) =>
+        (throws "Kilpailutuksen organisaatiota 6666666 ei ole olemassa."))))
+
+(fact
   "Kilpailutuksen tallennus ja kaikkien kilpailutusten haku"
   (test/with-hakija
     (let [kilpailutus {:organisaatioid 1M

@@ -27,11 +27,12 @@
     (db-operation)
     (catch Exception e
       (c/if-let* [constraint (violated-constraint e)
-                  error (or (-> constraint :violated-constraint str/lower-case keyword constraint-violation-error) {})
-                  message-template (or (:message error) (default-error-message sql params))]
-        (ss/throw+ (merge {:sql sql} constraint error error-parameters)
-                   (strx/interpolate message-template error-parameters))
-        (ss/throw+ {:sql sql} (default-error-message sql params)))))))
+                  error (or (-> constraint :violated-constraint str/lower-case keyword constraint-violation-error)
+                            {})
+                  message-template (or (:message error) (default-error-message sql params))
+                  message (strx/interpolate message-template error-parameters)]
+        (ss/throw+ (merge constraint error error-parameters {:sql sql :message message}) message)
+        (ss/throw+ {:sql sql :type "sql"} (default-error-message sql params)))))))
 
 (defn- db-do
   ([operation db sql params constraint-violation-error error-parameters]
@@ -81,8 +82,13 @@
         set-clause  (str/join separator (map assignment-expression (keys obj)))]
        (str "update " table " set " set-clause)))
 
-(defn update-where-id [db table obj id]
-  (first (db-do jdbc/db-do-prepared db (str (update-statement table obj) " where id = ?") (concat (vals obj) [id]))))
+(defn update-where-id
+  ([db table obj id] (update-where-id db table obj id (constantly nil) {}))
+  ([db table obj id constraint-violation-error error-parameters]
+    (first (db-do jdbc/db-do-prepared db
+                  (str (update-statement table obj) " where id = ?")
+                  (concat (vals obj) [id])
+                  constraint-violation-error error-parameters))))
 
 (defn- where-clause [where]
   (str/join " and " (map assignment-expression (keys where))))
