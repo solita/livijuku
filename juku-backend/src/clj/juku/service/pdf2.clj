@@ -177,8 +177,11 @@
     :pdf-table [:paragraph (assoc default-indent+spacing :keep-together false) item]
     item))
 
-(defn wrap-indent-paragraph [clj-pdf]
-  (vec (map indent-paragraph-wrapper clj-pdf)))
+(defn wrap-indent-paragraph [[first-item :as clj-pdf]]
+  (vec (cond
+    (string? clj-pdf) (indent-paragraph-wrapper [:paragraph {} clj-pdf])
+    (seqable? first-item) (map indent-paragraph-wrapper clj-pdf)
+    :else (indent-paragraph-wrapper clj-pdf))))
 
 (defn pdf [title date diaarinumero footer content out]
   (with-redefs [pdf-utils/font (partial font pdf-utils/font)]
