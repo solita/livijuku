@@ -1,5 +1,6 @@
 (ns juku.schema.asiakirjamalli
-  (:require [schema.core :as s])
+  (:require [schema.core :as s]
+            [juku.schema.common :as sc])
   (:import (org.joda.time DateTime)))
 
 (s/defschema Asiakirjamalli
@@ -11,6 +12,6 @@
    :poistoaika             (s/maybe DateTime)})
 
 (s/defschema Asiakirjamalli+sisalto
-  (assoc Asiakirjamalli :sisalto s/Str))
+  (assoc Asiakirjamalli :sisalto sc/NotBlank))
 
 (s/defschema Edit-Asiakirjamalli (dissoc Asiakirjamalli+sisalto :id :poistoaika))
