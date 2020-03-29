@@ -112,13 +112,16 @@
 (defn classname [object]
   (.getName (class object)))
 
+(defn thrown-object [^Throwable t]
+  (let [error (ss/get-thrown-object t)]
+    (if (map? error) error)))
+
 (defn throwable->http-error [^Throwable t]
-  (if t
-    (let [error (or (ss/get-thrown-object t) (ex-data t) {})]
-      (merge-with #(or %1 %2)
-        (select-keys error [:message :type :http-response])
-        {:message (message t)
-         :type (classname t)}))))
+  (let [error (or (thrown-object t) (ex-data t) {})]
+    (merge-with #(or %1 %2)
+      (select-keys error [:message :type :http-response])
+      {:message (message t)
+       :type (classname t)})))
 
 (defn internal-server-error [error]
   (r/internal-server-error (select-keys error [:type])))
